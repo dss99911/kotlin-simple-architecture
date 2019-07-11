@@ -1,0 +1,32 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext.app_version_code = 307
+    ext.app_version = '3.0.7'
+    ext.min_sdk_version = 23
+    ext.target_sdk_version = 28
+    ext.compile_sdk_version = 28
+    ext.build_tool_version = "28.0.3"
+    ext.application_id = "kim.jeonghyeon.androidlibrary"
+
+    apply from: (project(':library').projectDir.toString() + '/versions.gradle')
+    addRepos(repositories)
+
+    dependencies {
+        classpath deps.android_gradle_plugin
+        classpath deps.kotlin.plugin
+
+        //for bintray repository
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+    }
+}
+
+
+allprojects {
+    addRepos(repositories)
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

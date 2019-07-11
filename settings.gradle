@@ -1,0 +1,2 @@
+include ':sample', ':library', ':kotlinlibrary'
+project(':kotlinlibrary').projectDir = new File(settingsDir, '../../../IdeaProjects/my/Kotlin/kotlinlibrary/library')

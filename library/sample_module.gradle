@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+apply from: (project(':library').projectDir.toString() + '/base.gradle')
+
+android {
+    buildTypes {
+        release {
+            shrinkResources true
+        }
+    }
+
+    defaultConfig {
+        resConfigs("en")
+        buildConfigField "String", "freePackageName", "\"$application_id\""
+    }
+
+    flavorDimensions "free"
+    productFlavors {
+        free {
+            buildConfigField "boolean", "isPro", "false"
+            applicationId application_id
+        }
+        pro {
+            buildConfigField "boolean", "isPro", "true"
+            applicationId application_id + ".pro"
+        }
+    }
+}
+
+apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
+
+dependencies {
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    // Add your dependencies
+}

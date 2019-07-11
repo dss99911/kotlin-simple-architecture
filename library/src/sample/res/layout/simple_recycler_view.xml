@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@layout/simple_recycler_view">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.BaseRecyclerViewModel" />
+        <!--<variable name="model" type="kim.jeonghyeon.androidlibrary.example.recyclerview.PagedListViewModelExample"-->
+    </data>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        bind:itemResId="@{@layout/empty_layout}"
+        bind:viewModel="@{viewModel}" />
+
+    <!--&lt;!&ndash; use Paging&ndash;&gt;-->
+    <!--<androidx.recyclerview.widget.RecyclerView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+            <!--bind:itemResId="@{@layout/empty_layout}"-->
+            <!--bind:pagedList="@{model.pagedList}"-->
+            <!--bind:onItemClick="@{model}"-->
+    <!--/>-->
+
+</layout>

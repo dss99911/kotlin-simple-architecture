@@ -1,0 +1,3 @@
+include ':app', ':library', ':kotlinlibrary'
+project(':library').projectDir = new File("${gradle.gradleUserHomeDir}/../AndroidstudioProjects/my/AndroidLibrary/library")
+project(':kotlinlibrary').projectDir = new File("${gradle.gradleUserHomeDir}/../IdeaProjects/my/Kotlin/kotlinlibrary/library")

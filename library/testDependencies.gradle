@@ -1,0 +1,9 @@
+
+dependencies {
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.espresso.core
+    testImplementation deps.arch_core.testing
+    testImplementation deps.mock_web_server
+    kapt deps.room.compiler
+    kapt deps.dagger.android_support_compiler
+}
