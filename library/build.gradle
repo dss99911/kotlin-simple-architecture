@@ -11,7 +11,6 @@ android {
 }
 
 dependencies {
-    api deps.kotlin.stdlib
     api deps.room.runtime
     api deps.room.coroutine
 
@@ -31,7 +30,6 @@ dependencies {
     api deps.anko
     api deps.core_ktx
     api deps.constraint_layout
-    api deps.gson
     api deps.lifecycle.extensions
     api deps.paging_ktx
     api deps.timber
