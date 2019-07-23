@@ -30,5 +30,6 @@ apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    // Add your dependencies
+
+    implementation 'com.android.support:customtabs:23.3.0'
 }
