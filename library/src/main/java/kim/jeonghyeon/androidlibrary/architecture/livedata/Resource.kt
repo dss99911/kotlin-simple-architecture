@@ -15,6 +15,30 @@ data class Resource<T> constructor(val data: T?, val state: ResourceState) {
 
     fun asLiveData(): MutableLiveData<Resource<T>> =
             MutableLiveData<Resource<T>>().apply { value = this@Resource }
+
+    fun onSuccess(onResult: (T?) -> Unit) {
+        if (isSuccess) {
+            onResult(data)
+        }
+    }
+
+    fun onSuccessNotNull(onResult: (T) -> Unit) {
+        if (isSuccess) {
+            onResult(data ?: return)
+        }
+    }
+
+    fun onError(onResult: (BaseError) -> Unit) {
+        if (isError) {
+            onResult(state.error!!)
+        }
+    }
+
+    fun onLoading(onResult: (T?) -> Unit) {
+        if (isLoading) {
+            onResult(data)
+        }
+    }
 }
 
 val Resource<*>?.status: ResourceStatus
