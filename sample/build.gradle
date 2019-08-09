@@ -6,6 +6,10 @@ android {
         release {
             shrinkResources true
         }
+        //inherit other build type
+//        alpha {
+//            initWith release
+//        }
     }
 
     defaultConfig {
