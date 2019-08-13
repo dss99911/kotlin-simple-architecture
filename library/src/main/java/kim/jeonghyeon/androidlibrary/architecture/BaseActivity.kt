@@ -1,12 +1,11 @@
 package kim.jeonghyeon.androidlibrary.architecture
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import androidx.annotation.CallSuper
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import kim.jeonghyeon.androidlibrary.architecture.mvp.PermissionResultListener
 import kim.jeonghyeon.androidlibrary.architecture.mvp.PermissionUIHelper
 import kim.jeonghyeon.androidlibrary.extension.log
@@ -45,5 +44,31 @@ open class BaseActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         permissionUIHelper.onActivityResult(requestCode, resultCode, data)
+    }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    fun addFragment(container: Int, fragment: Fragment, tag: String? = null) {
+        val transaction = supportFragmentManager.beginTransaction()
+        if (tag == null) {
+            transaction.add(container, fragment)
+        } else {
+            transaction.add(container, fragment, tag)
+        }
+        transaction.commitNow()
+    }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null) {
+        val transaction = supportFragmentManager.beginTransaction()
+        if (tag == null) {
+            transaction.replace(container, fragment)
+        } else {
+            transaction.replace(container, fragment, tag)
+        }
+        transaction.commitNow()
     }
 }

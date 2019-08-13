@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Android LIbrary</string>
+    <string name="app_name">Android Sample</string>
+    <string name="mvvm">MVVM</string>
+    <string name="chrome_custom_tab">Chrome Custom Tab</string>
 </resources>

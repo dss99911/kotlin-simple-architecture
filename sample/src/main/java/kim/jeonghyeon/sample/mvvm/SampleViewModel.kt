@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.sample.mvvm
+package kim.jeonghyeon.sample.mvvm
 
 import android.view.MenuItem
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel

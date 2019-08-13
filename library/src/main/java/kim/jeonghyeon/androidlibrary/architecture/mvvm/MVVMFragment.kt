@@ -3,41 +3,84 @@ package kim.jeonghyeon.androidlibrary.architecture.mvvm
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.BaseFragment
-import kim.jeonghyeon.androidlibrary.extension.*
-import java.lang.IllegalStateException
+import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
+import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
+import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import kim.jeonghyeon.androidlibrary.extension.toast
 
-abstract class MVVMFragment<VM : BaseViewModel> : BaseFragment() {
+abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment() {
     abstract val viewModel: VM
+    abstract val layoutId: Int
+
+    open fun setVariable(binding: DB) {
+        binding.setVariable(BR.model, viewModel)
+    }
+
     private val progressDialog by lazy { activity?.createProgressDialog() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.toast.observe(this) {
-            toast(it)
-        }
 
-        viewModel.startActivity.observe(this) {
-            activity?.startActivity(it)
-        }
-
-        viewModel.startActivityForResult.observe(this) { (intent, requestCode) ->
-            try {
-                startActivityForResult(intent, requestCode)
-            } catch (e: IllegalStateException) {
-            } catch (e: ActivityNotFoundException) {
-                toast(R.string.toast_no_activity)
+        with(viewModel) {
+            toast.observe(this@MVVMFragment) {
+                toast(it)
             }
+
+            startActivity.observe(this@MVVMFragment) {
+                activity?.startActivity(it)
+            }
+
+            startActivityForResult.observe(this@MVVMFragment) { (intent, requestCode) ->
+                try {
+                    startActivityForResult(intent, requestCode)
+                } catch (e: IllegalStateException) {
+                } catch (e: ActivityNotFoundException) {
+                    toast(R.string.toast_no_activity)
+                }
+            }
+
+            showProgressBar.observe(this@MVVMFragment) {
+                if (it) {
+                    progressDialog?.showWithoutException()
+                } else {
+                    progressDialog?.dismissWithoutException()
+                }
+            }
+
+            addFragment.observe(this@MVVMFragment) {
+                this@MVVMFragment.addFragment(it.containerId, it.fragment, it.tag)
+            }
+
+            replaceFragment.observe(this@MVVMFragment) {
+                this@MVVMFragment.replaceFragment(it.containerId, it.fragment, it.tag)
+            }
+
+            performWithActivity.observe(this@MVVMFragment) {
+                //todo as fragment is active, this is processed. but it seems not to ensure activity exists. but let's try if this crash or not
+                it(activity!!)
+            }
+
+            onCreate()
         }
 
-        viewModel.showProgressBar.observe(this) {
-            if (it) {
-                progressDialog?.showWithoutException()
-            } else {
-                progressDialog?.dismissWithoutException()
-            }
-        }
+    }
+
+    final override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = DataBindingUtil.inflate<DB>(inflater, layoutId, container, false)
+        setVariable(binding)
+        binding.setLifecycleOwner(this)
+        return binding.root
     }
 
     override fun onStart() {

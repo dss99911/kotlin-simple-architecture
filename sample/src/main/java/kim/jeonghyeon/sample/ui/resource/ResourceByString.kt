@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.ui.resource
+package kim.jeonghyeon.sample.ui.resource
 
 import android.content.Context
 

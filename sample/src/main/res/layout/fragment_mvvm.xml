@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- show how to use mvvm data binding-->
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
 
         <variable
-            name="model"
-            type="kim.jeonghyeon.androidlibrary.sample.mvvm.SampleViewModel" />
+                name="model"
+                type="kim.jeonghyeon.sample.mvvm.SampleViewModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".ui.main.PlaceholderFragment">
+            tools:context=".mvvm.SampleMVVMFragment">
 
         <TextView
                 android:id="@+id/section_label"
@@ -26,7 +27,8 @@
                 android:layout_marginBottom="10dp"
                 tools:layout_constraintLeft_creator="1"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/constraintLayout"/>
+                android:text="test"
+                app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

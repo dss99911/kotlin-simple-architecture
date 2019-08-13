@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.ui.dialog
+package kim.jeonghyeon.sample.ui.dialog
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog

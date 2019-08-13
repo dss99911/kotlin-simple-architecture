@@ -1,4 +1,5 @@
 apply from: (project(':library').projectDir.toString() + '/testDependencies.gradle')
 dependencies {
+    implementation project(':kotlinlibrary')
     implementation project(':library')
 }

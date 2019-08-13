@@ -12,6 +12,10 @@ import androidx.lifecycle.ViewModelProviders
 inline fun <reified T : ViewModel> Fragment.getViewModel(): T =
         ViewModelProviders.of(this).get(T::class.java)
 
+inline fun <reified T : ViewModel> Fragment.getActivityViewModel(): T? {
+    return ViewModelProviders.of(activity ?: return null).get(T::class.java)
+}
+
 inline fun <reified T : ViewModel> FragmentActivity.getViewModel(): T =
         ViewModelProviders.of(this).get(T::class.java)
 

@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary
+package kim.jeonghyeon.sample
 
 fun main() {
     val matches = Regex("abc").matches("aaabcdfadsf")

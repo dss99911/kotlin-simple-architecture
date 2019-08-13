@@ -1,26 +1,24 @@
-package kim.jeonghyeon.androidlibrary.sample.mvvm
+package kim.jeonghyeon.sample.mvvm
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MVVMFragment
-import kim.jeonghyeon.androidlibrary.extension.bind
 import kim.jeonghyeon.androidlibrary.extension.getViewModel
-import kim.jeonghyeon.androidlibrary.test.R
+import kim.jeonghyeon.sample.R
+import kim.jeonghyeon.sample.databinding.FragmentMvvmBinding
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class SampleMVVMFragment : MVVMFragment<SampleViewModel>() {
+class SampleMVVMCustomizingFragment : MVVMFragment<SampleViewModel, FragmentMvvmBinding>() {
     override val viewModel: SampleViewModel
         get() = getViewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override val layoutId: Int
+        get() = R.layout.fragment_mvvm
 
-        return bind<SampleMvvmFragmentBinding>(inflater, container, R.layout.sample_mvvm_fragment) {
-            it.model = viewModel
-        }.root
+    override fun setVariable(binding: FragmentMvvmBinding) {
+        //todo set your variable
+        binding.model = viewModel
     }
 
     companion object {
@@ -35,8 +33,8 @@ class SampleMVVMFragment : MVVMFragment<SampleViewModel>() {
          * number.
          */
         @JvmStatic
-        fun newInstance(sectionNumber: Int): SampleMVVMFragment {
-            return SampleMVVMFragment().apply {
+        fun newInstance(sectionNumber: Int): SampleMVVMCustomizingFragment {
+            return SampleMVVMCustomizingFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_SECTION_NUMBER, sectionNumber)
                 }

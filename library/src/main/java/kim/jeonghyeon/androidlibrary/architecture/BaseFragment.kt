@@ -63,4 +63,18 @@ open class BaseFragment : Fragment() {
     open fun onVisibilityChanged(visible: Boolean) {
         log("${this::class.simpleName} : $visible")
     }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    fun addFragment(container: Int, fragment: Fragment, tag: String? = null) {
+        (activity as? BaseActivity)?.addFragment(container, fragment, tag)
+    }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null) {
+        (activity as? BaseActivity)?.replaceFragment(container, fragment, tag)
+    }
 }

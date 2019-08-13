@@ -1,11 +1,11 @@
-package kim.jeonghyeon.androidlibrary.ui.widget
+package kim.jeonghyeon.sample.ui.widget
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import kim.jeonghyeon.androidlibrary.R
+import kim.jeonghyeon.sample.R
 import kotlinx.android.synthetic.main.swipe_refresh_layout.*
 
 class SwipeRefreshLayoutFragment : Fragment() {

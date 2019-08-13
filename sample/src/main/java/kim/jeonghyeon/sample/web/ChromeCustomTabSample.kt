@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.web
+package kim.jeonghyeon.sample.web
 
 import android.content.Context
 import android.graphics.Color
@@ -14,7 +14,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 object ChromeCustomTabSample {
     fun showCustomTab(context: Context, url: String) {
         val builder = CustomTabsIntent.Builder()
-        builder.setToolbarColor(Color.BLUE);
+        builder.setToolbarColor(Color.BLUE)
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(context, Uri.parse(url))
     }

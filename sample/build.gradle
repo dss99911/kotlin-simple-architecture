@@ -13,19 +13,23 @@ android {
     }
 
     defaultConfig {
+        applicationId application_id
         resConfigs("en")
         buildConfigField "String", "freePackageName", "\"$application_id\""
+        //can add variable on manifest
+//        manifestPlaceholders = [app_name:"sample name"]
+        //can add resource
+        resValue "string", "test", "test"
     }
 
     flavorDimensions "free"
     productFlavors {
         free {
             buildConfigField "boolean", "isPro", "false"
-            applicationId application_id
         }
         pro {
             buildConfigField "boolean", "isPro", "true"
-            applicationId application_id + ".pro"
+            applicationIdSuffix ".pro"
         }
     }
 }

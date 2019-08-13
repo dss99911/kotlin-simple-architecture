@@ -5,7 +5,7 @@
 
         <variable
                 name="model"
-                type="kim.jeonghyeon.androidlibrary.mvvm.SampleViewModel"/>
+                type="kim.jeonghyeon.sample.mvvm.SampleViewModel"/>
     </data>
     <LinearLayout
             android:orientation="vertical"
@@ -16,7 +16,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:srcBitmap="@{model.qrCode}"
                 android:background="?android:attr/selectableItemBackground"
                 bind:popupMenuId="@{R.menu.sample_menu}"
                 bind:onPopupMenuClick="@{model::onMenuClick}"

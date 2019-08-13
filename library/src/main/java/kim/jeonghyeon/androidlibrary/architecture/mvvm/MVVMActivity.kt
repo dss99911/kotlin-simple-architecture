@@ -9,8 +9,6 @@ import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 import kim.jeonghyeon.androidlibrary.extension.toast
-import kotlinx.coroutines.GlobalScope
-import java.lang.IllegalStateException
 
 abstract class MVVMActivity<VM : BaseViewModel> : BaseActivity() {
 
@@ -18,32 +16,48 @@ abstract class MVVMActivity<VM : BaseViewModel> : BaseActivity() {
     private val progressDialog by lazy { createProgressDialog() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.toast.observe(this) {
-            toast(it)
-        }
 
-        viewModel.startActivity.observe(this) {
-            startActivity(it)
-        }
-
-        viewModel.startActivityForResult.observe(this) {(intent, requestCode) ->
-            try {
-                startActivityForResult(intent, requestCode)
-            } catch (e: IllegalStateException) {
-            } catch (e: ActivityNotFoundException) {
-                toast(R.string.toast_no_activity)
+        with(viewModel) {
+            toast.observe(this@MVVMActivity) {
+                toast(it)
             }
-        }
 
-        viewModel.showProgressBar.observe(this) {
-            if (it) {
-                progressDialog.showWithoutException()
-            } else {
-                progressDialog.dismissWithoutException()
+            startActivity.observe(this@MVVMActivity) {
+                startActivity(it)
             }
+
+            startActivityForResult.observe(this@MVVMActivity) { (intent, requestCode) ->
+                try {
+                    startActivityForResult(intent, requestCode)
+                } catch (e: IllegalStateException) {
+                } catch (e: ActivityNotFoundException) {
+                    toast(R.string.toast_no_activity)
+                }
+            }
+
+            showProgressBar.observe(this@MVVMActivity) {
+                if (it) {
+                    progressDialog.showWithoutException()
+                } else {
+                    progressDialog.dismissWithoutException()
+                }
+            }
+
+            addFragment.observe(this@MVVMActivity) {
+                this@MVVMActivity.addFragment(it.containerId, it.fragment, it.tag)
+            }
+
+            replaceFragment.observe(this@MVVMActivity) {
+                this@MVVMActivity.replaceFragment(it.containerId, it.fragment, it.tag)
+            }
+
+            performWithActivity.observe(this@MVVMActivity) {
+                it(this@MVVMActivity)
+            }
+
+            onCreate()
         }
 
-        viewModel.onCreate()
     }
 
     override fun onStart() {

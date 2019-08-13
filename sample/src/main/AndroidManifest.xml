@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
-          package="kim.jeonghyeon.androidlibrary">
+          package="kim.jeonghyeon.sample">
 
     <application
-            android:name=".SampleApplication"
+            android:name="kim.jeonghyeon.sample.SampleApplication"
             tools:replace="android:name"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -11,7 +11,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <!--android:label="${app_name}"-->
+
+
+        <activity android:name="kim.jeonghyeon.sample.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
