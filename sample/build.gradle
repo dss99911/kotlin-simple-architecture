@@ -32,6 +32,17 @@ android {
             applicationIdSuffix ".pro"
         }
     }
+
+    //you can add new res folder
+    //if you want to add different layout or drawable for each feature
+    //refer https://www.evernote.com/shard/s462/nl/79124253/a5db09ce-07c6-476b-9e5d-f9a1c91a1378/
+    sourceSets {
+        main {
+            res.srcDirs += [
+                    'src/main/res-sample',
+            ]
+        }
+    }
 }
 
 apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
