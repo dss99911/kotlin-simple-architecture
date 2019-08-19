@@ -1,2 +1,2 @@
 include ':sample', ':library', ':kotlinlibrary'
-project(':kotlinlibrary').projectDir = new File(settingsDir, '../../../IdeaProjects/my/Kotlin/kotlinlibrary/kotlinlibrary')
+project(':kotlinlibrary').projectDir = new File("${pathKotlinLibrary}")
