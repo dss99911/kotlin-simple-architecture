@@ -3,15 +3,13 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import androidx.annotation.NonNull
-import androidx.arch.core.util.Function
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
-import kim.jeonghyeon.androidlibrary.architecture.livedata.map
-import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
 
 /**
+ *
  * why use this?
  * 1.
  *  - if referring to activity, fragment. it may cause memory leak.
@@ -24,13 +22,18 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
  *
  * 3. UIHandler can be stored at WeakReference, but ViewModel constructor parameter contains it. and though I thought it will be okay, if not set var or val keyword, yet lambda can access the parameter. it means that Though it is local parameter, it is not garbage collected.
  *
+ *
  */
+@Deprecated(
+    "This is too complicated",
+    ReplaceWith("kim.jeonghyeon.androidlibrary.architecture.mvvm.Event")
+)
 open class SingleEventLiveData<T> {
     private val liveData by lazy { MediatorLiveData<SingleEvent<T>>() }
 
     companion object {
-        fun <X, Y> map(source: LiveData<X>, function: (X) -> Y): SingleEventLiveData<Y> {
-            val result = SingleEventLiveData<Y>()
+        fun <X, Y> map(source: LiveData<X>, function: (X) -> Y): Event {
+            val result = Event<Y>()
             result.liveData.addSource(source) { t ->
                 result.call(function(t))
             }
@@ -52,7 +55,7 @@ open class SingleEventLiveData<T> {
 
     fun observe(@NonNull owner: LifecycleOwner, @NonNull action: (T) -> Unit) {
         if (liveData.hasObservers()) {
-            error(SingleEventLiveData::class.simpleName + " support only 1 observer")
+            error(Event::class.simpleName + " support only 1 observer")
         }
 
         liveData.observe(owner, SingleEventObserver(action))
@@ -60,7 +63,7 @@ open class SingleEventLiveData<T> {
 
     fun observeForever(@NonNull action: (T) -> Unit) {
         if (liveData.hasObservers()) {
-            error(SingleEventLiveData::class.simpleName + " support only 1 observer")
+            error(Event::class.simpleName + " support only 1 observer")
         }
 
         liveData.observeForever(SingleEventObserver(action))
@@ -76,8 +79,8 @@ open class SingleEventLiveData<T> {
         return result
     }
 
-    fun <Y> eventMap(@NonNull func: (T) -> Y): SingleEventLiveData<Y> {
-        val result = SingleEventLiveData<Y>()
+    fun <Y> eventMap(@NonNull func: (T) -> Y): Event {
+        val result = Event<Y>()
         result.addSource<SingleEvent<T>>(liveData) { event ->
             if (!event.hasBeenHandled) {
                 result.setValue(func(event.popContent()))
@@ -113,8 +116,8 @@ open class SingleEventLiveData<T> {
     }
 }
 
-fun <X, Y> LiveData<X>.eventMap(function: (X) -> Y): SingleEventLiveData<Y> =
-        SingleEventLiveData.map(this, function)
+fun <X, Y> LiveData<X>.eventMap(function: (X) -> Y): Event =
+    Event.map(this, function)
 
 
 internal class SingleEventObserver<T>(val action: (T) -> Unit) : Observer<SingleEvent<T>> {
@@ -140,7 +143,7 @@ internal class SingleEvent<out T>(private val content: T) {
     }
 }
 
-class EmptySingleEventLiveData : SingleEventLiveData<Unit?>() {
+class EmptySingleEventLiveData : Event() {
     fun call() {
         call(null)
     }

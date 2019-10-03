@@ -18,15 +18,15 @@ abstract class MVVMActivity<VM : BaseViewModel> : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         with(viewModel) {
-            toast.observe(this@MVVMActivity) {
+            toast.observeEvent(this@MVVMActivity) {
                 toast(it)
             }
 
-            startActivity.observe(this@MVVMActivity) {
+            startActivity.observeEvent(this@MVVMActivity) {
                 startActivity(it)
             }
 
-            startActivityForResult.observe(this@MVVMActivity) { (intent, requestCode) ->
+            startActivityForResult.observeEvent(this@MVVMActivity) { (intent, requestCode) ->
                 try {
                     startActivityForResult(intent, requestCode)
                 } catch (e: IllegalStateException) {
@@ -35,7 +35,7 @@ abstract class MVVMActivity<VM : BaseViewModel> : BaseActivity() {
                 }
             }
 
-            showProgressBar.observe(this@MVVMActivity) {
+            showProgressBar.observeEvent(this@MVVMActivity) {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
@@ -43,15 +43,15 @@ abstract class MVVMActivity<VM : BaseViewModel> : BaseActivity() {
                 }
             }
 
-            addFragment.observe(this@MVVMActivity) {
+            addFragment.observeEvent(this@MVVMActivity) {
                 this@MVVMActivity.addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            replaceFragment.observe(this@MVVMActivity) {
+            replaceFragment.observeEvent(this@MVVMActivity) {
                 this@MVVMActivity.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            performWithActivity.observe(this@MVVMActivity) {
+            performWithActivity.observeEvent(this@MVVMActivity) {
                 it(this@MVVMActivity)
             }
 

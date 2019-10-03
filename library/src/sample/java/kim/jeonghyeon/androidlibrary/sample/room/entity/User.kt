@@ -9,7 +9,9 @@ import java.util.*
 @Entity
 data class User (
 //        @PrimaryKey var uid: Int,
-        @PrimaryKey(autoGenerate = true) var id: Int,//autogenerate
+//        @PrimaryKey var id: String = UUID.randomUUID().toString() // UUID
+    @PrimaryKey(autoGenerate = true) var id: Int,//autogenerate // AutoGenerate Int
+
 //        @ColumnInfo(name = "first_name") var firstName: String?,
         @ColumnInfo var firstName: String?,//if not set, column name is same with field name
         @ColumnInfo(name = "last_name") var lastName: String?,

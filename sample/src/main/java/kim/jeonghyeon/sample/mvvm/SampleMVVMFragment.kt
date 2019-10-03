@@ -1,8 +1,10 @@
 package kim.jeonghyeon.sample.mvvm
 
 import android.os.Bundle
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MVVMFragment
-import kim.jeonghyeon.androidlibrary.extension.getViewModel
+import kim.jeonghyeon.androidlibrary.extension.app
 import kim.jeonghyeon.sample.R
 import kim.jeonghyeon.sample.databinding.FragmentMvvmBinding
 
@@ -10,8 +12,8 @@ import kim.jeonghyeon.sample.databinding.FragmentMvvmBinding
  * A placeholder fragment containing a simple view.
  */
 class SampleMVVMFragment : MVVMFragment<SampleViewModel, FragmentMvvmBinding>() {
-    override val viewModel: SampleViewModel
-        get() = getViewModel()
+
+    override val viewModel: SampleViewModel by viewModels { SavedStateViewModelFactory(app, this) }
 
     override val layoutId: Int
         get() = R.layout.fragment_mvvm

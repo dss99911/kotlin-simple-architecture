@@ -15,6 +15,7 @@ buildscript {
     dependencies {
         classpath deps.android_gradle_plugin
         classpath deps.kotlin.plugin
+        classpath deps.navigation.safe_args_plugin
 
         //for bintray repository
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'

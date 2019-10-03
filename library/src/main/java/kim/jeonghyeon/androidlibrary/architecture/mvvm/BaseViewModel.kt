@@ -7,31 +7,31 @@ import androidx.lifecycle.ViewModel
 
 open class BaseViewModel : ViewModel() {
     val toast by lazy {
-        SingleEventLiveData<String?>()
+        EventMutableLiveData<String?>()
     }
 
     val startActivity by lazy {
-        SingleEventLiveData<Intent>()
+        EventMutableLiveData<Intent>()
     }
 
     val startActivityForResult by lazy {
-        SingleEventLiveData<Pair<Intent, Int>>()
+        EventMutableLiveData<Pair<Intent, Int>>()
     }
 
     val showProgressBar by lazy {
-        SingleEventLiveData<Boolean>()
+        EventMutableLiveData<Boolean>()
     }
 
     internal val addFragment by lazy {
-        SingleEventLiveData<RequestFragment>()
+        EventMutableLiveData<RequestFragment>()
     }
 
     internal val replaceFragment by lazy {
-        SingleEventLiveData<RequestFragment>()
+        EventMutableLiveData<RequestFragment>()
     }
 
     internal val performWithActivity by lazy {
-        SingleEventLiveData<(Activity) -> Unit>()
+        EventMutableLiveData<(Activity) -> Unit>()
     }
 
     open fun onCreate() {

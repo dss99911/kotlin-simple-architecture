@@ -19,9 +19,7 @@ dependencies {
     api deps.support.design
     api deps.support.preference
 
-    api deps.navigation.fragment
     api deps.navigation.fragment_ktx
-    api deps.navigation.ui
     api deps.navigation.ui_ktx
     api deps.dagger.android
     api deps.dagger.android_support
@@ -31,9 +29,13 @@ dependencies {
     api deps.core_ktx
     api deps.constraint_layout
     api deps.lifecycle.extensions
+    api deps.lifecycle.livedat_ktx
+    api deps.lifecycle.viewmodel_ktx
+    api deps.lifecycle.viewmodel_savedstate
     api deps.paging_ktx
     api deps.timber
     api deps.picasso
+    api deps.fragment_ktx
     /*[START] Retrofit */
     api deps.retrofit.runtime
     api deps.retrofit.gson

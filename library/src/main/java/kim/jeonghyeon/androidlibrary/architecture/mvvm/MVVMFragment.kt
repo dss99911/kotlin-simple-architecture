@@ -3,9 +3,8 @@ package kim.jeonghyeon.androidlibrary.architecture.mvvm
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.annotation.MenuRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import kim.jeonghyeon.androidlibrary.BR
@@ -15,12 +14,51 @@ import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 import kim.jeonghyeon.androidlibrary.extension.toast
+import org.jetbrains.anko.support.v4.toast
 
-abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment() {
-    abstract val viewModel: VM
-    abstract val layoutId: Int
+/**
+ * Methods
+ * - setMenu()
+ */
 
-    open fun setVariable(binding: DB) {
+interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
+    /**
+     * viewModel name should be "model" for auto binding
+     * if you'd like to change it, override setVariable
+     */
+    val viewModel: VM
+    val layoutId: Int
+
+    fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
+
+    fun setVariable(binding: DB)
+}
+
+abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
+    IMvvmFragment<VM, DB> {
+    @MenuRes
+    private var menuId: Int = 0
+    private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
+    //todo when call?
+    override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
+        this.menuId = menuId
+        this.onMenuItemClickListener = onMenuItemClickListener
+        setHasOptionsMenu(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (!::onMenuItemClickListener.isInitialized) {
+            return super.onOptionsItemSelected(item)
+        }
+
+        return onMenuItemClickListener(item)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(menuId, menu)
+    }
+
+    override fun setVariable(binding: DB) {
         binding.setVariable(BR.model, viewModel)
     }
 
@@ -29,15 +67,15 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
         super.onCreate(savedInstanceState)
 
         with(viewModel) {
-            toast.observe(this@MVVMFragment) {
+            toast.observeEvent(this@MVVMFragment) {
                 toast(it)
             }
 
-            startActivity.observe(this@MVVMFragment) {
+            startActivity.observeEvent(this@MVVMFragment) {
                 activity?.startActivity(it)
             }
 
-            startActivityForResult.observe(this@MVVMFragment) { (intent, requestCode) ->
+            startActivityForResult.observeEvent(this@MVVMFragment) { (intent, requestCode) ->
                 try {
                     startActivityForResult(intent, requestCode)
                 } catch (e: IllegalStateException) {
@@ -46,7 +84,7 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            showProgressBar.observe(this@MVVMFragment) {
+            showProgressBar.observeEvent(this@MVVMFragment) {
                 if (it) {
                     progressDialog?.showWithoutException()
                 } else {
@@ -54,17 +92,16 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            addFragment.observe(this@MVVMFragment) {
+            addFragment.observeEvent(this@MVVMFragment) {
                 this@MVVMFragment.addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            replaceFragment.observe(this@MVVMFragment) {
+            replaceFragment.observeEvent(this@MVVMFragment) {
                 this@MVVMFragment.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            performWithActivity.observe(this@MVVMFragment) {
-                //todo as fragment is active, this is processed. but it seems not to ensure activity exists. but let's try if this crash or not
-                it(activity!!)
+            performWithActivity.observeEvent(this@MVVMFragment) {
+                it(requireActivity())
             }
 
             onCreate()
@@ -79,7 +116,7 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     ): View? {
         val binding = DataBindingUtil.inflate<DB>(inflater, layoutId, container, false)
         setVariable(binding)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         return binding.root
     }
 
