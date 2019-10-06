@@ -4,16 +4,21 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
+import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.BaseFragment
 import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
+import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
-import kim.jeonghyeon.androidlibrary.extension.toast
 import org.jetbrains.anko.support.v4.toast
 
 /**
@@ -27,19 +32,43 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
      * if you'd like to change it, override setVariable
      */
     val viewModel: VM
+    fun setVariable(binding: DB)
+    var binding: DB
+
     val layoutId: Int
 
     fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
 
-    fun setVariable(binding: DB)
+
+
+    fun navigate(@IdRes id : Int)
+    fun navigate(navDirections: NavDirections)
 }
 
-abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
+abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
     IMvvmFragment<VM, DB> {
+    override lateinit var binding: DB
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
-    //todo when call?
+    private val progressDialog by lazy { activity?.createProgressDialog() }
+
+    final override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+        setVariable(binding)
+        binding.lifecycleOwner = this
+        return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setupObserver()
+    }
+
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
         this.menuId = menuId
         this.onMenuItemClickListener = onMenuItemClickListener
@@ -51,8 +80,15 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
             return super.onOptionsItemSelected(item)
         }
 
+        //if menu id and nav's fragment id is same, then redirect
+        if (item.onNavDestinationSelected(findNavController())) {
+            return true
+        }
+
         return onMenuItemClickListener(item)
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(menuId, menu)
@@ -62,20 +98,21 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
         binding.setVariable(BR.model, viewModel)
     }
 
-    private val progressDialog by lazy { activity?.createProgressDialog() }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+    private fun setupObserver() {
         with(viewModel) {
-            toast.observeEvent(this@MVVMFragment) {
+            toast.observeEvent(this@MvvmFragment) {
                 toast(it)
             }
 
-            startActivity.observeEvent(this@MVVMFragment) {
+            snackbar.observeEvent(this@MvvmFragment) {
+                binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
+            }
+
+            startActivity.observeEvent(this@MvvmFragment) {
                 activity?.startActivity(it)
             }
 
-            startActivityForResult.observeEvent(this@MVVMFragment) { (intent, requestCode) ->
+            startActivityForResult.observeEvent(this@MvvmFragment) { (intent, requestCode) ->
                 try {
                     startActivityForResult(intent, requestCode)
                 } catch (e: IllegalStateException) {
@@ -84,7 +121,7 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            showProgressBar.observeEvent(this@MVVMFragment) {
+            showProgressBar.observeEvent(this@MvvmFragment) {
                 if (it) {
                     progressDialog?.showWithoutException()
                 } else {
@@ -92,32 +129,28 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            addFragment.observeEvent(this@MVVMFragment) {
-                this@MVVMFragment.addFragment(it.containerId, it.fragment, it.tag)
+            addFragment.observeEvent(this@MvvmFragment) {
+                this@MvvmFragment.addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            replaceFragment.observeEvent(this@MVVMFragment) {
-                this@MVVMFragment.replaceFragment(it.containerId, it.fragment, it.tag)
+            navDirectionId.observeEvent(this@MvvmFragment) {
+                navigate(it)
             }
 
-            performWithActivity.observeEvent(this@MVVMFragment) {
+            navDirection.observeEvent(this@MvvmFragment) {
+                navigate(it)
+            }
+
+            replaceFragment.observeEvent(this@MvvmFragment) {
+                this@MvvmFragment.replaceFragment(it.containerId, it.fragment, it.tag)
+            }
+
+            performWithActivity.observeEvent(this@MvvmFragment) {
                 it(requireActivity())
             }
 
             onCreate()
         }
-
-    }
-
-    final override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val binding = DataBindingUtil.inflate<DB>(inflater, layoutId, container, false)
-        setVariable(binding)
-        binding.lifecycleOwner = this
-        return binding.root
     }
 
     override fun onStart() {
@@ -148,5 +181,13 @@ abstract class MVVMFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         viewModel.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun navigate(id: Int) {
+        findNavController().navigate(id)
+    }
+
+    override fun navigate(navDirections: NavDirections) {
+        findNavController().navigate(navDirections)
     }
 }

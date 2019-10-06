@@ -1,26 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/layout_container"
-        tools:context="kim.jeonghyeon.sample.MainActivity">
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <!--
-    1. The app:defaultNavHost="true"
-        attribute ensures that your NavHostFragment intercepts the system Back button.
-        Note that only one NavHost can be the default.
-        If you have multiple hosts in the same layout (two-pane layouts, for example),
-        be sure to specify only one default NavHost
+    <data>
 
-    2. how to add this : add from palette, then all configuration will be set
-    -->
-    <fragment
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <variable
+                name="model"
+                type="kim.jeonghyeon.sample.MainActivityViewModel" />
+
+    </data>
+
+
+    <androidx.drawerlayout.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph_main" />
-</FrameLayout>
+            tools:context=".MainActivity">
+
+        <!--
+            1. The app:defaultNavHost="true"
+            attribute ensures that your NavHostFragment intercepts the system Back button.
+            Note that only one NavHost can be the default.
+            If you have multiple hosts in the same layout (two-pane layouts, for example),
+            be sure to specify only one default NavHost
+
+            2. how to add this : add from palette, then all configuration will be set
+        -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:elevation="4dp"
+                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+            <fragment
+                    android:id="@+id/my_nav_host_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:defaultNavHost="true"
+                    android:layout_weight="1"
+                    app:navGraph="@navigation/nav_graph_main" />
+        </LinearLayout>
+        <com.google.android.material.navigation.NavigationView
+                android:id="@+id/nav_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                app:menu="@menu/nav_drawer_menu" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

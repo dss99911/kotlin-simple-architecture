@@ -2,4 +2,16 @@
     <string name="app_name">Android Sample</string>
     <string name="mvvm">MVVM</string>
     <string name="chrome_custom_tab">Chrome Custom Tab</string>
+    <string name="navigate">navigate</string>
+    <string name="help">help</string>
+    <string name="save">save</string>
+    <string name="file">file</string>
+    <string name="create_new">new</string>
+    <string name="open">open</string>
+    <string name="settings_fragment_text">settings fragment</string>
+    <string name="setting">setting</string>
+    <string name="home">home</string>
+    <string name="deeplink">deeplink</string>
+    <string name="action_search">search</string>
+    <string name="share">share</string>
 </resources>

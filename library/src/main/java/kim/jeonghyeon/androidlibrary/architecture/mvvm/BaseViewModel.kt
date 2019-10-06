@@ -3,11 +3,20 @@ package kim.jeonghyeon.androidlibrary.architecture.mvvm
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavDirections
+import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 
 open class BaseViewModel : ViewModel() {
+    val status = MutableLiveData<Resource<Unit>>()
+
     val toast by lazy {
-        EventMutableLiveData<String?>()
+        EventMutableLiveData<String>()
+    }
+
+    val snackbar by lazy {
+        EventMutableLiveData<String>()
     }
 
     val startActivity by lazy {
@@ -20,6 +29,14 @@ open class BaseViewModel : ViewModel() {
 
     val showProgressBar by lazy {
         EventMutableLiveData<Boolean>()
+    }
+
+    internal val navDirectionId by lazy {
+        EventMutableLiveData<Int>()
+    }
+
+    internal val navDirection by lazy {
+        EventMutableLiveData<NavDirections>()
     }
 
     internal val addFragment by lazy {
@@ -68,6 +85,14 @@ open class BaseViewModel : ViewModel() {
 
     fun performWithActivity(action: (Activity) -> Unit) {
         performWithActivity.call(action)
+    }
+
+    fun launchDirection(navDirections: NavDirections) {
+        navDirection.call(navDirections)
+    }
+
+    fun launchDirection(id: Int) {
+        navDirectionId.call(id)
     }
 
     data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)

@@ -1,20 +1,19 @@
 package kim.jeonghyeon.androidlibrary.ui.binder;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.view.ContextThemeWrapper;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.BindingAdapter;
+import androidx.navigation.Navigation;
 
 /**
  * Created by hyun.kim on 11/12/17.
@@ -138,5 +137,10 @@ public class ViewBinder {
     @BindingAdapter("android:backgroundTint")
     public static void setImageTint(ImageView view, @ColorInt int color) {
         ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(color));
+    }
+
+    @BindingAdapter("onClickNavigate")
+    public static void setOnClickNavigate(View view, @IdRes int id) {
+        view.setOnClickListener(Navigation.createNavigateOnClickListener(id));
     }
 }

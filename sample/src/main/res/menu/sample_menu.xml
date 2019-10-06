@@ -6,8 +6,45 @@
     <!-- action layout-->
     <item
             android:id="@+id/menu_save"
-            android:title="save"
+            android:title="@string/save"
             app:showAsAction="always"
             app:actionLayout="@layout/menu_action_layout"
             tools:visible="true"/>
+
+    <item android:id="@+id/help"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="@string/help"
+            app:showAsAction="ifRoom" />
+
+    <item android:id="@id/settingsFragment"
+            android:title="@string/setting"
+            app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_search"
+            android:title="@string/action_search"
+            android:icon="@android:drawable/ic_menu_search"
+            app:showAsAction="ifRoom|collapseActionView"
+            app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item android:id="@+id/action_share"
+            android:title="@string/share"
+            app:showAsAction="ifRoom"
+            app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"/>
+
+    <item android:id="@+id/file"
+            android:title="@string/file"
+            app:showAsAction="always">
+        <!-- "file" submenu -->
+        <menu>
+            <item android:id="@+id/create_new"
+                    android:title="@string/create_new" >
+                <menu>
+                    <item android:id="@+id/open2"
+                            android:title="@string/open" />
+                </menu>
+
+            </item>
+            <item android:id="@+id/open"
+                    android:title="@string/open" />
+        </menu>
+    </item>
 </menu>

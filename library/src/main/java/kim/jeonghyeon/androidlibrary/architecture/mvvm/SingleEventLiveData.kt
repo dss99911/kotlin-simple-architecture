@@ -32,8 +32,8 @@ open class SingleEventLiveData<T> {
     private val liveData by lazy { MediatorLiveData<SingleEvent<T>>() }
 
     companion object {
-        fun <X, Y> map(source: LiveData<X>, function: (X) -> Y): Event {
-            val result = Event<Y>()
+        fun <X, Y> map(source: LiveData<X>, function: (X) -> Y): SingleEventLiveData<Y> {
+            val result = SingleEventLiveData<Y>()
             result.liveData.addSource(source) { t ->
                 result.call(function(t))
             }
@@ -55,7 +55,7 @@ open class SingleEventLiveData<T> {
 
     fun observe(@NonNull owner: LifecycleOwner, @NonNull action: (T) -> Unit) {
         if (liveData.hasObservers()) {
-            error(Event::class.simpleName + " support only 1 observer")
+            error(SingleEventLiveData::class.simpleName + " support only 1 observer")
         }
 
         liveData.observe(owner, SingleEventObserver(action))
@@ -63,7 +63,7 @@ open class SingleEventLiveData<T> {
 
     fun observeForever(@NonNull action: (T) -> Unit) {
         if (liveData.hasObservers()) {
-            error(Event::class.simpleName + " support only 1 observer")
+            error(SingleEventLiveData::class.simpleName + " support only 1 observer")
         }
 
         liveData.observeForever(SingleEventObserver(action))
@@ -79,8 +79,8 @@ open class SingleEventLiveData<T> {
         return result
     }
 
-    fun <Y> eventMap(@NonNull func: (T) -> Y): Event {
-        val result = Event<Y>()
+    fun <Y> eventMap(@NonNull func: (T) -> Y): SingleEventLiveData<Y> {
+        val result = SingleEventLiveData<Y>()
         result.addSource<SingleEvent<T>>(liveData) { event ->
             if (!event.hasBeenHandled) {
                 result.setValue(func(event.popContent()))
@@ -116,8 +116,8 @@ open class SingleEventLiveData<T> {
     }
 }
 
-fun <X, Y> LiveData<X>.eventMap(function: (X) -> Y): Event =
-    Event.map(this, function)
+fun <X, Y> LiveData<X>.eventMap(function: (X) -> Y): SingleEventLiveData<Y> =
+    SingleEventLiveData.map(this, function)
 
 
 internal class SingleEventObserver<T>(val action: (T) -> Unit) : Observer<SingleEvent<T>> {
@@ -143,7 +143,7 @@ internal class SingleEvent<out T>(private val content: T) {
     }
 }
 
-class EmptySingleEventLiveData : Event() {
+class EmptySingleEventLiveData : SingleEventLiveData<Unit?>() {
     fun call() {
         call(null)
     }

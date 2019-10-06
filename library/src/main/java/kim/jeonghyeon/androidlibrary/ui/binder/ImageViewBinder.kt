@@ -22,42 +22,42 @@ fun setImageBitmap(view: ImageView, bm: Bitmap?) {
 }
 
 @BindingAdapter("android:tint")
-fun setImageTint(view: ImageView, color: Int) {
-    ImageViewCompat.setImageTintList(view, ColorStateList.valueOf(color))
+fun ImageView.setImageTint(color: Int) {
+    ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
 }
 
 @BindingAdapter("imgUrl")
-fun setImageUrl(view: ImageView, imgUrl: String) {
+fun ImageView.setImageUrl(imgUrl: String) {
     if (!TextUtils.isEmpty(imgUrl)) {
         Picasso.get()
             .load(imgUrl)
             .fit()
-            .into(view)
+            .into(this)
     }
 }
 
 @BindingAdapter("imgUrl", "defaultImg")
-fun setImageUrl(view: ImageView, imgUrl: String, defaultImg: Drawable) {
+fun ImageView.setImageUrl(imgUrl: String, defaultImg: Drawable) {
     if (!TextUtils.isEmpty(imgUrl)) {
         Picasso.get()
             .load(imgUrl)
             .placeholder(defaultImg)
             .error(defaultImg)
-            .into(view)
+            .into(this)
     } else {
-        view.setImageDrawable(defaultImg)
+        setImageDrawable(defaultImg)
     }
 }
 
 @BindingAdapter("imgUrl", "defaultImg", "errorImg")
-fun setImageUrl(view: ImageView, imgUrl: String, defaultImg: Drawable, errorImg: Drawable) {
+fun ImageView.setImageUrl(imgUrl: String, defaultImg: Drawable, errorImg: Drawable) {
     if (!TextUtils.isEmpty(imgUrl)) {
         Picasso.get()
             .load(imgUrl)
             .placeholder(defaultImg)
             .error(errorImg)
-            .into(view)
+            .into(this)
     } else {
-        view.setImageDrawable(defaultImg)
+        setImageDrawable(defaultImg)
     }
 }
