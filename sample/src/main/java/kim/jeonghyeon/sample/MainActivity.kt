@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : MvvmActivity<MainActivityViewModel, ActivityMainBinding>() {
 
-    override val viewModel: MainActivityViewModel by simpleViewModels()
+    override val viewModel: MainActivityViewModel by simpleViewModels(MainActivityViewModel(getSavedState()))
 
     override val layoutId: Int
         get() = R.layout.activity_main

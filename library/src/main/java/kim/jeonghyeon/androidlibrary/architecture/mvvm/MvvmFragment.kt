@@ -8,17 +8,19 @@ import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.navigation.NavArgs
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.onNavDestinationSelected
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.BaseFragment
-import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
-import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
-import kim.jeonghyeon.androidlibrary.extension.showSnackbar
-import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import kim.jeonghyeon.androidlibrary.extension.*
 import org.jetbrains.anko.support.v4.toast
 
 /**
@@ -43,6 +45,9 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
 
     fun navigate(@IdRes id : Int)
     fun navigate(navDirections: NavDirections)
+
+//  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
+//fun <reified T : NavArgs> getNavArgs(): T
 }
 
 abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
@@ -60,7 +65,7 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     ): View? {
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         setVariable(binding)
-        binding.lifecycleOwner = this
+        binding.setLifecycleOwner(this)
         return binding.root
     }
 
@@ -149,33 +154,8 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 it(requireActivity())
             }
 
-            onCreate()
+            lifecycle.addObserver(this)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -190,4 +170,18 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     override fun navigate(navDirections: NavDirections) {
         findNavController().navigate(navDirections)
     }
+
+    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
+        return SavedStateViewModelFactory(
+            app,
+            savedStateRegistryOwner
+        ).create(SavedStateViewModel::class.java)
+            .savedStateHandle
+    }
+
+    fun <A : BaseViewModel> getActivityViewModel(): A {
+        return (requireActivity() as MvvmActivity<*,*>).viewModel as A
+    }
+
+    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
 }

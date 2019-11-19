@@ -13,7 +13,7 @@ android {
         buildConfigField "String", "freePackageName", "\"$application_id\""
     }
 
-    flavorDimensions "free"
+    flavorDimensions "mode"
     productFlavors {
         free {
             buildConfigField "boolean", "isPro", "false"

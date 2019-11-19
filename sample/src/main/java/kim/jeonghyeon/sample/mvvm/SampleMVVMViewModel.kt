@@ -2,11 +2,11 @@ package kim.jeonghyeon.sample.mvvm
 
 import android.view.MenuItem
 import androidx.lifecycle.SavedStateHandle
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.EmptyViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
 class SampleMVVMViewModel(
-    savedStateHandle: SavedStateHandle
-) : EmptyViewModel(savedStateHandle) {
+    val savedStateHandle: SavedStateHandle
+) : BaseViewModel() {
     fun onMenuClick() {
 
     }

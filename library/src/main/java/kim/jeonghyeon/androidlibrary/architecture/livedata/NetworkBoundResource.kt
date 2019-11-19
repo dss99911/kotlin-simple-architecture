@@ -37,7 +37,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
      * please call this only when process is completed, i.e. on success. or on error state.
      */
     protected fun invalidate() {
-        result.value = Resource.loading()
+        result.value = Resource.Loading
         executors.executeDisk {
             val dbSource = loadFromDb()
             executors.executeMainThread {
@@ -48,7 +48,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
                         fetchFromNetwork(dbSource)
                     } else {
                         result.addSource(dbSource) {
-                            result.value = Resource.success(it)
+                            result.value = Resource.Success(it)
                         }
                     }
                 }
@@ -59,7 +59,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
 
     private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
         result.addSource(dbSource) {
-            result.value = Resource.loading(it)
+            result.value = Resource.LoadingWithData(it)
         }
 
         val response = createCall()
@@ -71,13 +71,13 @@ abstract class NetworkBoundResource<ResultType, RequestType>
             result.removeSource(response)
             result.removeSource(dbSource)
 
-            when (resource.status) {
-                ResourceStatus.SUCCESS -> {
+            when (resource) {
+                is Resource.Success -> {
                     saveResultAndReInit(resource.data)
                 }
-                ResourceStatus.ERROR -> {
+                is Resource.Error -> {
                     result.addSource(dbSource) { newData ->
-                        result.value = Resource.error(resource.state.error!!, newData)
+                        result.value = Resource.ErrorWithData(resource.error, newData)
                     }
                 }
                 else -> {
@@ -92,7 +92,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
     private fun saveResultAndReInit(data: RequestType?) {
         executors.executeDisk {
             if (!saveCallResult(data)) {
-                result.value = Resource.error(SaveFailedError())
+                result.value = SaveFailedError().asResource()
                 return@executeDisk
             }
             executors.executeMainThread {
@@ -100,7 +100,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>
                 // otherwise we will get immediately last cached value,
                 // which may not be updated with latest results received from network.
                 result.addSource(loadFromDb()) {
-                    result.value = Resource.success(it)
+                    result.value = Resource.Success(it)
                 }
             }
         }

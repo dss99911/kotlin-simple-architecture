@@ -7,7 +7,9 @@ import kim.jeonghyeon.sample.databinding.FragmentMainBinding
 
 class ParentFragment : MvvmFragment<SampleParentViewModel, FragmentMainBinding>() {
 
-    override val viewModel: SampleParentViewModel by simpleViewModels()
+    override val viewModel: SampleParentViewModel by simpleViewModels {
+        SampleParentViewModel(getActivityViewModel())
+    }
     override val layoutId: Int
         get() = R.layout.fragment_main
 

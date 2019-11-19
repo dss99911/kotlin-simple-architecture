@@ -11,13 +11,14 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.navigation.NavController
-import androidx.navigation.NavDirections
-import androidx.navigation.findNavController
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.navigation.*
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
@@ -50,8 +51,12 @@ interface IMvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> {
     fun navigate(@IdRes id : Int)
     fun navigate(navDirections: NavDirections)
 
+//    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
+//    fun <reified T : NavArgs> getNavArgs(): T
+
 }
 
+//todo make common duplication between Activity, Fragment
 abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActivity(), IMvvmActivity<VM, DB> {
 
     override val navHostId: Int = 0
@@ -139,7 +144,7 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
                 navigate(it)
             }
 
-            onCreate()
+            lifecycle.addObserver(this)
         }
     }
 
@@ -200,31 +205,6 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
         binding.setVariable(BR.model, viewModel)
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.onDestroy()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         viewModel.onActivityResult(requestCode, resultCode, data)
@@ -241,4 +221,14 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
 
         findNavController(navHostId).navigate(navDirections)
     }
+
+    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
+        return SavedStateViewModelFactory(
+            app,
+            savedStateRegistryOwner
+        ).create(SavedStateViewModel::class.java)
+            .savedStateHandle
+    }
+
+    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
 }

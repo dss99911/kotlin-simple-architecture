@@ -1,8 +1,32 @@
 apply plugin: 'com.android.library'
-apply from: 'base.gradle'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
 apply from: (project(':kotlinlibrary').projectDir.toString() + '/dependencies.gradle')
 apply from: 'testDependencies.gradle'
 
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+//todo move to sample module
 android {
     sourceSets {
         androidTest.java.srcDirs += "src/sample/java"
@@ -12,7 +36,8 @@ android {
 
 dependencies {
     api deps.room.runtime
-    api deps.room.coroutine
+    api deps.room.ktx
+    api deps.room.testing
 
     api deps.support.app_compat
     api deps.support.recyclerview

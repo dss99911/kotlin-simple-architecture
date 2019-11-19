@@ -7,9 +7,14 @@ import androidx.lifecycle.Observer
 
 typealias EventLiveData<T> = LiveData<Event<T>>
 typealias EventMutableLiveData<T> = MutableLiveData<Event<T>>
+typealias EmptyEventMutableLiveData = MutableLiveData<Event<Unit>>
 
 fun <T> EventMutableLiveData<T>.call(data: T) {
     postValue(Event(data))
+}
+
+fun EmptyEventMutableLiveData.call() {
+    postValue(Event(Unit))
 }
 
 fun <T> EventLiveData<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {

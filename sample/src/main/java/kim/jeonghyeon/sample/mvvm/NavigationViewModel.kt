@@ -1,9 +1,7 @@
 package kim.jeonghyeon.sample.mvvm
 
 import androidx.lifecycle.SavedStateHandle
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.NavArgsViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
-class NavigationViewModel(savedStateHandle: SavedStateHandle) :
-    NavArgsViewModel<NavigationFragmentArgs>(savedStateHandle) {
-
-}
+class NavigationViewModel(val args: NavigationFragmentArgs, val savedStateHandle: SavedStateHandle) :
+    BaseViewModel()

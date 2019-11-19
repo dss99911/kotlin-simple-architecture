@@ -1,14 +1,16 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
+import android.os.Handler
 import androidx.annotation.NonNull
 import androidx.lifecycle.*
-import kim.jeonghyeon.androidlibrary.architecture.net.error.BaseError
-import kim.jeonghyeon.androidlibrary.architecture.net.error.ExceptionError
-import kim.jeonghyeon.androidlibrary.architecture.net.error.NeedRetryError
-import java.util.concurrent.atomic.AtomicBoolean
+import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
+import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
 
 typealias LiveString = LiveData<String>
 typealias LiveBoolean = LiveData<Boolean>
+typealias ResourceLiveData<T> = LiveData<Resource<T>>
+typealias MutableResourceLiveData<T> = MutableLiveData<Resource<T>>
+typealias MediatorResourceLiveData<T> = MediatorLiveData<Resource<T>>
 
 fun <X, Y> LiveData<X>.map(@NonNull func: (X?) -> Y?): LiveData<Y> =
         Transformations.map(this, func)
@@ -17,12 +19,32 @@ fun <X, Y> LiveData<X>.map(@NonNull func: (X?) -> Y?): LiveData<Y> =
 fun <X> LiveData<X>.toMutable(): MutableLiveData<X> =
         if (this is MutableLiveData<X>) this
         else {
-            val result = MediatorLiveData<X>()
-            result.addSource(this) {
-                result.value = it
+            MediatorLiveData<X>().apply {
+               this += this@toMutable
             }
-            result
         }
+
+operator fun <T> MediatorLiveData<T>.plusAssign(other: LiveData<T>) {
+    addSource(other, ::setValue)
+}
+
+fun <T> MediatorLiveData<T>.receive(other: () -> LiveData<T>) {
+    addSource(other(), ::setValue)
+}
+
+
+fun <T> MutableResourceLiveData<T>.postSuccess(data: T) {
+    postValue(Resource.Success(data))
+}
+
+fun <T> MutableResourceLiveData<T>.postLoading() {
+    postValue(Resource.Loading)
+}
+
+fun <T> MutableResourceLiveData<T>.postError(data: ResourceError) {
+    postValue(Resource.Error(data))
+}
+
 
 /**
  * set same value, so that, notify.
@@ -31,58 +53,22 @@ fun <X> MutableLiveData<X>.repeat() {
     value = value
 }
 
-fun <X, Y> LiveData<Resource<X>>.mapOnSuccess(@NonNull func: (Resource<X>) -> Resource<Y>): LiveData<Resource<Y>> =
-        Transformations.map(this) {
-            when {
-                it.isSuccess -> try {
-                    func(it)
-                } catch (e: Exception) {
-                    val error = e as? BaseError ?: ExceptionError(e)
-                    Resource.error<Y>(error)
-                }
-                it.data == null ->
-                    @Suppress("UNCHECKED_CAST")
-                    (it as Resource<Y>)
-                else -> Resource<Y>(null, it.state)
+fun <X, Y> LiveData<X>.switchMap(@NonNull func: (X) -> LiveData<Y>?): LiveData<Y> =
+    this.switchMap(func)
+
+fun <X, Y> ResourceLiveData<X>.switchMapOnSuccess(@NonNull func: (X) -> ResourceLiveData<Y>): ResourceLiveData<Y> =
+    this.switchMap {
+        when (it) {
+            is Resource.Success -> try {
+                func(it.data)
+            } catch (e: Exception) {
+                val error = e as? ResourceError ?: UnknownError(e)
+                error.asResourceLiveData<Y>()
             }
+            is Resource.HasData -> (it.asEmptyData() as Resource<Y>).asLiveData()
+            else -> (it as Resource<Y>).asLiveData()
         }
-
-fun <X, Y> LiveData<Resource<X>>.mapDataOnSuccess(@NonNull func: (X?) -> Y?): LiveData<Resource<Y>> =
-        Transformations.map(this) {
-            when {
-                it.isSuccess -> try {
-                    Resource(func(it.data), it.state)
-                } catch (e: Exception) {
-                    val error = e as? BaseError ?: ExceptionError(e)
-
-                    Resource.error<Y>(error)
-                }
-                it.data == null ->
-                    @Suppress("UNCHECKED_CAST")
-                    (it as Resource<Y>)
-                else -> Resource<Y>(null, it.state)
-            }
-
-        }
-
-fun <X, Y> LiveData<X>.switchMap(@NonNull func: (X) -> LiveData<Y>): LiveData<Y> =
-        Transformations.switchMap(this, func)
-
-fun <X, Y> LiveData<Resource<X>>.switchMapOnSuccess(@NonNull func: (Resource<X>) -> LiveData<Resource<Y>>): LiveData<Resource<Y>> =
-        Transformations.switchMap(this) {
-            when {
-                it.isSuccess -> try {
-                    func(it)
-                } catch (e: Exception) {
-                    val error = e as? BaseError ?: ExceptionError(e)
-                    Resource.error<Y>(error).asLiveData()
-                }
-                it.data == null ->
-                    @Suppress("UNCHECKED_CAST")
-                    (it as Resource<Y>).asLiveData()
-                else -> Resource<Y>(null, it.state).asLiveData()
-            }
-        }
+    }
 
 /**
  * if return is true, remove observer
@@ -95,18 +81,6 @@ fun <T> LiveData<T>.observeOneTime(@NonNull func: (T?) -> Boolean) {
             }
         }
     })
-}
-
-fun <T> mutableLiveDataOf(data: T?): MutableLiveData<T> = MutableLiveData<T>().apply { value = data }
-
-fun <T> liveDataOf(data: () -> T?): LiveData<T> = object : LiveData<T>() {
-    val isFirst = AtomicBoolean(true)
-    override fun onActive() {
-        super.onActive()
-        if (isFirst.getAndSet(false)) {
-            value = data()
-        }
-    }
 }
 
 fun <A, B, OUT> LiveData<A>.merge(source: LiveData<B>, observer: (A?, B?) -> OUT?): LiveData<OUT> {
@@ -132,3 +106,94 @@ fun <A, B, OUT> LiveData<A>.mergeNotNull(source: LiveData<B>, observer: (A, B) -
 
     return result
 }
+
+fun <T> ResourceLiveData<T>.getData(): T? {
+    return value?.data()
+}
+
+fun <X, Y> ResourceLiveData<X>.mapOnSuccess(@NonNull func: (X) -> Resource<Y>): ResourceLiveData<Y> =
+    map {
+        when (it) {
+            is Resource.Success -> try {
+                func(it.data)
+            } catch (e: Exception) {
+                val error = e as? ResourceError ?: UnknownError(e)
+                error.asResource()
+            }
+            is Resource.HasData -> it.asEmptyData()
+            else -> it as Resource<Y>
+        }
+    }
+
+fun <X> ResourceLiveData<X>.applyDataOnSuccess(@NonNull func: (X) -> Unit): ResourceLiveData<X> {
+    return mapDataOnSuccess {
+        func(it)
+        it
+    }
+}
+
+fun <X, Y> ResourceLiveData<X>.mapDataOnSuccess(@NonNull func: (X) -> Y): ResourceLiveData<Y> =
+    map {
+        when (it) {
+            is Resource.Success -> try {
+                Resource.Success(func(it.data))
+            } catch (e: Exception) {
+                val error = e as? ResourceError ?: UnknownError(e)
+                error.asResource()
+            }
+            is Resource.HasData -> it.asEmptyData()
+            else -> it as Resource<Y>
+        }
+
+    }
+
+
+fun <X, Y> ResourceLiveData<X>.switchResourceMapOnSuccess(@NonNull func: (Resource.Success<X>) -> ResourceLiveData<Y>): ResourceLiveData<Y> =
+    this.switchMap {
+        when (it) {
+            is Resource.Success -> try {
+                func(it)
+            } catch (e: Exception) {
+                val error = e as? ResourceError ?: UnknownError(e)
+                error.asResourceLiveData<Y>()
+            }
+            is Resource.HasData -> (it.asEmptyData() as Resource<Y>).asLiveData()
+            else -> (it as Resource<Y>).asLiveData()
+        }
+    }
+
+/**
+ * @param func : return delay time
+ */
+fun <X> ResourceLiveData<X>.delay(@NonNull func: (Resource<X>) -> Long): ResourceLiveData<X> {
+    val mediatorLiveData = MediatorResourceLiveData<X>()
+    mediatorLiveData.addSource(this) {
+        if (it == null) {
+            mediatorLiveData.postValue(it)
+            return@addSource
+        }
+        val duration = func(it)
+
+        if (duration == 0L) {
+            mediatorLiveData.postValue(it)
+        } else {
+            //todo if coroutine is applied, consider kotlin coroutine delay
+            Handler().postDelayed({
+                mediatorLiveData.postValue(it)
+            }, func(it))
+        }
+    }
+
+    return mediatorLiveData
+}
+
+
+
+private fun Resource.HasData.asEmptyData():Resource<Nothing> {
+    return when (this) {
+        is Resource.ErrorWithData<*> -> Resource.Error(error)
+        is Resource.LoadingWithData<*> -> Resource.Loading
+        else -> throw IllegalStateException()
+    }
+}
+

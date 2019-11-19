@@ -5,7 +5,7 @@
 ext.deps = [:]
 def versions = [:]
 versions.arch_core = "2.0.0"
-versions.room = "2.1.0-alpha03"
+versions.room = "2.1.0-alpha06"
 versions.lifecycle = "2.2.0-alpha05"
 versions.support = "1.1.0-alpha04"
 versions.material = "1.1.0-alpha05"
@@ -50,14 +50,12 @@ deps.support = support
 def room = [:]
 room.runtime = "androidx.room:room-runtime:$versions.room"
 room.compiler = "androidx.room:room-compiler:$versions.room"
-room.rxjava2 = "androidx.room:room-rxjava2:$versions.room"
-room.coroutine = "androidx.room:room-coroutines:$versions.room"
+room.ktx = "androidx.room:room-ktx:$versions.room"
 room.testing = "androidx.room:room-testing:$versions.room"
 deps.room = room
 
 def lifecycle = [:]
 lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
-lifecycle.java8 = "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
 lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
 lifecycle.livedat_ktx = "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
 lifecycle.viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"

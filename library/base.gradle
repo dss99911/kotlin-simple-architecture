@@ -16,6 +16,9 @@ android {
         versionName app_version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        buildConfigField "String", "freePackageName", "\"$application_id\""
+        resValue "string", "app_version", app_version
     }
     signingConfigs {
         release {
@@ -28,16 +31,61 @@ android {
 
     buildTypes {
         debug {
-            resValue "string", "app_version", app_version
+            testCoverageEnabled true
         }
 
         release {
-            resValue "string", "app_version", app_version
             minifyEnabled true
-//            shrinkResources true // can not use for library
+            shrinkResources true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+        }
+    }
+
+    flavorDimensions "mode", "stage"
+
+    productFlavors {
+        free {
+            dimension "mode"
+
+            applicationId application_id
+            buildConfigField "boolean", "isPro", "false"
+        }
+
+        pro {
+            dimension "mode"
+
+            applicationId application_id + ".pro"
+            buildConfigField "boolean", "isPro", "true"
+        }
+
+        dev {
+            dimension "stage"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+
+            //optimize build time
+            resConfigs "en", "hdpi"
+            minSdkVersion min_sdk_version > 21 ? min_sdk_version : 21
+        }
+
+        prod {
+            dimension "stage"
+        }
+
+        mock {
+            dimension "stage"
+            applicationIdSuffix ".mock"
+            versionNameSuffix "-mock"
+        }
+    }
+
+    // Remove mockRelease as it's not needed.
+    android.variantFilter { variant ->
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
+            variant.setIgnore(true)
         }
     }
 
@@ -52,4 +100,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    useLibrary 'android.test.runner'
+
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
 }

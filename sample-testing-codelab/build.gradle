@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+apply from: (project(':library').projectDir.toString() + '/base.gradle')
+
+android {
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.example.android.architecture.blueprints.todomvvmlivekotlin"
+    }
+
+
+
+    // Always show the result of every unit test, even if it passes.
+    testOptions.unitTests {
+        includeAndroidResources = true
+
+        all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
+    }
+
+    dataBinding {
+        enabled = true
+        enabledForTests = true
+    }
+}
+
+apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
+
+dependencies {
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+}

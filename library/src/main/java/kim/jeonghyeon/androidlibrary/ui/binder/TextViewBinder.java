@@ -8,11 +8,14 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.TypefaceSpan;
+import android.text.style.URLSpan;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -102,6 +105,13 @@ public class TextViewBinder {
         tv.setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], compoundDrawables[2], compoundDrawables[3]);
     }
 
+    @BindingAdapter({"linkUrl", "android:text"})
+    public static void setLinkUrl(TextView textView, String linkUrl, String text) {
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        SpannableString span = new SpannableString(text);
+        span.setSpan(new URLSpan(linkUrl), 0, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(span);
+    }
 }
 
 @SuppressWarnings({"unused", "WeakerAccess"})

@@ -22,6 +22,9 @@ import androidx.lifecycle.Observer
  *
  * 3. UIHandler can be stored at WeakReference, but ViewModel constructor parameter contains it. and though I thought it will be okay, if not set var or val keyword, yet lambda can access the parameter. it means that Though it is local parameter, it is not garbage collected.
  *
+ * 4. ui handler way : if activity is garbage collected, can't use ui handler.
+ *
+ * 5. navigation interface : memory leak.
  *
  */
 @Deprecated(

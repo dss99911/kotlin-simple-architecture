@@ -6,8 +6,10 @@ import androidx.lifecycle.Transformations
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.*
-import kim.jeonghyeon.kotlinlibrary.extension.ignoreException
+import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.isLoading
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeOneTime
 
 abstract class BaseNetworkDataSourceFactory<ITEM, RDATA>(private val pageSize: Int) : DataSource.Factory<Int, ITEM>() {
 
@@ -70,20 +72,20 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
                 return@observeOneTime false
             }
 
-            when (it.status) {
-                ResourceStatus.SUCCESS -> {
+            when (it) {
+                is Resource.Success -> {
                     loadState.postValue(ResourceState.SUCCESS)
-                    callback.onResult(getListFromResponseData(it!!.data)
+                    callback.onResult(getListFromResponseData(it.data)
                             ?: emptyList(), page - 1, page + 1)
                 }
 
-                ResourceStatus.ERROR -> {
+                is Resource.Error -> {
                     retry = {
                         loadInitial(params, callback)
                     }
 
                     loadState.postValue(
-                            ResourceState.error(it!!.state.error!!)
+                            ResourceState.error(it.error)
                     )
                 }
                 else -> {
@@ -108,19 +110,18 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
                 return@observeOneTime false
             }
 
-            when (it.status) {
-                ResourceStatus.SUCCESS -> {
+            when (it) {
+                is Resource.Success -> {
                     loadState.postValue(ResourceState.SUCCESS)
-                    callback.onResult(getListFromResponseData(it!!.data) ?: emptyList(), page + 1)
+                    callback.onResult(getListFromResponseData(it.data) ?: emptyList(), page + 1)
                 }
-
-                ResourceStatus.ERROR -> {
+                is Resource.Error -> {
                     retry = {
                         loadAfter(params, callback)
                     }
 
                     loadState.postValue(
-                            ResourceState.error(it!!.state.error!!)
+                            ResourceState.error(it.error)
                     )
                 }
                 else -> {

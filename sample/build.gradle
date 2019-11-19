@@ -2,47 +2,30 @@ apply plugin: 'com.android.application'
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
 
 android {
-    buildTypes {
-        release {
-            shrinkResources true
-        }
-        //inherit other build type
+//    buildTypes {
+//        //inherit other build type
 //        alpha {
 //            initWith release
 //        }
-    }
+//    }
 
-    defaultConfig {
-        applicationId application_id
-        resConfigs("en")
-        buildConfigField "String", "freePackageName", "\"$application_id\""
-        //can add variable on manifest
+//    defaultConfig {
+//        //can add variable on manifest
 //        manifestPlaceholders = [app_name:"sample name"]
-        //can add resource
-        resValue "string", "test", "test"
-    }
-
-    flavorDimensions "free"
-    productFlavors {
-        free {
-            buildConfigField "boolean", "isPro", "false"
-        }
-        pro {
-            buildConfigField "boolean", "isPro", "true"
-            applicationIdSuffix ".pro"
-        }
-    }
+//        //can add resource
+//        resValue "string", "test", "test"
+//    }
 
     //you can add new res folder
     //if you want to add different layout or drawable for each feature
     //refer https://www.evernote.com/shard/s462/nl/79124253/a5db09ce-07c6-476b-9e5d-f9a1c91a1378/
-    sourceSets {
-        main {
-            res.srcDirs += [
-                    'src/main/res-sample',
-            ]
-        }
-    }
+//    sourceSets {
+//        main {
+//            res.srcDirs += [
+//                    'src/main/res-sample',
+//            ]
+//        }
+//    }
 }
 
 apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')

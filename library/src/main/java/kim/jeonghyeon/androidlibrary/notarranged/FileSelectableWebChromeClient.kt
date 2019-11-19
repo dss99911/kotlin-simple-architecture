@@ -16,6 +16,9 @@ import kim.jeonghyeon.androidlibrary.BuildConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
 
+/**
+ * file choose by webapp request
+ */
 class FileSelectableWebChromeClient(
     val activity: AppCompatActivity,
     val fileChooserTitle: String,

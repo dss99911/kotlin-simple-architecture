@@ -1,6 +1,6 @@
 package kim.jeonghyeon.sample
 
 import androidx.lifecycle.SavedStateHandle
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.EmptyViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
-class MainActivityViewModel(savedStateHandle: SavedStateHandle) : EmptyViewModel(savedStateHandle)
+class MainActivityViewModel(val savedStateHandle: SavedStateHandle) : BaseViewModel()

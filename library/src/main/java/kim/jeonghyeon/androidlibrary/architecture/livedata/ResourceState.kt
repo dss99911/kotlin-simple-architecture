@@ -1,6 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
-import kim.jeonghyeon.androidlibrary.architecture.net.error.BaseError
+import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 
 
 enum class ResourceStatus {
@@ -12,10 +12,10 @@ enum class ResourceStatus {
  */
 class ResourceState private constructor(
         val status: ResourceStatus,
-        val error: BaseError? = null) {
+        val error: ResourceError? = null) {
     companion object {
         val SUCCESS = ResourceState(ResourceStatus.SUCCESS)
         val LOADING = ResourceState(ResourceStatus.LOADING)
-        fun error(error: BaseError) = ResourceState(ResourceStatus.ERROR, error)
+        fun error(error: ResourceError) = ResourceState(ResourceStatus.ERROR, error)
     }
 }

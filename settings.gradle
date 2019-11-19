@@ -1,2 +1,2 @@
-include ':sample', ':library', ':kotlinlibrary'
+include ':sample', ':library', ':kotlinlibrary', ':sample-testing-codelab'
 project(':kotlinlibrary').projectDir = new File("${pathKotlinLibrary}")

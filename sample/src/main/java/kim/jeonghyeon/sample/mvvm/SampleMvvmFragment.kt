@@ -10,7 +10,9 @@ import kim.jeonghyeon.sample.databinding.FragmentMvvmBinding
  */
 class SampleMvvmFragment : MvvmFragment<SampleMVVMViewModel, FragmentMvvmBinding>() {
 
-    override val viewModel: SampleMVVMViewModel by simpleViewModels()
+    override val viewModel: SampleMVVMViewModel by simpleViewModels {
+        SampleMVVMViewModel(getSavedState())
+    }
 
     override val layoutId: Int
         get() = R.layout.fragment_mvvm
