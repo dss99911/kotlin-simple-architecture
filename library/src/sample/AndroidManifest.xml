@@ -7,7 +7,7 @@
             android:name="kim.jeonghyeon.androidlibrary.sample.job.SampleJobIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
-            android:name="kim.jeonghyeon.androidlibrary.sample.job.SampleJobService"
+            android:name="kim.jeonghyeon.sample.framework.job.SampleJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!-- transparent activity-->

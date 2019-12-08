@@ -4,6 +4,7 @@ import android.webkit.WebView
 
 fun log() {
     WebView.setWebContentsDebuggingEnabled(true)
+    //you can debug on chrome browser on more tools -> remote devices
 }
 
 fun loadFileFromAsset(webView: WebView) {

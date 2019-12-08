@@ -106,3 +106,7 @@ fun <T> ResourceLiveData<T>.observeResource(owner: LifecycleOwner, onResult: Res
         onResult(it)
     }
 }
+
+typealias ResourceState = Resource<out Any>
+val ResourceSuccess = Resource.Success(Unit)
+val ResourceLoading = Resource.Loading

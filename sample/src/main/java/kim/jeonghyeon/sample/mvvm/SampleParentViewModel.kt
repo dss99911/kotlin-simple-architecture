@@ -8,6 +8,6 @@ class SampleParentViewModel(parent: MainActivityViewModel) :
     BaseViewModel() {
 
     init {
-        parent.status.value = Resource.Loading
+        parent.state.value = Resource.Loading
     }
 }

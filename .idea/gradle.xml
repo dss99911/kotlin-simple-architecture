@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/sample" />
             <option value="$PROJECT_DIR$/sample-testing-codelab" />
             <option value="$USER_HOME$/IdeaProjects/my/Kotlin/kotlinlibrary/kotlinlibrary" />
+            <option value="$USER_HOME$/IdeaProjects/my/Kotlin/kotlinlibrary/sample" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

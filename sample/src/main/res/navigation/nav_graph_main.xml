@@ -35,6 +35,9 @@
         <action
                 android:id="@+id/action_mainFragment_to_navigationFragment"
                 app:destination="@id/navigateFragment" />
+        <action
+                android:id="@+id/action_mainFragment_to_apiCallFragment"
+                app:destination="@id/apiCallFragment" />
 
         <!-- argument example
         <argument
@@ -88,6 +91,11 @@
             android:id="@+id/deeplink_dest"
             android:name="kim.jeonghyeon.sample.MainFragment"
             />
+    <fragment
+            android:id="@+id/apiCallFragment"
+            android:name="kim.jeonghyeon.sample.feature.apicall.ApiCallFragment"
+            android:label="ApiCallFragment"
+            tools:layout="@layout/fragment_api_call"/>
 
     <!-- use argument for attribute value
     <fragment

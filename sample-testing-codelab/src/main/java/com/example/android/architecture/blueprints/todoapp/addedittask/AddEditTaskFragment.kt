@@ -17,7 +17,6 @@ package com.example.android.architecture.blueprints.todoapp.addedittask
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.databinding.AddtaskFragBinding
-import com.example.android.architecture.blueprints.todoapp.util.obtainViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
 import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 

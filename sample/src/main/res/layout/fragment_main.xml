@@ -12,7 +12,7 @@
             tools:context="kim.jeonghyeon.sample.MainFragment">
         <Button android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="@string/mvvm"
-                android:onClick="@{() -> model.launchDirection(@id/sampleMVVMFragment)}"
+                android:onClick="@{() -> model.navigateDirection(@id/sampleMVVMFragment)}"
         />
         <Button android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="@string/navigate"
@@ -22,5 +22,13 @@
                 android:text="@string/chrome_custom_tab"
                 app:onClickNavigate="@{@id/chromeCustomTabFragment}"
         />
+        <Button android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/api_call"
+                app:onClickNavigate="@{@id/action_mainFragment_to_apiCallFragment}"
+                />
+        <Button android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="test"
+                app:clickEvent="@={model.clickEvent}"
+                />
     </LinearLayout>
 </layout>

@@ -1,13 +1,13 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.NavArgs
@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.BaseFragment
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.*
 import org.jetbrains.anko.support.v4.toast
 
@@ -41,13 +42,16 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
 
     fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
 
-
-
     fun navigate(@IdRes id : Int)
     fun navigate(navDirections: NavDirections)
 
 //  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 //fun <reified T : NavArgs> getNavArgs(): T
+
+    /**
+     * set state observer to change loading and error on state liveData
+     */
+    var stateObserver: Observer<ResourceState>
 }
 
 abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
@@ -56,7 +60,14 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
-    private val progressDialog by lazy { activity?.createProgressDialog() }
+    internal val progressDialog by lazy { activity?.createProgressDialog() }
+
+    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+        set(value) {
+            viewModel.state.removeObserver(field)
+            field = value
+            viewModel.state.observe(this@MvvmFragment, value)
+        }
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +76,7 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     ): View? {
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         setVariable(binding)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         return binding.root
     }
 
@@ -105,28 +116,30 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
 
     private fun setupObserver() {
         with(viewModel) {
-            toast.observeEvent(this@MvvmFragment) {
+            state.observe(this@MvvmFragment, stateObserver)
+
+            eventToast.observeEvent(this@MvvmFragment) {
                 toast(it)
             }
 
-            snackbar.observeEvent(this@MvvmFragment) {
+            eventSnackbar.observeEvent(this@MvvmFragment) {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            startActivity.observeEvent(this@MvvmFragment) {
+            eventStartActivity.observeEvent(this@MvvmFragment) {
                 activity?.startActivity(it)
             }
 
-            startActivityForResult.observeEvent(this@MvvmFragment) { (intent, requestCode) ->
+            eventStartActivityForResult.observeEvent(this@MvvmFragment) { (intent, onResult) ->
                 try {
-                    startActivityForResult(intent, requestCode)
+                    this@MvvmFragment.startActivityForResult(intent, onResult)
                 } catch (e: IllegalStateException) {
                 } catch (e: ActivityNotFoundException) {
                     toast(R.string.toast_no_activity)
                 }
             }
 
-            showProgressBar.observeEvent(this@MvvmFragment) {
+            eventShowProgressBar.observeEvent(this@MvvmFragment) {
                 if (it) {
                     progressDialog?.showWithoutException()
                 } else {
@@ -134,33 +147,36 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            addFragment.observeEvent(this@MvvmFragment) {
+            eventAddFragment.observeEvent(this@MvvmFragment) {
                 this@MvvmFragment.addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            navDirectionId.observeEvent(this@MvvmFragment) {
+            eventNavDirectionId.observeEvent(this@MvvmFragment) {
                 navigate(it)
             }
 
-            navDirection.observeEvent(this@MvvmFragment) {
+            eventNavDirection.observeEvent(this@MvvmFragment) {
                 navigate(it)
             }
 
-            replaceFragment.observeEvent(this@MvvmFragment) {
+            eventReplaceFragment.observeEvent(this@MvvmFragment) {
                 this@MvvmFragment.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            performWithActivity.observeEvent(this@MvvmFragment) {
+            eventPerformWithActivity.observeEvent(this@MvvmFragment) {
                 it(requireActivity())
+            }
+
+            eventRequestPermissionEvent.observeEvent(this@MvvmFragment) {
+                requestPermissions(it.permissions, it.listener)
+            }
+
+            eventStartPermissionSettingsPageEvent.observeEvent(this@MvvmFragment) {
+                startPermissionSettingsPage(it)
             }
 
             lifecycle.addObserver(this)
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        viewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun navigate(id: Int) {

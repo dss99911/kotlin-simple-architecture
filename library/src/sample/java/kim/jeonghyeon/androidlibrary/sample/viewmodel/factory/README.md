@@ -1,1 +1,0 @@
-Factory is for dependency injection

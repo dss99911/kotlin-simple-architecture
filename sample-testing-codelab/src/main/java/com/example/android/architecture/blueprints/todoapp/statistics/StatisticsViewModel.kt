@@ -21,7 +21,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTa
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableResourceLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.mapDataOnSuccess
+import kim.jeonghyeon.androidlibrary.architecture.livedata.successDataMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
 /**
@@ -39,7 +39,7 @@ class StatisticsViewModel(
 
     val tasks = MutableResourceLiveData<List<Task>>()
 
-    val statusResult = tasks.mapDataOnSuccess {
+    val statusResult = tasks.successDataMap {
         getActiveAndCompletedStats(it)
     }
 

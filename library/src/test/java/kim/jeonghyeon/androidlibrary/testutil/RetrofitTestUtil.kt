@@ -1,6 +1,6 @@
 package kim.jeonghyeon.androidlibrary.testutil
 
-import kim.jeonghyeon.androidlibrary.architecture.net.adapter.LiveDataCallAdapterFactory
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveDataCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

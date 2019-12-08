@@ -1,7 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,6 +10,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.navigation.*
@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.BaseActivity
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.*
 
 interface IMvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> {
@@ -51,12 +52,18 @@ interface IMvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> {
     fun navigate(@IdRes id : Int)
     fun navigate(navDirections: NavDirections)
 
-//    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
-//    fun <reified T : NavArgs> getNavArgs(): T
+    //has 'this' default parameter. so, commented out
+    //fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 
+    //has reified. so, commented out
+    //fun <reified T : NavArgs> getNavArgs(): T
+
+    /**
+     * set state observer to change loading and error on state liveData
+     */
+    var stateObserver: Observer<ResourceState>
 }
 
-//todo make common duplication between Activity, Fragment
 abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActivity(), IMvvmActivity<VM, DB> {
 
     override val navHostId: Int = 0
@@ -66,7 +73,7 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
         get() = if (navHostId != 0) AppBarConfiguration(navController.graph) else null
 
 
-    private val progressDialog by lazy { createProgressDialog() }
+    internal val progressDialog by lazy { createProgressDialog() }
 
     @MenuRes
     private var menuId: Int = 0
@@ -77,6 +84,13 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
 
 
     override lateinit var binding: DB
+
+    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+        set(value) {
+            viewModel.state.removeObserver(field)
+            field = value
+            viewModel.state.observe(this@MvvmActivity, value)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,28 +109,30 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
 
     private fun setupObserver() {
         with(viewModel) {
-            toast.observeEvent(this@MvvmActivity) {
+            state.observe(this@MvvmActivity, stateObserver)
+
+            eventToast.observeEvent(this@MvvmActivity) {
                 toast(it)
             }
 
-            snackbar.observeEvent(this@MvvmActivity) {
+            eventSnackbar.observeEvent(this@MvvmActivity) {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            startActivity.observeEvent(this@MvvmActivity) {
+            eventStartActivity.observeEvent(this@MvvmActivity) {
                 startActivity(it)
             }
 
-            startActivityForResult.observeEvent(this@MvvmActivity) { (intent, requestCode) ->
+            eventStartActivityForResult.observeEvent(this@MvvmActivity) { (intent, onResult) ->
                 try {
-                    startActivityForResult(intent, requestCode)
+                    this@MvvmActivity.startActivityForResult(intent, onResult)
                 } catch (e: IllegalStateException) {
                 } catch (e: ActivityNotFoundException) {
                     toast(R.string.toast_no_activity)
                 }
             }
 
-            showProgressBar.observeEvent(this@MvvmActivity) {
+            eventShowProgressBar.observeEvent(this@MvvmActivity) {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
@@ -124,24 +140,32 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
                 }
             }
 
-            addFragment.observeEvent(this@MvvmActivity) {
+            eventAddFragment.observeEvent(this@MvvmActivity) {
                 this@MvvmActivity.addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            replaceFragment.observeEvent(this@MvvmActivity) {
+            eventReplaceFragment.observeEvent(this@MvvmActivity) {
                 this@MvvmActivity.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            performWithActivity.observeEvent(this@MvvmActivity) {
+            eventPerformWithActivity.observeEvent(this@MvvmActivity) {
                 it(this@MvvmActivity)
             }
 
-            navDirectionId.observeEvent(this@MvvmActivity) {
+            eventNavDirectionId.observeEvent(this@MvvmActivity) {
                 navigate(it)
             }
 
-            navDirection.observeEvent(this@MvvmActivity) {
+            eventNavDirection.observeEvent(this@MvvmActivity) {
                 navigate(it)
+            }
+
+            eventRequestPermissionEvent.observeEvent(this@MvvmActivity) {
+                requestPermissions(it.permissions, it.listener)
+            }
+
+            eventStartPermissionSettingsPageEvent.observeEvent(this@MvvmActivity) {
+                startPermissionSettingsPage(it)
             }
 
             lifecycle.addObserver(this)
@@ -205,11 +229,6 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
         binding.setVariable(BR.model, viewModel)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        viewModel.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun navigate(id: Int) {
         require(navHostId != 0) { "navHostId is not set" }
 
@@ -231,4 +250,6 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
     }
 
     inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
+
+
 }

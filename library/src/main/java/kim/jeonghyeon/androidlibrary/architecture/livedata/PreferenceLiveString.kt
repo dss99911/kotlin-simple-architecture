@@ -1,9 +1,8 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import androidx.annotation.IdRes
-import androidx.lifecycle.Observer
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.repository.PreferenceCache
+import kim.jeonghyeon.androidlibrary.deprecated.BaseLiveData
 import kim.jeonghyeon.androidlibrary.extension.getString
 
 /**

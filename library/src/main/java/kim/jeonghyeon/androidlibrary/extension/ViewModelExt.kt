@@ -31,17 +31,17 @@ inline fun <reified T : ViewDataBinding> Fragment.bind(inflater: LayoutInflater,
                 .also { it.lifecycleOwner = this }
 
 
-class InstanceViewModelFactory<V : ViewModel> (val viewModel: V) : ViewModelProvider.Factory {
+class InstanceViewModelFactory<V : ViewModel> (val viewModel: () -> V) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return viewModel as T
+        return viewModel() as T
     }
 }
 
 inline fun <reified V : ViewModel> Fragment.simpleViewModels(ownerProducer: ViewModelStoreOwner = this, noinline viewModel: () -> V): Lazy<V> {
-    return viewModels({ownerProducer}, {InstanceViewModelFactory(viewModel())})
+    return viewModels({ownerProducer}, {InstanceViewModelFactory(viewModel)})
 }
 
 
-inline fun <reified V : ViewModel> AppCompatActivity.simpleViewModels(viewModel: V): Lazy<V> {
+inline fun <reified V : ViewModel> AppCompatActivity.simpleViewModels(noinline viewModel: () -> V): Lazy<V> {
     return viewModels {InstanceViewModelFactory(viewModel)}
 }

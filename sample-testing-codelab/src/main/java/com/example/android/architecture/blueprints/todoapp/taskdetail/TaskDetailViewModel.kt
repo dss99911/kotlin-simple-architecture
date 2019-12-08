@@ -50,7 +50,7 @@ class TaskDetailViewModel(
 
             val direction = TaskDetailFragmentDirections
                 .actionTaskDetailFragmentToTasksFragment().setUserMessage(DELETE_RESULT_OK)
-            launchDirection(direction)
+            navigateDirection(direction)
         }
     }
 
@@ -60,7 +60,7 @@ class TaskDetailViewModel(
                 navArgs.taskid,
                 ctx.getString(R.string.edit_task)
             )
-        launchDirection(direction)
+        navigateDirection(direction)
     }
 
     fun setCompleted(completed: Boolean) {

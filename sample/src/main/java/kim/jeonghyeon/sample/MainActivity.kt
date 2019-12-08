@@ -19,7 +19,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : MvvmActivity<MainActivityViewModel, ActivityMainBinding>() {
 
-    override val viewModel: MainActivityViewModel by simpleViewModels(MainActivityViewModel(getSavedState()))
+    override val viewModel: MainActivityViewModel by simpleViewModels {
+        MainActivityViewModel(getSavedState())
+    }
 
     override val layoutId: Int
         get() = R.layout.activity_main
@@ -31,10 +33,10 @@ class MainActivity : MvvmActivity<MainActivityViewModel, ActivityMainBinding>() 
         setMenu(R.menu.sample_menu) {
 
             when (it.itemId) {
-//                R.id.create_new -> {
-//                    toast("new")
-//                    true
-//                }
+                R.id.create_new -> {
+                    toast("new")
+                    true
+                }
                 else -> false
             }
         }

@@ -35,7 +35,7 @@ public abstract class BaseRecyclerViewHolder<VM> extends RecyclerView.ViewHolder
     }
 
     /**
-     * if viewModel name is not "viewModel", override this method to set the other view model name
+     * if viewModel name is not "model", override this method to set the other view model name
      *
      * @return viewModel Id
      */

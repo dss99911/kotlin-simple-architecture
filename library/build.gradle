@@ -7,10 +7,15 @@ apply from: (project(':kotlinlibrary').projectDir.toString() + '/dependencies.gr
 apply from: 'testDependencies.gradle'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tool_version
     dataBinding {
         enabled = true
+    }
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
     }
 
     compileOptions {
@@ -24,14 +29,6 @@ android {
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-}
-
-//todo move to sample module
-android {
-    sourceSets {
-        androidTest.java.srcDirs += "src/sample/java"
-        androidTest.res.srcDirs += "src/sample/res"
-    }
 }
 
 dependencies {

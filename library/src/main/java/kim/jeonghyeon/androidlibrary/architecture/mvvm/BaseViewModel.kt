@@ -6,107 +6,123 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.NavDirections
+import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidlibrary.permission.PermissionResultListener
 
-open class BaseViewModel : ViewModel(), LifecycleObserver {
-    val status = MutableLiveData<Resource<Unit>>()
+interface IBaseViewModel {
+    val state: MutableLiveData<ResourceState>
+    val eventToast: MutableLiveEvent<String>
+    val eventSnackbar: MutableLiveEvent<String>
+    val eventStartActivity: MutableLiveEvent<Intent>
+    val eventShowProgressBar:MutableLiveEvent<Boolean>
 
-    val toast by lazy {
-        EventMutableLiveData<String>()
-    }
+    fun onCreate()
+    fun onStart()
+    fun onResume()
+    fun onPause()
+    fun onStop()
+    fun onDestroy()
 
-    val snackbar by lazy {
-        EventMutableLiveData<String>()
-    }
+    fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
+    fun addFragment(containerId: Int, fragment: Fragment, tag: String? = null)
+    fun replaceFragment(containerId: Int, fragment: Fragment, tag: String? = null)
+    fun performWithActivity(action: (Activity) -> Unit)
+    fun navigateDirection(navDirections: NavDirections)
+    fun navigateDirection(id: Int)
+    fun showSnackbar(text: String)
+    fun showSnackbar(@StringRes textId: Int)
+    fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
+    fun startPermissionSettingsPage(listener: () -> Unit)
+}
 
-    val startActivity by lazy {
-        EventMutableLiveData<Intent>()
-    }
+open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
+    override val state by lazy { MutableLiveData<Resource<Any>>() }
+    override val eventToast by lazy { MutableLiveEvent<String>() }
+    override val eventSnackbar by lazy { MutableLiveEvent<String>() }
+    override val eventStartActivity by lazy { MutableLiveEvent<Intent>() }
 
-    val startActivityForResult by lazy {
-        EventMutableLiveData<Pair<Intent, Int>>()
-    }
+    override val eventShowProgressBar by lazy { MutableLiveEvent<Boolean>() }
 
-    val showProgressBar by lazy {
-        EventMutableLiveData<Boolean>()
-    }
-
-    internal val navDirectionId by lazy {
-        EventMutableLiveData<Int>()
-    }
-
-    internal val navDirection by lazy {
-        EventMutableLiveData<NavDirections>()
-    }
-
-    internal val addFragment by lazy {
-        EventMutableLiveData<RequestFragment>()
-    }
-
-    internal val replaceFragment by lazy {
-        EventMutableLiveData<RequestFragment>()
-    }
-
-    internal val performWithActivity by lazy {
-        EventMutableLiveData<(Activity) -> Unit>()
-    }
+    //this is not shown on inherited viewModel. use function.
+    internal val eventStartActivityForResult by lazy { MutableLiveEvent<Pair<Intent, (resultCode: Int, data: Intent?) -> Unit>>() }
+    internal val eventNavDirectionId by lazy { MutableLiveEvent<Int>() }
+    internal val eventNavDirection by lazy { MutableLiveEvent<NavDirections>() }
+    internal val eventAddFragment by lazy { MutableLiveEvent<RequestFragment>() }
+    internal val eventReplaceFragment by lazy { MutableLiveEvent<RequestFragment>() }
+    internal val eventPerformWithActivity by lazy { MutableLiveEvent<(Activity) -> Unit>() }
+    internal val eventRequestPermissionEvent by lazy { MutableLiveEvent<RequestPermission>() }
+    internal val eventStartPermissionSettingsPageEvent by lazy { MutableLiveEvent<() -> Unit>() }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    open fun onCreate() {
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    open fun onDestroy() {
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    open fun onResume() {
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    open fun onPause() {
+    override fun onCreate() {
+        loadResource(state) {
+            return@loadResource "dsf"
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    open fun onStart() {
+    override fun onStart() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    override fun onResume() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    override fun onPause() {
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    open fun onStop() {
+    override fun onStop() {
     }
 
-    open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    override fun onDestroy() {
     }
 
-    fun addFragment(containerId: Int, fragment: Fragment, tag: String? = null) {
-        addFragment.call(RequestFragment(containerId, fragment, tag))
+    override fun addFragment(containerId: Int, fragment: Fragment, tag: String?) {
+        eventAddFragment.call(RequestFragment(containerId, fragment, tag))
     }
 
-    fun replaceFragment(containerId: Int, fragment: Fragment, tag: String? = null) {
-        replaceFragment.call(RequestFragment(containerId, fragment, tag))
+    override fun replaceFragment(containerId: Int, fragment: Fragment, tag: String?) {
+        eventReplaceFragment.call(RequestFragment(containerId, fragment, tag))
     }
 
-    fun performWithActivity(action: (Activity) -> Unit) {
-        performWithActivity.call(action)
+    override fun performWithActivity(action: (Activity) -> Unit) {
+        eventPerformWithActivity.call(action)
     }
 
-    fun launchDirection(navDirections: NavDirections) {
-        navDirection.call(navDirections)
+    override fun navigateDirection(navDirections: NavDirections) {
+        eventNavDirection.call(navDirections)
     }
 
-    fun launchDirection(id: Int) {
-        navDirectionId.call(id)
+    override fun navigateDirection(id: Int) {
+        eventNavDirectionId.call(id)
     }
 
-    fun showSnackbar(text: String) {
-        snackbar.call(text)
+    override fun showSnackbar(text: String) {
+        eventSnackbar.call(text)
     }
 
-    fun showSnackbar(@StringRes textId: Int) {
-        snackbar.call(ctx.getString(textId))
+    override fun showSnackbar(@StringRes textId: Int) {
+        eventSnackbar.call(ctx.getString(textId))
     }
 
-    data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)
+    override fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener) {
+        eventRequestPermissionEvent.call(RequestPermission(permissions, listener))
+    }
+
+    override fun startPermissionSettingsPage(listener: () -> Unit) {
+        eventStartPermissionSettingsPageEvent.call(listener)
+    }
+
+    override fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit) {
+        eventStartActivityForResult.call(Pair(intent, onResult))
+    }
+
+    internal data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)
+    internal class RequestPermission(val permissions: Array<String>, val listener: PermissionResultListener)
 }

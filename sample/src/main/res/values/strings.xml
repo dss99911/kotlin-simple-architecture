@@ -2,6 +2,7 @@
     <string name="app_name">Android Sample</string>
     <string name="mvvm">MVVM</string>
     <string name="chrome_custom_tab">Chrome Custom Tab</string>
+    <string name="api_call">Api call</string>
     <string name="navigate">navigate</string>
     <string name="help">help</string>
     <string name="save">save</string>

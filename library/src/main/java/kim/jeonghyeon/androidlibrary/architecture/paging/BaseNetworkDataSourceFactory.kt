@@ -2,32 +2,31 @@ package kim.jeonghyeon.androidlibrary.architecture.paging
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.switchMap
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
-import kim.jeonghyeon.androidlibrary.architecture.livedata.isLoading
-import kim.jeonghyeon.androidlibrary.architecture.livedata.observeOneTime
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 
-abstract class BaseNetworkDataSourceFactory<ITEM, RDATA>(private val pageSize: Int) : DataSource.Factory<Int, ITEM>() {
+abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageSize: Int) : DataSource.Factory<String, ITEM>() {
 
     private val sourceLiveData = MutableLiveData<BaseNetworkDataSource<ITEM, RDATA>>()
 
-    abstract fun createCall(page: Int, pageSize: Int): LiveData<Resource<RDATA>>
+    abstract fun createCall(page: String?, pageSize: Int): LiveData<Resource<RDATA>>
 
     abstract fun getListFromResponseData(data: RDATA?): List<ITEM>?
+    abstract fun getNextPageFromResponseData(data: RDATA?): String?
 
 
-    override fun create(): DataSource<Int, ITEM> = object : BaseNetworkDataSource<ITEM, RDATA>() {
-        override fun createCall(page: Int, pageSize: Int) =
+    override fun create(): DataSource<String, ITEM> = object : BaseNetworkDataSource<ITEM, RDATA>() {
+
+        override fun createCall(page: String?, pageSize: Int): LiveData<Resource<RDATA>> =
                 this@BaseNetworkDataSourceFactory.createCall(page, pageSize)
 
         override fun getListFromResponseData(data: RDATA?): List<ITEM>? =
                 this@BaseNetworkDataSourceFactory.getListFromResponseData(data)
 
-
+        override fun getNextPageFromResponseData(data: RDATA?) = this@BaseNetworkDataSourceFactory.getNextPageFromResponseData(data)
     }.also { sourceLiveData.postValue(it) }
 
     val asListing: Listing<ITEM>
@@ -35,17 +34,16 @@ abstract class BaseNetworkDataSourceFactory<ITEM, RDATA>(private val pageSize: I
             val livePagedList = toLiveData(pageSize)
             return Listing(
                     data = livePagedList,
-                    loadState = Transformations.switchMap(sourceLiveData) { it.loadState },
+                    loadState = sourceLiveData.switchMap { it.loadState },
                     retry = { sourceLiveData.value?.retryFailed() },
                     refresh = { sourceLiveData.value?.invalidate() }
             )
         }
 }
 
-private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<Int, ITEM>() {
+private abstract class BaseNetworkDataSource<ITEM, RDATA : Any> : PageKeyedDataSource<String, ITEM>() {
 
     val loadState = MutableLiveData<ResourceState>()
-    var lastRequestedPage = 1
 
     // keep a function reference for the retry event
     private var retry: (() -> Any)? = null
@@ -56,17 +54,19 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
         prevRetry?.invoke()
     }
 
-    abstract fun createCall(page: Int, pageSize: Int): LiveData<Resource<RDATA>>
+    /**
+     * if first page, it's null
+     */
+    abstract fun createCall(page: String?, pageSize: Int): LiveData<Resource<RDATA>>
 
     abstract fun getListFromResponseData(data: RDATA?): List<ITEM>?
 
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, ITEM>) {
-        loadState.postValue(ResourceState.LOADING)
+    abstract fun getNextPageFromResponseData(data: RDATA?): String?
 
-        lastRequestedPage = 1
-        val page = lastRequestedPage
+    override fun loadInitial(params: LoadInitialParams<String>, callback: LoadInitialCallback<String, ITEM>) {
+        loadState.postValue(ResourceLoading)
 
-        val response = createCall(page, params.requestedLoadSize)
+        val response = createCall(null, params.requestedLoadSize)
         response.observeOneTime {
             if (it.isLoading) {
                 return@observeOneTime false
@@ -74,9 +74,9 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
 
             when (it) {
                 is Resource.Success -> {
-                    loadState.postValue(ResourceState.SUCCESS)
+                    loadState.postValue(it)
                     callback.onResult(getListFromResponseData(it.data)
-                            ?: emptyList(), page - 1, page + 1)
+                            ?: emptyList(), null, getNextPageFromResponseData(it.data))
                 }
 
                 is Resource.Error -> {
@@ -84,9 +84,7 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
                         loadInitial(params, callback)
                     }
 
-                    loadState.postValue(
-                            ResourceState.error(it.error)
-                    )
+                    loadState.postValue(it)
                 }
                 else -> {
                     //loading state doesn't reach here
@@ -96,15 +94,14 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
         }
     }
 
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, ITEM>) {
+    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<String, ITEM>) {
 
     }
 
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, ITEM>) {
-        loadState.postValue(ResourceState.LOADING)
-        val page = ++lastRequestedPage
+    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<String, ITEM>) {
+        loadState.postValue(ResourceLoading)
 
-        val response = createCall(page, params.requestedLoadSize)
+        val response = createCall(params.key, params.requestedLoadSize)
         response.observeOneTime {
             if (it.isLoading) {
                 return@observeOneTime false
@@ -112,17 +109,15 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA> : PageKeyedDataSource<
 
             when (it) {
                 is Resource.Success -> {
-                    loadState.postValue(ResourceState.SUCCESS)
-                    callback.onResult(getListFromResponseData(it.data) ?: emptyList(), page + 1)
+                    loadState.postValue(it)
+                    callback.onResult(getListFromResponseData(it.data) ?: emptyList(), getNextPageFromResponseData(it.data))
                 }
                 is Resource.Error -> {
                     retry = {
                         loadAfter(params, callback)
                     }
 
-                    loadState.postValue(
-                            ResourceState.error(it.error)
-                    )
+                    loadState.postValue(it)
                 }
                 else -> {
                     //loading state doesn't reach here

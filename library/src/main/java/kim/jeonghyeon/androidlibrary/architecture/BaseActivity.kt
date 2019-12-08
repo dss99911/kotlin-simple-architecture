@@ -2,23 +2,23 @@ package kim.jeonghyeon.androidlibrary.architecture
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.CallSuper
-import androidx.annotation.NonNull
-import androidx.appcompat.app.AppCompatActivity
+import android.util.SparseArray
 import androidx.fragment.app.Fragment
-import kim.jeonghyeon.androidlibrary.architecture.mvp.PermissionResultListener
-import kim.jeonghyeon.androidlibrary.architecture.mvp.PermissionUIHelper
 import kim.jeonghyeon.androidlibrary.extension.log
+import kim.jeonghyeon.androidlibrary.permission.PermissionActivity
+import java.util.concurrent.atomic.AtomicInteger
 
-open class BaseActivity : AppCompatActivity() {
+interface IBaseActivity {
+    fun addFragment(container: Int, fragment: Fragment, tag: String? = null)
+    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null)
 
-    private val permissionUIHelper by lazy {
-        PermissionUIHelper(this)
-    }
+    fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
+}
 
-    fun requestPermissions(listener: PermissionResultListener, vararg permissions: String) {
-        permissionUIHelper.requestPermissions(permissions, listener)
-    }
+open class BaseActivity : PermissionActivity(), IBaseActivity {
+
+    private val nextRequestCode = AtomicInteger(1)
+    private val resultListeners = SparseArray<(resultCode: Int, data: Intent?) -> Unit>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,26 +30,10 @@ open class BaseActivity : AppCompatActivity() {
         log("${this::class.simpleName} onDestroy")
     }
 
-    @CallSuper
-    override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionUIHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    fun startPermissionSettingsPage(listener: () -> Unit) {
-        permissionUIHelper.startPermissionSettingsPage(listener)
-    }
-
-    @CallSuper
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        permissionUIHelper.onActivityResult(requestCode, resultCode, data)
-    }
-
     /**
      * @param tag to find fragment by tag
      */
-    fun addFragment(container: Int, fragment: Fragment, tag: String? = null) {
+    override fun addFragment(container: Int, fragment: Fragment, tag: String?) {
         val transaction = supportFragmentManager.beginTransaction()
         if (tag == null) {
             transaction.add(container, fragment)
@@ -62,7 +46,7 @@ open class BaseActivity : AppCompatActivity() {
     /**
      * @param tag to find fragment by tag
      */
-    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null) {
+    override fun replaceFragment(container: Int, fragment: Fragment, tag: String?) {
         val transaction = supportFragmentManager.beginTransaction()
         if (tag == null) {
             transaction.replace(container, fragment)
@@ -70,5 +54,20 @@ open class BaseActivity : AppCompatActivity() {
             transaction.replace(container, fragment, tag)
         }
         transaction.commitNow()
+    }
+
+    override fun startActivityForResult(
+        intent: Intent,
+        onResult: (resultCode: Int, data: Intent?) -> Unit
+    ) {
+        val requestCode = nextRequestCode.getAndIncrement()
+        resultListeners.put(requestCode, onResult)
+        startActivityForResult(intent, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        resultListeners[requestCode]?.invoke(resultCode, data)
+        resultListeners.remove(requestCode)
     }
 }

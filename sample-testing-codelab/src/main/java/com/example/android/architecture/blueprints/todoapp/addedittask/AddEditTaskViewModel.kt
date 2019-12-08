@@ -58,7 +58,7 @@ class AddEditTaskViewModel(
     }
 
     private fun navigateToTasksFragment() {
-        launchDirection(AddEditTaskFragmentDirections
+        navigateDirection(AddEditTaskFragmentDirections
             .actionAddEditTaskFragmentToTasksFragment().setUserMessage(ADD_EDIT_RESULT_OK))
     }
 }

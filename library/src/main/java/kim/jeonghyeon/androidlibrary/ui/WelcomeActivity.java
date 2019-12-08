@@ -23,7 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import kim.jeonghyeon.androidlibrary.BaseApplication;
 import kim.jeonghyeon.androidlibrary.R;
-import kim.jeonghyeon.androidlibrary.architecture.mvp.EmptyActivity;
+import kim.jeonghyeon.androidlibrary.deprecated.mvp.EmptyActivity;
 
 import static kim.jeonghyeon.androidlibrary.extension.GlobalFunctionsKt.isFromVersion;
 
