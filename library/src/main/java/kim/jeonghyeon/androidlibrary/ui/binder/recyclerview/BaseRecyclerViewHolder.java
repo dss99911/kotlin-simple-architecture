@@ -1,11 +1,10 @@
 package kim.jeonghyeon.androidlibrary.ui.binder.recyclerview;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
+
+import kim.jeonghyeon.androidlibrary.deprecated.BaseRecyclerViewAdapter;
 
 /**
  * Created by hyun.kim on 27/12/17.
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public abstract class BaseRecyclerViewHolder<VM> extends RecyclerView.ViewHolder {
     @NonNull
     private final ViewDataBinding mBinding;
+    private VM viewModel;
 
     public BaseRecyclerViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
@@ -23,15 +23,14 @@ public abstract class BaseRecyclerViewHolder<VM> extends RecyclerView.ViewHolder
 
     }
 
-    public void setOnClickListener(@Nullable View.OnClickListener onClickListener) {
-        if (onClickListener != null) {
-            itemView.setOnClickListener(onClickListener);
-        }
-    }
-
     public void bind(VM viewModel) {
+        this.viewModel = viewModel;
         mBinding.setVariable(getViewModelId(), viewModel);
         mBinding.executePendingBindings();
+    }
+
+    public VM getViewModel() {
+        return viewModel;
     }
 
     /**

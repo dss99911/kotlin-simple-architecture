@@ -8,7 +8,7 @@ versions.arch_core = "2.0.0"
 versions.room = "2.1.0-alpha06"
 versions.lifecycle = "2.2.0-alpha05"
 versions.support = "1.1.0-alpha04"
-versions.material = "1.1.0-alpha05"
+versions.material = "1.1.0-alpha09"
 versions.dagger = "2.16"
 
 versions.espresso = "3.1.0-alpha4"

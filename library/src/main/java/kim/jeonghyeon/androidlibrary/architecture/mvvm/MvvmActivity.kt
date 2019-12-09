@@ -68,7 +68,14 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
 
     override val navHostId: Int = 0
     override val navController: NavController
-        get() = findNavController(navHostId)
+        get() {
+            require(navHostId != 0) { "navHostId is not set" }
+            return findNavController(navHostId)
+        }
+
+    override val toolbarId: Int
+        get() = R.id.toolbar
+
     override val appBarConfiguration: AppBarConfiguration?
         get() = if (navHostId != 0) AppBarConfiguration(navController.graph) else null
 
@@ -79,8 +86,7 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
 
-    override val toolbarId: Int
-        get() = R.id.toolbar
+
 
 
     override lateinit var binding: DB
@@ -153,11 +159,15 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
             }
 
             eventNavDirectionId.observeEvent(this@MvvmActivity) {
-                navigate(it)
+                this@MvvmActivity.navigate(it)
+            }
+
+            eventNav.observeEvent(this@MvvmActivity) {action ->
+                action(navController)
             }
 
             eventNavDirection.observeEvent(this@MvvmActivity) {
-                navigate(it)
+                this@MvvmActivity.navigate(it)
             }
 
             eventRequestPermissionEvent.observeEvent(this@MvvmActivity) {
@@ -173,7 +183,7 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
     }
 
     private fun setupActionbar() {
-        val toolbar = findViewById<View>(R.id.toolbar)
+        val toolbar = findViewById<View>(toolbarId)
         if (toolbar == null || toolbar !is Toolbar) {
             return
         }
@@ -214,7 +224,7 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
         }
 
         //if menu id and nav's fragment id is same, then redirect
-        if (navHostId != 0 && item.onNavDestinationSelected(findNavController(navHostId))) {
+        if (navHostId != 0 && item.onNavDestinationSelected(navController)) {
             return true
         }
 
@@ -230,15 +240,11 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
     }
 
     override fun navigate(id: Int) {
-        require(navHostId != 0) { "navHostId is not set" }
-
-        findNavController(navHostId).navigate(id)
+        navController.navigate(id)
     }
 
     override fun navigate(navDirections: NavDirections) {
-        require(navHostId != 0) { "navHostId is not set" }
-
-        findNavController(navHostId).navigate(navDirections)
+        navController.navigate(navDirections)
     }
 
     fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {

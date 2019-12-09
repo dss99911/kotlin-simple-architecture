@@ -1,9 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 
 typealias LiveEvent<T> = LiveData<Event<T>>
 typealias MutableLiveEvent<T> = MutableLiveData<Event<T>>
@@ -18,6 +15,10 @@ fun MutableLiveData<Event<Unit>>.call() {
 
 fun <T> LiveEvent<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observe(owner, EventObserver(onChanged))
+}
+
+fun <T, U> MediatorLiveData<T>.addEventSource(source: LiveEvent<U>, onChanged: (U) -> Unit) {
+    addSource(source, EventObserver(onChanged))
 }
 
 /**

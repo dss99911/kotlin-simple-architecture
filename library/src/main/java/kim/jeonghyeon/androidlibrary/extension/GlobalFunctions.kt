@@ -12,13 +12,12 @@ import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.telephony.TelephonyManager
 import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
 import kim.jeonghyeon.androidlibrary.BaseApplication
 import kim.jeonghyeon.androidlibrary.BuildConfig
-import kim.jeonghyeon.androidlibrary.ui.LongToast
+import kim.jeonghyeon.androidlibrary.deprecated.LongToast
 import org.jetbrains.anko.telephonyManager
 
 

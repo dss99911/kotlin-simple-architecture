@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.BaseRecyclerViewModel" />
+            type="kim.jeonghyeon.androidlibrary.deprecated.BaseRecyclerViewModel" />
         <!--<variable name="model" type="kim.jeonghyeon.androidlibrary.example.recyclerview.PagedListViewModelExample"-->
     </data>
 

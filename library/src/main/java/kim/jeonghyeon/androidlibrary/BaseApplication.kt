@@ -1,9 +1,6 @@
 package kim.jeonghyeon.androidlibrary
 
 import android.app.Application
-import com.squareup.leakcanary.LeakCanary
-import com.squareup.picasso.OkHttp3Downloader
-import okhttp3.OkHttpClient
 import timber.log.Timber
 
 open class BaseApplication : Application() {
@@ -14,13 +11,13 @@ open class BaseApplication : Application() {
     @Suppress("RedundantModalityModifier")
     final override fun onCreate() {
         super.onCreate()
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return
-        }
-
-        LeakCanary.install(this)
+//        if (LeakCanary.isInAnalyzerProcess(this)) {
+//            // This process is dedicated to LeakCanary for heap analysis.
+//            // You should not init your app in this process.
+//            return
+//        }
+//
+//        LeakCanary.install(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(object : Timber.DebugTree() {
@@ -34,7 +31,7 @@ open class BaseApplication : Application() {
             })
         }
 
-        StethoHelper.initialize(this)
+//        StethoHelper.initialize(this)
 
         instance = this
 

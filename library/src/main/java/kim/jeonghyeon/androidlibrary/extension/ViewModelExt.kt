@@ -37,6 +37,9 @@ class InstanceViewModelFactory<V : ViewModel> (val viewModel: () -> V) : ViewMod
     }
 }
 
+/**
+ * this is used for ViewModelProvider, and also use lazy
+ */
 inline fun <reified V : ViewModel> Fragment.simpleViewModels(ownerProducer: ViewModelStoreOwner = this, noinline viewModel: () -> V): Lazy<V> {
     return viewModels({ownerProducer}, {InstanceViewModelFactory(viewModel)})
 }

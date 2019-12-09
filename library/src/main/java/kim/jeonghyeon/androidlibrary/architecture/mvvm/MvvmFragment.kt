@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
@@ -14,6 +16,8 @@ import androidx.navigation.NavArgs
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
@@ -40,10 +44,22 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
 
     val layoutId: Int
 
+    /**
+     * toolbar id is "toolbar"
+     * If you want to change, override this property
+     */
+    val toolbarId: Int
+    val appBarConfiguration: AppBarConfiguration?
+
     fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
 
     fun navigate(@IdRes id : Int)
     fun navigate(navDirections: NavDirections)
+
+    /**
+     * when observe LiveData, override this
+     */
+    fun VM.onViewModelSetup()
 
 //  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 //fun <reified T : NavArgs> getNavArgs(): T
@@ -62,6 +78,12 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
     internal val progressDialog by lazy { activity?.createProgressDialog() }
 
+    override val toolbarId: Int
+        get() = R.id.toolbar
+
+    override val appBarConfiguration: AppBarConfiguration?
+        get() = AppBarConfiguration(findNavController().graph)
+
     override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
         set(value) {
             viewModel.state.removeObserver(field)
@@ -77,11 +99,13 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         setVariable(binding)
         binding.lifecycleOwner = this
+
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        setupActionbar()
         setupObserver()
     }
 
@@ -107,6 +131,9 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if (menuId == 0) {
+            return super.onCreateOptionsMenu(menu, inflater)
+        }
         inflater.inflate(menuId, menu)
     }
 
@@ -152,11 +179,15 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
             }
 
             eventNavDirectionId.observeEvent(this@MvvmFragment) {
-                navigate(it)
+                this@MvvmFragment.navigate(it)
+            }
+
+            eventNav.observeEvent(this@MvvmFragment) {action ->
+                action(findNavController())
             }
 
             eventNavDirection.observeEvent(this@MvvmFragment) {
-                navigate(it)
+                this@MvvmFragment.navigate(it)
             }
 
             eventReplaceFragment.observeEvent(this@MvvmFragment) {
@@ -176,7 +207,37 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
             }
 
             lifecycle.addObserver(this)
+
+            onViewModelSetup()
         }
+    }
+
+    private fun setupActionbar() {
+        val toolbar = binding.root.findViewById<View>(toolbarId)
+        if (toolbar == null || toolbar !is Toolbar) {
+            return
+        }
+
+        val activity = activity as AppCompatActivity
+        activity.setSupportActionBar(toolbar)
+
+        //todo check if it's working
+        if (toolbar.menu != null) {
+            setHasOptionsMenu(true)
+        }
+
+        //todo check if it's working
+        appBarConfiguration?.let {
+            //the title in the action bar will automatically be updated when the destination changes
+            // [AppBarConfiguration] you provide controls how the Navigation button is displayed.
+            setupActionBarWithNavController(activity, findNavController(), it)
+        }
+
+
+    }
+
+    override fun VM.onViewModelSetup() {
+
     }
 
     override fun navigate(id: Int) {

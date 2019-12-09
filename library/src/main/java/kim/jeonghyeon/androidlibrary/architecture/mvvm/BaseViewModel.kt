@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
@@ -31,6 +32,7 @@ interface IBaseViewModel {
     fun replaceFragment(containerId: Int, fragment: Fragment, tag: String? = null)
     fun performWithActivity(action: (Activity) -> Unit)
     fun navigateDirection(navDirections: NavDirections)
+    fun navigate(action: (NavController) -> Unit)
     fun navigateDirection(id: Int)
     fun showSnackbar(text: String)
     fun showSnackbar(@StringRes textId: Int)
@@ -49,6 +51,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     //this is not shown on inherited viewModel. use function.
     internal val eventStartActivityForResult by lazy { MutableLiveEvent<Pair<Intent, (resultCode: Int, data: Intent?) -> Unit>>() }
     internal val eventNavDirectionId by lazy { MutableLiveEvent<Int>() }
+    internal val eventNav by lazy { MutableLiveEvent<(NavController) -> Unit>() }
     internal val eventNavDirection by lazy { MutableLiveEvent<NavDirections>() }
     internal val eventAddFragment by lazy { MutableLiveEvent<RequestFragment>() }
     internal val eventReplaceFragment by lazy { MutableLiveEvent<RequestFragment>() }
@@ -101,6 +104,10 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     override fun navigateDirection(id: Int) {
         eventNavDirectionId.call(id)
+    }
+
+    override fun navigate(action: (NavController) -> Unit) {
+        eventNav.call(action)
     }
 
     override fun showSnackbar(text: String) {
