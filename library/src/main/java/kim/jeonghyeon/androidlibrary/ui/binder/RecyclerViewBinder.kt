@@ -16,14 +16,14 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
  *
  * @param view       recyclerView
  * @param viewModel  recyclerviewModel
- * @param resourceId layout that refers data of viewmodel
+ * @param layoutId layout that refers data of viewmodel
  * @param <VM>       viewmodel class
 </VM> */
-@BindingAdapter("itemList", "itemResId")
+@BindingAdapter("itemList", "itemLayoutId")
 fun <VM : DiffComparable<VM>> bindRecyclerView(
     view: RecyclerView,
     itemList: List<VM>?,
-    resourceId: Int
+    layoutId: Int
 ) {
     if (itemList == null) return
 
@@ -34,13 +34,13 @@ fun <VM : DiffComparable<VM>> bindRecyclerView(
 
     val adapter =
         view.adapter as? BaseRecyclerViewAdapter<VM> ?: (object : BaseRecyclerViewAdapter<VM>() {
-            override fun getLayoutId(viewType: Int): Int = resourceId
+            override fun getItemLayoutId(position: Int) = layoutId
         }.also { view.adapter = it })
 
     adapter.submitList(itemList)
 }
 
-@BindingAdapter("itemList", "itemResId")
+@BindingAdapter("itemList", "itemLayoutId")
 fun <VM : DiffComparable<VM>> bindRecyclerView(
     view: RecyclerView,
     itemList: PagedList<VM>?,

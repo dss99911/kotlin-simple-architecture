@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@layout/simple_recycler_view">
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:keep="@layout/simple_recycler_view">
 
     <data>
         <variable
@@ -14,8 +13,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        bind:itemResId="@{@layout/empty_layout}"
-        bind:viewModel="@{viewModel}" />
+         />
 
     <!--&lt;!&ndash; use Paging&ndash;&gt;-->
     <!--<androidx.recyclerview.widget.RecyclerView-->

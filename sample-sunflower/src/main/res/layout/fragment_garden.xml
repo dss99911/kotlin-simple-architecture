@@ -41,7 +41,7 @@
                 android:clipToPadding="false"
                 app:isGone="@{model.plantAndGardengPlantingsViewModel.isEmpty()}"
                 app:itemList="@{model.plantAndGardengPlantingsViewModel}"
-                app:itemResId="@{@layout/list_item_garden_planting}"
+                app:itemLayoutId="@{@layout/list_item_garden_planting}"
 
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                 app:spanCount="@integer/grid_columns"

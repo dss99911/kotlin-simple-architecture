@@ -26,9 +26,10 @@ abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
             oldItem.areContentsTheSame(newItem)
     }) {
 
-
     @LayoutRes
-    abstract fun getLayoutId(viewType: Int): Int
+    abstract fun getItemLayoutId(position: Int): Int
+
+    final override fun getItemViewType(position: Int): Int = getItemLayoutId(position)
 
     /**
      * if viewModel Id is different. override this
@@ -43,7 +44,7 @@ abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
             layoutInflater,
-            getLayoutId(viewType),
+            viewType,
             parent,
             false
         )
@@ -58,10 +59,6 @@ abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
 
     final override fun onBindViewHolder(holder: BaseRecyclerViewHolder<VM>, position: Int) {
         holder.bind(getItem(position))
-    }
-
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
     }
 
     final override fun onBindViewHolder(

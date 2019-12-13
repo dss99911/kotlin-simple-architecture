@@ -41,7 +41,7 @@
             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:spanCount="@integer/grid_columns"
             itemList="@{model.plants}"
-            itemResId="@{@layout/list_item_plant}"
+            itemLayoutId="@{@layout/list_item_plant}"
             tools:context="com.google.samples.apps.sunflower.GardenActivity"
             tools:listitem="@layout/list_item_plant"/>
 

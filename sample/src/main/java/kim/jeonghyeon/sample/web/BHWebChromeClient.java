@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.notarranged;
+package kim.jeonghyeon.sample.web;
 
 import android.annotation.TargetApi;
 import android.content.Context;
