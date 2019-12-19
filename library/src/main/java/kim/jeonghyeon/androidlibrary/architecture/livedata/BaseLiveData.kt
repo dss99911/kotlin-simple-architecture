@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.deprecated
+package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import androidx.lifecycle.LiveData
 import java.util.concurrent.atomic.AtomicBoolean

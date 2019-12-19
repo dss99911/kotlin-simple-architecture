@@ -1,7 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import kim.jeonghyeon.androidlibrary.architecture.repository.PreferenceCache
-import kim.jeonghyeon.androidlibrary.deprecated.BaseLiveData
 
 open class PreferenceLiveData<T>(
     val key: String,

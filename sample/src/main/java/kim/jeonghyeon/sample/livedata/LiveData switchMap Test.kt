@@ -4,7 +4,7 @@ import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.switchMap
-import kim.jeonghyeon.androidlibrary.deprecated.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 
 fun testLiveDataActiveDeactiveRepeat() {
     val start = MutableLiveData<String>()
