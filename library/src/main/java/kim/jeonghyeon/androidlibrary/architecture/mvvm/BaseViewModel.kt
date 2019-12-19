@@ -7,18 +7,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.permission.PermissionResultListener
 
 interface IBaseViewModel {
-    val state: MutableLiveData<ResourceState>
-    val eventToast: MutableLiveEvent<String>
-    val eventSnackbar: MutableLiveEvent<String>
-    val eventStartActivity: MutableLiveEvent<Intent>
-    val eventShowProgressBar:MutableLiveEvent<Boolean>
+    val state: LiveData<ResourceState>
+    val eventToast: LiveEvent<String>
+    val eventSnackbar: LiveEvent<String>
+    val eventStartActivity: LiveEvent<Intent>
+    val eventShowProgressBar: LiveEvent<Boolean>
 
     fun onCreate()
     fun onStart()
@@ -41,7 +39,7 @@ interface IBaseViewModel {
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
-    override val state by lazy { MutableLiveData<Resource<Any>>() }
+    override val state by lazy { MediatorLiveData<ResourceState>() }
     override val eventToast by lazy { MutableLiveEvent<String>() }
     override val eventSnackbar by lazy { MutableLiveEvent<String>() }
     override val eventStartActivity by lazy { MutableLiveEvent<Intent>() }
@@ -61,9 +59,6 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate() {
-        loadResource(state) {
-            return@loadResource "dsf"
-        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

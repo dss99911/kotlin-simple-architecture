@@ -11,7 +11,7 @@ interface GithubService {
     /**
      * Get repos ordered by stars.
      */
-    @GET("search/repositoriesa?sort=stars")
+    @GET("search/repositories?sort=stars")
     suspend fun searchRepos(
         @Query("q") query: String,
         @Query("page") page: Int,

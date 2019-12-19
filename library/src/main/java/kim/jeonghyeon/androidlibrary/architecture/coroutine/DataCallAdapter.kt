@@ -13,7 +13,7 @@ import retrofit2.Response
 import java.io.IOException
 import java.lang.reflect.Type
 
-class CoroutineCallAdapter<U, T : BaseResponseBody<U>>(
+class DataCallAdapter<U, T : BaseResponseBody<U>>(
     private val type: Type
 ) : CallAdapter<T, Call<U>> {
     override fun responseType() = type
@@ -39,14 +39,19 @@ class CoroutineCallAdapter<U, T : BaseResponseBody<U>>(
 
     class ResourceCall<U, T : BaseResponseBody<U>>(proxy: Call<T>) : CallDelegate<T, U>(proxy) {
         override fun enqueueImpl(callback: Callback<U>) {
-            try {
-                onResponse(proxy.execute(), callback)
-            } catch (ex: Exception) {
-                throw when (ex) {
-                    is IOException -> NoNetworkError(ex)
-                    else -> UnknownError(ex)
+            proxy.enqueue(object : Callback<T> {
+                override fun onFailure(call: Call<T>, t: Throwable) {
+                    val resourceError = when (t) {
+                        is IOException -> NoNetworkError(t)
+                        else -> UnknownError(t)
+                    }
+                    callback.onFailure(this@ResourceCall, resourceError)
                 }
-            }
+
+                override fun onResponse(call: Call<T>, response: Response<T>) {
+                    onResponse(response, callback)
+                }
+            })
         }
 
         private fun onResponse(response: Response<T>, callback: Callback<U>) {

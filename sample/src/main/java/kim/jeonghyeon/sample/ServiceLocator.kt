@@ -6,25 +6,12 @@ import kim.jeonghyeon.sample.room.repository.UserRepository
 
 object ServiceLocator {
 
-    private val lock = Any()
-    private var database: UserDatabase? = null
+    private var mockUserRepository: UserRepository? = null
 
-
-    private var userRepository: UserRepository? = null
-
-    fun provideUserRepository(): UserRepository {
-        synchronized(this) {
-            return userRepository ?:
-            userRepository ?: createUserRepository()
-        }
-    }
+    fun provideUserRepository(): UserRepository = mockUserRepository ?:UserRepository(UserDatabase.instance.userDao())
 
     @VisibleForTesting
     fun setRepository(userRepository: UserRepository) {
-        this.userRepository = userRepository
-    }
-
-    private fun createUserRepository(): UserRepository {
-        return UserRepository(UserDatabase.instance.userDao())
+        this.mockUserRepository = userRepository
     }
 }

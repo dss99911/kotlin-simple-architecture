@@ -21,7 +21,7 @@ fun <X> LiveData<X>.toMutable(): MutableLiveData<X> =
             }
         }
 
-operator fun <T> MediatorLiveData<T>.plusAssign(other: LiveData<T>) {
+operator fun <T> MediatorLiveData<T>.plusAssign(other: LiveData<out T>) {
     addSource(other, ::setValue)
 }
 

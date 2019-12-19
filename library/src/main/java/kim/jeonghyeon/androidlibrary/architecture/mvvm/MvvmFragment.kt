@@ -256,6 +256,7 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
             .savedStateHandle
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <A : BaseViewModel> getActivityViewModel(): A {
         return (requireActivity() as MvvmActivity<*,*>).viewModel as A
     }

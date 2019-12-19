@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-class CoroutineCallAdapterFactory : CallAdapter.Factory() {
+class DataCallAdapterFactory : CallAdapter.Factory() {
     override fun get(
             returnType: Type,
             annotations: Array<Annotation>,
@@ -38,7 +38,7 @@ class CoroutineCallAdapterFactory : CallAdapter.Factory() {
             }
         }
 
-        return CoroutineCallAdapter<Any, BaseResponseBody<Any>>(baseResponseBodyGenericType)
+        return DataCallAdapter<Any, BaseResponseBody<Any>>(baseResponseBodyGenericType)
     }
 }
 
