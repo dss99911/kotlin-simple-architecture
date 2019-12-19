@@ -83,8 +83,7 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
         }, {
             onSuccess {
                 it as RDATA
-                callback.onResult(getListFromResponseData(it)
-                    ?: emptyList(), null,  getNextPageFromResponseData(it, 1, params.requestedLoadSize).toString())
+                callback.onResult(getListFromResponseData(it), null,  getNextPageFromResponseData(it, 1, params.requestedLoadSize).toString())
             }
             onError {
                 retry = {
