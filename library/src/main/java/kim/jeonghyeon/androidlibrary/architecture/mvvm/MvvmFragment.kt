@@ -1,6 +1,7 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
@@ -12,6 +13,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.observe
 import androidx.navigation.NavArgs
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -154,12 +156,12 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
             }
 
             eventStartActivity.observeEvent(this@MvvmFragment) {
-                activity?.startActivity(it)
+                startActivity(it)
             }
 
-            eventStartActivityForResult.observeEvent(this@MvvmFragment) { (intent, onResult) ->
+            eventStartActivityForResult.observeEvent(this@MvvmFragment) { (requestCode, intent) ->
                 try {
-                    this@MvvmFragment.startActivityForResult(intent, onResult)
+                    this@MvvmFragment.startActivityForResult(intent, requestCode)
                 } catch (e: IllegalStateException) {
                 } catch (e: ActivityNotFoundException) {
                     toast(R.string.toast_no_activity)
@@ -194,22 +196,24 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 this@MvvmFragment.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            eventPerformWithActivity.observeEvent(this@MvvmFragment) {
-                it(requireActivity())
-            }
+            eventPerformWithActivity.observe(this@MvvmFragment) { array ->
+                array.forEach { event ->
+                    if (!event.hasBeenHandled) {
+                        event.popContent()(requireActivity())
+                    }
+                }
 
-            eventRequestPermissionEvent.observeEvent(this@MvvmFragment) {
-                requestPermissions(it.permissions, it.listener)
-            }
-
-            eventStartPermissionSettingsPageEvent.observeEvent(this@MvvmFragment) {
-                startPermissionSettingsPage(it)
             }
 
             lifecycle.addObserver(this)
 
             onViewModelSetup()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        viewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun setupActionbar() {

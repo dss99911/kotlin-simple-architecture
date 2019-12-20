@@ -1,18 +1,22 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
+import androidx.annotation.NonNull
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.observe
 import androidx.navigation.*
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -129,9 +133,9 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
                 startActivity(it)
             }
 
-            eventStartActivityForResult.observeEvent(this@MvvmActivity) { (intent, onResult) ->
+            eventStartActivityForResult.observeEvent(this@MvvmActivity) { (requestCode, intent) ->
                 try {
-                    this@MvvmActivity.startActivityForResult(intent, onResult)
+                    this@MvvmActivity.startActivityForResult(intent, requestCode)
                 } catch (e: IllegalStateException) {
                 } catch (e: ActivityNotFoundException) {
                     toast(R.string.toast_no_activity)
@@ -154,8 +158,12 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
                 this@MvvmActivity.replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            eventPerformWithActivity.observeEvent(this@MvvmActivity) {
-                it(this@MvvmActivity)
+            eventPerformWithActivity.observe(this@MvvmActivity) { array ->
+                array.forEach { event ->
+                    if (!event.hasBeenHandled) {
+                        event.popContent()(this@MvvmActivity)
+                    }
+                }
             }
 
             eventNavDirectionId.observeEvent(this@MvvmActivity) {
@@ -170,16 +178,19 @@ abstract class MvvmActivity<VM : BaseViewModel, DB : ViewDataBinding> : BaseActi
                 this@MvvmActivity.navigate(it)
             }
 
-            eventRequestPermissionEvent.observeEvent(this@MvvmActivity) {
-                requestPermissions(it.permissions, it.listener)
-            }
-
-            eventStartPermissionSettingsPageEvent.observeEvent(this@MvvmActivity) {
-                startPermissionSettingsPage(it)
-            }
-
             lifecycle.addObserver(this)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        viewModel.onActivityResult(requestCode, resultCode, data)
+    }
+
+    @CallSuper
+    override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        viewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setupActionbar() {

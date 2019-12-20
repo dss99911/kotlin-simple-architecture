@@ -15,7 +15,6 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
  * if you want other layout manager, use app:layoutManager="LinearLayoutManager" over than the attributes
  *
  * @param view       recyclerView
- * @param viewModel  recyclerviewModel
  * @param layoutId layout that refers data of viewmodel
  * @param <VM>       viewmodel class
 </VM> */
@@ -32,7 +31,7 @@ fun <VM : DiffComparable<VM>> bindRecyclerView(
         view.layoutManager = LinearLayoutManager(view.context)
     }
 
-    val adapter =
+    @Suppress("UNCHECKED_CAST") val adapter =
         view.adapter as? BaseRecyclerViewAdapter<VM> ?: (object : BaseRecyclerViewAdapter<VM>() {
             override fun getItemLayoutId(position: Int) = layoutId
         }.also { view.adapter = it })
@@ -53,7 +52,7 @@ fun <VM : DiffComparable<VM>> bindRecyclerView(
         view.layoutManager = LinearLayoutManager(view.context)
     }
 
-    val adapter =
+    @Suppress("UNCHECKED_CAST") val adapter =
         view.adapter as? BasePagedListAdapter<VM> ?: (object : BasePagedListAdapter<VM>() {
             override fun getLayoutId(viewType: Int): Int = resourceId
         }.also { view.adapter = it })

@@ -32,6 +32,7 @@ inline fun <reified T : ViewDataBinding> Fragment.bind(inflater: LayoutInflater,
 
 
 class InstanceViewModelFactory<V : ViewModel> (val viewModel: () -> V) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return viewModel() as T
     }

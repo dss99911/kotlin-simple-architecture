@@ -1,22 +1,16 @@
 package kim.jeonghyeon.androidlibrary.architecture
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.SparseArray
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import kim.jeonghyeon.androidlibrary.extension.log
-import kim.jeonghyeon.androidlibrary.permission.PermissionFragment
-import java.util.concurrent.atomic.AtomicInteger
+
 interface IBaseFragment {
-    fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
     fun addFragment(container: Int, fragment: Fragment, tag: String? = null)
     fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null)
 }
-open class BaseFragment : PermissionFragment(), IBaseFragment {
 
-    private val nextRequestCode = AtomicInteger(1)
-    private val resultListeners = SparseArray<(resultCode: Int, data: Intent?) -> Unit>()
+open class BaseFragment : Fragment(), IBaseFragment {
 
     /**
      * used on pager. if not used always true.
@@ -90,20 +84,5 @@ open class BaseFragment : PermissionFragment(), IBaseFragment {
      */
     override fun replaceFragment(container: Int, fragment: Fragment, tag: String?) {
         (activity as? BaseActivity)?.replaceFragment(container, fragment, tag)
-    }
-
-    override fun startActivityForResult(
-        intent: Intent,
-        onResult: (resultCode: Int, data: Intent?) -> Unit
-    ) {
-        val requestCode = nextRequestCode.getAndIncrement()
-        resultListeners.put(requestCode, onResult)
-        startActivityForResult(intent, requestCode)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        resultListeners[requestCode]?.invoke(resultCode, data)
-        resultListeners.remove(requestCode)
     }
 }

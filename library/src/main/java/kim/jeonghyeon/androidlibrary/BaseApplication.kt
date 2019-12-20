@@ -31,7 +31,7 @@ open class BaseApplication : Application() {
             })
         }
 
-//        StethoHelper.initialize(this)
+        StethoHelper.initialize(this)
 
         instance = this
 
