@@ -1,13 +1,11 @@
 package kim.jeonghyeon.sample.mvvm
 
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.sample.R
-import kim.jeonghyeon.sample.databinding.FragmentMainBinding
 
-class ParentFragment : MvvmFragment<SampleParentViewModel, FragmentMainBinding>() {
+class ParentFragment : BaseFragment() {
 
-    override val viewModel: SampleParentViewModel by simpleViewModels {
+    val viewModel: SampleParentViewModel by addingViewModel {
         SampleParentViewModel(getActivityViewModel())
     }
     override val layoutId: Int

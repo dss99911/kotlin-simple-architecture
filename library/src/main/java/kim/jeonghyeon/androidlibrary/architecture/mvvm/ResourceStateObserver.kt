@@ -7,7 +7,7 @@ import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
-fun <T> MvvmActivity<*, *>.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
+fun <T> BaseActivity.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
     Observer {
         if (it.isLoading()) {
             progressDialog.showWithoutException()
@@ -22,7 +22,7 @@ fun <T> MvvmActivity<*, *>.resourceObserverCommon(onSuccess: (T) -> Unit): Obser
         it.onSuccess(onSuccess)
     }
 
-fun <T> MvvmFragment<*, *>.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
+fun <T> BaseFragment.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
     Observer {
         if (it.isLoading()) {
             progressDialog?.showWithoutException()

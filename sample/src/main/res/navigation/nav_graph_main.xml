@@ -61,7 +61,7 @@
 
     <fragment
             android:id="@+id/sampleMVVMFragment"
-            android:name="kim.jeonghyeon.sample.mvvm.SampleMvvmFragment"
+            android:name="kim.jeonghyeon.sample.mvvm.SampleBaseFragment"
             android:label="MVVM Fragment"
             tools:layout="@layout/fragment_mvvm"></fragment>
     <fragment

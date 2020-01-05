@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
-import kim.jeonghyeon.androidlibrary.deprecated.BaseRecyclerViewAdapter;
 
 /**
  * Created by hyun.kim on 27/12/17.

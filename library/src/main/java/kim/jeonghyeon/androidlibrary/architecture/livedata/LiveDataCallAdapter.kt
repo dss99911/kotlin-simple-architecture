@@ -24,6 +24,7 @@ import java.lang.reflect.Type
  * 3. base url is wrong or server down -> UnknownHostException
  * 4. base url is correct but sub url is wrong -> 404 Not Found
  **/
+@Deprecated("use coroutine suspend")
 class LiveDataCallAdapter<R, T : BaseResponseBody<R>>(private val responseType: Type) :
     CallAdapter<T, LiveData<Resource<R>>> {
 

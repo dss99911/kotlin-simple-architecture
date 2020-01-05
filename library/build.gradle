@@ -67,9 +67,7 @@ dependencies {
     /*[END] Retrofit */
     /*[START] Leakanary */
     debugImplementation deps.leakcanary.debug
-    debugImplementation deps.leakcanary.debug_fragment
     debugImplementation deps.stetho
-    releaseImplementation deps.leakcanary.release
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'
 
 }

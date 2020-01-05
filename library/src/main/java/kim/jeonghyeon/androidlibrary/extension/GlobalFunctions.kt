@@ -17,7 +17,6 @@ import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
 import kim.jeonghyeon.androidlibrary.BaseApplication
 import kim.jeonghyeon.androidlibrary.BuildConfig
-import kim.jeonghyeon.androidlibrary.deprecated.LongToast
 import org.jetbrains.anko.telephonyManager
 
 
@@ -71,15 +70,6 @@ fun toastLong(text: String?) {
 
 fun toastLong(textResId: Int) {
     toast(ctx.getString(textResId), Toast.LENGTH_LONG)
-}
-
-fun toastRepeat(count: Int, textResId: Int) {
-    handler.post { LongToast.makeText(ctx, textResId).start(count) }
-
-}
-
-fun toastRepeat(count: Int, text: String?) {
-    handler.post { LongToast.makeText(ctx, text).start(count) }
 }
 
 

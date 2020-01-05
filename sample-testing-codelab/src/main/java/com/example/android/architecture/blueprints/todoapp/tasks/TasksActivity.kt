@@ -16,6 +16,7 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -25,10 +26,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.android.architecture.blueprints.todoapp.R
 import com.google.android.material.navigation.NavigationView
-import kim.jeonghyeon.androidlibrary.architecture.BaseActivity
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmActivity
 
-class TasksActivity : BaseActivity() {
-
+class TasksActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
 

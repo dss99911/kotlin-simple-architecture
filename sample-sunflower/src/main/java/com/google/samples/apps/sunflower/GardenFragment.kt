@@ -17,26 +17,24 @@
 package com.google.samples.apps.sunflower
 
 import androidx.navigation.fragment.findNavController
-import com.google.samples.apps.sunflower.databinding.FragmentGardenBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 
-class GardenFragment : MvvmFragment<GardenPlantingListViewModel, FragmentGardenBinding>() {
+class GardenFragment : BaseFragment() {
 
     override val layoutId = R.layout.fragment_garden
 
-    override val viewModel by simpleViewModels {
+    val viewModel by addingViewModel {
         GardenPlantingListViewModel(
             getActivityViewModel(),
             InjectorUtils.getGardenPlantingRepository(requireContext())
         )
     }
 
-    override fun GardenPlantingListViewModel.onViewModelSetup() {
-        clickEvent.observeEvent(this@GardenFragment) {
+    override fun onViewModelSetup() {
+        viewModel.clickEvent.observeEvent(this@GardenFragment) {
             val direction = HomeViewPagerFragmentDirections
                 .actionViewPagerFragmentToPlantDetailFragment(it)
             findNavController().navigate(direction)

@@ -21,15 +21,13 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.samples.apps.sunflower.adapters.MY_GARDEN_PAGE_INDEX
 import com.google.samples.apps.sunflower.adapters.PLANT_LIST_PAGE_INDEX
 import com.google.samples.apps.sunflower.adapters.SunflowerPagerAdapter
-import com.google.samples.apps.sunflower.databinding.FragmentViewPagerBinding
 import com.google.samples.apps.sunflower.viewmodels.HomeViewPagerViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kotlinx.android.synthetic.main.fragment_view_pager.*
 
-class HomeViewPagerFragment : MvvmFragment<HomeViewPagerViewModel, FragmentViewPagerBinding>() {
+class HomeViewPagerFragment : BaseFragment() {
 
-    override val viewModel by simpleViewModels { HomeViewPagerViewModel(getActivityViewModel()) }
+    val viewModel by addingViewModel { HomeViewPagerViewModel(getActivityViewModel()) }
     override val layoutId = R.layout.fragment_view_pager
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

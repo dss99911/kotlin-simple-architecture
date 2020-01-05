@@ -16,16 +16,20 @@
 
 package com.google.samples.apps.sunflower
 
-import com.google.samples.apps.sunflower.databinding.FragmentPlantListBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.PlantListViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 
-class PlantListFragment : MvvmFragment<PlantListViewModel, FragmentPlantListBinding>() {
+class PlantListFragment : BaseFragment() {
 
 
-    override val viewModel by simpleViewModels { PlantListViewModel(InjectorUtils.getPlantRepository(requireContext())) }
+    val viewModel by addingViewModel {
+        PlantListViewModel(
+            InjectorUtils.getPlantRepository(
+                requireContext()
+            )
+        )
+    }
     override val layoutId = R.layout.fragment_plant_list
 
     //todo check if this approach is fine

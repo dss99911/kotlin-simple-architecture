@@ -1,10 +1,10 @@
 package kim.jeonghyeon.androidlibrary.architecture
 
-import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 
 abstract class BasePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     var currentFragment: Fragment? = null

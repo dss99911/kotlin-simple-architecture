@@ -1,17 +1,14 @@
 package kim.jeonghyeon.sample.web
 
-import androidx.fragment.app.viewModels
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.databinding.EmptyLayoutBinding
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.sample.R
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class ChromeCustomTabFragment : MvvmFragment<ChromeCustomTabViewModel, EmptyLayoutBinding>() {
-    override val viewModel: ChromeCustomTabViewModel by viewModels()
+class ChromeCustomTabFragment : BaseFragment() {
+    val viewModel by addingViewModel { ChromeCustomTabViewModel() }
 
-    override val layoutId: Int
-        get() = R.layout.empty_layout
+    override val layoutId = R.layout.empty_layout
 
 }

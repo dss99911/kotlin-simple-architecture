@@ -1,16 +1,14 @@
 package kim.jeonghyeon.sample.mvvm
 
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.sample.R
-import kim.jeonghyeon.sample.databinding.FragmentMvvmBinding
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class SampleMvvmFragment : MvvmFragment<SampleMVVMViewModel, FragmentMvvmBinding>() {
+class SampleBaseFragment : BaseFragment() {
 
-    override val viewModel: SampleMVVMViewModel by simpleViewModels {
+    val viewModel: SampleMVVMViewModel by addingViewModel {
         SampleMVVMViewModel(getSavedState())
     }
 

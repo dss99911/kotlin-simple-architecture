@@ -22,31 +22,30 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.samples.apps.sunflower.databinding.FragmentPlantDetailBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 import kotlinx.android.synthetic.main.fragment_plant_detail.*
 
 /**
  * A fragment representing a single Plant detail screen.
  */
-class PlantDetailFragment : MvvmFragment<PlantDetailViewModel, FragmentPlantDetailBinding>() {
+class PlantDetailFragment : BaseFragment() {
 
-    override val viewModel by simpleViewModels {
+    val viewModel by addingViewModel {
         PlantDetailViewModel(InjectorUtils.getPlantRepository(requireContext()), InjectorUtils.getGardenPlantingRepository(requireContext()), getNavArgs())
     }
     override val layoutId = R.layout.fragment_plant_detail
 
 //todo check when use setSupportActionBar and when use just setHasOptionsMenu()
-    override fun PlantDetailViewModel.onViewModelSetup() {
-        fabHideEvent.observeEvent(this@PlantDetailFragment) {
+
+    override fun onViewModelSetup() {
+        viewModel.fabHideEvent.observeEvent(this) {
             hideAppBarFab(fab)
         }
 
-        startShareEvent.observeEvent(this@PlantDetailFragment) {
+        viewModel.startShareEvent.observeEvent(this) {
             startShareActivity()
         }
     }

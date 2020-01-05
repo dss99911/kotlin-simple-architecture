@@ -1,5 +1,6 @@
 package kim.jeonghyeon.sample.feature.apicall
 
+import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.plusAssign
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.sample.retrofit.api.GithubService
@@ -10,5 +11,11 @@ class ApiCallViewModel(val api: GithubService = GithubService.create(), val dao:
     val listing = RepoDataSourceFactory(api).asListing
     init {
         state += listing.loadState
+    }
+
+    fun test() {
+        loadResource(state) {
+
+        }
     }
 }

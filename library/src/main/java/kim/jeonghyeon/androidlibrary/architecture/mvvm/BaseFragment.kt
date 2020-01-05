@@ -1,7 +1,5 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.IdRes
@@ -10,10 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.observe
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.*
 import androidx.navigation.NavArgs
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -25,7 +22,6 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.*
 import org.jetbrains.anko.support.v4.toast
@@ -35,14 +31,12 @@ import org.jetbrains.anko.support.v4.toast
  * - setMenu()
  */
 
-interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
+interface IBaseFragment {
     /**
      * viewModel name should be "model" for auto binding
      * if you'd like to change it, override setVariable
      */
-    val viewModel: VM
-    fun setVariable(binding: DB)
-    var binding: DB
+    var binding: ViewDataBinding
 
     val layoutId: Int
 
@@ -61,7 +55,7 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
     /**
      * when observe LiveData, override this
      */
-    fun VM.onViewModelSetup()
+    fun onViewModelSetup()
 
 //  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 //fun <reified T : NavArgs> getNavArgs(): T
@@ -70,11 +64,26 @@ interface IMvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> {
      * set state observer to change loading and error on state liveData
      */
     var stateObserver: Observer<ResourceState>
+
+    /**
+     * used on pager. if not used always true.
+     */
+    var selected: Boolean
+    /**
+     * whether fragment is visible.
+     * considering fragment lifecycle and pager
+     */
+    var visible: Boolean
+
+    fun addFragment(container: Int, fragment: Fragment, tag: String? = null)
+    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null)
 }
 
-abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFragment(),
-    IMvvmFragment<VM, DB> {
-    override lateinit var binding: DB
+abstract class BaseFragment : Fragment(),
+    IBaseFragment {
+    override lateinit var binding: ViewDataBinding
+    val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
@@ -88,10 +97,36 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
 
     override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
         set(value) {
-            viewModel.state.removeObserver(field)
+            val prev = field
             field = value
-            viewModel.state.observe(this@MvvmFragment, value)
+
+            viewModels.values.map { it.value }.forEach {
+                it.state.removeObserver(prev)
+                it.state.observe(this, field)
+            }
         }
+
+    /**
+     * used on pager. if not used always true.
+     */
+    override var selected = true
+        set(value) {
+            field = value
+            visible = isVisible(value, lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED))
+        }
+
+    override var visible = false
+        set(value) {
+            if (value != field) {
+                onVisibilityChanged(value)
+            }
+            field = value
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        log("${this::class.simpleName}")
+    }
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -99,7 +134,9 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-        setVariable(binding)
+        viewModels.forEach { (variableId, viewModel) ->
+            binding.setVariable(variableId, viewModel.value)
+        }
         binding.lifecycleOwner = this
 
         return binding.root
@@ -107,8 +144,40 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        log("${this::class.simpleName}")
         setupActionbar()
         setupObserver()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        log("${this::class.simpleName}")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        log("${this::class.simpleName}")
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        visible = isVisible(selected, false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        log("${this::class.simpleName}")
+    }
+
+    inline fun <reified V : BaseViewModel> addingViewModel(
+        ownerProducer: ViewModelStoreOwner = this,
+        variableId: Int = BR.model,
+        noinline viewModel: () -> V
+    ): Lazy<V> {
+        return viewModels<V>({ ownerProducer }, { InstanceViewModelFactory(viewModel) }).also {
+            viewModels[variableId] = it
+        }
     }
 
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
@@ -139,36 +208,23 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
         inflater.inflate(menuId, menu)
     }
 
-    override fun setVariable(binding: DB) {
-        binding.setVariable(BR.model, viewModel)
-    }
-
     private fun setupObserver() {
-        with(viewModel) {
-            state.observe(this@MvvmFragment, stateObserver)
+        viewModels.values.map { it.value }.forEach {
+            it.state.observe(this, stateObserver)
 
-            eventToast.observeEvent(this@MvvmFragment) {
+            it.eventToast.observeEvent(this) {
                 toast(it)
             }
 
-            eventSnackbar.observeEvent(this@MvvmFragment) {
+            it.eventSnackbar.observeEvent(this) {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            eventStartActivity.observeEvent(this@MvvmFragment) {
+            it.eventStartActivity.observeEvent(this) {
                 startActivity(it)
             }
 
-            eventStartActivityForResult.observeEvent(this@MvvmFragment) { (requestCode, intent) ->
-                try {
-                    this@MvvmFragment.startActivityForResult(intent, requestCode)
-                } catch (e: IllegalStateException) {
-                } catch (e: ActivityNotFoundException) {
-                    toast(R.string.toast_no_activity)
-                }
-            }
-
-            eventShowProgressBar.observeEvent(this@MvvmFragment) {
+            it.eventShowProgressBar.observeEvent(this) {
                 if (it) {
                     progressDialog?.showWithoutException()
                 } else {
@@ -176,44 +232,39 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
                 }
             }
 
-            eventAddFragment.observeEvent(this@MvvmFragment) {
-                this@MvvmFragment.addFragment(it.containerId, it.fragment, it.tag)
+            it.eventAddFragment.observeEvent(this) {
+                addFragment(it.containerId, it.fragment, it.tag)
             }
 
-            eventNavDirectionId.observeEvent(this@MvvmFragment) {
-                this@MvvmFragment.navigate(it)
+            it.eventNavDirectionId.observeEvent(this) {
+                navigate(it)
             }
 
-            eventNav.observeEvent(this@MvvmFragment) {action ->
+            it.eventNav.observeEvent(this) { action ->
                 action(findNavController())
             }
 
-            eventNavDirection.observeEvent(this@MvvmFragment) {
-                this@MvvmFragment.navigate(it)
+            it.eventNavDirection.observeEvent(this) {
+                navigate(it)
             }
 
-            eventReplaceFragment.observeEvent(this@MvvmFragment) {
-                this@MvvmFragment.replaceFragment(it.containerId, it.fragment, it.tag)
+            it.eventReplaceFragment.observeEvent(this) {
+                replaceFragment(it.containerId, it.fragment, it.tag)
             }
 
-            eventPerformWithActivity.observe(this@MvvmFragment) { array ->
+            it.eventPerformWithActivity.observe(this) { array ->
                 array.forEach { event ->
                     if (!event.hasBeenHandled) {
-                        event.popContent()(requireActivity())
+                        event.popContent()(requireActivity() as BaseActivity)
                     }
                 }
 
             }
 
-            lifecycle.addObserver(this)
+            lifecycle.addObserver(it)
 
             onViewModelSetup()
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        viewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun setupActionbar() {
@@ -240,7 +291,7 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
 
     }
 
-    override fun VM.onViewModelSetup() {
+    override fun onViewModelSetup() {
 
     }
 
@@ -261,9 +312,36 @@ abstract class MvvmFragment<VM : BaseViewModel, DB : ViewDataBinding> : BaseFrag
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <A : BaseViewModel> getActivityViewModel(): A {
-        return (requireActivity() as MvvmActivity<*,*>).viewModel as A
+    fun <A : BaseViewModel> getActivityViewModel(variableId: Int = BR.model): A {
+        return (requireActivity() as BaseActivity).viewModels[variableId]!!.value as A
     }
 
     inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
+
+
+    override fun onStart() {
+        super.onStart()
+
+        visible = isVisible(selected, true)
+    }
+
+    private fun isVisible(selected: Boolean, isStarted: Boolean): Boolean = selected && isStarted
+
+    open fun onVisibilityChanged(visible: Boolean) {
+        log("${this::class.simpleName} : $visible")
+    }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    override fun addFragment(container: Int, fragment: Fragment, tag: String?) {
+        (activity as? BaseActivity)?.addFragment(container, fragment, tag)
+    }
+
+    /**
+     * @param tag to find fragment by tag
+     */
+    override fun replaceFragment(container: Int, fragment: Fragment, tag: String?) {
+        (activity as? BaseActivity)?.replaceFragment(container, fragment, tag)
+    }
 }

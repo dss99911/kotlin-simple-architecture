@@ -1,13 +1,11 @@
 package kim.jeonghyeon.sample.mvvm
 
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.sample.R
-import kim.jeonghyeon.sample.databinding.FragmentNavBinding
 
-class NavigationFragment : MvvmFragment<NavigationViewModel, FragmentNavBinding>() {
+class NavigationFragment : BaseFragment() {
 
-    override val viewModel: NavigationViewModel by simpleViewModels {
+    val viewModel: NavigationViewModel by addingViewModel {
         NavigationViewModel(getNavArgs(), getSavedState())
     }
     override val layoutId: Int

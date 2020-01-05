@@ -1,7 +1,7 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,8 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidlibrary.extension.toast
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -42,7 +44,7 @@ interface IBaseViewModel {
     fun showSnackbar(text: String)
     fun showSnackbar(@StringRes textId: Int)
 
-    fun performWithActivity(action: (Activity) -> Unit)
+    fun performWithActivity(action: (BaseActivity) -> Unit)
     fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
@@ -57,16 +59,15 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val eventShowProgressBar by lazy { MutableLiveEvent<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventStartActivityForResult by lazy { MutableLiveEvent<RequestStartActivityResult>() }
     internal val eventNavDirectionId by lazy { MutableLiveEvent<Int>() }
     internal val eventNav by lazy { MutableLiveEvent<(NavController) -> Unit>() }
     internal val eventNavDirection by lazy { MutableLiveEvent<NavDirections>() }
     internal val eventAddFragment by lazy { MutableLiveEvent<RequestFragment>() }
     internal val eventReplaceFragment by lazy { MutableLiveEvent<RequestFragment>() }
-    internal val eventPerformWithActivity by lazy { MutableLiveData<Array<Event<(Activity) -> Unit>>>() }
-    private val nextRequestCode = AtomicInteger(1)
-    private val resultListeners = SparseArray<(resultCode: Int, data: Intent?) -> Unit>()
-    private val permissionResultListeners = SparseArray<PermissionResultListener>()
+    internal val eventPerformWithActivity by lazy { MutableLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
+    private val nextRequestCode by lazy { AtomicInteger(1) }
+    private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
+    private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate() {
@@ -100,7 +101,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         eventReplaceFragment.call(RequestFragment(containerId, fragment, tag))
     }
 
-    override fun performWithActivity(action: (Activity) -> Unit) {
+    override fun performWithActivity(action: (BaseActivity) -> Unit) {
         val currArray = (eventPerformWithActivity.value ?: emptyArray())
             .filter { event ->
                 !event.hasBeenHandled
@@ -135,9 +136,17 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         intent: Intent,
         onResult: (resultCode: Int, data: Intent?) -> Unit
     ) {
-        val requestCode = nextRequestCode.getAndIncrement()
-        resultListeners.put(requestCode, onResult)
-        eventStartActivityForResult.call(RequestStartActivityResult(requestCode, intent))
+        performWithActivity {
+            try {
+                val viewModel = it.rootViewModel.value
+                val requestCode = viewModel.nextRequestCode.getAndIncrement()
+                viewModel.resultListeners.put(requestCode, onResult)
+                it.startActivityForResult(intent, requestCode)
+            } catch (e: IllegalStateException) {
+            } catch (e: ActivityNotFoundException) {
+                toast(R.string.toast_no_activity)
+            }
+        }
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -149,8 +158,6 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener) {
         //this is called on activity because using requestCode of activity
         performWithActivity { activity ->
-            activity as MvvmActivity<*, *>
-            val viewModel = activity.viewModel
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 listener.onPermissionGranted()
                 return@performWithActivity
@@ -160,6 +167,8 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
                 listener.onPermissionGranted()
                 return@performWithActivity
             }
+
+            val viewModel = activity.rootViewModel.value
 
             val requestCode = viewModel.nextRequestCode.getAndIncrement()
             viewModel.permissionResultListeners.put(requestCode, listener)
@@ -183,8 +192,6 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         performWithActivity { activity ->
-            activity as MvvmActivity<*, *>
-            val viewModel = activity.viewModel
             val deniedPermissions = ArrayList<String>()
             var hasPermanentDenied = false
             for (i in permissions.indices) {
@@ -201,8 +208,8 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
             }
 
             val permissionResultListener =
-                viewModel.permissionResultListeners[requestCode] ?: return@performWithActivity
-            viewModel.permissionResultListeners.remove(requestCode)
+                permissionResultListeners[requestCode] ?: return@performWithActivity
+            permissionResultListeners.remove(requestCode)
 
             when {
                 deniedPermissions.isEmpty() -> try {
@@ -221,7 +228,6 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     internal data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)
-    internal data class RequestStartActivityResult(val requestCode: Int, val intent: Intent)
 }
 
 interface PermissionResultListener {

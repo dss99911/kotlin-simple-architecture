@@ -17,16 +17,14 @@ package com.example.android.architecture.blueprints.todoapp.statistics
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.databinding.StatisticsFragBinding
-import com.example.android.architecture.blueprints.todoapp.util.obtainViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 
 /**
  * Main UI for the statistics screen.
  */
-class StatisticsFragment : MvvmFragment<StatisticsViewModel, StatisticsFragBinding>() {
+class StatisticsFragment : MvvmFragment() {
 
-    override val viewModel: StatisticsViewModel by simpleViewModels { StatisticsViewModel() }
+    val viewModel: StatisticsViewModel by addingViewModel { StatisticsViewModel() }
     override val layoutId: Int
         get() = R.layout.statistics_frag
 }

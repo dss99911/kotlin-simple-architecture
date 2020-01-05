@@ -2,16 +2,12 @@ package kim.jeonghyeon.androidlibrary.extension
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 
 /**
  * bind layoutId, viewModel
@@ -36,16 +32,4 @@ class InstanceViewModelFactory<V : ViewModel> (val viewModel: () -> V) : ViewMod
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return viewModel() as T
     }
-}
-
-/**
- * this is used for ViewModelProvider, and also use lazy
- */
-inline fun <reified V : ViewModel> Fragment.simpleViewModels(ownerProducer: ViewModelStoreOwner = this, noinline viewModel: () -> V): Lazy<V> {
-    return viewModels({ownerProducer}, {InstanceViewModelFactory(viewModel)})
-}
-
-
-inline fun <reified V : ViewModel> AppCompatActivity.simpleViewModels(noinline viewModel: () -> V): Lazy<V> {
-    return viewModels {InstanceViewModelFactory(viewModel)}
 }

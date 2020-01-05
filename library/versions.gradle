@@ -132,9 +132,7 @@ deps.navigation = navigation
 
 def leakcanary = [:]
 
-leakcanary.debug = 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-leakcanary.debug_fragment = 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2'
-leakcanary.release = 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+leakcanary.debug = 'com.squareup.leakcanary:leakcanary-android:2.0'
 deps.leakcanary = leakcanary
 
 deps.anko = "org.jetbrains.anko:anko:0.10.8"

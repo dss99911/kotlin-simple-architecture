@@ -16,13 +16,11 @@
 
 package com.google.samples.apps.sunflower
 
-import com.google.samples.apps.sunflower.databinding.ActivityGardenBinding
 import com.google.samples.apps.sunflower.viewmodels.GardenViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmActivity
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseActivity
 
-class GardenActivity : MvvmActivity<GardenViewModel, ActivityGardenBinding>() {
-    override val viewModel by simpleViewModels { GardenViewModel() }
+class GardenActivity : BaseActivity() {
+    val viewModel by addingViewModel { GardenViewModel() }
     override val layoutId = R.layout.activity_garden
     override val navHostId = R.id.nav_host
 }

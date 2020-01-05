@@ -15,21 +15,20 @@
  */
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
+import com.example.android.architecture.blueprints.todoapp.BR
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.databinding.AddtaskFragBinding
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 
 /**
  * Main UI for the add task screen. Users can enter a task title and description.
  */
-class AddEditTaskFragment : MvvmFragment<AddEditTaskViewModel, AddtaskFragBinding>() {
+class AddEditTaskFragment : MvvmFragment() {
 
     override val layoutId = R.layout.addtask_frag
 
-    override val viewModel: AddEditTaskViewModel by simpleViewModels { AddEditTaskViewModel(getNavArgs()) }
-
-    override fun setVariable(binding: AddtaskFragBinding) {
-        binding.viewmodel = viewModel
-    }
+    val viewModel: AddEditTaskViewModel by addingViewModel(
+        this,
+        BR.viewmodel
+    ) { AddEditTaskViewModel(getNavArgs()) }
 }

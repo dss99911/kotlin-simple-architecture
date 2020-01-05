@@ -10,16 +10,14 @@ import androidx.core.view.MenuItemCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmActivity
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseActivity
 import kim.jeonghyeon.androidlibrary.extension.toast
-import kim.jeonghyeon.sample.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : MvvmActivity<MainActivityViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity() {
 
-    override val viewModel: MainActivityViewModel by simpleViewModels {
+    val viewModel by addingViewModel {
         MainActivityViewModel(getSavedState())
     }
 

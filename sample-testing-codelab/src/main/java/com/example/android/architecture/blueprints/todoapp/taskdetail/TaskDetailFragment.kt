@@ -17,15 +17,13 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.databinding.TaskdetailFragBinding
-import com.example.android.architecture.blueprints.todoapp.util.obtainViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import kim.jeonghyeon.androidlibrary.extension.simpleViewModels
 
 /**
  * Main UI for the task detail screen.
  */
-class TaskDetailFragment : MvvmFragment<TaskDetailViewModel, TaskdetailFragBinding>() {
-    override val viewModel: TaskDetailViewModel by simpleViewModels { TaskDetailViewModel(getNavArgs()) }
+class TaskDetailFragment : MvvmFragment() {
+    val viewModel: TaskDetailViewModel by addingViewModel { TaskDetailViewModel(getNavArgs()) }
     override val layoutId: Int
         get() = R.layout.taskdetail_frag
 
