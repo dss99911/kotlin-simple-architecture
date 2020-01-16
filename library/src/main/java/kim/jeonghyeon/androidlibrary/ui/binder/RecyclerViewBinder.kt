@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.BasePagedListAdapter
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.BaseRecyclerViewAdapter
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
-import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.NoScrollListView
 
 /**
  * set list of item viewModel and item layout, then no need to implement RecyclerViewAdapter.
@@ -59,15 +58,4 @@ fun <VM : DiffComparable<VM>> bindRecyclerView(
         }.also { view.adapter = it })
 
     adapter.submitList(itemList)
-}
-
-@BindingAdapter("itemList", "itemLayoutId")
-fun <VM> bindRecyclerView(
-    view: NoScrollListView,
-    itemList: List<VM>?,
-    layoutId: Int
-) {
-    if (itemList == null) return
-
-    view.setItemListAndItemLayoutId(itemList, layoutId)
 }

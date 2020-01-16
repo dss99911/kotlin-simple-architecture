@@ -17,20 +17,20 @@
 package com.google.samples.apps.sunflower
 
 import androidx.navigation.fragment.findNavController
-import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel
+import com.google.samples.apps.sunflower.viewmodels.GardenViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import org.koin.core.parameter.parametersOf
 
 class GardenFragment : BaseFragment() {
 
     override val layoutId = R.layout.fragment_garden
 
-    val viewModel by addingViewModel {
-        GardenPlantingListViewModel(
-            getActivityViewModel(),
-            InjectorUtils.getGardenPlantingRepository(requireContext())
-        )
+    val viewModel: GardenPlantingListViewModel by bindingViewModel {
+        parametersOf(getSharedViewModel<GardenViewModel>())
     }
 
     override fun onViewModelSetup() {

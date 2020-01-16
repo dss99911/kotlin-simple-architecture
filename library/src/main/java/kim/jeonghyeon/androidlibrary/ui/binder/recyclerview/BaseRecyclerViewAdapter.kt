@@ -16,6 +16,9 @@ import kim.jeonghyeon.androidlibrary.BR
  *
  * This is for using RecyclerView without implementing RecyclerViewAdapter by developer.
  * refer to {[RecyclerViewBinder.bindRecyclerView]}
+ *
+ * limitation
+ * - if item count is different with list size. just extending this class may not work properly. need to test
  */
 abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
     ListAdapter<VM, BaseRecyclerViewHolder<VM>>(object : DiffUtil.ItemCallback<VM>() {

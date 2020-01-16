@@ -5,9 +5,17 @@ import androidx.lifecycle.*
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
 
-typealias ResourceLiveData<T> = LiveData<Resource<T>>
-typealias MutableResourceLiveData<T> = MutableLiveData<Resource<T>>
-typealias MediatorResourceLiveData<T> = MediatorLiveData<Resource<T>>
+typealias LiveResource<T> = LiveData<Resource<T>>
+typealias MutableLiveResource<T> = MutableLiveData<Resource<T>>
+typealias MediatorLiveResource<T> = MediatorLiveData<Resource<T>>
+
+fun <T> liveResource() = MediatorLiveResource<T>().apply {
+    value = Resource.None
+}
+
+fun liveState() = MediatorLiveData<ResourceState>().apply {
+    value = Resource.None
+}
 
 fun <X, Y> LiveData<X>.map(@NonNull func: (X) -> Y): LiveData<Y> =
         Transformations.map(this, func)
@@ -30,15 +38,15 @@ fun <T> MediatorLiveData<T>.receive(other: () -> LiveData<T>) {
 }
 
 
-fun <T> MutableResourceLiveData<T>.postSuccess(data: T) {
+fun <T> MutableLiveResource<T>.postSuccess(data: T) {
     postValue(Resource.Success(data))
 }
 
-fun <T> MutableResourceLiveData<T>.postLoading() {
+fun <T> MutableLiveResource<T>.postLoading() {
     postValue(Resource.Loading)
 }
 
-fun <T> MutableResourceLiveData<T>.postError(data: ResourceError) {
+fun <T> MutableLiveResource<T>.postError(data: ResourceError) {
     postValue(Resource.Error(data))
 }
 
@@ -50,7 +58,7 @@ fun <X> MutableLiveData<X>.repeat() {
     value = value
 }
 
-fun <X, Y> ResourceLiveData<X>.successSwitchMap(@NonNull func: (X) -> ResourceLiveData<Y>): ResourceLiveData<Y> =
+fun <X, Y> LiveResource<X>.successSwitchMap(@NonNull func: (X) -> LiveResource<Y>): LiveResource<Y> =
     switchMap {
         when (it) {
             is Resource.Success -> try {
@@ -78,11 +86,11 @@ fun <T> LiveData<T>.observeOneTime(@NonNull func: (T) -> Boolean) {
 }
 
 
-fun <T> ResourceLiveData<T>.getData(): T? {
+fun <T> LiveResource<T>.getData(): T? {
     return value?.data()
 }
 
-fun <X, Y> ResourceLiveData<X>.successMap(@NonNull func: (X) -> Resource<Y>): ResourceLiveData<Y> = map {
+fun <X, Y> LiveResource<X>.successMap(@NonNull func: (X) -> Resource<Y>): LiveResource<Y> = map {
     when (it) {
         is Resource.Success -> try {
             func(it.data)
@@ -95,7 +103,7 @@ fun <X, Y> ResourceLiveData<X>.successMap(@NonNull func: (X) -> Resource<Y>): Re
     }
 }
 
-fun <X, Y> ResourceLiveData<X>.successDataMap(@NonNull func: (X) -> Y): ResourceLiveData<Y> = map {
+fun <X, Y> LiveResource<X>.successDataMap(@NonNull func: (X) -> Y): LiveResource<Y> = map {
     when (it) {
         is Resource.Success -> try {
             Resource.Success(func(it.data))

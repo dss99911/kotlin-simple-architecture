@@ -5,16 +5,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.annotation.CallSuper
-import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -26,48 +23,22 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
-import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.*
 
-interface IBaseActivity {
-    /**
-     * viewModel name should be "model" for auto binding
-     * if you'd like to change it, override setVariable
-     */
-    var binding: ViewDataBinding
-
-    val layoutId: Int
-    /**
-     * toolbar id is "toolbar"
-     * If you want to change, override this property
-     */
-    val toolbarId: Int
-    val appBarConfiguration: AppBarConfiguration?
-
-    fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
+interface IBaseActivity : IBasePage {
     /**
      * if you want to use nav controller, override this
      */
     val navHostId: Int
     val navController: NavController
-    fun navigate(@IdRes id : Int)
-    fun navigate(navDirections: NavDirections)
 
     //has 'this' default parameter. so, commented out
     //fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 
     //has reified. so, commented out
     //fun <reified T : NavArgs> getNavArgs(): T
-
-    /**
-     * set state observer to change loading and error on state liveData
-     */
-    var stateObserver: Observer<ResourceState>
-
-    fun addFragment(container: Int, fragment: Fragment, tag: String? = null)
-    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null)
 }
 
 abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
@@ -94,11 +65,12 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
 
     override lateinit var binding: ViewDataBinding
-    val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
     /**
      * used for startActivityForResult
      */
-    lateinit var rootViewModel: Lazy<BaseViewModel>
+    val rootViewModel: BaseViewModel
+        get() = viewModels[0]!!.value
 
     override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
         set(value) {
@@ -118,6 +90,10 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         setupView()
         setupActionbar()
         setupObserver()
+        onViewModelSetup()
+    }
+
+    override fun onViewModelSetup() {
     }
 
     override fun onDestroy() {
@@ -131,18 +107,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
             binding.setVariable(variableId, viewModel.value)
         }
         binding.lifecycleOwner = this
-    }
-
-    inline fun <reified V : BaseViewModel> addingViewModel(
-        variableId: Int = BR.model,
-        noinline viewModel: () -> V
-    ): Lazy<V> {
-        return viewModels<V> { InstanceViewModelFactory(viewModel) }.also {
-            if (!::rootViewModel.isInitialized) {
-                rootViewModel = it
-            }
-            viewModels[variableId] = it
-        }
     }
 
     private fun setupObserver() {
@@ -169,18 +133,10 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventAddFragment.observeEvent(this) {
-                addFragment(it.containerId, it.fragment, it.tag)
-            }
-
-            it.eventReplaceFragment.observeEvent(this) {
-                replaceFragment(it.containerId, it.fragment, it.tag)
-            }
-
             it.eventPerformWithActivity.observe(this) { array ->
                 array.forEach { event ->
-                    if (!event.hasBeenHandled) {
-                        event.popContent()(this)
+                    if (!event.handled) {
+                        event.handle()(this)
                     }
                 }
             }
@@ -203,13 +159,13 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        rootViewModel.value.onActivityResult(requestCode, resultCode, data)
+        rootViewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     @CallSuper
     override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        rootViewModel.value.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        rootViewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setupActionbar() {
@@ -282,30 +238,4 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     }
 
     inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
-
-    /**
-     * @param tag to find fragment by tag
-     */
-    override fun addFragment(container: Int, fragment: Fragment, tag: String?) {
-        val transaction = supportFragmentManager.beginTransaction()
-        if (tag == null) {
-            transaction.add(container, fragment)
-        } else {
-            transaction.add(container, fragment, tag)
-        }
-        transaction.commitNow()
-    }
-
-    /**
-     * @param tag to find fragment by tag
-     */
-    override fun replaceFragment(container: Int, fragment: Fragment, tag: String?) {
-        val transaction = supportFragmentManager.beginTransaction()
-        if (tag == null) {
-            transaction.replace(container, fragment)
-        } else {
-            transaction.replace(container, fragment, tag)
-        }
-        transaction.commitNow()
-    }
 }

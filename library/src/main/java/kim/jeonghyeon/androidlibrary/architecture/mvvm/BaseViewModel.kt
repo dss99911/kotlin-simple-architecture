@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.liveState
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
 import java.util.*
@@ -36,8 +37,6 @@ interface IBaseViewModel {
     fun onStop()
     fun onDestroy()
 
-    fun addFragment(containerId: Int, fragment: Fragment, tag: String? = null)
-    fun replaceFragment(containerId: Int, fragment: Fragment, tag: String? = null)
     fun navigateDirection(navDirections: NavDirections)
     fun navigate(action: (NavController) -> Unit)
     fun navigateDirection(id: Int)
@@ -51,19 +50,17 @@ interface IBaseViewModel {
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
-    override val state by lazy { MediatorLiveData<ResourceState>() }
-    override val eventToast by lazy { MutableLiveEvent<String>() }
-    override val eventSnackbar by lazy { MutableLiveEvent<String>() }
-    override val eventStartActivity by lazy { MutableLiveEvent<Intent>() }
+    override val state by lazy { liveState() }
+    override val eventToast by lazy { LiveEvent<String>() }
+    override val eventSnackbar by lazy { LiveEvent<String>() }
+    override val eventStartActivity by lazy { LiveEvent<Intent>() }
 
-    override val eventShowProgressBar by lazy { MutableLiveEvent<Boolean>() }
+    override val eventShowProgressBar by lazy { LiveEvent<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventNavDirectionId by lazy { MutableLiveEvent<Int>() }
-    internal val eventNav by lazy { MutableLiveEvent<(NavController) -> Unit>() }
-    internal val eventNavDirection by lazy { MutableLiveEvent<NavDirections>() }
-    internal val eventAddFragment by lazy { MutableLiveEvent<RequestFragment>() }
-    internal val eventReplaceFragment by lazy { MutableLiveEvent<RequestFragment>() }
+    internal val eventNavDirectionId by lazy { LiveEvent<Int>() }
+    internal val eventNav by lazy { LiveEvent<(NavController) -> Unit>() }
+    internal val eventNavDirection by lazy { LiveEvent<NavDirections>() }
     internal val eventPerformWithActivity by lazy { MutableLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
@@ -93,18 +90,10 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override fun onDestroy() {
     }
 
-    override fun addFragment(containerId: Int, fragment: Fragment, tag: String?) {
-        eventAddFragment.call(RequestFragment(containerId, fragment, tag))
-    }
-
-    override fun replaceFragment(containerId: Int, fragment: Fragment, tag: String?) {
-        eventReplaceFragment.call(RequestFragment(containerId, fragment, tag))
-    }
-
     override fun performWithActivity(action: (BaseActivity) -> Unit) {
         val currArray = (eventPerformWithActivity.value ?: emptyArray())
             .filter { event ->
-                !event.hasBeenHandled
+                !event.handled
             }.toTypedArray()
 
         //this can be used several times
@@ -138,7 +127,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     ) {
         performWithActivity {
             try {
-                val viewModel = it.rootViewModel.value
+                val viewModel = it.rootViewModel
                 val requestCode = viewModel.nextRequestCode.getAndIncrement()
                 viewModel.resultListeners.put(requestCode, onResult)
                 it.startActivityForResult(intent, requestCode)
@@ -168,7 +157,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
                 return@performWithActivity
             }
 
-            val viewModel = activity.rootViewModel.value
+            val viewModel = activity.rootViewModel
 
             val requestCode = viewModel.nextRequestCode.getAndIncrement()
             viewModel.permissionResultListeners.put(requestCode, listener)

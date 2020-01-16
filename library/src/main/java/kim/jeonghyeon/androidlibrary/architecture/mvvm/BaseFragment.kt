@@ -2,14 +2,12 @@ package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.os.Bundle
 import android.view.*
-import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.navigation.NavArgs
 import androidx.navigation.NavDirections
@@ -20,7 +18,6 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
-import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.extension.*
@@ -31,39 +28,9 @@ import org.jetbrains.anko.support.v4.toast
  * - setMenu()
  */
 
-interface IBaseFragment {
-    /**
-     * viewModel name should be "model" for auto binding
-     * if you'd like to change it, override setVariable
-     */
-    var binding: ViewDataBinding
-
-    val layoutId: Int
-
-    /**
-     * toolbar id is "toolbar"
-     * If you want to change, override this property
-     */
-    val toolbarId: Int
-    val appBarConfiguration: AppBarConfiguration?
-
-    fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
-
-    fun navigate(@IdRes id : Int)
-    fun navigate(navDirections: NavDirections)
-
-    /**
-     * when observe LiveData, override this
-     */
-    fun onViewModelSetup()
-
+interface IBaseFragment : IBasePage {
 //  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
 //fun <reified T : NavArgs> getNavArgs(): T
-
-    /**
-     * set state observer to change loading and error on state liveData
-     */
-    var stateObserver: Observer<ResourceState>
 
     /**
      * used on pager. if not used always true.
@@ -74,15 +41,12 @@ interface IBaseFragment {
      * considering fragment lifecycle and pager
      */
     var visible: Boolean
-
-    fun addFragment(container: Int, fragment: Fragment, tag: String? = null)
-    fun replaceFragment(container: Int, fragment: Fragment, tag: String? = null)
 }
 
 abstract class BaseFragment : Fragment(),
     IBaseFragment {
     override lateinit var binding: ViewDataBinding
-    val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
 
     @MenuRes
     private var menuId: Int = 0
@@ -170,16 +134,6 @@ abstract class BaseFragment : Fragment(),
         log("${this::class.simpleName}")
     }
 
-    inline fun <reified V : BaseViewModel> addingViewModel(
-        ownerProducer: ViewModelStoreOwner = this,
-        variableId: Int = BR.model,
-        noinline viewModel: () -> V
-    ): Lazy<V> {
-        return viewModels<V>({ ownerProducer }, { InstanceViewModelFactory(viewModel) }).also {
-            viewModels[variableId] = it
-        }
-    }
-
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
         this.menuId = menuId
         this.onMenuItemClickListener = onMenuItemClickListener
@@ -232,10 +186,6 @@ abstract class BaseFragment : Fragment(),
                 }
             }
 
-            it.eventAddFragment.observeEvent(this) {
-                addFragment(it.containerId, it.fragment, it.tag)
-            }
-
             it.eventNavDirectionId.observeEvent(this) {
                 navigate(it)
             }
@@ -248,14 +198,10 @@ abstract class BaseFragment : Fragment(),
                 navigate(it)
             }
 
-            it.eventReplaceFragment.observeEvent(this) {
-                replaceFragment(it.containerId, it.fragment, it.tag)
-            }
-
             it.eventPerformWithActivity.observe(this) { array ->
                 array.forEach { event ->
-                    if (!event.hasBeenHandled) {
-                        event.popContent()(requireActivity() as BaseActivity)
+                    if (!event.handled) {
+                        event.handle()(requireActivity() as BaseActivity)
                     }
                 }
 
@@ -311,11 +257,6 @@ abstract class BaseFragment : Fragment(),
             .savedStateHandle
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <A : BaseViewModel> getActivityViewModel(variableId: Int = BR.model): A {
-        return (requireActivity() as BaseActivity).viewModels[variableId]!!.value as A
-    }
-
     inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
 
 
@@ -329,19 +270,5 @@ abstract class BaseFragment : Fragment(),
 
     open fun onVisibilityChanged(visible: Boolean) {
         log("${this::class.simpleName} : $visible")
-    }
-
-    /**
-     * @param tag to find fragment by tag
-     */
-    override fun addFragment(container: Int, fragment: Fragment, tag: String?) {
-        (activity as? BaseActivity)?.addFragment(container, fragment, tag)
-    }
-
-    /**
-     * @param tag to find fragment by tag
-     */
-    override fun replaceFragment(container: Int, fragment: Fragment, tag: String?) {
-        (activity as? BaseActivity)?.replaceFragment(container, fragment, tag)
     }
 }

@@ -33,6 +33,7 @@ versions.kotlin = "1.3.10"
 versions.paging = "2.1.0-rc01"
 versions.navigation = "2.1.0"
 versions.work = "1.0.0-beta01"
+versions.koin = '2.0.1'
 
 apply from: (project(':kotlinlibrary').projectDir.toString() + '/versions.gradle')
 
@@ -141,6 +142,15 @@ deps.timber = "com.jakewharton.timber:timber:4.5.1"
 deps.picasso = "com.squareup.picasso:picasso:2.71828"
 deps.stetho = "com.facebook.stetho:stetho:1.5.1"
 deps.fragment_ktx = "androidx.fragment:fragment-ktx:1.1.0"
+
+def koin = [:]
+koin.core = "org.koin:koin-core:$versions.koin"
+koin.android = "org.koin:koin-android:$versions.koin"
+koin.android_scope = "org.koin:koin-androidx-scope:$versions.koin"
+koin.android_viewmodel = "org.koin:koin-androidx-viewmodel:$versions.koin"
+//koin.android_fragment = "org.koin:koin-androidx-fragment:$versions.koin"
+deps.koin = koin
+
 ext.deps = deps
 
 def addRepos(RepositoryHandler handler) {

@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
  * able to remove all sources
  */
 class BaseMediatorLiveData<T> : MediatorLiveData<T>() {
-    private val sources = mutableListOf<LiveData<*>>()
+    private val sources by lazy { mutableListOf<LiveData<*>>() }
 
     fun removeSources() {
         sources.forEach {

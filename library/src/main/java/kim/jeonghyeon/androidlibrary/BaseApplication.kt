@@ -1,6 +1,10 @@
 package kim.jeonghyeon.androidlibrary
 
 import android.app.Application
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import timber.log.Timber
 
 open class BaseApplication : Application() {
@@ -28,12 +32,28 @@ open class BaseApplication : Application() {
 
         instance = this
 
+        initKoin(getKoinModules())
+
         onCreated()
         // Normal app init code...
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
     open fun onCreated(){}
+
+    open fun getKoinModules(): List<Module> = emptyList()
+
+    fun initKoin(koinModules: List<Module>) {
+        if (koinModules.isEmpty()) return
+
+        startKoin {
+            // use Koin logger
+            androidLogger()
+            androidContext(this@BaseApplication)
+            // declare used modules
+            modules(koinModules)
+        }
+    }
 
     companion object {
         @JvmStatic

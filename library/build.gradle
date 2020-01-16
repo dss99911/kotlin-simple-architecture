@@ -65,7 +65,12 @@ dependencies {
     api deps.okhttp
     api deps.okhttp_logging_interceptor
     /*[END] Retrofit */
-    /*[START] Leakanary */
+    api deps.koin.core
+    api deps.koin.android
+    api deps.koin.android_scope
+    api deps.koin.android_viewmodel
+//    api deps.koin.android_fragment
+
     debugImplementation deps.leakcanary.debug
     debugImplementation deps.stetho
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'

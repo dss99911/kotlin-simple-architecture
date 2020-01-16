@@ -24,7 +24,7 @@ import com.google.samples.apps.sunflower.data.GardenPlantingRepository
 import com.google.samples.apps.sunflower.data.PlantRepository
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MutableLiveEvent
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.LiveEvent
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.call
 
 /**
@@ -39,8 +39,8 @@ class PlantDetailViewModel(
     val isPlanted = gardenPlantingRepository.isPlanted(navArgs.plantId)
     val plant = plantRepository.getPlant(navArgs.plantId)
 
-    val fabHideEvent = MutableLiveEvent<Unit>()
-    val startShareEvent = MutableLiveEvent<Unit>()
+    val fabHideEvent = LiveEvent<Unit>()
+    val startShareEvent = LiveEvent<Unit>()
 
     fun onFabClick() {
         fabHideEvent.call()

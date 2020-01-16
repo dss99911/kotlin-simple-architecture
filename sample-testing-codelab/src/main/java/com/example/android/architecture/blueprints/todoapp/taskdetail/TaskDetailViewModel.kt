@@ -21,7 +21,7 @@ import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTa
 import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableResourceLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableLiveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.ctx
 
@@ -34,7 +34,7 @@ class TaskDetailViewModel(
     private val tasksRepository: DefaultTasksRepository = DefaultTasksRepository()
 ) : BaseViewModel() {
 
-    val task = MutableResourceLiveData<Task>()
+    val task = MutableLiveResource<Task>()
 
     override fun onResume() {
         onRefresh()

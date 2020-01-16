@@ -16,20 +16,14 @@
 
 package com.google.samples.apps.sunflower
 
-import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.PlantListViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 
 class PlantListFragment : BaseFragment() {
 
 
-    val viewModel by addingViewModel {
-        PlantListViewModel(
-            InjectorUtils.getPlantRepository(
-                requireContext()
-            )
-        )
-    }
+    val viewModel: PlantListViewModel by bindingViewModel()
     override val layoutId = R.layout.fragment_plant_list
 
     //todo check if this approach is fine

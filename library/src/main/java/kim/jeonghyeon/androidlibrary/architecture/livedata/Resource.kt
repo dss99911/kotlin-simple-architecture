@@ -6,8 +6,10 @@ import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 
 sealed class Resource<out T> {
     data class Success<T>(val data: T) : Resource<T>(), HasData
-    data class Error(val error: ResourceError) : Resource<Nothing>()
+    data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>()
     object Loading : Resource<Nothing>()
+
+    object None : Resource<Nothing>()
 
     data class LoadingWithData<T>(val data: T) : Resource<T>(), HasData
     data class ErrorWithData<T>(val error: ResourceError, val data: T) : Resource<T>(), HasData
@@ -51,7 +53,7 @@ sealed class Resource<out T> {
     }
 
     fun onLoading(onResult: () -> Unit) {
-        if (isLoading) {
+        if (isLoading()) {
             onResult()
         }
     }
@@ -63,7 +65,7 @@ sealed class Resource<out T> {
     }
 
     fun onNotLoading(onResult: () -> Unit) {
-        if (!isLoading) {
+        if (!isLoading()) {
             onResult()
         }
     }
@@ -87,21 +89,20 @@ sealed class Resource<out T> {
 }
 
 
-val Resource<*>?.isLoading: Boolean
-    get() = this?.isLoading()?:false
+fun Resource<*>?.isLoadingNotNull() = this?.isLoading() ?: false
 
-inline val Resource<*>?.isSuccess: Boolean
-    get() = this?.isSuccess()?:false
+fun Resource<*>?.isSuccessNotNull() = this?.isSuccess() ?: false
 
 
-val Resource<*>?.isError: Boolean
-    get() = this?.isError()?:false
+fun Resource<*>?.isErrorNotNull() = this?.isError() ?: false
 
-fun <T> Resource<T>.asLiveData(): MutableResourceLiveData<T> =
-    MutableResourceLiveData(this)
+fun <T> Resource<T>.asLiveData() = MutableLiveResource(this)
 
 
-fun <T> ResourceLiveData<T>.observeResource(owner: LifecycleOwner, onResult: Resource<T>.() -> Unit = {}) {
+fun <T> LiveResource<T>.observeResource(
+    owner: LifecycleOwner,
+    onResult: Resource<T>.() -> Unit = {}
+) {
     observe(owner) {
         onResult(it)
     }

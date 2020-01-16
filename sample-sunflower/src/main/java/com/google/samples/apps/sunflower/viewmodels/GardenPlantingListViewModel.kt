@@ -22,7 +22,7 @@ import com.google.samples.apps.sunflower.adapters.PLANT_LIST_PAGE_INDEX
 import com.google.samples.apps.sunflower.data.GardenPlantingRepository
 import com.google.samples.apps.sunflower.data.PlantAndGardenPlantings
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MutableLiveEvent
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.LiveEvent
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.addEventSource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.call
 
@@ -32,8 +32,8 @@ class GardenPlantingListViewModel internal constructor(
 ) : BaseViewModel() {
     val plantAndGardenPlantings: LiveData<List<PlantAndGardenPlantings>> = gardenPlantingRepository.getPlantedGardens()
 
-    val clickEvent = MutableLiveEvent<String>()
-    val addClickEvent = MutableLiveEvent<Unit>()
+    val clickEvent = LiveEvent<String>()
+    val addClickEvent = LiveEvent<Unit>()
 
     val plantAndGardengPlantingsViewModel: LiveData<List<PlantAndGardenPlantingsViewModel>> =
         plantAndGardenPlantings.map { list ->
