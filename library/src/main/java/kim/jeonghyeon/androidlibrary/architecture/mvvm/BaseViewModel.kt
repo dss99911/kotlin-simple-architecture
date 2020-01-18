@@ -71,6 +71,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     internal val eventNavDirectionId by lazy { BaseLiveData<Int>() }
     internal val eventNav by lazy { BaseLiveData<(NavController) -> Unit>() }
     internal val eventNavDirection by lazy { BaseLiveData<NavDirections>() }
+    @Suppress("DEPRECATION")
     internal val eventPerformWithActivity by lazy { BaseLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
