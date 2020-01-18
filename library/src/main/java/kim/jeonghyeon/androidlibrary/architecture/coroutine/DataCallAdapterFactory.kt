@@ -1,6 +1,5 @@
 package kim.jeonghyeon.androidlibrary.architecture.coroutine
 
-import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 import kim.jeonghyeon.androidlibrary.architecture.net.model.BaseResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -41,5 +40,3 @@ class DataCallAdapterFactory : CallAdapter.Factory() {
         return DataCallAdapter<Any, BaseResponseBody<Any>>(baseResponseBodyGenericType)
     }
 }
-
-class ResourceException(val error: ResourceError): Exception()

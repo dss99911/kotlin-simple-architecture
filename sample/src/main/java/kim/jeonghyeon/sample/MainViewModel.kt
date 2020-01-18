@@ -1,7 +1,7 @@
 package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.LiveEvent
+import kim.jeonghyeon.androidlibrary.extension.toast
 
 class MainViewModel : BaseViewModel() {
     fun launchNavigateFragment() {
@@ -11,5 +11,7 @@ class MainViewModel : BaseViewModel() {
 
     }
 
-    val clickEvent = LiveEvent<Unit>()
+    fun onClickTest() {
+        toast("test")
+    }
 }

@@ -17,7 +17,7 @@ class DataCallAdapter<U, T : BaseResponseBody<U>>(
     private val type: Type
 ) : CallAdapter<T, Call<U>> {
     override fun responseType() = type
-    override fun adapt(call: Call<T>): Call<U> = ResourceCall(call)
+    override fun adapt(call: Call<T>): Call<U> = DataCall(call)
 
     abstract class CallDelegate<TIn, TOut>(
         protected val proxy: Call<TIn>
@@ -37,7 +37,7 @@ class DataCallAdapter<U, T : BaseResponseBody<U>>(
         abstract fun cloneImpl(): Call<TOut>
     }
 
-    class ResourceCall<U, T : BaseResponseBody<U>>(proxy: Call<T>) : CallDelegate<T, U>(proxy) {
+    class DataCall<U, T : BaseResponseBody<U>>(proxy: Call<T>) : CallDelegate<T, U>(proxy) {
         override fun enqueueImpl(callback: Callback<U>) {
             proxy.enqueue(object : Callback<T> {
                 override fun onFailure(call: Call<T>, t: Throwable) {
@@ -45,7 +45,7 @@ class DataCallAdapter<U, T : BaseResponseBody<U>>(
                         is IOException -> NoNetworkError(t)
                         else -> UnknownError(t)
                     }
-                    callback.onFailure(this@ResourceCall, resourceError)
+                    callback.onFailure(this@DataCall, resourceError)
                 }
 
                 override fun onResponse(call: Call<T>, response: Response<T>) {
@@ -90,7 +90,7 @@ class DataCallAdapter<U, T : BaseResponseBody<U>>(
         }
 
         override fun cloneImpl(): Call<U> {
-            return ResourceCall(proxy.clone())
+            return DataCall(proxy.clone())
         }
 
     }

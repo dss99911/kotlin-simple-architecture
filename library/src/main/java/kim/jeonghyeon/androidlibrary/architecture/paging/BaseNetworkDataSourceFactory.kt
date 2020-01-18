@@ -1,17 +1,18 @@
 package kim.jeonghyeon.androidlibrary.architecture.paging
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.asBase
+import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
 import kotlinx.coroutines.GlobalScope
 
 abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageSize: Int) : DataSource.Factory<String, ITEM>() {
 
-    private val sourceLiveData = MutableLiveData<BaseNetworkDataSource<ITEM, RDATA>>()
+    private val sourceLiveData = BaseLiveData<BaseNetworkDataSource<ITEM, RDATA>>()
 
     /**
      * if first page, it's 1
@@ -45,7 +46,7 @@ abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageS
         get() {
             val livePagedList = toLiveData(pageSize)
             return Listing(
-                    data = livePagedList,
+                data = livePagedList.asBase(),
                     loadState = sourceLiveData.switchMap { it.loadState },
                     retry = { sourceLiveData.value?.retryFailed() },
                     refresh = { sourceLiveData.value?.invalidate() }
@@ -55,7 +56,7 @@ abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageS
 
 private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: Int) : PageKeyedDataSource<String, ITEM>() {
 
-    val loadState = MutableLiveData<ResourceState>()
+    val loadState = LiveState()
 
     // keep a function reference for the retry event
     private var retry: (() -> Any)? = null
@@ -81,17 +82,15 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
         GlobalScope.loadResource(loadState, {
             createCall(1, params.requestedLoadSize)
         }, {
-            onSuccess {
+            it.onSuccess {
+                @Suppress("UNCHECKED_CAST")
                 it as RDATA
                 callback.onResult(getListFromResponseData(it), null,  getNextPageFromResponseData(it, 1, params.requestedLoadSize).toString())
-            }
-            onError {
+            }.onError {
                 retry = {
                     loadInitial(params, callback)
                 }
             }
-
-            this
         })
     }
 
@@ -103,17 +102,15 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
         GlobalScope.loadResource(loadState, {
             createCall(params.key.toInt(), params.requestedLoadSize)
         }, {
-            onSuccess {
+            it.onSuccess {
+                @Suppress("UNCHECKED_CAST")
                 it as RDATA
                 callback.onResult(getListFromResponseData(it), getNextPageFromResponseData(it, params.key.toInt(), params.requestedLoadSize).toString())
-            }
-            onError {
+            }.onError {
                 retry = {
                     loadAfter(params, callback)
                 }
             }
-
-            this
         })
     }
 }

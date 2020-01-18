@@ -23,9 +23,9 @@ import androidx.core.app.ShareCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
 import kotlinx.android.synthetic.main.fragment_plant_detail.*
 import org.koin.core.parameter.parametersOf
 

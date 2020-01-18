@@ -24,7 +24,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
 
 interface IBaseActivity : IBasePage {
@@ -57,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         get() = if (navHostId != 0) AppBarConfiguration(navController.graph) else null
 
 
-    internal val progressDialog by lazy { createProgressDialog() }
+    override val progressDialog by lazy { createProgressDialog() }
 
     @MenuRes
     private var menuId: Int = 0
@@ -72,7 +73,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     val rootViewModel: BaseViewModel
         get() = viewModels[0]!!.value
 
-    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+    override var stateObserver: Observer<State> = resourceObserverCommon { }
         set(value) {
             val prev = field
             field = value

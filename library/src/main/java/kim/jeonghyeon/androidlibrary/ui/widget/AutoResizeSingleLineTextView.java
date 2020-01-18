@@ -2,9 +2,10 @@ package kim.jeonghyeon.androidlibrary.ui.widget;
 
 import android.content.Context;
 import android.util.TypedValue;
-import android.widget.TextView;
 
-public class AutoResizeSingleLineTextView extends TextView {
+import androidx.appcompat.widget.AppCompatTextView;
+
+public class AutoResizeSingleLineTextView extends AppCompatTextView {
 
     public AutoResizeSingleLineTextView(Context context) {
         super(context);

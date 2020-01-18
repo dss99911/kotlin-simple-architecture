@@ -1,16 +1,17 @@
 package kim.jeonghyeon.androidlibrary.architecture.coroutine
 
-import androidx.lifecycle.*
-import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import androidx.lifecycle.LiveDataScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
 import kotlinx.coroutines.*
 
-fun <T> resourceLiveData(data: suspend () -> T): LiveResource<T> {
-    return liveData {
+fun <T> liveResource(data: suspend () -> T): LiveResource<T> = liveResource<T>().apply {
+    plusAssign(liveData {
         processLiveData(data)
-    }
+    })
 }
 
 private suspend fun <T> LiveDataScope<Resource<T>>.processLiveData(
@@ -33,8 +34,11 @@ private suspend fun <T> LiveDataScope<Resource<T>>.processLiveData(
     }
 }
 
-fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = null, work: suspend CoroutineScope.() -> T): Job {
-    liveData?.postValue(Resource.Loading)
+fun <T> CoroutineScope.loadResource(
+    liveData: LiveResource<T>? = null,
+    work: suspend CoroutineScope.() -> T
+): Job {
+    liveData?.postLoading()
     return launch {
         val result = getResource(work) {
             loadResource(liveData, work)
@@ -43,8 +47,12 @@ fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = nu
     }
 }
 
-fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = null, work: suspend CoroutineScope.() -> T, onResult: Resource<T>.() -> Resource<T>): Job {
-    liveData?.postValue(Resource.Loading)
+fun <T> CoroutineScope.loadResource(
+    liveData: LiveResource<T>? = null,
+    work: suspend CoroutineScope.() -> T,
+    onResult: (Resource<T>) -> Resource<T>
+): Job {
+    liveData?.postLoading()
     return launch {
         val result = getResource(work) {
             loadResource(liveData, work, onResult)
@@ -53,9 +61,13 @@ fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = nu
     }
 }
 
-fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = null, state: MutableLiveData<ResourceState>? = null, work: suspend CoroutineScope.() -> T): Job {
-    liveData?.postValue(Resource.Loading)
-    state?.postValue(Resource.Loading)
+fun <T> CoroutineScope.loadResource(
+    liveData: LiveResource<T>? = null,
+    state: LiveState? = null,
+    work: suspend CoroutineScope.() -> T
+): Job {
+    liveData?.postLoading()
+    state?.postLoading()
     return launch {
         val result = getResource(work) {
             loadResource(liveData, state, work)
@@ -65,13 +77,24 @@ fun <T> CoroutineScope.loadResource(liveData: MutableLiveData<Resource<T>>? = nu
     }
 }
 
-fun <T> ViewModel.loadResource(liveData: MutableLiveData<Resource<T>>? = null, work: suspend CoroutineScope.() -> T): Job =
+fun <T> ViewModel.loadResource(
+    liveData: LiveResource<T>? = null,
+    work: suspend CoroutineScope.() -> T
+): Job =
     viewModelScope.loadResource(liveData, work)
 
-fun <T> ViewModel.loadResource(liveData: MutableLiveData<Resource<T>>? = null, work: suspend CoroutineScope.() -> T, onResult: Resource<T>.() -> Resource<T>): Job =
+fun <T> ViewModel.loadResource(
+    liveData: LiveResource<T>? = null,
+    work: suspend CoroutineScope.() -> T,
+    onResult: (Resource<T>) -> Resource<T>
+): Job =
     viewModelScope.loadResource(liveData, work, onResult)
 
-fun <T> ViewModel.loadResource(liveData: MutableLiveData<Resource<T>>? = null, state: MutableLiveData<ResourceState>? = null, work: suspend CoroutineScope.() -> T): Job =
+fun <T> ViewModel.loadResource(
+    liveData: LiveResource<T>? = null,
+    state: LiveState? = null,
+    work: suspend CoroutineScope.() -> T
+): Job =
     viewModelScope.loadResource(liveData, state, work)
 
 inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job {
@@ -97,7 +120,7 @@ suspend fun <T> CoroutineScope.getResource(
 suspend inline fun <T> polling(
     count: Int,
     delayMillis: Long,
-    action: suspend (index: Int) -> T
+    action: (index: Int) -> T
 ): T {
     repeat(count) { repeatIndex ->
         try {

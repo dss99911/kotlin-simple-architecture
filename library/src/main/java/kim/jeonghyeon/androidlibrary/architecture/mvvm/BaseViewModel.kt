@@ -12,23 +12,28 @@ import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
-import kim.jeonghyeon.androidlibrary.architecture.livedata.liveState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.IBaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ILiveState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveState
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 interface IBaseViewModel {
-    val state: LiveData<ResourceState>
-    val eventToast: LiveEvent<String>
-    val eventSnackbar: LiveEvent<String>
-    val eventStartActivity: LiveEvent<Intent>
-    val eventShowProgressBar: LiveEvent<Boolean>
+    val state: ILiveState
+    val eventToast: IBaseLiveData<String>
+    val eventSnackbar: IBaseLiveData<String>
+    val eventStartActivity: IBaseLiveData<Intent>
+    val eventShowProgressBar: IBaseLiveData<Boolean>
 
     fun onCreate()
     fun onStart()
@@ -50,18 +55,18 @@ interface IBaseViewModel {
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
-    override val state by lazy { liveState() }
-    override val eventToast by lazy { LiveEvent<String>() }
-    override val eventSnackbar by lazy { LiveEvent<String>() }
-    override val eventStartActivity by lazy { LiveEvent<Intent>() }
+    override val state by lazy { LiveState() }
+    override val eventToast by lazy { BaseLiveData<String>() }
+    override val eventSnackbar by lazy { BaseLiveData<String>() }
+    override val eventStartActivity by lazy { BaseLiveData<Intent>() }
 
-    override val eventShowProgressBar by lazy { LiveEvent<Boolean>() }
+    override val eventShowProgressBar by lazy { BaseLiveData<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventNavDirectionId by lazy { LiveEvent<Int>() }
-    internal val eventNav by lazy { LiveEvent<(NavController) -> Unit>() }
-    internal val eventNavDirection by lazy { LiveEvent<NavDirections>() }
-    internal val eventPerformWithActivity by lazy { MutableLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
+    internal val eventNavDirectionId by lazy { BaseLiveData<Int>() }
+    internal val eventNav by lazy { BaseLiveData<(NavController) -> Unit>() }
+    internal val eventNavDirection by lazy { BaseLiveData<NavDirections>() }
+    internal val eventPerformWithActivity by lazy { BaseLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
@@ -102,23 +107,23 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     override fun navigateDirection(navDirections: NavDirections) {
-        eventNavDirection.call(navDirections)
+        eventNavDirection.postValue(navDirections)
     }
 
     override fun navigateDirection(id: Int) {
-        eventNavDirectionId.call(id)
+        eventNavDirectionId.postValue(id)
     }
 
     override fun navigate(action: (NavController) -> Unit) {
-        eventNav.call(action)
+        eventNav.postValue(action)
     }
 
     override fun showSnackbar(text: String) {
-        eventSnackbar.call(text)
+        eventSnackbar.postValue(text)
     }
 
     override fun showSnackbar(@StringRes textId: Int) {
-        eventSnackbar.call(ctx.getString(textId))
+        eventSnackbar.postValue(ctx.getString(textId))
     }
 
     override fun startActivityForResult(

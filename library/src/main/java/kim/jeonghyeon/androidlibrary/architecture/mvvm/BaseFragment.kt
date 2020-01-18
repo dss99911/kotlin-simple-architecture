@@ -19,7 +19,8 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
 import org.jetbrains.anko.support.v4.toast
 
@@ -51,7 +52,7 @@ abstract class BaseFragment : Fragment(),
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
-    internal val progressDialog by lazy { activity?.createProgressDialog() }
+    override val progressDialog by lazy { createProgressDialog() }
 
     override val toolbarId: Int
         get() = R.id.toolbar
@@ -59,7 +60,7 @@ abstract class BaseFragment : Fragment(),
     override val appBarConfiguration: AppBarConfiguration?
         get() = AppBarConfiguration(findNavController().graph)
 
-    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+    override var stateObserver: Observer<State> = resourceObserverCommon { }
         set(value) {
             val prev = field
             field = value
@@ -180,9 +181,9 @@ abstract class BaseFragment : Fragment(),
 
             it.eventShowProgressBar.observeEvent(this) {
                 if (it) {
-                    progressDialog?.showWithoutException()
+                    progressDialog.showWithoutException()
                 } else {
-                    progressDialog?.dismissWithoutException()
+                    progressDialog.dismissWithoutException()
                 }
             }
 

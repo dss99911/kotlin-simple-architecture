@@ -16,6 +16,8 @@
 
 package com.google.samples.apps.sunflower.data
 
+import kim.jeonghyeon.androidlibrary.architecture.livedata.asBase
+
 class GardenPlantingRepository private constructor(
     private val gardenPlantingDao: GardenPlantingDao
 ) {
@@ -30,9 +32,9 @@ class GardenPlantingRepository private constructor(
     }
 
     fun isPlanted(plantId: String) =
-            gardenPlantingDao.isPlanted(plantId)
+        gardenPlantingDao.isPlanted(plantId).asBase()
 
-    fun getPlantedGardens() = gardenPlantingDao.getPlantedGardens()
+    fun getPlantedGardens() = gardenPlantingDao.getPlantedGardens().asBase()
 
     companion object {
 

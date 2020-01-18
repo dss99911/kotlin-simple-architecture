@@ -16,7 +16,6 @@ fun <API> testApi(baseUrl: String, apiClass: Class<API>): API {
             .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(LiveDataCallAdapterFactory())
             .build()
             .create(apiClass)
 }

@@ -1,5 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
+import android.app.AlertDialog
 import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
@@ -8,7 +9,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import com.google.android.material.snackbar.Snackbar
+import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
+import kim.jeonghyeon.androidlibrary.extension.showSnackbar
+import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
 interface IBasePage : LifecycleOwner {
     /**
@@ -42,5 +48,22 @@ interface IBasePage : LifecycleOwner {
     /**
      * set state observer to change loading and error on state liveData
      */
-    var stateObserver: Observer<ResourceState>
+    var stateObserver: Observer<State>
+
+    val progressDialog: AlertDialog
 }
+
+fun <T> IBasePage.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
+    Observer {
+        if (it.isLoading()) {
+            progressDialog.showWithoutException()
+        } else {
+            progressDialog.dismissWithoutException()
+        }
+
+        it.onError {
+            binding.root.showSnackbar("error occurred", Snackbar.LENGTH_SHORT)
+        }
+
+        it.onSuccess(onSuccess)
+    }

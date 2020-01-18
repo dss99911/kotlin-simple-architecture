@@ -1,8 +1,8 @@
 package com.google.samples.apps.sunflower.viewmodels
 
-import androidx.lifecycle.MediatorLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
 class GardenViewModel : BaseViewModel() {
-    val currentItem = MediatorLiveData<Int>()
+    val currentItem = BaseLiveData<Int>()
 }

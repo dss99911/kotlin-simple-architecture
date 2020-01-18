@@ -22,12 +22,6 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import kim.jeonghyeon.kotlinlibrary.extension.onFalse
 import kim.jeonghyeon.kotlinlibrary.extension.onTrue
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.ContextCompat.startActivity
-import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-
-
-
 
 
 @SuppressLint("ObsoleteSdkInt")
@@ -130,6 +124,12 @@ fun Activity.createProgressDialog(): AlertDialog = AlertDialog.Builder(this)
         .setCancelable(false)
         .create()
         .apply { window?.setBackgroundDrawable(ColorDrawable(0)) }
+
+fun Fragment.createProgressDialog(): AlertDialog = AlertDialog.Builder(context)
+    .setView(ProgressBar(context))
+    .setCancelable(false)
+    .create()
+    .apply { window?.setBackgroundDrawable(ColorDrawable(0)) }
 
 fun Activity.buildListDialog(title: String, items: Array<String>, itemClickListener: (dialog:DialogInterface, which: Int) -> Unit): AlertDialog.Builder =
         AlertDialog.Builder(this)

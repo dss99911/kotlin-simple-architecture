@@ -19,9 +19,9 @@ package com.google.samples.apps.sunflower
 import androidx.navigation.fragment.findNavController
 import com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel
 import com.google.samples.apps.sunflower.viewmodels.GardenViewModel
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,7 +34,7 @@ class GardenFragment : BaseFragment() {
     }
 
     override fun onViewModelSetup() {
-        viewModel.clickEvent.observeEvent(this@GardenFragment) {
+        viewModel.itemClickEvent.observeEvent(this@GardenFragment) {
             val direction = HomeViewPagerFragmentDirections
                 .actionViewPagerFragmentToPlantDetailFragment(it)
             findNavController().navigate(direction)
