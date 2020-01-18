@@ -5,10 +5,7 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
 import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 fun <T> resourceLiveData(data: suspend () -> T): LiveResource<T> {
     return liveData {
@@ -83,7 +80,6 @@ inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T
     }
 }
 
-
 suspend fun <T> CoroutineScope.getResource(
     action: suspend CoroutineScope.() -> T,
     retry: () -> Unit
@@ -94,3 +90,24 @@ suspend fun <T> CoroutineScope.getResource(
 } catch (e: Exception) {
     Resource.Error(UnknownError(e), retry)
 }
+
+/**
+ * @param action returns data and not polling again. but if exception occurs, polling
+ */
+suspend inline fun <T> polling(
+    count: Int,
+    delayMillis: Long,
+    action: suspend (index: Int) -> T
+): T {
+    repeat(count) { repeatIndex ->
+        try {
+            return action(repeatIndex)
+        } catch (e: Exception) {
+            //retry
+            delay(delayMillis)
+        }
+    }
+    throw PollingException()
+}
+
+class PollingException : RuntimeException()
