@@ -52,16 +52,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/statistics_no_tasks"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="@{model.tasks.data().isEmpty()}" />
+                    android:visibility="@{model.tasks.get().isEmpty()}" />
 
             <TextView
                 android:id="@+id/stats_active_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="1dp"
-                android:text="@{@string/statistics_active_tasks(model.statusResult.data().activeTasksPercent)}"
+                    android:text="@{@string/statistics_active_tasks(model.statusResult.get().activeTasksPercent)}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="@{!model.tasks.data().isEmpty()}" />
+                    android:visibility="@{!model.tasks.get().isEmpty()}" />
 
             <!-- android:paddingTop specified to temporarily work around -->
             <!-- https://github.com/robolectric/robolectric/issues/4588 -->
@@ -70,9 +70,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="1dp"
-                android:text="@{@string/statistics_completed_tasks(model.statusResult.data().activeTasksPercent)}"
+                    android:text="@{@string/statistics_completed_tasks(model.statusResult.get().activeTasksPercent)}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:visibility="@{!model.tasks.data().isEmpty()}" />
+                    android:visibility="@{!model.tasks.get().isEmpty()}" />
 
         </LinearLayout>
     </LinearLayout>

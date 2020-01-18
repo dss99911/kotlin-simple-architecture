@@ -24,6 +24,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
@@ -80,7 +81,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
             viewModels.values.map { it.value }.forEach {
                 it.state.removeObserver(prev)
-                it.state.observe(this, field)
+                it.state.observe(field)
             }
         }
 
@@ -112,21 +113,21 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
     private fun setupObserver() {
         viewModels.values.map { it.value }.forEach {
-            it.state.observe(this, stateObserver)
+            it.state.observe(stateObserver)
 
-            it.eventToast.observeEvent(this) {
+            it.eventToast.observeEvent {
                 toast(it)
             }
 
-            it.eventSnackbar.observeEvent(this) {
+            it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            it.eventStartActivity.observeEvent(this) {
+            it.eventStartActivity.observeEvent {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent(this) {
+            it.eventShowProgressBar.observeEvent {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
@@ -134,7 +135,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventPerformWithActivity.observe(this) { array ->
+            it.eventPerformWithActivity.observe { array ->
                 array.forEach { event ->
                     if (!event.handled) {
                         event.handle()(this)
@@ -142,16 +143,16 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventNavDirectionId.observeEvent(this) {
+            it.eventNavDirectionId.observeEvent {
                 navigate(it)
             }
 
-            it.eventNav.observeEvent(this) { action ->
+            it.eventNav.observeEvent { action ->
                 action(navController)
             }
 
-            it.eventNavDirection.observeEvent(this) {
-                navigate(it)
+            it.eventNavDirection.observeEvent {
+                it.navigate()
             }
 
             lifecycle.addObserver(it)
@@ -226,9 +227,10 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         navController.navigate(id)
     }
 
-    override fun navigate(navDirections: NavDirections) {
-        navController.navigate(navDirections)
+    override fun NavDirections.navigate() {
+        navController.navigate(this)
     }
+
 
     fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
         return SavedStateViewModelFactory(
@@ -239,4 +241,20 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     }
 
     inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
+
+    override fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit) {
+        observe(this@BaseActivity, onChanged)
+    }
+
+    override fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit) {
+        observeEvent(this@BaseActivity, onChanged)
+    }
+
+    override fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>) {
+        observeEvent(this@BaseActivity, observer)
+    }
+
+    override fun <T> BaseLiveData<T>.observe(observer: Observer<in T>) {
+        observe(this@BaseActivity, observer)
+    }
 }

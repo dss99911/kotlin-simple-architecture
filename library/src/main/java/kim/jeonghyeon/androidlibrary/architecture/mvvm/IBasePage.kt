@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.material.snackbar.Snackbar
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
@@ -35,7 +36,7 @@ interface IBasePage : LifecycleOwner {
     fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean)
 
     fun navigate(@IdRes id: Int)
-    fun navigate(navDirections: NavDirections)
+    fun NavDirections.navigate()
 
     /**
      * when observe LiveData, override this
@@ -51,6 +52,11 @@ interface IBasePage : LifecycleOwner {
     var stateObserver: Observer<State>
 
     val progressDialog: AlertDialog
+
+    fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit)
+    fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit)
+    fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>)
+    fun <T> BaseLiveData<T>.observe(observer: Observer<in T>)
 }
 
 fun <T> IBasePage.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =

@@ -41,7 +41,7 @@ class DefaultTasksRepositoryTest {
     private lateinit var tasksLocalDataSource: FakeDataSource
 
     // Class under test
-    private lateinit var tasksRepository: DefaultTasksRepository
+    private lateinit var tasksRepository: TasksRepositoryImpl
 
     @ExperimentalCoroutinesApi
     @Before
@@ -49,7 +49,7 @@ class DefaultTasksRepositoryTest {
         tasksRemoteDataSource = FakeDataSource(remoteTasks.toMutableList())
         tasksLocalDataSource = FakeDataSource(localTasks.toMutableList())
         // Get a reference to the class under test
-        tasksRepository = DefaultTasksRepository(
+        tasksRepository = TasksRepositoryImpl(
             tasksRemoteDataSource, tasksLocalDataSource, Dispatchers.Unconfined
         )
     }
@@ -58,7 +58,7 @@ class DefaultTasksRepositoryTest {
     @Test
     fun getTasks_emptyRepositoryAndUninitializedCache() = runBlockingTest {
         val emptySource = FakeDataSource()
-        val tasksRepository = DefaultTasksRepository(
+        val tasksRepository = TasksRepositoryImpl(
             emptySource, emptySource, Dispatchers.Unconfined
         )
 
@@ -92,7 +92,7 @@ class DefaultTasksRepositoryTest {
         // Make sure newTask is not in the remote or local datasources or cache
         assertThat(tasksRemoteDataSource.tasks).doesNotContain(newTask)
         assertThat(tasksLocalDataSource.tasks).doesNotContain(newTask)
-        assertThat((tasksRepository.getTasks() as? Success)?.data).doesNotContain(newTask)
+        assertThat((tasksRepository.getTasks() as? Success).data).doesNotContain(newTask)
 
         // When a task is saved to the tasks repository
         tasksRepository.saveTask(newTask)
@@ -102,7 +102,7 @@ class DefaultTasksRepositoryTest {
         assertThat(tasksLocalDataSource.tasks).contains(newTask)
 
         val result = tasksRepository.getTasks() as? Success
-        assertThat(result?.data).contains(newTask)
+        assertThat(result.data).contains(newTask)
     }
 
     @Test
@@ -246,8 +246,8 @@ class DefaultTasksRepositoryTest {
         val task2SecondTime = tasksRepository.getTask(task2.id, true)
 
         // Only task2 works because the cache and local were invalidated
-        assertThat((task1SecondTime as? Success)?.data?.id).isNull()
-        assertThat((task2SecondTime as? Success)?.data?.id).isEqualTo(task2.id)
+        assertThat((task1SecondTime as? Success).data.id).isNull()
+        assertThat((task2SecondTime as? Success).data.id).isEqualTo(task2.id)
     }
 
     @Test
@@ -256,7 +256,7 @@ class DefaultTasksRepositoryTest {
         tasksRemoteDataSource.tasks = mutableListOf(completedTask, task2)
         tasksRepository.clearCompletedTasks()
 
-        val tasks = (tasksRepository.getTasks() as? Success)?.data
+        val tasks = (tasksRepository.getTasks() as? Success).data
 
         assertThat(tasks).hasSize(1)
         assertThat(tasks).contains(task2)
@@ -265,13 +265,13 @@ class DefaultTasksRepositoryTest {
 
     @Test
     fun deleteAllTasks() = runBlockingTest {
-        val initialTasks = (tasksRepository.getTasks() as? Success)?.data
+        val initialTasks = (tasksRepository.getTasks() as? Success).data
 
         // Delete all tasks
         tasksRepository.deleteAllTasks()
 
         // Fetch data again
-        val afterDeleteTasks = (tasksRepository.getTasks() as? Success)?.data
+        val afterDeleteTasks = (tasksRepository.getTasks() as? Success).data
 
         // Verify tasks are empty now
         assertThat(initialTasks).isNotEmpty()
@@ -280,16 +280,16 @@ class DefaultTasksRepositoryTest {
 
     @Test
     fun deleteSingleTask() = runBlockingTest {
-        val initialTasks = (tasksRepository.getTasks() as? Success)?.data
+        val initialTasks = (tasksRepository.getTasks() as? Success).data
 
         // Delete first task
         tasksRepository.deleteTask(task1.id)
 
         // Fetch data again
-        val afterDeleteTasks = (tasksRepository.getTasks() as? Success)?.data
+        val afterDeleteTasks = (tasksRepository.getTasks() as? Success).data
 
         // Verify only one task was deleted
-        assertThat(afterDeleteTasks?.size).isEqualTo(initialTasks!!.size - 1)
+        assertThat(afterDeleteTasks.size).isEqualTo(initialTasks!!.size - 1)
         assertThat(afterDeleteTasks).doesNotContain(task1)
     }
 }

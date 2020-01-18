@@ -17,7 +17,6 @@ package com.example.android.architecture.blueprints.todoapp.data.source
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksDao
-import com.example.android.architecture.blueprints.todoapp.data.source.local.ToDoDatabase
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TaskApi
 
 /**
@@ -26,13 +25,13 @@ import com.example.android.architecture.blueprints.todoapp.data.source.remote.Ta
  * To simplify the sample, this repository only uses the local data source only if the remote
  * data source fails. Remote is the source of truth.
  */
-class DefaultTasksRepository(
-    private val tasksDao: TasksDao = ToDoDatabase.instance.taskDao(),
-    private val taskApi: TaskApi = TaskApi.create()
-) {
+class TasksRepositoryImpl(
+    private val tasksDao: TasksDao,
+    private val taskApi: TaskApi
+) : TaskRepository {
 
-    suspend fun getTasks(forceUpdate: Boolean): List<Task> {
-        if (!forceUpdate) {
+    override suspend fun getTasks(): List<Task> {
+        if (!isForceUpdate()) {
             val tasks = tasksDao.getTasks()
             if (tasks.isNotEmpty()) {
                 return tasks
@@ -44,9 +43,9 @@ class DefaultTasksRepository(
         }
     }
 
-    suspend fun getTask(taskId: String, forceUpdate: Boolean): Task {
-        if (!forceUpdate) {
-            tasksDao.getTaskById(taskId)?.let {
+    override suspend fun getTask(taskId: String): Task {
+        if (!isForceUpdate()) {
+            tasksDao.getTask(taskId).let {
                 return it
             }
         }
@@ -56,29 +55,60 @@ class DefaultTasksRepository(
         }
     }
 
-    suspend fun deleteTask(taskId: String) {
+    override suspend fun deleteTask(taskId: String) {
         taskApi.deleteTask(taskId)
-        tasksDao.deleteTaskById(taskId)
+        tasksDao.deleteTask(taskId)
     }
 
-    suspend fun activateTask(task: Task)  {
-        taskApi.activateTask(task)
-        tasksDao.updateCompleted(task.id, false)
+    override suspend fun saveTask(task: Task) {
+        taskApi.saveTask(task)
+        tasksDao.saveTask(task)
     }
 
-    suspend fun completeTask(task: Task) {
-        // Do in memory cache update to keep the app UI up to date
+    override suspend fun completeTask(task: Task) {
+        task.isCompleted = true
         taskApi.completeTask(task)
-        tasksDao.updateCompleted(task.id, true)
+        tasksDao.completeTask(task)
+    }
+
+    override suspend fun completeTask(taskId: String) {
+        completeTask(getTask(taskId))
+    }
+
+    override suspend fun activateTask(task: Task) {
+        task.isCompleted = false
+        taskApi.activateTask(task)
+        tasksDao.activateTask(task)
+    }
+
+    override suspend fun activateTask(taskId: String) {
+        activateTask(getTask(taskId))
+    }
+
+    override suspend fun clearCompletedTasks() {
+        taskApi.clearCompletedTasks()
+        tasksDao.clearCompletedTasks()
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun deleteAllTasks() {
+        taskApi.deleteAllTasks()
+        tasksDao.deleteAllTasks()
     }
 
     private suspend fun refreshLocalDataSource(tasks: List<Task>) {
-        tasksDao.deleteTasks()
+        tasksDao.deleteAllTasks()
         for (task in tasks) {
-            tasksDao.insertTask(task)
+            tasksDao.saveTask(task)
         }
     }
     private suspend fun refreshLocalDataSource(task: Task) {
-        tasksDao.insertTask(task)
+        tasksDao.saveTask(task)
     }
+
+    fun isForceUpdate(): Boolean {
+        //todo decide if it will update from remote or not
+        return false
+    }
+
 }

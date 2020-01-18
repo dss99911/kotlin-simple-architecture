@@ -164,7 +164,7 @@ class TasksViewModelTest {
     @Test
     fun clearCompletedTasks_clearsTasks() = mainCoroutineRule.runBlockingTest {
         // When completed tasks are cleared
-        tasksViewModel.clearCompletedTasks()
+        tasksViewModel.onClearMenuClicked()
 
         // Fetch tasks
         tasksViewModel.loadTasks(true)

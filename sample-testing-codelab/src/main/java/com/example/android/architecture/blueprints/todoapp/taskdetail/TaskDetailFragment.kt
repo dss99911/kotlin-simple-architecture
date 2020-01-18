@@ -16,16 +16,18 @@
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
 import com.example.android.architecture.blueprints.todoapp.R
-import com.example.android.architecture.blueprints.todoapp.databinding.TaskdetailFragBinding
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import org.koin.core.parameter.parametersOf
 
 /**
  * Main UI for the task detail screen.
  */
-class TaskDetailFragment : MvvmFragment() {
-    val viewModel: TaskDetailViewModel by addingViewModel { TaskDetailViewModel(getNavArgs()) }
-    override val layoutId: Int
-        get() = R.layout.taskdetail_frag
+class TaskDetailFragment : BaseFragment() {
+    val viewModel: TaskDetailViewModel by bindingViewModel {
+        parametersOf(getNavArgs<TaskDetailFragmentArgs>())
+    }
+    override val layoutId = R.layout.taskdetail_frag
 
 
     init {

@@ -37,7 +37,7 @@ import androidx.test.filters.LargeTest
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.ServiceLocator
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
+import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepositoryImpl
 import com.example.android.architecture.blueprints.todoapp.util.DataBindingIdlingResource
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
 import com.example.android.architecture.blueprints.todoapp.util.monitorActivity
@@ -55,7 +55,7 @@ import org.junit.runner.RunWith
 @LargeTest
 class AppNavigationTest {
 
-    private lateinit var tasksRepository: TasksRepository
+    private lateinit var tasksRepository: TasksRepositoryImpl
 
     // An Idling Resource that waits for Data Binding to have no pending bindings
     private val dataBindingIdlingResource = DataBindingIdlingResource()

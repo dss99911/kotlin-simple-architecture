@@ -23,7 +23,6 @@ import androidx.core.app.ShareCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
-import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kotlinx.android.synthetic.main.fragment_plant_detail.*
@@ -42,11 +41,11 @@ class PlantDetailFragment : BaseFragment() {
 //todo check when use setSupportActionBar and when use just setHasOptionsMenu()
 
     override fun onViewModelSetup() {
-        viewModel.fabHideEvent.observeEvent(this) {
+        viewModel.fabHideEvent.observeEvent {
             hideAppBarFab(fab)
         }
 
-        viewModel.startShareEvent.observeEvent(this) {
+        viewModel.startShareEvent.observeEvent {
             startShareActivity()
         }
     }

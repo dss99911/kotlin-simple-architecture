@@ -19,6 +19,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
+import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
@@ -67,7 +68,7 @@ abstract class BaseFragment : Fragment(),
 
             viewModels.values.map { it.value }.forEach {
                 it.state.removeObserver(prev)
-                it.state.observe(this, field)
+                it.state.observe(field)
             }
         }
 
@@ -165,21 +166,21 @@ abstract class BaseFragment : Fragment(),
 
     private fun setupObserver() {
         viewModels.values.map { it.value }.forEach {
-            it.state.observe(this, stateObserver)
+            it.state.observe(stateObserver)
 
-            it.eventToast.observeEvent(this) {
+            it.eventToast.observeEvent {
                 toast(it)
             }
 
-            it.eventSnackbar.observeEvent(this) {
+            it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            it.eventStartActivity.observeEvent(this) {
+            it.eventStartActivity.observeEvent {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent(this) {
+            it.eventShowProgressBar.observeEvent {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
@@ -187,19 +188,19 @@ abstract class BaseFragment : Fragment(),
                 }
             }
 
-            it.eventNavDirectionId.observeEvent(this) {
+            it.eventNavDirectionId.observeEvent {
                 navigate(it)
             }
 
-            it.eventNav.observeEvent(this) { action ->
+            it.eventNav.observeEvent { action ->
                 action(findNavController())
             }
 
-            it.eventNavDirection.observeEvent(this) {
-                navigate(it)
+            it.eventNavDirection.observeEvent {
+                it.navigate()
             }
 
-            it.eventPerformWithActivity.observe(this) { array ->
+            it.eventPerformWithActivity.observe { array ->
                 array.forEach { event ->
                     if (!event.handled) {
                         event.handle()(requireActivity() as BaseActivity)
@@ -246,8 +247,8 @@ abstract class BaseFragment : Fragment(),
         findNavController().navigate(id)
     }
 
-    override fun navigate(navDirections: NavDirections) {
-        findNavController().navigate(navDirections)
+    override fun NavDirections.navigate() {
+        findNavController().navigate(this)
     }
 
     fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
@@ -271,5 +272,21 @@ abstract class BaseFragment : Fragment(),
 
     open fun onVisibilityChanged(visible: Boolean) {
         log("${this::class.simpleName} : $visible")
+    }
+
+    override fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit) {
+        observe(this@BaseFragment, onChanged)
+    }
+
+    override fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit) {
+        observeEvent(this@BaseFragment, onChanged)
+    }
+
+    override fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>) {
+        observeEvent(this@BaseFragment, observer)
+    }
+
+    override fun <T> BaseLiveData<T>.observe(observer: Observer<in T>) {
+        observe(this@BaseFragment, observer)
     }
 }

@@ -11,7 +11,6 @@ import android.util.SparseArray
 import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -19,12 +18,12 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.IBaseLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ILiveState
-import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveState
+import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -52,6 +51,12 @@ interface IBaseViewModel {
     fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
+
+    fun <T> LiveResource<T>.loadResource(work: suspend CoroutineScope.() -> T): Job
+    fun <T> LiveResource<T>.loadResource(
+        work: suspend CoroutineScope.() -> T,
+        onResult: (Resource<T>) -> Resource<T>
+    ): Job
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
@@ -221,7 +226,15 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     }
 
-    internal data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)
+    override fun <T> LiveResource<T>.loadResource(work: suspend CoroutineScope.() -> T): Job {
+        return this@BaseViewModel.loadResource(this@loadResource, work)
+    }
+
+    override fun <T> LiveResource<T>.loadResource(
+        work: suspend CoroutineScope.() -> T,
+        onResult: (Resource<T>) -> Resource<T>
+    ): Job =
+        this@BaseViewModel.loadResource(this@loadResource, work, onResult)
 }
 
 interface PermissionResultListener {

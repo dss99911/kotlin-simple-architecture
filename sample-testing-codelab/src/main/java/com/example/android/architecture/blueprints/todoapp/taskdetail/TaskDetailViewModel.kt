@@ -17,11 +17,11 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableLiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.ctx
 
@@ -31,10 +31,10 @@ import kim.jeonghyeon.androidlibrary.extension.ctx
  */
 class TaskDetailViewModel(
     private val navArgs: TaskDetailFragmentArgs,
-    private val tasksRepository: DefaultTasksRepository = DefaultTasksRepository()
+    private val tasksRepository: TaskRepository
 ) : BaseViewModel() {
 
-    val task = MutableLiveResource<Task>()
+    val task = LiveResource<Task>()
 
     override fun onResume() {
         onRefresh()
@@ -64,7 +64,7 @@ class TaskDetailViewModel(
     }
 
     fun setCompleted(completed: Boolean) {
-        val task: Task = task.value?.data()?:return
+        val task: Task = task.getData() ?: return
 
         launch {
             if (completed) {
@@ -78,8 +78,8 @@ class TaskDetailViewModel(
     }
 
     fun onRefresh() {
-        loadResource(task) {
-            tasksRepository.getTask(navArgs.taskid, false)
+        task.loadResource {
+            tasksRepository.getTask(navArgs.taskid)
         }
     }
 }
