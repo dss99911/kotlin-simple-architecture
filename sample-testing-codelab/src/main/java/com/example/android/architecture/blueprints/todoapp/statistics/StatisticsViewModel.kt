@@ -42,7 +42,7 @@ class StatisticsViewModel(
     }
 
     override fun onResume() {
-        tasks.loadResource {
+        tasks.load {
             tasksDao.getTasks()
         }
     }

@@ -14,13 +14,17 @@ import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val appModule = module {
+val viewModelModule = module {
     viewModel { (args: AddEditTaskFragmentArgs) -> AddEditTaskViewModel(args, get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { (args: TaskDetailFragmentArgs) -> TaskDetailViewModel(args, get()) }
     viewModel { (args: TasksFragmentArgs) -> TasksViewModel(args, get()) }
+}
 
+val dataModule = module {
     single { ToDoDatabase.instance.taskDao() }
     single { TaskApi.create() }
     single<TaskRepository> { TasksRepositoryImpl(get(), get()) }
 }
+
+val appModule = listOf(viewModelModule, dataModule)

@@ -37,6 +37,7 @@ sealed class Resource<out T> {
     fun isSuccess() = this is Success
     fun isLoading() = this is Loading
     fun isError() = this is Error
+    fun isResult() = isSuccess() || isError()
     inline fun <reified E : ResourceError> isErrorOf() = this is Error && this.error is E
 }
 

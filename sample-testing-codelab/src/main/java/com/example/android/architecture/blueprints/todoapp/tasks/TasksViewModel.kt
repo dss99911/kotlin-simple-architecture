@@ -79,7 +79,7 @@ class TasksViewModel(
      * [TasksFilterType.COMPLETED_TASKS], or
      * [TasksFilterType.ACTIVE_TASKS]
      */
-    fun setFiltering(requestType: TasksFilterType) {
+    private fun setFiltering(requestType: TasksFilterType) {
         currentFiltering = requestType
 
         // Depending on the filter type, set the filtering label, icon drawables, etc.
@@ -126,13 +126,6 @@ class TasksViewModel(
     }
 
     /**
-     * Called by the Data Binding library and the FAB's click listener.
-     */
-    fun addNewTask() {
-        newTaskEvent.call()
-    }
-
-    /**
      * Called by the [TasksAdapter].
      */
     internal fun openTask(taskId: String) {
@@ -162,7 +155,7 @@ class TasksViewModel(
      */
     fun loadTasks(forceUpdate: Boolean) {
         //todo how to force update
-        items.loadResource {
+        items.load {
             tasksRepository.getTasks()
                 .filter()
                 .map { TaskItemViewModel(it, this@TasksViewModel) }

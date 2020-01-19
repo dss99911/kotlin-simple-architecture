@@ -52,8 +52,8 @@ interface IBaseViewModel {
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
 
-    fun <T> LiveResource<T>.loadResource(work: suspend CoroutineScope.() -> T): Job
-    fun <T> LiveResource<T>.loadResource(
+    fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job
+    fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
     ): Job
@@ -227,15 +227,15 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     }
 
-    override fun <T> LiveResource<T>.loadResource(work: suspend CoroutineScope.() -> T): Job {
-        return this@BaseViewModel.loadResource(this@loadResource, work)
+    override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job {
+        return this@BaseViewModel.loadResource(this@load, work)
     }
 
-    override fun <T> LiveResource<T>.loadResource(
+    override fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
     ): Job =
-        this@BaseViewModel.loadResource(this@loadResource, work, onResult)
+        this@BaseViewModel.loadResource(this@load, work, onResult)
 }
 
 interface PermissionResultListener {

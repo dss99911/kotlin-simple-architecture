@@ -78,7 +78,7 @@ class TaskDetailViewModel(
     }
 
     fun onRefresh() {
-        task.loadResource {
+        task.load {
             tasksRepository.getTask(navArgs.taskid)
         }
     }

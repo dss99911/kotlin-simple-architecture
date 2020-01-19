@@ -12,7 +12,7 @@ class ApiCallViewModel(val api: GithubService, val dao: UserDao) : BaseViewModel
     }
 
     fun test() {
-        state.loadResource {
+        state.load {
 
         }
     }

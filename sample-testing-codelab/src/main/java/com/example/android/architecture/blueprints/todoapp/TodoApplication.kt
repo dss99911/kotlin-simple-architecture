@@ -11,6 +11,6 @@ import org.koin.core.module.Module
  */
 class TodoApplication : BaseApplication() {
     override fun getKoinModules(): List<Module> {
-        return listOf(appModule)
+        return appModule
     }
 }
