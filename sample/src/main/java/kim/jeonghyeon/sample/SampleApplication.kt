@@ -7,6 +7,8 @@ import kim.jeonghyeon.sample.mvvm.NavigationFragmentArgs
 import kim.jeonghyeon.sample.mvvm.NavigationViewModel
 import kim.jeonghyeon.sample.mvvm.SampleMVVMViewModel
 import kim.jeonghyeon.sample.mvvm.SampleParentViewModel
+import kim.jeonghyeon.sample.retrofit.api.GithubService
+import kim.jeonghyeon.sample.room.database.UserDatabase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -25,6 +27,9 @@ val appModule = module {
         )
     }
     viewModel { MainViewModel() }
-    viewModel { ApiCallViewModel() }
+    viewModel { ApiCallViewModel(get(), get()) }
     viewModel { (parent: MainActivityViewModel) -> SampleParentViewModel(parent) }
+
+    factory { GithubService.create() }
+    factory { UserDatabase.instance.userDao() }
 }

@@ -1,5 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.net
 
+import kim.jeonghyeon.androidlibrary.architecture.coroutine.DataCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.interceptor.BaseInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,6 +18,7 @@ inline fun <reified API> api(baseUrl: String): API {
             .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(DataCallAdapterFactory())
             .build()
             .create(API::class.java)
 }
