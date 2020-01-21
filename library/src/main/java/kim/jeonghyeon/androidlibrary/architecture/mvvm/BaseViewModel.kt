@@ -21,6 +21,7 @@ import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -257,6 +258,12 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
             return null
         }
         return load(work)
+    }
+}
+
+inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job {
+    return viewModelScope.launch {
+        work()
     }
 }
 
