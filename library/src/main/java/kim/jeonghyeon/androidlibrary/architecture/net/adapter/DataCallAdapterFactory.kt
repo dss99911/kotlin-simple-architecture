@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.architecture.coroutine
+package kim.jeonghyeon.androidlibrary.architecture.net.adapter
 
 import kim.jeonghyeon.androidlibrary.architecture.net.model.BaseResponseBody
 import retrofit2.Call
@@ -37,6 +37,8 @@ class DataCallAdapterFactory : CallAdapter.Factory() {
             }
         }
 
-        return DataCallAdapter<Any, BaseResponseBody<Any>>(baseResponseBodyGenericType)
+        return DataCallAdapter<Any, BaseResponseBody<Any>>(
+            baseResponseBodyGenericType
+        )
     }
 }

@@ -8,32 +8,27 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
-import androidx.navigation.NavArgs
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
-import org.jetbrains.anko.support.v4.toast
 
 /**
  * Methods
  * - setMenu()
  */
 
-interface IBaseFragment : IBasePage {
-//  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
-//fun <reified T : NavArgs> getNavArgs(): T
-
+interface IBaseFragment : IBaseUi {
     /**
      * used on pager. if not used always true.
      */
@@ -168,10 +163,6 @@ abstract class BaseFragment : Fragment(),
         viewModels.values.map { it.value }.forEach {
             it.state.observe(stateObserver)
 
-            it.eventToast.observeEvent {
-                toast(it)
-            }
-
             it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
@@ -250,17 +241,6 @@ abstract class BaseFragment : Fragment(),
     override fun NavDirections.navigate() {
         findNavController().navigate(this)
     }
-
-    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
-        return SavedStateViewModelFactory(
-            app,
-            savedStateRegistryOwner
-        ).create(SavedStateViewModel::class.java)
-            .savedStateHandle
-    }
-
-    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
-
 
     override fun onStart() {
         super.onStart()

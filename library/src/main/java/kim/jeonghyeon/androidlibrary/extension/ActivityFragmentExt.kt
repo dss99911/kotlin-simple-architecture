@@ -20,6 +20,9 @@ import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgs
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navArgs
 import kim.jeonghyeon.kotlinlibrary.extension.onFalse
 import kim.jeonghyeon.kotlinlibrary.extension.onTrue
 
@@ -142,3 +145,7 @@ fun Fragment.buildListDialog(title: String, items: Array<String>, itemClickListe
         .setTitle(title)
         .setAdapter(ArrayAdapter<String>(context, android.R.layout.select_dialog_singlechoice).apply { addAll(*items) }, itemClickListener)
 }
+
+inline fun <reified T : NavArgs> Activity.getNavArgs(): T = navArgs<T>().value
+
+inline fun <reified T : NavArgs> Fragment.getNavArgs(): T = navArgs<T>().value

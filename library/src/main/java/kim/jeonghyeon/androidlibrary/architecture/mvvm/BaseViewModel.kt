@@ -8,17 +8,14 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.SparseArray
+import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
@@ -28,11 +25,10 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 interface IBaseViewModel {
-    val state: ILiveState
-    val eventToast: IBaseLiveData<String>
-    val eventSnackbar: IBaseLiveData<String>
-    val eventStartActivity: IBaseLiveData<Intent>
-    val eventShowProgressBar: IBaseLiveData<Boolean>
+    val state: LiveState
+    val eventSnackbar: BaseLiveData<String>
+    val eventStartActivity: BaseLiveData<Intent>
+    val eventShowProgressBar: BaseLiveData<Boolean>
 
     fun onCreate()
     fun onStart()
@@ -52,16 +48,26 @@ interface IBaseViewModel {
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
 
+    @MainThread
     fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job
+
+    @MainThread
     fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
     ): Job
+
+    @MainThread
+    fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T): Job
+
+    /**
+     * if it is loading, ignore
+     */
+    fun <T> LiveResource<T>.loadOneByOne(work: suspend CoroutineScope.() -> T): Job?
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
-    override val eventToast by lazy { BaseLiveData<String>() }
     override val eventSnackbar by lazy { BaseLiveData<String>() }
     override val eventStartActivity by lazy { BaseLiveData<Intent>() }
 
@@ -149,13 +155,16 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         }
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    internal fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         resultListeners[requestCode]?.invoke(resultCode, data)
         resultListeners.remove(requestCode)
     }
 
     @SuppressLint("ObsoleteSdkInt")//this can be used on different minimum sdk
-    override fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener) {
+    override fun requestPermissions(
+        permissions: Array<String>,
+        listener: PermissionResultListener
+    ) {
         //this is called on activity because using requestCode of activity
         performWithActivity { activity ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -190,7 +199,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         }
     }
 
-    fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
+    internal fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         performWithActivity { activity ->
             val deniedPermissions = ArrayList<String>()
             var hasPermanentDenied = false
@@ -228,14 +237,27 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job {
-        return this@BaseViewModel.loadResource(this@load, work)
+        return viewModelScope.loadResource(this@load, work)
     }
 
     override fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
+    ): Job = viewModelScope.loadResource(this@load, work, onResult)
+
+    @MainThread
+    override fun <T> LiveResource<T>.load(
+        state: LiveState,
+        work: suspend CoroutineScope.() -> T
     ): Job =
-        this@BaseViewModel.loadResource(this@load, work, onResult)
+        viewModelScope.loadResource(this@load, state, work)
+
+    override fun <T> LiveResource<T>.loadOneByOne(work: suspend CoroutineScope.() -> T): Job? {
+        if (value.isLoadingNotNull()) {
+            return null
+        }
+        return load(work)
+    }
 }
 
 interface PermissionResultListener {
@@ -257,4 +279,25 @@ interface PermissionResultListener {
     fun onPermissionDeniedPermanently(deniedPermissions: Array<String>) {}
 
     fun onPermissionException() {}
+}
+
+/**
+ * the reason to use Event instead of SingleLiveEvent is that. SingleLiveEvent is class and difficult to integrate with other livedata
+ */
+@Deprecated("use BaseLiveData")
+open class Event<out T>(private val content: T) {
+
+    var handled = false
+        private set // Allow external read but not write
+
+    fun handle(): T {
+        handled = true
+        return content
+    }
+
+    /**
+     * Returns the content, even if it's already been handled.
+     * this is used when one time or multi time both are used.
+     */
+    fun get(): T = content
 }

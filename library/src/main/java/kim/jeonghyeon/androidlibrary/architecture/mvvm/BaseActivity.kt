@@ -13,15 +13,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.observe
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
@@ -29,18 +28,12 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
 
-interface IBaseActivity : IBasePage {
+interface IBaseActivity : IBaseUi {
     /**
      * if you want to use nav controller, override this
      */
     val navHostId: Int
     val navController: NavController
-
-    //has 'this' default parameter. so, commented out
-    //fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
-
-    //has reified. so, commented out
-    //fun <reified T : NavArgs> getNavArgs(): T
 }
 
 abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
@@ -114,10 +107,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     private fun setupObserver() {
         viewModels.values.map { it.value }.forEach {
             it.state.observe(stateObserver)
-
-            it.eventToast.observeEvent {
-                toast(it)
-            }
 
             it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
@@ -230,17 +219,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     override fun NavDirections.navigate() {
         navController.navigate(this)
     }
-
-
-    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
-        return SavedStateViewModelFactory(
-            app,
-            savedStateRegistryOwner
-        ).create(SavedStateViewModel::class.java)
-            .savedStateHandle
-    }
-
-    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
 
     override fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit) {
         observe(this@BaseActivity, onChanged)

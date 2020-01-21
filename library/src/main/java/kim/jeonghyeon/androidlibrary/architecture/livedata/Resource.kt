@@ -48,8 +48,9 @@ fun Resource<*>?.isSuccessNotNull() = this?.isSuccess() ?: false
 
 
 fun Resource<*>?.isErrorNotNull() = this?.isError() ?: false
+fun Resource<*>?.isResultNotNull() = this?.isResult() ?: false
 
-fun <T> Resource<T>.asLiveData() = liveResource(this)
+fun <T> Resource<T>.asLive() = liveResource(this)
 
 
 typealias State = Resource<Any?>

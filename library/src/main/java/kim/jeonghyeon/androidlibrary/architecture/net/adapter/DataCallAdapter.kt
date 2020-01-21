@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.architecture.coroutine
+package kim.jeonghyeon.androidlibrary.architecture.net.adapter
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException

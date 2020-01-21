@@ -2,10 +2,13 @@
 dependencies {
 
     //android document doesn't request this library. let's consider this later.
-//    testImplementation deps.arch_core.testing
-//    testImplementation deps.mock_web_server
-
-    androidTestImplementation 'androidx.test:core:1.2.0'
+    testImplementation deps.arch_core.testing
+    testImplementation deps.mock_web_server
+    testImplementation deps.koin.test
+    testImplementation deps.kotlin.coroutine_test
+    testImplementation deps.mockito.core
+    testImplementation deps.mockito.all
+    testImplementation deps.mockito.android
 
     // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation 'androidx.test:runner:1.2.0'
@@ -13,8 +16,7 @@ dependencies {
 
     // Assertions
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
-    androidTestImplementation 'com.google.truth:truth:0.44'
+    testImplementation 'com.google.truth:truth:1.0.1'
 
     // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -29,6 +31,8 @@ dependencies {
     // dependency to appear on your APK's compile classpath or the test APK
     // classpath.
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
+
+
 
     kapt deps.room.compiler
     kapt deps.dagger.android_support_compiler

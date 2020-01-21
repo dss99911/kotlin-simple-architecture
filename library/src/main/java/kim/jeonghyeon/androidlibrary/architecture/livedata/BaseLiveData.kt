@@ -8,15 +8,21 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import java.util.concurrent.atomic.AtomicBoolean
 
-
-interface IBaseLiveData<T> {
-    fun onFirstActive()
-    fun removeSources()
-    fun observeEvent(owner: LifecycleOwner, observer: Observer<in T>)
-    fun observe(owner: LifecycleOwner, observer: Observer<in T>)
-}
-
-open class BaseLiveData<T>() : MediatorLiveData<T>(), IBaseLiveData<T> {
+/**
+ * SingleLiveData.java
+ *  - livedata.switchMap { SingleLiveData(it.value) }
+ *  - this is limited to use on single event. and difficult to convert to normal live data
+ * LiveData<Event>.kt
+ *  - livedata.map { Event(it) }
+ *  - extensions
+ *  - but we have to use Event. and understand new concept of Event.
+ *  - and sometimes event and not event both case can be happen.
+ *
+ * BaseLiveData<>
+ * .asBase()
+ *  - view side decide if it is event or not. viewModel doesn't need to know it.
+ */
+open class BaseLiveData<T>() : MediatorLiveData<T>() {
     constructor(value: T) : this() {
         setValue(value)
     }
@@ -31,14 +37,14 @@ open class BaseLiveData<T>() : MediatorLiveData<T>(), IBaseLiveData<T> {
         super.onActive()
     }
 
-    override fun onFirstActive() {}
+    fun onFirstActive() {}
     //endregion firstActive
 
     //region sources
 
     private val sources by lazy { mutableListOf<LiveData<*>>() }
 
-    override fun removeSources() {
+    fun removeSources() {
         sources.forEach {
             removeSource(it)
         }
@@ -48,6 +54,15 @@ open class BaseLiveData<T>() : MediatorLiveData<T>(), IBaseLiveData<T> {
         super.addSource(source, onChanged)
         sources.add(source)
     }
+
+    fun addSources(vararg source: LiveData<Any?>, onChanged: () -> Unit) {
+        source.forEach {
+            addSource(it) {
+                onChanged()
+            }
+        }
+    }
+
 
     override fun <S : Any?> removeSource(toRemote: LiveData<S>) {
         super.removeSource(toRemote)
@@ -62,7 +77,7 @@ open class BaseLiveData<T>() : MediatorLiveData<T>(), IBaseLiveData<T> {
         private set // Allow external read but not write
 
     @MainThread
-    override fun observeEvent(owner: LifecycleOwner, observer: Observer<in T>) {
+    fun observeEvent(owner: LifecycleOwner, observer: Observer<in T>) {
         //only one observer will be notified of changes.
 
         // Observe the internal MutableLiveData

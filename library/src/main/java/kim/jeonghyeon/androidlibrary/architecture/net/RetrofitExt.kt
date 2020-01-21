@@ -1,6 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.net
 
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.DataCallAdapterFactory
+import kim.jeonghyeon.androidlibrary.architecture.net.adapter.DataCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.interceptor.BaseInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

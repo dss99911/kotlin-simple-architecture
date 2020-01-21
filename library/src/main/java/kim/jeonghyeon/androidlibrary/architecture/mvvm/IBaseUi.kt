@@ -5,19 +5,23 @@ import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.extension.app
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
-interface IBasePage : LifecycleOwner {
+interface IBaseUi : SavedStateRegistryOwner {
     /**
      * viewModel name should be "model" for auto binding
      * if you'd like to change it, override setVariable
@@ -59,7 +63,7 @@ interface IBasePage : LifecycleOwner {
     fun <T> BaseLiveData<T>.observe(observer: Observer<in T>)
 }
 
-fun <T> IBasePage.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
+fun <T> IBaseUi.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
     Observer {
         if (it.isLoading()) {
             progressDialog.showWithoutException()
@@ -73,3 +77,13 @@ fun <T> IBasePage.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resou
 
         it.onSuccess(onSuccess)
     }
+
+fun IBaseUi.getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
+    return SavedStateViewModelFactory(
+        app,
+        savedStateRegistryOwner
+    ).create(SavedStateViewModel::class.java)
+        .savedStateHandle
+}
+
+internal class SavedStateViewModel(val savedStateHandle: SavedStateHandle) : ViewModel()

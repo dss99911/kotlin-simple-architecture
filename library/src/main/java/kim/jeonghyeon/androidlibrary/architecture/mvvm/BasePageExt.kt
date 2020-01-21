@@ -5,7 +5,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 
-inline fun <reified V : BaseViewModel> IBasePage.bindingViewModel(
+inline fun <reified V : BaseViewModel> IBaseUi.bindingViewModel(
     variableId: Int = BR.model,
     qualifier: Qualifier? = null,
     noinline parameters: ParametersDefinition? = null
