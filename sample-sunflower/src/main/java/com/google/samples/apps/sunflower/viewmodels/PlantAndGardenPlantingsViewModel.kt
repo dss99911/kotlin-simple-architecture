@@ -16,13 +16,15 @@
 
 package com.google.samples.apps.sunflower.viewmodels
 
-import androidx.lifecycle.ViewModel
 import com.google.samples.apps.sunflower.data.PlantAndGardenPlantings
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PlantAndGardenPlantingsViewModel(plantings: PlantAndGardenPlantings, val onClick: (String) -> Unit) : ViewModel(),
+class PlantAndGardenPlantingsViewModel(
+    plantings: PlantAndGardenPlantings,
+    val onClick: (String) -> Unit
+) :
     DiffComparable<PlantAndGardenPlantingsViewModel> {
     val plant = checkNotNull(plantings.plant)
     val gardenPlanting = plantings.gardenPlantings[0]
