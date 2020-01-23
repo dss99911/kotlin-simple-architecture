@@ -49,11 +49,11 @@ private suspend fun <T> LiveDataScope<Resource<T>>.processLiveData(
     data: suspend () -> T
 ) {
     emit(Resource.Loading)
-
     try {
         Resource.Success(data())
     } catch (e: ResourceException) {
         Resource.Error(e.error) {
+            //todo globalscope??
             GlobalScope.launch {
                 processLiveData(data)
             }
@@ -71,7 +71,8 @@ fun <T> CoroutineScope.loadResource(
     work: suspend CoroutineScope.() -> T
 ): Job {
     liveData?.setLoading()
-    return launch {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
         val result = getResource(work) {
             loadResource(liveData, work)
         }
@@ -87,7 +88,8 @@ fun <T, U> CoroutineScope.loadResourcePartialRetryable(
     part2: suspend CoroutineScope.(T) -> U
 ): Job {
     liveData?.setLoading()
-    return launch {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
             loadResourcePartialRetryable(liveData, part1, part2)
@@ -111,7 +113,8 @@ fun <T, U, V> CoroutineScope.loadResourcePartialRetryable(
 ): Job {
     liveData?.setLoading()
 
-    return launch {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
             loadResourcePartialRetryable(liveData, part1, part2, part3)
@@ -144,7 +147,8 @@ fun <T, U, V, W> CoroutineScope.loadResourcePartialRetryable(
 ): Job {
     liveData?.setLoading()
 
-    return launch {
+//if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
             loadResourcePartialRetryable(liveData, part1, part2, part3, part4)
@@ -194,7 +198,8 @@ fun <T> CoroutineScope.loadResource(
     onResult: (Resource<T>) -> Resource<T>
 ): Job {
     liveData?.setLoading()
-    return launch {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
         val result = getResource(work) {
             loadResource(liveData, work, onResult)
         }
@@ -210,7 +215,8 @@ fun <T> CoroutineScope.loadResource(
 ): Job {
     liveData?.setLoading()
     state?.setLoading()
-    return launch {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }) {
         val result = getResource(work) {
             loadResource(liveData, state, work)
         }
@@ -277,6 +283,7 @@ fun <T> LiveData<Resource<T>>.asResource(): LiveResource<T> = liveResource<T>().
 }
 
 /**
+ * don't use this after other async(), if the async() error occrus, this should be stopped but because of try catch, this is not stopped.
  * @param action returns data and not polling again. but if exception occurs, polling
  */
 @Throws(PollingException::class)

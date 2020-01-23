@@ -18,6 +18,7 @@ import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -101,6 +102,10 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
+
+    init {
+        log("initialized")
+    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate() {
