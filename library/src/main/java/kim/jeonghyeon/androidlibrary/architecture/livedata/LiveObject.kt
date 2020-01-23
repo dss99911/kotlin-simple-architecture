@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * .asBase()
  *  - view side decide if it is event or not. viewModel doesn't need to know it.
  */
-open class BaseLiveData<T>() : MediatorLiveData<T>() {
+open class LiveObject<T>() : MediatorLiveData<T>() {
     constructor(value: T) : this() {
         setValue(value)
     }
@@ -37,7 +37,7 @@ open class BaseLiveData<T>() : MediatorLiveData<T>() {
         super.onActive()
     }
 
-    fun onFirstActive() {}
+    open fun onFirstActive() {}
     //endregion firstActive
 
     //region sources
@@ -61,6 +61,12 @@ open class BaseLiveData<T>() : MediatorLiveData<T>() {
                 onChanged()
             }
         }
+    }
+
+    fun <S : Any?> replaceSource(source: LiveData<S>, onChanged: Observer<in S>) {
+        removeSources()
+        super.addSource(source, onChanged)
+        sources.add(source)
     }
 
 
@@ -90,42 +96,42 @@ open class BaseLiveData<T>() : MediatorLiveData<T>() {
     }
 
     @MainThread
-    override fun setValue(t: T?) {
+    final override fun setValue(t: T?) {
         handled = false
         super.setValue(t)
     }
     //endregion event
 }
 
-fun <T> BaseLiveData<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {
+fun <T> LiveObject<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observeEvent(owner, Observer {
         onChanged(it)
     })
 }
 
-operator fun <T> BaseLiveData<T>.plusAssign(other: LiveData<out T>) {
+operator fun <T> LiveObject<T>.plusAssign(other: LiveData<out T>) {
     addSource(other, ::setValue)
 }
 
-fun <T> BaseLiveData<T>.receive(other: () -> LiveData<T>) {
+fun <T> LiveObject<T>.receive(other: () -> LiveData<T>) {
     addSource(other(), ::setValue)
 }
 
 
 @MainThread
-inline fun <X, Y> BaseLiveData<X>.map(crossinline transform: (X) -> Y): BaseLiveData<Y> {
-    val result = BaseLiveData<Y>()
+inline fun <X, Y> LiveObject<X>.map(crossinline transform: (X) -> Y): LiveObject<Y> {
+    val result = LiveObject<Y>()
     result.addSource(this) { x -> result.value = transform(x) }
     return result
 }
 
 @MainThread
-inline fun <X, Y> BaseLiveData<X>.switchMap(
-    crossinline transform: (X) -> BaseLiveData<Y>
-): BaseLiveData<Y> {
-    val result = BaseLiveData<Y>()
+inline fun <X, Y> LiveObject<X>.switchMap(
+    crossinline transform: (X) -> LiveObject<Y>
+): LiveObject<Y> {
+    val result = LiveObject<Y>()
     result.addSource(this, object : Observer<X> {
-        var mSource: BaseLiveData<Y>? = null
+        var mSource: LiveObject<Y>? = null
         override fun onChanged(x: X) {
             val newLiveData = transform(x)
             if (mSource === newLiveData) {
@@ -146,8 +152,8 @@ inline fun <X, Y> BaseLiveData<X>.switchMap(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <X> BaseLiveData<X>.distinct(): BaseLiveData<X> {
-    val outputLiveData = BaseLiveData<X>()
+inline fun <X> LiveObject<X>.distinct(): LiveObject<X> {
+    val outputLiveData = LiveObject<X>()
     outputLiveData.addSource(this, object : Observer<X> {
         var mFirstTime = true
         override fun onChanged(currentValue: X) {
@@ -168,7 +174,7 @@ inline fun <X> BaseLiveData<X>.distinct(): BaseLiveData<X> {
 /**
  * if return is true, remove observer
  */
-fun <T> BaseLiveData<T>.observeUntil(@NonNull func: (T) -> Boolean) {
+fun <T> LiveObject<T>.observeUntil(@NonNull func: (T) -> Boolean) {
     observeForever(object : Observer<T> {
         override fun onChanged(t: T) {
             if (func(t)) {
@@ -178,14 +184,14 @@ fun <T> BaseLiveData<T>.observeUntil(@NonNull func: (T) -> Boolean) {
     })
 }
 
-fun <T> LiveData<T>.asBase(): BaseLiveData<T> = BaseLiveData<T>().apply {
+fun <T> LiveData<T>.asBase(): LiveObject<T> = LiveObject<T>().apply {
     plusAssign(this@asBase)
 }
 
-fun <T> BaseLiveData<T>.call(value: T) {
+fun <T> LiveObject<T>.call(value: T) {
     postValue(value)
 }
 
-fun BaseLiveData<Unit>.call() {
+fun LiveObject<Unit>.call() {
     postValue(Unit)
 }

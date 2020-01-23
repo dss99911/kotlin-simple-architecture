@@ -2,10 +2,10 @@ package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import kim.jeonghyeon.androidlibrary.architecture.repository.PreferenceCache
 
-open class PreferenceLiveData<T>(
+open class LivePreference<T>(
     val key: String,
     private val stringToValue: (String?) -> T?
-) : BaseLiveData<T>(), PreferenceCache.OnSharedPreferenceChangeListener {
+) : LiveObject<T>(), PreferenceCache.OnSharedPreferenceChangeListener {
 
     override fun onFirstActive() {
         super.onFirstActive()

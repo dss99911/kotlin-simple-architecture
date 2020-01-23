@@ -3,16 +3,12 @@ package kim.jeonghyeon.androidlibrary.architecture.paging
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveState
-import kim.jeonghyeon.androidlibrary.architecture.livedata.asBase
-import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kotlinx.coroutines.GlobalScope
 
 abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageSize: Int) : DataSource.Factory<String, ITEM>() {
 
-    private val sourceLiveData = BaseLiveData<BaseNetworkDataSource<ITEM, RDATA>>()
+    private val sourceLiveData = LiveObject<BaseNetworkDataSource<ITEM, RDATA>>()
 
     /**
      * if first page, it's 1

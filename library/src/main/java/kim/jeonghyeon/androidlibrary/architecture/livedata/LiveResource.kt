@@ -7,14 +7,11 @@ import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.liveData
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
-typealias LiveResource<T> = BaseLiveData<Resource<T>>
-typealias LiveState = BaseLiveData<State>
+typealias LiveResource<T> = LiveObject<Resource<T>>
+typealias LiveState = LiveObject<State>
 
 fun <T> liveResource(value: Resource<T> = Resource.None): LiveResource<T> {
     return LiveResource(value)
@@ -81,6 +78,114 @@ fun <T> CoroutineScope.loadResource(
         liveData?.postValue(result)
     }
 }
+
+
+@MainThread
+fun <T, U> CoroutineScope.loadResourcePartialRetryable(
+    liveData: LiveResource<U>? = null,
+    part1: suspend CoroutineScope.() -> T,
+    part2: suspend CoroutineScope.(T) -> U
+): Job {
+    liveData?.setLoading()
+    return launch {
+
+        val result1 = getResource(part1) {
+            loadResourcePartialRetryable(liveData, part1, part2)
+        }
+        val result2 = getNextResource(result1, part2) {
+            loadResource(liveData) {
+                part2((result1 as Resource.Success).data)
+            }
+        }
+
+        liveData?.postValue(result2)
+    }
+}
+
+@MainThread
+fun <T, U, V> CoroutineScope.loadResourcePartialRetryable(
+    liveData: LiveResource<V>? = null,
+    part1: suspend CoroutineScope.() -> T,
+    part2: suspend CoroutineScope.(T) -> U,
+    part3: suspend CoroutineScope.(U) -> V
+): Job {
+    liveData?.setLoading()
+
+    return launch {
+
+        val result1 = getResource(part1) {
+            loadResourcePartialRetryable(liveData, part1, part2, part3)
+        }
+
+        val result2 = getNextResource(result1, part2) {
+            loadResourcePartialRetryable(liveData, {
+                part2((result1 as Resource.Success).data)
+            }, part3)
+        }
+
+        val result3 = getNextResource(result2, part3) {
+            loadResource(liveData) {
+                part3((result2 as Resource.Success).data)
+            }
+        }
+
+        liveData?.postValue(result3)
+    }
+
+}
+
+@MainThread
+fun <T, U, V, W> CoroutineScope.loadResourcePartialRetryable(
+    liveData: LiveResource<W>? = null,
+    part1: suspend CoroutineScope.() -> T,
+    part2: suspend CoroutineScope.(T) -> U,
+    part3: suspend CoroutineScope.(U) -> V,
+    part4: suspend CoroutineScope.(V) -> W
+): Job {
+    liveData?.setLoading()
+
+    return launch {
+
+        val result1 = getResource(part1) {
+            loadResourcePartialRetryable(liveData, part1, part2, part3, part4)
+        }
+
+        val result2 = getNextResource(result1, part2) {
+            loadResourcePartialRetryable(liveData, {
+                part2((result1 as Resource.Success).data)
+            }, part3, part4)
+        }
+
+        val result3 = getNextResource(result2, part3) {
+            loadResourcePartialRetryable(liveData, {
+                part3((result2 as Resource.Success).data)
+            }, part4)
+        }
+
+        val result4 = getNextResource(result3, part4) {
+            loadResource(liveData) {
+                part4((result3 as Resource.Success).data)
+            }
+        }
+
+        liveData?.postValue(result4)
+    }
+
+}
+
+private suspend fun <T, U> CoroutineScope.getNextResource(
+    previous: Resource<T>,
+    part2: suspend CoroutineScope.(T) -> U,
+    retry: () -> Unit
+): Resource<U> {
+    val result2 = if (previous is Resource.Success) {
+        getResource({ part2(previous.data) }, retry)
+    } else {
+        previous as Resource<Nothing>
+    }
+    return result2
+}
+
 
 @MainThread
 fun <T> CoroutineScope.loadResource(
@@ -170,3 +275,27 @@ fun <X, Y> LiveResource<X>.successMap(@NonNull func: (X) -> Resource<Y>): LiveRe
 fun <T> LiveData<Resource<T>>.asResource(): LiveResource<T> = liveResource<T>().apply {
     plusAssign(this@asResource)
 }
+
+/**
+ * @param action returns data and not polling again. but if exception occurs, polling
+ */
+@Throws(PollingException::class)
+suspend inline fun <T> polling(
+    count: Int,
+    initialDelay: Long,
+    delayMillis: Long,
+    action: (index: Int) -> T
+): T {
+    delay(initialDelay)
+    repeat(count) { repeatIndex ->
+        try {
+            return action(repeatIndex)
+        } catch (e: Exception) {
+            //retry
+            delay(delayMillis)
+        }
+    }
+    throw PollingException()
+}
+
+class PollingException : RuntimeException()

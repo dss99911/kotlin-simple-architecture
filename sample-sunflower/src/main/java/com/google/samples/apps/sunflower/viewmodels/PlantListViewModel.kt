@@ -20,7 +20,7 @@ import com.google.samples.apps.sunflower.HomeViewPagerFragmentDirections
 import com.google.samples.apps.sunflower.PlantListFragment
 import com.google.samples.apps.sunflower.data.Plant
 import com.google.samples.apps.sunflower.data.PlantRepository
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.map
 import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
@@ -30,9 +30,9 @@ import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
  */
 class PlantListViewModel internal constructor(plantRepository: PlantRepository) : BaseViewModel() {
 
-    private val growZoneNumber = BaseLiveData(NO_GROW_ZONE)
+    private val growZoneNumber = LiveObject(NO_GROW_ZONE)
 
-    val plants: BaseLiveData<List<PlantItemViewModel>> = growZoneNumber.switchMap {
+    val plants: LiveObject<List<PlantItemViewModel>> = growZoneNumber.switchMap {
         if (it == NO_GROW_ZONE) {
             plantRepository.getPlants()
         } else {

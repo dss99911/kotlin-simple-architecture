@@ -18,7 +18,7 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
@@ -254,19 +254,19 @@ abstract class BaseFragment : Fragment(),
         log("${this::class.simpleName} : $visible")
     }
 
-    override fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit) {
+    override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {
         observe(this@BaseFragment, onChanged)
     }
 
-    override fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit) {
+    override fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit) {
         observeEvent(this@BaseFragment, onChanged)
     }
 
-    override fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>) {
+    override fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>) {
         observeEvent(this@BaseFragment, observer)
     }
 
-    override fun <T> BaseLiveData<T>.observe(observer: Observer<in T>) {
+    override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
         observe(this@BaseFragment, observer)
     }
 }

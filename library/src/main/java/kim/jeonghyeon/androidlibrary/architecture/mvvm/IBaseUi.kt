@@ -13,7 +13,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.extension.app
@@ -57,10 +57,10 @@ interface IBaseUi : SavedStateRegistryOwner {
 
     val progressDialog: AlertDialog
 
-    fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit)
-    fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit)
-    fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>)
-    fun <T> BaseLiveData<T>.observe(observer: Observer<in T>)
+    fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit)
+    fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit)
+    fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>)
+    fun <T> LiveObject<T>.observe(observer: Observer<in T>)
 }
 
 fun <T> IBaseUi.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =

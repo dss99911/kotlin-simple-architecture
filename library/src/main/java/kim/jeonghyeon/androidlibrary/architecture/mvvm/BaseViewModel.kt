@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger
 
 interface IBaseViewModel {
     val state: LiveState
-    val eventSnackbar: BaseLiveData<String>
-    val eventStartActivity: BaseLiveData<Intent>
-    val eventShowProgressBar: BaseLiveData<Boolean>
+    val eventSnackbar: LiveObject<String>
+    val eventStartActivity: LiveObject<Intent>
+    val eventShowProgressBar: LiveObject<Boolean>
 
     fun onCreate()
     fun onStart()
@@ -65,21 +65,39 @@ interface IBaseViewModel {
      * if it is loading, ignore
      */
     fun <T> LiveResource<T>.loadOneByOne(work: suspend CoroutineScope.() -> T): Job?
+
+    fun <T, U> LiveResource<U>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U
+    ): Job
+
+    fun <T, U, V> LiveResource<V>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V
+    ): Job
+
+    fun <T, U, V, W> LiveResource<W>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V,
+        part4: suspend CoroutineScope.(V) -> W
+    ): Job
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
-    override val eventSnackbar by lazy { BaseLiveData<String>() }
-    override val eventStartActivity by lazy { BaseLiveData<Intent>() }
+    override val eventSnackbar by lazy { LiveObject<String>() }
+    override val eventStartActivity by lazy { LiveObject<Intent>() }
 
-    override val eventShowProgressBar by lazy { BaseLiveData<Boolean>() }
+    override val eventShowProgressBar by lazy { LiveObject<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventNavDirectionId by lazy { BaseLiveData<Int>() }
-    internal val eventNav by lazy { BaseLiveData<(NavController) -> Unit>() }
-    internal val eventNavDirection by lazy { BaseLiveData<NavDirections>() }
+    val eventNavDirectionId by lazy { LiveObject<Int>() }
+    val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
+    val eventNavDirection by lazy { LiveObject<NavDirections>() }
     @Suppress("DEPRECATION")
-    internal val eventPerformWithActivity by lazy { BaseLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
+    val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
@@ -259,13 +277,30 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         }
         return load(work)
     }
+
+    override fun <T, U> LiveResource<U>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U
+    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2)
+
+    override fun <T, U, V> LiveResource<V>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V
+    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3)
+
+    override fun <T, U, V, W> LiveResource<W>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V,
+        part4: suspend CoroutineScope.(V) -> W
+    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3, part4)
 }
 
-inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job {
-    return viewModelScope.launch {
+inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job =
+    viewModelScope.launch {
         work()
     }
-}
 
 interface PermissionResultListener {
     /**

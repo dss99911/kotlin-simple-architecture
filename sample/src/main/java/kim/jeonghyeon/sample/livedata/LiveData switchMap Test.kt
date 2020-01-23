@@ -4,7 +4,7 @@ import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.switchMap
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 
 fun testLiveDataActiveDeactiveRepeat() {
     val start = MutableLiveData<String>()
@@ -40,7 +40,7 @@ fun testLiveDataActiveDeactiveRepeat() {
     start.value = "start"
 }
 
-class TestLiveData(val name: String) : BaseLiveData<String>() {
+class TestLiveData(val name: String) : LiveObject<String>() {
     override fun onFirstActive() {
         super.onFirstActive()
         Handler().postDelayed({

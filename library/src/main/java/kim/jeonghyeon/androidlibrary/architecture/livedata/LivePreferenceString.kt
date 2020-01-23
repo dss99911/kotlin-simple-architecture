@@ -11,7 +11,8 @@ import kim.jeonghyeon.androidlibrary.extension.getString
  * Consideration
  * - It should not update when setValue(), cuz if do that, if setValue(), and save failed. but LiveData already notify updated value. so, please call update()
  */
-class PreferenceLiveString(val key: String) : BaseLiveData<String>(), PreferenceCache.OnSharedPreferenceChangeListener {
+class LivePreferenceString(val key: String) : LiveObject<String>(),
+    PreferenceCache.OnSharedPreferenceChangeListener {
 
 
     constructor(@IdRes resId: Int) : this(resId.getString())

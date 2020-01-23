@@ -23,7 +23,7 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
@@ -220,19 +220,19 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         navController.navigate(this)
     }
 
-    override fun <T> BaseLiveData<T>.observe(onChanged: (T) -> Unit) {
+    override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {
         observe(this@BaseActivity, onChanged)
     }
 
-    override fun <T> BaseLiveData<T>.observeEvent(onChanged: (T) -> Unit) {
+    override fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit) {
         observeEvent(this@BaseActivity, onChanged)
     }
 
-    override fun <T> BaseLiveData<T>.observeEvent(observer: Observer<in T>) {
+    override fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>) {
         observeEvent(this@BaseActivity, observer)
     }
 
-    override fun <T> BaseLiveData<T>.observe(observer: Observer<in T>) {
+    override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
         observe(this@BaseActivity, observer)
     }
 }
