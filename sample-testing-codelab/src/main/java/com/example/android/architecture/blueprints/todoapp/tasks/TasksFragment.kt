@@ -86,7 +86,7 @@ class TasksFragment : BaseFragment() {
             menuInflater.inflate(R.menu.filter_tasks, menu)
 
             setOnMenuItemClickListener {
-                viewModel.onMenuItemClicked(it ?: return@setOnMenuItemClickListener false)
+                viewModel.onMenuItemClicked(it.itemId)
 
                 true
             }

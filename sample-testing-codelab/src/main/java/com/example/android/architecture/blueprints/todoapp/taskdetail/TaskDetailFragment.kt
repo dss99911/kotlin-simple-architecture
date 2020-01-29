@@ -18,6 +18,7 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 import com.example.android.architecture.blueprints.todoapp.R
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import kim.jeonghyeon.androidlibrary.extension.getNavArgs
 import org.koin.core.parameter.parametersOf
 
 /**

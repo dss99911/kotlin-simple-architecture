@@ -14,6 +14,22 @@ android {
     }
 
 
+    productFlavors {
+        dev {
+            dimension "stage"
+            buildConfigField "String", "SERVER_URL", "\"http://example.com\""
+        }
+
+        prod {
+            dimension "stage"
+            buildConfigField "String", "SERVER_URL", "\"http://example.com\""
+        }
+
+        mock {
+            dimension "stage"
+            buildConfigField "String", "SERVER_URL", "\"/\""
+        }
+    }
 
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests {

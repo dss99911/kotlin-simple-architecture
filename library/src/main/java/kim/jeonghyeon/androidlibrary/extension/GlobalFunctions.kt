@@ -23,6 +23,14 @@ import org.jetbrains.anko.telephonyManager
 val isDebug: Boolean
     inline get() = BuildConfig.DEBUG
 
+val isProdRelease: Boolean
+    inline get() = BuildConfig.isProd && !isDebug
+
+val isTesting: Boolean
+    get() =
+        noThrow { Class.forName("android.support.test.espresso.Espresso") } != null
+                || noThrow { Class.forName("org.robolectric.RobolectricTestRunner") } != null
+
 
 val ctx: Context
     inline get() = app

@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_done"
-            android:onClick="@{() -> viewmodel.saveTask()}"
+                android:onClick="@{() -> viewmodel.onClickFAB()}"
             app:fabSize="normal"
             app:layout_anchor="@id/refresh_layout"
             app:layout_anchorGravity="bottom|right|end"/>

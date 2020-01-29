@@ -91,6 +91,7 @@ android {
 
     dataBinding {
         enabled = true
+        enabledForTests = true
     }
 
     compileOptions {
@@ -99,6 +100,17 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    // Always show the result of every unit test, even if it passes.
+    testOptions.unitTests {
+        includeAndroidResources = true
+
+        all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+            }
+        }
     }
 
     useLibrary 'android.test.runner'

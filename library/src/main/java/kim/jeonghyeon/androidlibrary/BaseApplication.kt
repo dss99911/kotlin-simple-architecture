@@ -1,9 +1,12 @@
 package kim.jeonghyeon.androidlibrary
 
 import android.app.Application
+import kim.jeonghyeon.androidlibrary.extension.isProdRelease
+import kim.jeonghyeon.androidlibrary.extension.isTesting
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
 import timber.log.Timber
 
@@ -15,8 +18,9 @@ open class BaseApplication : Application() {
     @Suppress("RedundantModalityModifier")
     final override fun onCreate() {
         super.onCreate()
+        instance = this
 
-        if (BuildConfig.DEBUG) {
+        if (!isProdRelease) {
             Timber.plant(object : Timber.DebugTree() {
                 override fun createStackElementTag(element: StackTraceElement): String {
                     return String.format("L::(%s:%s)#%s",
@@ -26,16 +30,23 @@ open class BaseApplication : Application() {
                     )
                 }
             })
+
+            if (isTesting) {
+                //has exception on testing
+                StethoHelper.initialize(this)
+            }
         }
-
-        StethoHelper.initialize(this)
-
-        instance = this
 
         initKoin(getKoinModules())
 
         onCreated()
         // Normal app init code...
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+
+        terminateKoin()
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -49,10 +60,16 @@ open class BaseApplication : Application() {
         startKoin {
             // use Koin logger
             androidLogger()
-            androidContext(this@BaseApplication)
+            androidContext(instance)
             // declare used modules
             modules(koinModules)
         }
+    }
+
+    fun terminateKoin() {
+        if (getKoinModules().isEmpty()) return
+
+        stopKoin()
     }
 
     companion object {

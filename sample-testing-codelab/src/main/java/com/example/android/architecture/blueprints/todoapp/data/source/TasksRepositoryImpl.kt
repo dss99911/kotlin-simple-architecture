@@ -67,7 +67,7 @@ class TasksRepositoryImpl(
 
     override suspend fun completeTask(task: Task) {
         task.isCompleted = true
-        taskApi.completeTask(task)
+        taskApi.completeTask(task.id)
         tasksDao.completeTask(task)
     }
 
@@ -77,7 +77,7 @@ class TasksRepositoryImpl(
 
     override suspend fun activateTask(task: Task) {
         task.isCompleted = false
-        taskApi.activateTask(task)
+        taskApi.activateTask(task.id)
         tasksDao.activateTask(task)
     }
 
@@ -88,7 +88,6 @@ class TasksRepositoryImpl(
     override suspend fun clearCompletedTasks() {
         taskApi.clearCompletedTasks()
         tasksDao.clearCompletedTasks()
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override suspend fun deleteAllTasks() {

@@ -16,6 +16,12 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
+
+        buildConfigField "boolean", "isFree", "false"
+        buildConfigField "boolean", "isPro", "false"
+        buildConfigField "boolean", "isDev", "false"
+        buildConfigField "boolean", "isProd", "false"
+        buildConfigField "boolean", "isMock", "false"
     }
 
     compileOptions {
@@ -24,6 +30,38 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    flavorDimensions "mode", "stage"
+
+    productFlavors {
+        free {
+            dimension "mode"
+            buildConfigField "boolean", "isFree", "true"
+        }
+
+        pro {
+            dimension "mode"
+            buildConfigField "boolean", "isPro", "true"
+        }
+
+        dev {
+            dimension "stage"
+            buildConfigField "boolean", "isDev", "true"
+            //optimize build time
+            resConfigs "en", "hdpi"
+            minSdkVersion min_sdk_version > 21 ? min_sdk_version : 21
+        }
+
+        prod {
+            dimension "stage"
+            buildConfigField "boolean", "isProd", "true"
+        }
+
+        mock {
+            dimension "stage"
+            buildConfigField "boolean", "isMock", "true"
+        }
     }
 }
 

@@ -19,10 +19,10 @@ package com.example.android.architecture.blueprints.todoapp.addedittask
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
 
 /**
  * ViewModel for the Add/Edit screen.
@@ -48,7 +48,7 @@ class AddEditTaskViewModel(
     }
 
     // Called when clicking on fab.
-    fun saveTask() {
+    fun onClickFAB() {
         launch {
             tasksRepository.saveTask(task.getData()!!)
             navigateToTasksFragment()

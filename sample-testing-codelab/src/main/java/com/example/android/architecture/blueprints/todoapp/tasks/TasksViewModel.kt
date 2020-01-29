@@ -15,8 +15,8 @@
  */
 package com.example.android.architecture.blueprints.todoapp.tasks
 
-import android.view.MenuItem
 import androidx.annotation.DrawableRes
+import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.example.android.architecture.blueprints.todoapp.R
@@ -25,11 +25,9 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepos
 import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
 import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import com.example.android.architecture.blueprints.todoapp.util.EDIT_RESULT_OK
-import kim.jeonghyeon.androidlibrary.architecture.livedata.BaseLiveData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.call
-import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -47,11 +45,11 @@ class TasksViewModel(
 ) : BaseViewModel() {
 
     val items: LiveResource<List<TaskItemViewModel>> = liveResource()
-    val currentFilteringLabel: BaseLiveData<Int> = BaseLiveData()
-    val noTasksLabel: BaseLiveData<Int> = BaseLiveData()
-    val noTaskIconRes: BaseLiveData<Int> = BaseLiveData()
-    val tasksAddViewVisible: BaseLiveData<Boolean> = BaseLiveData()
-    val snackbarMessage: BaseLiveData<Int> = BaseLiveData<Int>().apply {
+    val currentFilteringLabel: LiveObject<Int> = liveObject()
+    val noTasksLabel: LiveObject<Int> = liveObject()
+    val noTaskIconRes: LiveObject<Int> = liveObject()
+    val tasksAddViewVisible: LiveObject<Boolean> = liveObject()
+    val snackbarMessage: LiveObject<Int> = liveObject<Int>().apply {
         addSource(items) {
             if (it.isError()) {
                 call(R.string.loading_tasks_error)
@@ -60,10 +58,10 @@ class TasksViewModel(
 
     }
     private var currentFiltering = TasksFilterType.ALL_TASKS
-    val openTaskEvent: BaseLiveData<String> = BaseLiveData()
-    val newTaskEvent: BaseLiveData<Unit> = BaseLiveData()
+    val openTaskEvent: LiveObject<String> = liveObject()
+    val newTaskEvent: LiveObject<Unit> = liveObject()
 
-    init {
+    override fun onCreate() {
         // Set initial state
         setFiltering(TasksFilterType.ALL_TASKS)
 
@@ -105,17 +103,18 @@ class TasksViewModel(
         noTasksLabel.value = noTasksLabelString
         noTaskIconRes.value = noTaskIconDrawable
         tasksAddViewVisible.value = tasksAddVisible
+
     }
 
     fun onClearMenuClicked() {
-        viewModelScope.launch {
+        launch {
             tasksRepository.clearCompletedTasks()
             snackbarMessage.value = R.string.completed_tasks_cleared
             loadTasks(false)
         }
     }
 
-    fun completeTask(task: Task, completed: Boolean) = viewModelScope.launch {
+    internal fun completeTask(task: Task, completed: Boolean) = viewModelScope.launch {
         if (completed) {
             tasksRepository.completeTask(task)
             showSnackbarMessage(R.string.task_marked_complete)
@@ -132,7 +131,7 @@ class TasksViewModel(
         openTaskEvent.call(taskId)
     }
 
-    fun showEditResultMessage(result: Int) {
+    private fun showEditResultMessage(result: Int) {
         when (result) {
             EDIT_RESULT_OK -> snackbarMessage.call(R.string.successfully_saved_task_message)
             ADD_EDIT_RESULT_OK -> snackbarMessage.call(R.string.successfully_added_task_message)
@@ -153,7 +152,7 @@ class TasksViewModel(
      * @param forceUpdate   Pass in true to refresh the data in the [TasksDataSource]
      * @param showLoadingUI Pass in true to display a loading icon in the UI
      */
-    fun loadTasks(forceUpdate: Boolean) {
+    private fun loadTasks(forceUpdate: Boolean) {
         //todo how to force update
         items.load {
             tasksRepository.getTasks()
@@ -179,9 +178,9 @@ class TasksViewModel(
         return tasksToShow
     }
 
-    fun onMenuItemClicked(it: MenuItem) {
+    fun onMenuItemClicked(@MenuRes itemId: Int) {
         setFiltering(
-            when (it.itemId) {
+            when (itemId) {
                 R.id.active -> TasksFilterType.ACTIVE_TASKS
                 R.id.completed -> TasksFilterType.COMPLETED_TASKS
                 else -> TasksFilterType.ALL_TASKS
