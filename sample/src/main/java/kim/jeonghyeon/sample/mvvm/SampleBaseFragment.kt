@@ -2,6 +2,7 @@ package kim.jeonghyeon.sample.mvvm
 
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.getSavedState
 import kim.jeonghyeon.sample.R
 import org.koin.core.parameter.parametersOf
 

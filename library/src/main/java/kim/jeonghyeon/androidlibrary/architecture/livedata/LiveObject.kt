@@ -55,18 +55,30 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
         sources.add(source)
     }
 
-    fun addSources(vararg source: LiveData<Any?>, onChanged: () -> Unit) {
+    fun addSources(vararg source: LiveData<Any?>, onChanged: () -> Unit): LiveObject<T> {
         source.forEach {
             addSource(it) {
                 onChanged()
             }
         }
+        return this
     }
 
-    fun <S : Any?> replaceSource(source: LiveData<S>, onChanged: Observer<in S>) {
+    fun <S : Any?> withSource(source: LiveData<S>, onChanged: Observer<in S>): LiveObject<T> {
+        addSource(source, onChanged)
+        return this
+    }
+
+    fun <S : Any?> withSource(source: LiveData<S>, onChanged: (S) -> Unit): LiveObject<T> {
+        addSource(source, onChanged)
+        return this
+    }
+
+    fun <S : Any?> replaceSource(source: LiveData<S>, onChanged: Observer<in S>): LiveObject<T> {
         removeSources()
         super.addSource(source, onChanged)
         sources.add(source)
+        return this
     }
 
 
@@ -102,6 +114,10 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
     }
     //endregion event
 }
+
+fun <T> liveObject(value: T) = LiveObject(value)
+
+fun <T> liveObject() = LiveObject<T>()
 
 fun <T> LiveObject<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observeEvent(owner, Observer {

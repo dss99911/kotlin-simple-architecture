@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseActivity
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.getSavedState
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.core.parameter.parametersOf
