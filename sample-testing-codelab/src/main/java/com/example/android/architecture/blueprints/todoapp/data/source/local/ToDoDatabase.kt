@@ -31,8 +31,8 @@ abstract class ToDoDatabase : RoomDatabase() {
     abstract fun taskDao(): TasksDao
 
     companion object {
-        val instance: ToDoDatabase by lazy {
-            Room.databaseBuilder(ctx, ToDoDatabase::class.java, "Tasks.db").build()
+        fun create(): ToDoDatabase {
+            return Room.databaseBuilder(ctx, ToDoDatabase::class.java, "Tasks.db").build()
         }
     }
 }

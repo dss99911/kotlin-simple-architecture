@@ -23,7 +23,8 @@ val viewModelModule = module {
 }
 
 val dataModule = module {
-    single { ToDoDatabase.instance.taskDao() }
+    single { ToDoDatabase.create() }
+    single { get<ToDoDatabase>().taskDao() }
     single<TaskApi> { api(BuildConfig.SERVER_URL) }
     single<TaskRepository> { TasksRepositoryImpl(get(), get()) }
 }

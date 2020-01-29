@@ -31,7 +31,7 @@ open class BaseApplication : Application() {
                 }
             })
 
-            if (isTesting) {
+            if (!isTesting) {
                 //has exception on testing
                 StethoHelper.initialize(this)
             }

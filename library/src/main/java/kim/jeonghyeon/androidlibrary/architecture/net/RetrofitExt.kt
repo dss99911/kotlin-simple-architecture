@@ -26,4 +26,3 @@ inline fun <reified API> api(baseUrl: String): API {
             .build()
             .create(API::class.java)
 }
-

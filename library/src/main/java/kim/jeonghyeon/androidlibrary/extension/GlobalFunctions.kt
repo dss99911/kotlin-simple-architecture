@@ -85,9 +85,6 @@ inline fun <T> noThrow(action: () -> T): T? {
     return try {
         action()
     } catch (e: Exception) {
-        if (isDebug) {
-            e.printStackTrace()
-        }
         null
     }
 }
