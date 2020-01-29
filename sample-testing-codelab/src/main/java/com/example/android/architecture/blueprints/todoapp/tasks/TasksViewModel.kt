@@ -18,7 +18,6 @@ package com.example.android.architecture.blueprints.todoapp.tasks
 import androidx.annotation.DrawableRes
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.viewModelScope
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
@@ -27,8 +26,6 @@ import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import com.example.android.architecture.blueprints.todoapp.util.EDIT_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
-import kotlinx.coroutines.launch
 import java.util.*
 
 /**
@@ -107,14 +104,14 @@ class TasksViewModel(
     }
 
     fun onClearMenuClicked() {
-        launch {
+        state.load {
             tasksRepository.clearCompletedTasks()
-            snackbarMessage.value = R.string.completed_tasks_cleared
+            snackbarMessage.postValue(R.string.completed_tasks_cleared)
             loadTasks(false)
         }
     }
 
-    internal fun completeTask(task: Task, completed: Boolean) = viewModelScope.launch {
+    internal fun completeTask(task: Task, completed: Boolean) = state.load {
         if (completed) {
             tasksRepository.completeTask(task)
             showSnackbarMessage(R.string.task_marked_complete)

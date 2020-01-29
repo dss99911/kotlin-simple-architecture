@@ -17,10 +17,8 @@
 package com.example.android.architecture.blueprints.todoapp.data.source.local
 
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import kim.jeonghyeon.androidlibrary.extension.ctx
 
 /**
  * The Room Database that contains the Task table.
@@ -29,10 +27,4 @@ import kim.jeonghyeon.androidlibrary.extension.ctx
 abstract class ToDoDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TasksDao
-
-    companion object {
-        fun create(): ToDoDatabase {
-            return Room.databaseBuilder(ctx, ToDoDatabase::class.java, "Tasks.db").build()
-        }
-    }
 }

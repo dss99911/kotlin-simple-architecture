@@ -20,13 +20,22 @@ import timber.log.Timber
 @Suppress("NOTHING_TO_INLINE")
 inline fun log(e: Exception) {
     if (isDebug) {
-        Timber.e(e)
+        if (isTesting) {
+            e.printStackTrace()
+        } else {
+            Timber.e(e)
+        }
     }
 }
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun log(vararg obj: Any?) {
     if (isDebug) {
-        Timber.v(Gson().toJson(obj))
+        if (isTesting) {
+            println(Gson().toJson(obj))
+        } else {
+            Timber.v(Gson().toJson(obj))
+        }
+
     }
 }

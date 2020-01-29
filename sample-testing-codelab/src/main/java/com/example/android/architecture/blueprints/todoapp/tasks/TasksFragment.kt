@@ -26,7 +26,9 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import kim.jeonghyeon.androidlibrary.extension.getNavArgs
 import kotlinx.android.synthetic.main.tasks_frag.*
+import org.koin.core.parameter.parametersOf
 
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
@@ -35,7 +37,9 @@ class TasksFragment : BaseFragment() {
 
     override val layoutId = R.layout.tasks_frag
 
-    val viewModel: TasksViewModel by bindingViewModel(BR.viewmodel)
+    private val viewModel: TasksViewModel by bindingViewModel(BR.viewmodel) {
+        parametersOf(getNavArgs<TasksFragmentArgs>())
+    }
 
     init {
         setMenu(R.menu.tasks_fragment_menu) {

@@ -30,6 +30,6 @@ class AddEditTaskFragment : BaseFragment() {
     override val layoutId = R.layout.addtask_frag
 
     val viewModel: AddEditTaskViewModel by bindingViewModel(BR.viewmodel) {
-        parametersOf(getNavArgs())
+        parametersOf(getNavArgs<AddEditTaskFragmentArgs>())
     }
 }

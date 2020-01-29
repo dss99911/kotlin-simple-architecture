@@ -1,12 +1,20 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
+import kim.jeonghyeon.androidlibrary.extension.isProdRelease
+import kim.jeonghyeon.androidlibrary.extension.log
 
 sealed class Resource<out T> {
     object None : Resource<Nothing>()
     object Loading : Resource<Nothing>()
     data class Success<T>(val data: T) : Resource<T>()
-    data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>()
+    data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>() {
+        init {
+            if (!isProdRelease) {
+                log(error)
+            }
+        }
+    }
 
     fun get(): T? = when (this) {
         is Success -> data

@@ -12,6 +12,7 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetail
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksFragmentArgs
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import kim.jeonghyeon.androidlibrary.architecture.net.api
+import kim.jeonghyeon.androidlibrary.architecture.repository.RoomUtil
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -23,7 +24,7 @@ val viewModelModule = module {
 }
 
 val dataModule = module {
-    single { ToDoDatabase.create() }
+    single<ToDoDatabase> { RoomUtil.getDatabase() }
     single { get<ToDoDatabase>().taskDao() }
     single<TaskApi> { api(BuildConfig.SERVER_URL) }
     single<TaskRepository> { TasksRepositoryImpl(get(), get()) }
