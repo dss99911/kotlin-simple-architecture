@@ -35,7 +35,7 @@ class TaskDetailFragment : BaseFragment() {
         setMenu(R.menu.taskdetail_fragment_menu) {
             when (it.itemId) {
                 R.id.menu_delete -> {
-                    viewModel.onDeleteClick()
+                    viewModel.onClickDelete()
                     true
                 }
                 else -> false

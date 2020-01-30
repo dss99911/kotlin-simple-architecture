@@ -8,10 +8,10 @@ interface TaskApi {
     suspend fun getTasks(): List<Task>
 
     @GET("/tasks/{taskId}")
-    suspend fun getTask(@Path("taskId") taskId: String): Task
+    suspend fun getTask(@Path("taskId") taskId: String): Task?
 
-    @POST("/tasks")
-    suspend fun saveTask(@Body task: Task)
+    @PUT("/tasks/{taskId}")
+    suspend fun saveTask(@Path("taskId") taskId: String, @Body task: Task)
 
     @PATCH("/tasks/{taskId}/complete")
     suspend fun completeTask(@Path("taskId") taskId: String)

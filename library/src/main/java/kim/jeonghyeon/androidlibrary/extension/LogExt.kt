@@ -18,7 +18,7 @@ import timber.log.Timber
 //}
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun log(e: Exception) {
+inline fun log(e: Throwable) {
     if (isDebug) {
         if (isTesting) {
             e.printStackTrace()

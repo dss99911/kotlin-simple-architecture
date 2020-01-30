@@ -1,21 +1,17 @@
 
 dependencies {
 
-    //android document doesn't request this library. let's consider this later.
     testImplementation deps.arch_core.testing
-    testImplementation deps.mock_web_server
     testImplementation deps.koin.test
     testImplementation deps.kotlin.coroutine_test
     testImplementation deps.mockito.core
     testImplementation deps.mockito.all
     testImplementation deps.mockito.android
-
-    // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-
-    // Assertions
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    testImplementation deps.atsl.robolectric
+    testImplementation deps.atsl.ext
+    testImplementation deps.atsl.core
+    testImplementation deps.atsl.rules
+    testImplementation deps.atsl.runner
     testImplementation 'com.google.truth:truth:1.0.1'
 
     // Espresso dependencies

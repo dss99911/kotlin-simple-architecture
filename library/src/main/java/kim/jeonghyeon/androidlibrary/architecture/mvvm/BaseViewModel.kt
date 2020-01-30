@@ -94,11 +94,11 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val eventShowProgressBar by lazy { LiveObject<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    val eventNavDirectionId by lazy { LiveObject<Int>() }
-    val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
-    val eventNavDirection by lazy { LiveObject<NavDirections>() }
+    internal val eventNavDirectionId by lazy { LiveObject<Int>() }
+    internal val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
+    internal val eventNavDirection by lazy { LiveObject<NavDirections>() }
     @Suppress("DEPRECATION")
-    val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
+    internal val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }

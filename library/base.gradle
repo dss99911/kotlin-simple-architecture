@@ -105,7 +105,6 @@ android {
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests {
         includeAndroidResources = true
-
         all {
             testLogging {
                 events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'

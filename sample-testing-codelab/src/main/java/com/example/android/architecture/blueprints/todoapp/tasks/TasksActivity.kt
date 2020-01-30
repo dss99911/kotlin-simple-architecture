@@ -30,7 +30,7 @@ import com.google.android.material.navigation.NavigationView
 class TasksActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    ////TODO HYUN [baselivedata] : task 추가한 후, 백하면 TasksActivity 가 다시 보이는 현상
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tasks_act)

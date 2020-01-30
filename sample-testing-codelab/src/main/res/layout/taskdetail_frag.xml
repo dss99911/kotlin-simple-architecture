@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_edit"
-                android:onClick="@{() -> model.editTask()}"
+                android:onClick="@{() -> model.onClickEdit()}"
             app:fabSize="normal"
             app:layout_anchor="@id/refresh_layout"
             app:layout_anchorGravity="bottom|right|end"/>

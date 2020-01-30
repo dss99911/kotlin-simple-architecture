@@ -18,13 +18,12 @@ package com.example.android.architecture.blueprints.todoapp.data.source.local
 
 import androidx.room.*
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 
 /**
  * Data Access Object for the tasks table.
  */
 @Dao
-interface TasksDao : TaskRepository {
+interface TasksDao {
 
     /**
      * Select all tasks from the tasks table.
@@ -32,7 +31,7 @@ interface TasksDao : TaskRepository {
      * @return all tasks.
      */
     @Query("SELECT * FROM Tasks")
-    override suspend fun getTasks(): List<Task>
+    suspend fun getTasks(): List<Task>
 
     /**
      * Select a task by id.
@@ -41,33 +40,33 @@ interface TasksDao : TaskRepository {
      * @return the task with taskId.
      */
     @Query("SELECT * FROM Tasks WHERE entryid = :taskId")
-    override suspend fun getTask(taskId: String): Task
+    suspend fun getTask(taskId: String): Task?
 
     /**
-     * Insert a task in the database. If the task already exists, replace it.
+     * Insert a task in the database. If the task already exists, abort it
      *
      * @param task the task to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override suspend fun saveTask(task: Task)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun saveTask(task: Task)
 
     @Update
-    override suspend fun completeTask(task: Task)
+    suspend fun completeTask(task: Task)
 
     @Update
-    override suspend fun activateTask(task: Task)
+    suspend fun activateTask(task: Task)
 
     @Query("UPDATE Tasks SET completed = 1 WHERE entryid = :taskId")
-    override suspend fun completeTask(taskId: String)
+    suspend fun completeTask(taskId: String)
 
     @Query("UPDATE Tasks SET completed = 0 WHERE entryid = :taskId")
-    override suspend fun activateTask(taskId: String)
+    suspend fun activateTask(taskId: String)
 
     /**
      * Delete all tasks.
      */
     @Query("DELETE FROM Tasks WHERE completed = 1")
-    override suspend fun clearCompletedTasks()
+    suspend fun clearCompletedTasks()
 
     /**
      * Delete a task by id.
@@ -75,8 +74,8 @@ interface TasksDao : TaskRepository {
      * @return the number of tasks deleted. This should always be 1.
      */
     @Query("DELETE FROM Tasks WHERE entryid = :taskId")
-    override suspend fun deleteTask(taskId: String)
+    suspend fun deleteTask(taskId: String)
 
     @Query("DELETE FROM Tasks")
-    override suspend fun deleteAllTasks()
+    suspend fun deleteAllTasks()
 }

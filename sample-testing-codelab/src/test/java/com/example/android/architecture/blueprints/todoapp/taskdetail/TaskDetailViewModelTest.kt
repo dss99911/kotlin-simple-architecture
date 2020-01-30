@@ -15,154 +15,95 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.android.architecture.blueprints.todoapp.LiveDataTestUtil.getValue
-import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
-import com.example.android.architecture.blueprints.todoapp.R
-import com.example.android.architecture.blueprints.todoapp.assertSnackbarMessage
-import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.FakeRepository
+import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import com.example.android.architecture.blueprints.todoapp.util.BaseViewModelTest
+import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
+import com.example.android.architecture.blueprints.todoapp.util.await
+import com.example.android.architecture.blueprints.todoapp.util.awaitData
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
-import org.junit.Rule
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import org.koin.core.parameter.parametersOf
+import org.koin.test.inject
+import org.mockito.Mockito.spy
 
-/**
- * Unit tests for the implementation of [TaskDetailViewModel]
- */
-@ExperimentalCoroutinesApi
-class TaskDetailViewModelTest {
+class TaskDetailViewModelTest : BaseViewModelTest() {
+    val viewModel by inject<TaskDetailViewModel> {
+        parametersOf(TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build())
+    }
 
-    // Subject under test
-    private lateinit var taskDetailViewModel: TaskDetailViewModel
+    val repo by inject<TaskRepository>()
 
-    // Use a fake repository to be injected into the viewmodel
-    private lateinit var tasksRepository: FakeRepository
+    @Test
+    fun onRefresh() = runBlockingTest {
+        //GIVEN no task
+        //WHEN onResume
+        viewModel.onRefresh()
+        //THEN refresh occurs error
+        assertThat(viewModel.task.await().isError()).isTrue()
+        assertThat(viewModel.state.await().isError()).isTrue()
 
-    // Set the main coroutinesBaseApiTest dispatcher for unit testing.
-    @ExperimentalCoroutinesApi
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
+        //GIVEN same task
+        repo.saveTask(TaskSamples.sample1Active)
+        //WHEN onResume
+        viewModel.onRefresh()
+        //THEN refresh get task
+        assertThat(viewModel.task.awaitData()).isEqualTo(TaskSamples.sample1Active)
+    }
 
-    // Executes each task synchronously using Architecture Components.
-    @get:Rule var instantExecutorRule = InstantTaskExecutorRule()
 
-    val task = Task("Title1", "Description1")
+    @Test
+    fun onCompleteChanged() = runBlockingTest {
+        //GIVEN task
+        repo.saveTask(TaskSamples.sample1Active)
+        viewModel.onRefresh()
 
-    @Before
-    fun setupViewModel() {
-        tasksRepository = FakeRepository()
-        tasksRepository.addTasks(task)
+        //WHEN on change to complete
+        viewModel.onCompleteChanged(true)
 
-        taskDetailViewModel = TaskDetailViewModel(tasksRepository)
+        //THEN changed to complete
+        assertThat(repo.getTask(TaskSamples.sample1Active.id)!!.isCompleted).isTrue()
+
+        //GIVEN task
+        repo.saveTask(TaskSamples.sample2Completed)
+        viewModel.onRefresh()
+
+        //WHEN on change to Active
+        viewModel.onCompleteChanged(false)
+
+        //THEN change to active
+        assertThat(repo.getTask(TaskSamples.sample1Active.id)!!.isActive).isTrue()
     }
 
     @Test
-    fun getActiveTaskFromRepositoryAndLoadIntoView() {
-        taskDetailViewModel.start(task.id)
+    fun onClickDelete() = runBlockingTest {
+        //GIVEN has task
+        repo.saveTask(TaskSamples.sample1Active)
 
-        // Then verify that the view was notified
-        assertThat(getValue(taskDetailViewModel.task).title).isEqualTo(task.title)
-        assertThat(getValue(taskDetailViewModel.task).description)
-            .isEqualTo(task.description)
+        //WHEN on click delete
+        val viewModel = spy(viewModel)
+        viewModel.onClickDelete()
+
+        //THEN delete and navigate to task fragment
+        assertThat(repo.getTask(TaskSamples.sample1Active.id)).isNull()
+        val directions =
+            viewModel.captureNavigateDirection<TaskDetailFragmentDirections.ActionTaskDetailFragmentToTasksFragment>()
+        assertThat(directions.userMessage).isEqualTo(DELETE_RESULT_OK)
     }
 
     @Test
-    fun completeTask() {
-        taskDetailViewModel.start(task.id)
+    fun onClickEdit() = runBlockingTest {
+        //GIVEN sample1Active
+        //WHEN on click edit
+        val viewModel = spy(viewModel)
+        viewModel.onClickEdit()
 
-        // Verify that the task was active initially
-        assertThat(tasksRepository.tasksServiceData[task.id]?.isCompleted).isFalse()
-
-        // When the ViewModel is asked to complete the task
-        taskDetailViewModel.setCompleted(true)
-
-        // Then the task is completed and the snackbar shows the correct message
-        assertThat(tasksRepository.tasksServiceData[task.id]?.isCompleted).isTrue()
-        assertSnackbarMessage(taskDetailViewModel.snackbarMessage, R.string.task_marked_complete)
+        //THEN navigate to edit page
+        val directions =
+            viewModel.captureNavigateDirection<TaskDetailFragmentDirections.ActionTaskDetailFragmentToAddEditTaskFragment>()
+        assertThat(directions.taskid).isEqualTo(TaskSamples.sample1Active.id)
     }
 
-    @Test
-    fun activateTask() {
-        task.isCompleted = true
 
-        taskDetailViewModel.start(task.id)
-
-        // Verify that the task was completed initially
-        assertThat(tasksRepository.tasksServiceData[task.id]?.isCompleted).isTrue()
-
-        // When the ViewModel is asked to complete the task
-        taskDetailViewModel.setCompleted(false)
-
-        // Then the task is not completed and the snackbar shows the correct message
-        assertThat(tasksRepository.tasksServiceData[task.id]?.isCompleted).isFalse()
-        assertSnackbarMessage(taskDetailViewModel.snackbarMessage, R.string.task_marked_active)
-
-    }
-
-    @Test
-    fun taskDetailViewModel_repositoryError() {
-        // Given a repository that returns errors
-        tasksRepository.setReturnError(true)
-
-        // Given an initialized ViewModel with an active task
-        taskDetailViewModel.start(task.id)
-
-        // Then verify that data is not available
-        assertThat(getValue(taskDetailViewModel.isDataAvailable)).isFalse()
-    }
-
-    @Test
-    fun updateSnackbar_nullValue() {
-        // Before setting the Snackbar text, get its current value
-        val snackbarText = taskDetailViewModel.snackbarMessage.value
-
-        // Check that the value is null
-        assertThat(snackbarText).isNull()
-    }
-
-    @Test
-    fun clickOnEditTask_SetsEvent() {
-        // When opening a new task
-        taskDetailViewModel.editTask()
-
-        // Then the event is triggered
-        val value = getValue(taskDetailViewModel.editTaskCommand)
-        assertThat(value.getContentIfNotHandled()).isNotNull()
-    }
-
-    @Test
-    fun loadTask_loading() {
-        // TODO
-    }
-
-    @Test
-    fun deleteTask() {
-        assertThat(tasksRepository.tasksServiceData.containsValue(task)).isTrue()
-        taskDetailViewModel.start(task.id)
-
-        // When the deletion of a task is requested
-        taskDetailViewModel.onDeleteClick()
-
-        assertThat(tasksRepository.tasksServiceData.containsValue(task)).isFalse()
-    }
-
-    @Test
-    fun loadTask_loading_solution() {
-        // Pause dispatcher so we can verify initial values
-        mainCoroutineRule.pauseDispatcher()
-
-        // Load the task in the viewmodel
-        taskDetailViewModel.start(task.id)
-
-        // Then progress indicator is shown
-        assertThat(getValue(taskDetailViewModel.dataLoading)).isTrue()
-
-        // Execute pending coroutines actions
-        mainCoroutineRule.resumeDispatcher()
-
-        // Then progress indicator is hidden
-        assertThat(getValue(taskDetailViewModel.dataLoading)).isFalse()
-    }
 }

@@ -109,7 +109,10 @@ dependencies {
     api deps.koin.android_viewmodel
 //    api deps.koin.android_fragment
 
-    debugImplementation deps.leakcanary.debug
+    if (useLeakCanary) {
+        debugImplementation deps.leakcanary.debug
+    }
+
     debugImplementation deps.stetho
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'
 

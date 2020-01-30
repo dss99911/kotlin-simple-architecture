@@ -3,6 +3,7 @@ package kim.jeonghyeon.androidlibrary
 import android.app.Application
 import kim.jeonghyeon.androidlibrary.extension.isProdRelease
 import kim.jeonghyeon.androidlibrary.extension.isTesting
+import kim.jeonghyeon.androidlibrary.extension.log
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -14,6 +15,8 @@ open class BaseApplication : Application() {
     val name: String by lazy {
         packageManager.getApplicationLabel(applicationInfo).toString()
     }
+
+    val defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
     @Suppress("RedundantModalityModifier")
     final override fun onCreate() {
@@ -35,6 +38,10 @@ open class BaseApplication : Application() {
                 //has exception on testing
                 StethoHelper.initialize(this)
             }
+        }
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            log(e)
+            defaultUncaughtExceptionHandler.uncaughtException(t, e)
         }
 
         initKoin(getKoinModules())

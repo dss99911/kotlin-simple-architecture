@@ -31,11 +31,9 @@ class TasksRepositoryImpl(
 ) : TaskRepository {
 
     override suspend fun getTasks(): List<Task> {
-        if (!isForceUpdate()) {
-            val tasks = tasksDao.getTasks()
-            if (tasks.isNotEmpty()) {
-                return tasks
-            }
+        val tasks = tasksDao.getTasks()
+        if (tasks.isNotEmpty()) {
+            return tasks
         }
 
         return taskApi.getTasks().also {
@@ -43,14 +41,13 @@ class TasksRepositoryImpl(
         }
     }
 
-    override suspend fun getTask(taskId: String): Task {
-        if (!isForceUpdate()) {
-            tasksDao.getTask(taskId).let {
-                return it
-            }
+    override suspend fun getTask(taskId: String): Task? {
+        @Suppress("UNNECESSARY_SAFE_CALL")
+        tasksDao.getTask(taskId)?.let {
+            return it
         }
 
-        return taskApi.getTask(taskId).also {
+        return taskApi.getTask(taskId)?.also {
             refreshLocalDataSource(it)
         }
     }
@@ -61,7 +58,7 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun saveTask(task: Task) {
-        taskApi.saveTask(task)
+        taskApi.saveTask(task.id, task)
         tasksDao.saveTask(task)
     }
 
@@ -72,7 +69,7 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun completeTask(taskId: String) {
-        completeTask(getTask(taskId))
+        completeTask(getTask(taskId)!!)
     }
 
     override suspend fun activateTask(task: Task) {
@@ -82,7 +79,7 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun activateTask(taskId: String) {
-        activateTask(getTask(taskId))
+        activateTask(getTask(taskId)!!)
     }
 
     override suspend fun clearCompletedTasks() {
@@ -104,10 +101,4 @@ class TasksRepositoryImpl(
     private suspend fun refreshLocalDataSource(task: Task) {
         tasksDao.saveTask(task)
     }
-
-    fun isForceUpdate(): Boolean {
-        //todo decide if it will update from remote or not
-        return false
-    }
-
 }

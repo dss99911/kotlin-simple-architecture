@@ -44,8 +44,8 @@ class TaskDetailViewModel(
         setCompleted(isChecked)
     }
 
-    fun onDeleteClick() {
-        launch {
+    fun onClickDelete() {
+        state.load {
             tasksRepository.deleteTask(navArgs.taskid)
 
             val direction = TaskDetailFragmentDirections
@@ -54,7 +54,7 @@ class TaskDetailViewModel(
         }
     }
 
-    fun editTask() {
+    fun onClickEdit() {
         val direction = TaskDetailFragmentDirections
             .actionTaskDetailFragmentToAddEditTaskFragment(
                 navArgs.taskid,
@@ -63,7 +63,7 @@ class TaskDetailViewModel(
         navigateDirection(direction)
     }
 
-    fun setCompleted(completed: Boolean) {
+    private fun setCompleted(completed: Boolean) {
         val task: Task = task.getData() ?: return
 
         launch {
@@ -78,8 +78,8 @@ class TaskDetailViewModel(
     }
 
     fun onRefresh() {
-        task.load {
-            tasksRepository.getTask(navArgs.taskid)
+        task.load(state) {
+            tasksRepository.getTask(navArgs.taskid)!!
         }
     }
 }

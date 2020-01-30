@@ -43,7 +43,7 @@ class AddEditTaskViewModel(
         if (taskid == null) {
             Task()
         } else {
-            tasksRepository.getTask(taskid)
+            tasksRepository.getTask(taskid) ?: Task()
         }
     }
 
