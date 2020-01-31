@@ -267,6 +267,6 @@ abstract class BaseFragment : Fragment(),
     }
 
     override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
-        observe(this@BaseFragment, observer)
+        observe(this@BaseFragment.viewLifecycleOwner, observer)
     }
 }
