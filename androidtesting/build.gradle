@@ -1,0 +1,87 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
+
+android {
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tool_version
+
+    defaultConfig {
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+    }
+
+    dataBinding {
+        enabled = true
+        enabledForTests = true
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildTypes {
+        debug {
+        }
+
+        release {
+        }
+    }
+
+    flavorDimensions "mode", "stage"
+
+    productFlavors {
+        free {
+            dimension "mode"
+
+        }
+
+        pro {
+            dimension "mode"
+
+        }
+
+        dev {
+            dimension "stage"
+        }
+
+        prod {
+            dimension "stage"
+        }
+
+        mock {
+            dimension "stage"
+        }
+    }
+
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
+}
+
+dependencies {
+    implementation project(':library')
+
+    api deps.arch_core.testing
+    api deps.koin.test
+    api deps.kotlin.coroutine_test
+    api deps.mockito.core
+    api deps.mockito.all
+    api deps.mockito.android
+    api (deps.atsl.robolectric) {
+        //todo has error when use testing library. https://github.com/robolectric/robolectric/issues/5245
+        exclude group: 'com.google.auto.service', module: 'auto-service'
+    }
+    api deps.atsl.ext
+    api deps.atsl.core
+    api deps.atsl.rules
+    api deps.atsl.runner
+    api 'com.google.truth:truth:1.0.1'
+
+}

@@ -91,8 +91,11 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
 
 
     //region event
-    var handled = true
-        private set // Allow external read but not write
+
+    var version = 0
+        private set
+
+    private var handledVersion = 0
 
     @MainThread
     fun observeEvent(owner: LifecycleOwner, observer: Observer<in T>) {
@@ -100,8 +103,8 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
 
         // Observe the internal MutableLiveData
         super.observe(owner, Observer<T> { t ->
-            if (!handled) {
-                handled = true
+            if (version != handledVersion) {
+                handledVersion = version
                 observer.onChanged(t)
             }
         })
@@ -109,7 +112,7 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
 
     @MainThread
     final override fun setValue(t: T?) {
-        handled = false
+        version += 1
         super.setValue(t)
     }
     //endregion event

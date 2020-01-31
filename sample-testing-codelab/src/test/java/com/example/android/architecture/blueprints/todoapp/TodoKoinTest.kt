@@ -1,6 +1,6 @@
 package com.example.android.architecture.blueprints.todoapp
 
-import com.example.android.architecture.blueprints.todoapp.util.BaseKoinTest
+import com.balancehero.example.androidtesting.BaseKoinTest
 import org.koin.core.module.Module
 
 abstract class TodoKoinTest : BaseKoinTest() {

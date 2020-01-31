@@ -185,6 +185,7 @@ private suspend fun <T, U> CoroutineScope.getNextResource(
     val result2 = if (previous is Resource.Success) {
         getResource({ part2(previous.data) }, retry)
     } else {
+        @Suppress("UNCHECKED_CAST")
         previous as Resource<Nothing>
     }
     return result2

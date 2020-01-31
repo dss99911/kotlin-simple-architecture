@@ -331,8 +331,7 @@ interface PermissionResultListener {
 /**
  * the reason to use Event instead of SingleLiveEvent is that. SingleLiveEvent is class and difficult to integrate with other livedata
  */
-@Deprecated("use BaseLiveData")
-open class Event<out T>(private val content: T) {
+internal class Event<out T>(private val content: T) {
 
     var handled = false
         private set // Allow external read but not write

@@ -1,4 +1,4 @@
-package com.example.android.architecture.blueprints.todoapp.util
+package com.balancehero.example.androidtesting
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi

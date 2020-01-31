@@ -85,6 +85,7 @@ class DataCallAdapter<U, T : ResponseBody<U>>(
         private fun U.convertUnit(): U {
             val returnType = type.actualTypeArguments[0]!!
             return if (returnType == Unit.javaClass) {
+                @Suppress("UNCHECKED_CAST")
                 Unit as U
             } else this
         }

@@ -1,19 +1,5 @@
 
 dependencies {
-
-    testImplementation deps.arch_core.testing
-    testImplementation deps.koin.test
-    testImplementation deps.kotlin.coroutine_test
-    testImplementation deps.mockito.core
-    testImplementation deps.mockito.all
-    testImplementation deps.mockito.android
-    testImplementation deps.atsl.robolectric
-    testImplementation deps.atsl.ext
-    testImplementation deps.atsl.core
-    testImplementation deps.atsl.rules
-    testImplementation deps.atsl.runner
-    testImplementation 'com.google.truth:truth:1.0.1'
-
     // Espresso dependencies
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
@@ -28,9 +14,6 @@ dependencies {
     // classpath.
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
 
-
-
     kapt deps.room.compiler
-    kapt deps.dagger.android_support_compiler
     kapt deps.lifecycle.compiler
 }

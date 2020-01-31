@@ -81,9 +81,6 @@ dependencies {
 
     api deps.navigation.fragment_ktx
     api deps.navigation.ui_ktx
-    api deps.dagger.android
-    api deps.dagger.android_support
-    api deps.kotlin.reflect
 
     api deps.anko
     api deps.core_ktx

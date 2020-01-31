@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.architecture.blueprints.todoapp.util
+package com.balancehero.example.androidtesting
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
@@ -28,20 +28,22 @@ fun <T> LiveObject<T>.await(count: Int = 1, seconds: Long = 2): T {
     }
     latch.await(seconds, TimeUnit.SECONDS)
 
+    @Suppress("UNCHECKED_CAST")
     return value as T
 }
 
 fun <T> LiveResource<T>.awaitData(seconds: Long = 2): T {
     //if already value exists, countdown 2 times
-    val oldValue = value
+
+    val oldVersion = version
     val latch = CountDownLatch(1)
     observeForever {
-        if (!it.isResult() || it.get() === oldValue) {
+        if (!it.isResult() || version == oldVersion) {
             return@observeForever
         }
         latch.countDown()
     }
     latch.await(seconds, TimeUnit.SECONDS)
-    //todo throws if timeout? if value already exists, value will be wrong.
+    @Suppress("UNCHECKED_CAST")
     return value!!.get() as T
 }

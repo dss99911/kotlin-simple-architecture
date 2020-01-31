@@ -2,4 +2,5 @@ apply from: (project(':library').projectDir.toString() + '/testDependencies.grad
 dependencies {
     implementation project(':kotlinlibrary')
     implementation project(':library')
+    testImplementation project(':androidtesting')
 }

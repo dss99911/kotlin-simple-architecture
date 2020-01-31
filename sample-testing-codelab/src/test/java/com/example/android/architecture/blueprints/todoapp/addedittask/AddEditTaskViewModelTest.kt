@@ -1,10 +1,10 @@
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
+import com.balancehero.example.androidtesting.BaseViewModelTest
+import com.balancehero.example.androidtesting.awaitData
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
-import com.example.android.architecture.blueprints.todoapp.util.BaseViewModelTest
-import com.example.android.architecture.blueprints.todoapp.util.awaitData
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
