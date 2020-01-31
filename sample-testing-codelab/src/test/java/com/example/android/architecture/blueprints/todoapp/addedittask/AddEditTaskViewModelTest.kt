@@ -18,21 +18,16 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
     val repo: TaskRepository by inject()
 
     @Test
-    fun init() = runBlockingTest {
+    fun init_add() = runBlockingTest {
         //WHEN add case
         val viewModel1 = initViewModel(null)
 
         //THEN new task
         assertThat(viewModel1.task.awaitData()).isNotNull()
+    }
 
-        //GIVEN no task
-
-        //WHEN edit case
-        val viewModel2 = initViewModel(TaskSamples.sample1Active.id)
-        //THEN new task
-        assertThat(viewModel2.task.awaitData()).isNotNull()
-        assertThat(viewModel2.task.awaitData().id).isNotEqualTo(TaskSamples.sample1Active.id)
-
+    @Test
+    fun init_edit() = runBlockingTest {
         //GIVEN same task
         repo.saveTask(TaskSamples.sample1Active)
 
@@ -42,6 +37,20 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
         //THEN
         assertThat(viewModel3.task.awaitData()).isNotNull()
         assertThat(viewModel3.task.awaitData().id).isEqualTo(TaskSamples.sample1Active.id)
+    }
+
+    @Test
+    fun init_editButNoTask() = runBlockingTest {
+        //GIVEN no task
+
+        //WHEN edit case
+        val viewModel2 = initViewModel(TaskSamples.sample1Active.id)
+
+        //THEN new task
+        assertThat(viewModel2.task.awaitData()).isNotNull()
+        assertThat(viewModel2.task.awaitData().id).isNotEqualTo(TaskSamples.sample1Active.id)
+
+
     }
 
 

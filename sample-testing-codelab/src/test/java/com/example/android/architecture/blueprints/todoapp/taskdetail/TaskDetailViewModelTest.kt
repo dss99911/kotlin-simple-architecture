@@ -36,14 +36,17 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
     val repo by inject<TaskRepository>()
 
     @Test
-    fun onRefresh() = runBlockingTest {
+    fun onRefresh_noTask() = runBlockingTest {
         //GIVEN no task
         //WHEN onResume
         viewModel.onRefresh()
         //THEN refresh occurs error
         assertThat(viewModel.task.await().isError()).isTrue()
         assertThat(viewModel.state.await().isError()).isTrue()
+    }
 
+    @Test
+    fun onRefresh_sameTask() = runBlockingTest {
         //GIVEN same task
         repo.saveTask(TaskSamples.sample1Active)
         //WHEN onResume
@@ -54,7 +57,7 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
 
 
     @Test
-    fun onCompleteChanged() = runBlockingTest {
+    fun onCompleteChanged_toCompleted() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
         viewModel.onRefresh()
@@ -64,7 +67,10 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
 
         //THEN changed to complete
         assertThat(repo.getTask(TaskSamples.sample1Active.id)!!.isCompleted).isTrue()
+    }
 
+    @Test
+    fun onCompleteChanged_toActive() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample2Completed)
         viewModel.onRefresh()

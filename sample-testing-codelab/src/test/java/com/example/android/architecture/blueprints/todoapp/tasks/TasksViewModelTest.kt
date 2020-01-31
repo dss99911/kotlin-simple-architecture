@@ -26,7 +26,7 @@ import com.example.android.architecture.blueprints.todoapp.util.BaseViewModelTes
 import com.example.android.architecture.blueprints.todoapp.util.await
 import com.example.android.architecture.blueprints.todoapp.util.awaitData
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
 import org.koin.core.parameter.parametersOf
@@ -47,7 +47,7 @@ class TasksViewModelTest : BaseViewModelTest() {
 
     @Before
     fun before() {
-        runBlocking {
+        runBlockingTest {
             //given 1 active, 1 completed task
             repo.saveTask(TaskSamples.sample1Active)
             repo.saveTask(TaskSamples.sample2Completed)
@@ -88,8 +88,7 @@ class TasksViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun onMenuItemClicked() {
-
+    fun onMenuItemClicked_active() {
         //when active
         viewModel.onMenuItemClicked(R.id.active)
 
@@ -101,7 +100,10 @@ class TasksViewModelTest : BaseViewModelTest() {
             false
         )
         assertItemSize(1)
+    }
 
+    @Test
+    fun onMenuItemClicked_completed() {
         //when completed
         viewModel.onMenuItemClicked(R.id.completed)
 
@@ -113,7 +115,10 @@ class TasksViewModelTest : BaseViewModelTest() {
             false
         )
         assertItemSize(1)
+    }
 
+    @Test
+    fun onMenuItemClicked_all() {
         //when all
         viewModel.onMenuItemClicked(R.id.all)
 

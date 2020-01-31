@@ -2,9 +2,8 @@ package com.example.android.architecture.blueprints.todoapp.data.source
 
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.util.BaseRobolectricTest
-import com.example.android.architecture.blueprints.todoapp.util.assertNotReachable
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.test.inject
 
@@ -15,58 +14,71 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     val repo: TaskRepository by inject()
 
     @Test
-    fun getTasks() = runBlocking {
+    fun getTasks_empty() = runBlockingTest {
         //when empty
         assertThat(repo.getTasks()).isEmpty()
+    }
 
+    @Test
+    fun getTasks_size1() = runBlockingTest {
         //when size 1
         repo.saveTask(TaskSamples.sample1Active)
         assertThat(repo.getTasks()).hasSize(1)
+    }
 
+    @Test
+    fun getTasks_size2() = runBlockingTest {
         //when size 2
         repo.saveTask(TaskSamples.sample2Completed)
         assertThat(repo.getTasks()).hasSize(2)
     }
 
     @Test
-    fun getTask() = runBlocking {
-        //when not exists
-        val task = repo.getTask(TaskSamples.sample1Active.id)
-        assertThat(task).isNull()
-
+    fun getTask_exists() = runBlockingTest {
         //when exists
         repo.saveTask(TaskSamples.sample1Active)
         //no error occurs
         assertThat(repo.getTask(TaskSamples.sample1Active.id)).isEqualTo(TaskSamples.sample1Active)
     }
+    @Test
+    fun getTask_notExists() = runBlockingTest {
+        //when not exists
+        val task = repo.getTask(TaskSamples.sample1Active.id)
+        //then
+        assertThat(task).isNull()
+    }
 
     @Test
-    fun saveTask() = runBlocking {
+    fun saveTask_add1() = runBlockingTest {
         //when add
         repo.saveTask(TaskSamples.sample1Active)
 
         //then size 1
         assertThat(repo.getTasks()).hasSize(1)
+    }
 
-        //when add same task id
-        try {
-            repo.saveTask(TaskSamples.sample1Active)
-            assertNotReachable()
-        } catch (e: Exception) {
-            //then error occurs
-            assertThat(repo.getTasks()).hasSize(1)
-        }
-
+    @Test
+    fun saveTask_add2() = runBlockingTest {
         //when add 2 item
         repo.saveTask(TaskSamples.sample2Completed)
         repo.saveTask(TaskSamples.sample3TitleEmpty)
 
         //then 2 size increased
-        assertThat(repo.getTasks()).hasSize(3)
+        assertThat(repo.getTasks()).hasSize(2)
     }
 
     @Test
-    fun completeTask() = runBlocking {
+    fun saveTask_addSame() = runBlockingTest {
+        //when add same task id
+        repo.saveTask(TaskSamples.sample1Active)
+        repo.saveTask(TaskSamples.sample1Active)
+
+        //then size 1
+        assertThat(repo.getTasks()).hasSize(1)
+    }
+
+    @Test
+    fun completeTask() = runBlockingTest {
         //given
         repo.saveTask(TaskSamples.sample1Active)
 
@@ -75,6 +87,13 @@ class TasksRepositoryTest : BaseRobolectricTest() {
 
         //then
         assertThat(repo.getTask(TaskSamples.sample1Active.id)?.isActive).isFalse()
+    }
+
+    @Test
+    fun completeTask_already() = runBlockingTest {
+        //given
+        repo.saveTask(TaskSamples.sample1Active)
+        repo.completeTask(TaskSamples.sample1Active.id)
 
         //when complete the already completed task
         repo.completeTask(TaskSamples.sample1Active.id)
@@ -84,7 +103,7 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun activateTask() = runBlocking {
+    fun activateTask() = runBlockingTest {
         //given
         repo.saveTask(TaskSamples.sample2Completed)
 
@@ -93,6 +112,13 @@ class TasksRepositoryTest : BaseRobolectricTest() {
 
         //then activated
         assertThat(repo.getTask(TaskSamples.sample2Completed.id)?.isActive).isTrue()
+    }
+
+    @Test
+    fun activateTask_already() = runBlockingTest {
+        //given
+        repo.saveTask(TaskSamples.sample2Completed)
+        repo.activateTask(TaskSamples.sample2Completed.id)
 
         //when activate the already activated task
         repo.activateTask(TaskSamples.sample2Completed.id)
@@ -102,7 +128,7 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun clearCompletedTasks() = runBlocking {
+    fun clearCompletedTasks() = runBlockingTest {
         //given 2 completed, 1 active
         repo.saveTask(TaskSamples.sample2Completed)
         repo.saveTask(TaskSamples.sample2_2Completed)
@@ -116,7 +142,7 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun deleteAllTasks() = runBlocking {
+    fun deleteAllTasks() = runBlockingTest {
         //given 2 task
         repo.saveTask(TaskSamples.sample2Completed)
         repo.saveTask(TaskSamples.sample1Active)
@@ -129,7 +155,7 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun deleteTask() = runBlocking {
+    fun deleteTask() = runBlockingTest {
         //given 2 task
         repo.saveTask(TaskSamples.sample1Active)
         repo.saveTask(TaskSamples.sample2Completed)

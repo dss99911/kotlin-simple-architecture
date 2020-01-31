@@ -1,11 +1,9 @@
 package com.example.android.architecture.blueprints.todoapp.data.source.local
 
-import android.database.sqlite.SQLiteConstraintException
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.util.BaseRobolectricTest
-import com.example.android.architecture.blueprints.todoapp.util.assertNotReachable
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.test.inject
 
@@ -15,26 +13,32 @@ import org.koin.test.inject
 class TasksDaoTest : BaseRobolectricTest() {
     val dao: TasksDao by inject()
 
+
     @Test
-    fun getTasks() = runBlocking {
+    fun getTasks_empty() = runBlockingTest {
         //when empty
         assertThat(dao.getTasks()).isEmpty()
+    }
 
+    @Test
+    fun getTasks_size1() = runBlockingTest {
         //when size 1
         dao.saveTask(TaskSamples.sample1Active)
         assertThat(dao.getTasks()).hasSize(1)
+    }
+
+    @Test
+    fun getTasks_size2() = runBlockingTest {
 
         //when size 2
         dao.saveTask(TaskSamples.sample2Completed)
+        dao.saveTask(TaskSamples.sample1Active)
+        //then
         assertThat(dao.getTasks()).hasSize(2)
     }
 
     @Test
-    fun getTask() = runBlocking {
-        //when not exists
-        val task = dao.getTask(TaskSamples.sample1Active.id)
-        assertThat(task).isNull()
-
+    fun getTask_exists() = runBlockingTest {
         //when exists
         dao.saveTask(TaskSamples.sample1Active)
         //no error occurs
@@ -42,32 +46,45 @@ class TasksDaoTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun saveTask() = runBlocking {
+    fun getTask_notExists() = runBlockingTest {
+        //when not exists
+        val task = dao.getTask(TaskSamples.sample1Active.id)
+        //then
+        assertThat(task).isNull()
+    }
+
+
+    @Test
+    fun saveTask_add1() = runBlockingTest {
         //when add
         dao.saveTask(TaskSamples.sample1Active)
 
         //then size 1
         assertThat(dao.getTasks()).hasSize(1)
+    }
 
-        //when add same task id
-        try {
-            dao.saveTask(TaskSamples.sample1Active)
-            assertNotReachable()
-        } catch (e: SQLiteConstraintException) {
-            //then error occurs
-            assertThat(dao.getTasks()).hasSize(1)
-        }
-
+    @Test
+    fun saveTask_add2() = runBlockingTest {
         //when add 2 item
         dao.saveTask(TaskSamples.sample2Completed)
         dao.saveTask(TaskSamples.sample3TitleEmpty)
 
         //then 2 size increased
-        assertThat(dao.getTasks()).hasSize(3)
+        assertThat(dao.getTasks()).hasSize(2)
     }
 
     @Test
-    fun completeTask() = runBlocking {
+    fun saveTask_addSame() = runBlockingTest {
+        //when add same task id
+        dao.saveTask(TaskSamples.sample1Active)
+        dao.saveTask(TaskSamples.sample1Active)
+
+        //then size 1
+        assertThat(dao.getTasks()).hasSize(1)
+    }
+
+    @Test
+    fun completeTask() = runBlockingTest {
         //given
         dao.saveTask(TaskSamples.sample1Active)
 
@@ -76,6 +93,13 @@ class TasksDaoTest : BaseRobolectricTest() {
 
         //then
         assertThat(dao.getTask(TaskSamples.sample1Active.id)?.isActive).isFalse()
+    }
+
+    @Test
+    fun completeTask_already() = runBlockingTest {
+        //given
+        dao.saveTask(TaskSamples.sample1Active)
+        dao.completeTask(TaskSamples.sample1Active.id)
 
         //when complete the already completed task
         dao.completeTask(TaskSamples.sample1Active.id)
@@ -84,8 +108,9 @@ class TasksDaoTest : BaseRobolectricTest() {
         assertThat(dao.getTask(TaskSamples.sample1Active.id)?.isActive).isFalse()
     }
 
+
     @Test
-    fun activateTask() = runBlocking {
+    fun activateTask() = runBlockingTest {
         //given
         dao.saveTask(TaskSamples.sample2Completed)
 
@@ -94,6 +119,13 @@ class TasksDaoTest : BaseRobolectricTest() {
 
         //then activated
         assertThat(dao.getTask(TaskSamples.sample2Completed.id)?.isActive).isTrue()
+    }
+
+    @Test
+    fun activateTask_already() = runBlockingTest {
+        //given
+        dao.saveTask(TaskSamples.sample2Completed)
+        dao.activateTask(TaskSamples.sample2Completed.id)
 
         //when activate the already activated task
         dao.activateTask(TaskSamples.sample2Completed.id)
@@ -103,7 +135,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun clearCompletedTasks() = runBlocking {
+    fun clearCompletedTasks() = runBlockingTest {
         //given 2 completed, 1 active
         dao.saveTask(TaskSamples.sample2Completed)
         dao.saveTask(TaskSamples.sample2_2Completed)
@@ -117,7 +149,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun deleteAllTasks() = runBlocking {
+    fun deleteAllTasks() = runBlockingTest {
         //given 2 task
         dao.saveTask(TaskSamples.sample2Completed)
         dao.saveTask(TaskSamples.sample1Active)
@@ -130,7 +162,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     }
 
     @Test
-    fun deleteTask() = runBlocking {
+    fun deleteTask() = runBlockingTest {
         //given 2 task
         dao.saveTask(TaskSamples.sample1Active)
         dao.saveTask(TaskSamples.sample2Completed)
