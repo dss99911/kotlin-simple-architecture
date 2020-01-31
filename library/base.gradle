@@ -116,3 +116,10 @@ android {
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
 }
+
+dependencies {
+    implementation project(':library')
+    testImplementation project(':androidtesting')
+    //todo library, androidtesting, base.gradle can be split in dependency except for this kapt. we have to consider. whether split them or make one package
+    kapt "androidx.room:room-compiler:$version_room"
+}

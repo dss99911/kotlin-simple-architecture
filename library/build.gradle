@@ -1,10 +1,9 @@
+//noinspection GradleDependency
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
-apply from: (project(':kotlinlibrary').projectDir.toString() + '/dependencies.gradle')
-apply from: 'testDependencies.gradle'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -70,53 +69,50 @@ repositories {
 }
 
 dependencies {
-    api deps.room.runtime
-    api deps.room.ktx
-    api deps.room.testing
+    api "androidx.appcompat:appcompat:1.2.0-alpha01"
+    api "androidx.recyclerview:recyclerview:1.2.0-alpha01"
+    api "com.google.android.material:material:1.2.0-alpha04"
+    api "androidx.preference:preference:1.1.0"
 
-    api deps.support.app_compat
-    api deps.support.recyclerview
-    api deps.support.design
-    api deps.support.preference
+    api "androidx.navigation:navigation-fragment-ktx:$version_navigation"
+    api "androidx.navigation:navigation-ui-ktx:$version_navigation"
 
-    api deps.navigation.fragment_ktx
-    api deps.navigation.ui_ktx
-
-    api deps.anko
-    api deps.core_ktx
-    api deps.constraint_layout
-    api deps.lifecycle.extensions
-    api deps.lifecycle.livedat_ktx
-    api deps.lifecycle.viewmodel_ktx
-    api deps.lifecycle.viewmodel_savedstate
-    api deps.paging_ktx
-    api deps.timber
-    api deps.picasso
-    api deps.fragment_ktx
+    api "org.jetbrains.anko:anko:0.10.8"
+    api "androidx.core:core-ktx:1.1.0"
+    api "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+    api "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    api "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    api "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0"
+    api "androidx.paging:paging-runtime-ktx:2.1.1"
+    api "com.jakewharton.timber:timber:4.7.1"
+    api "com.squareup.picasso:picasso:2.71828"
+    api "androidx.fragment:fragment-ktx:1.2.0"
     /*[START] Retrofit */
-    api deps.retrofit.runtime
-    api deps.retrofit.gson
-    api deps.retrofit.mock
-    api deps.okhttp
-    api deps.okhttp_logging_interceptor
+    api "com.squareup.retrofit2:retrofit:2.6.2"
+    api "com.squareup.retrofit2:converter-gson:2.6.2"
+    api "com.squareup.okhttp3:okhttp:4.3.0"
+    api "com.squareup.okhttp3:logging-interceptor:4.3.0"
     /*[END] Retrofit */
-    api deps.koin.core
-    api deps.koin.android
-    api deps.koin.android_scope
-    api deps.koin.android_viewmodel
-//    api deps.koin.android_fragment
+    api "org.koin:koin-core:$version_koin"
+    api "org.koin:koin-android:$version_koin"
+    api "org.koin:koin-androidx-scope:$version_koin"
+    api "org.koin:koin-androidx-viewmodel:$version_koin"
 
     if (useLeakCanary) {
-        debugImplementation deps.leakcanary.debug
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0'
     }
 
-    debugImplementation deps.stetho
+    api "androidx.room:room-runtime:$version_room"
+    api "androidx.room:room-ktx:$version_room"
+
+    api project(':kotlinlibrary')
+
+    debugImplementation "com.facebook.stetho:stetho:1.5.1"
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'
 
 }
-repositories {
-    mavenCentral()
-}
+
 //todo automate gradle task of 'clean build generatePom bintrayUpload'.
 //todo find how to add source code and java doc
 

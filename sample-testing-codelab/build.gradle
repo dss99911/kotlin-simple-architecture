@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
-
 android {
     buildTypes {
         release {
@@ -47,8 +46,6 @@ android {
         enabledForTests = true
     }
 }
-
-apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')

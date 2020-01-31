@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
-apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
-
 android {
     defaultConfig {
         applicationId "com.google.samples.apps.sunflower"
@@ -9,10 +7,12 @@ android {
 }
 
 dependencies {
+
     kapt "com.github.bumptech.glide:compiler:4.10.0"
     implementation "com.github.bumptech.glide:glide:4.10.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"//todo add this to library
     implementation "androidx.work:work-runtime-ktx:2.1.0"//todo add this to library
     androidTestImplementation "androidx.work:work-testing:2.1.0"
     androidTestImplementation "androidx.arch.core:core-testing:2.0.0"
+
 }

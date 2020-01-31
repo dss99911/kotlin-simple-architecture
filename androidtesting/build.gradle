@@ -68,20 +68,21 @@ android {
 dependencies {
     implementation project(':library')
 
-    api deps.arch_core.testing
-    api deps.koin.test
-    api deps.kotlin.coroutine_test
-    api deps.mockito.core
-    api deps.mockito.all
-    api deps.mockito.android
-    api (deps.atsl.robolectric) {
+    api "androidx.arch.core:core-testing:2.1.0"
+    api "org.koin:koin-test:$version_koin"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutine"
+    api "org.mockito:mockito-core:3.2.4"
+    api "org.mockito:mockito-all:1.10.19"
+    api "org.mockito:mockito-android:3.2.4"
+    api ("org.robolectric:robolectric:4.3") {
         //todo has error when use testing library. https://github.com/robolectric/robolectric/issues/5245
         exclude group: 'com.google.auto.service', module: 'auto-service'
     }
-    api deps.atsl.ext
-    api deps.atsl.core
-    api deps.atsl.rules
-    api deps.atsl.runner
+    api "androidx.test.ext:junit-ktx:1.1.1"
+    api "androidx.test:core-ktx:1.2.0"
+    api "androidx.test:rules:1.2.0"
+    api "androidx.test:runner:1.2.0"
     api 'com.google.truth:truth:1.0.1'
 
+    api "androidx.room:room-testing:$version_room"
 }

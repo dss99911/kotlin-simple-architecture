@@ -9,16 +9,22 @@ buildscript {
     ext.application_id = "kim.jeonghyeon.fingerprintcamera"
 
     apply from: (project(':library').projectDir.toString() + '/versions.gradle')
-    addRepos(repositories)
+    repositories {
+        google()
+        jcenter()
+    }
 
     dependencies {
-        classpath deps.android_gradle_plugin
-        classpath deps.kotlin.plugin
+        classpath "com.android.tools.build:gradle:3.3.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlin"
     }
 }
 
 allprojects {
-    addRepos(repositories)
+    repositories {
+        google()
+        jcenter()
+    }
 }
 
 task clean(type: Delete) {

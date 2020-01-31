@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
-
 android {
 //    buildTypes {
 //        //inherit other build type
@@ -28,7 +27,7 @@ android {
 //    }
 }
 
-apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
+
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
