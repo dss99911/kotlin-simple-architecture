@@ -35,6 +35,7 @@ class TaskApiTest : TodoKoinTest() {
     @Test
     fun getTasks_size2() = runBlockingTest {
         //when size 2
+        api.saveTask(sample1Active.id, sample1Active)
         api.saveTask(sample2Completed.id, sample2Completed)
         assertThat(api.getTasks()).hasSize(2)
     }

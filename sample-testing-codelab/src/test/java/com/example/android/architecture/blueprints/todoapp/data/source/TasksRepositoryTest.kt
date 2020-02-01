@@ -29,6 +29,7 @@ class TasksRepositoryTest : BaseRobolectricTest() {
     @Test
     fun getTasks_size2() = runBlockingTest {
         //when size 2
+        repo.saveTask(TaskSamples.sample1Active)
         repo.saveTask(TaskSamples.sample2Completed)
         assertThat(repo.getTasks()).hasSize(2)
     }

@@ -73,42 +73,51 @@ dependencies {
     api "androidx.recyclerview:recyclerview:1.2.0-alpha01"
     api "com.google.android.material:material:1.2.0-alpha04"
     api "androidx.preference:preference:1.1.0"
-
-    api "androidx.navigation:navigation-fragment-ktx:$version_navigation"
-    api "androidx.navigation:navigation-ui-ktx:$version_navigation"
-
-    api "org.jetbrains.anko:anko:0.10.8"
+    api "androidx.fragment:fragment-ktx:1.2.0"
+    api "androidx.paging:paging-runtime-ktx:2.1.1"
     api "androidx.core:core-ktx:1.1.0"
     api "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+
+    //lifecycle
     api "androidx.lifecycle:lifecycle-extensions:2.2.0"
     api "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
     api "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     api "androidx.lifecycle:lifecycle-viewmodel-savedstate:1.0.0"
-    api "androidx.paging:paging-runtime-ktx:2.1.1"
-    api "com.jakewharton.timber:timber:4.7.1"
-    api "com.squareup.picasso:picasso:2.71828"
-    api "androidx.fragment:fragment-ktx:1.2.0"
+
+    //navigation
+    api "androidx.navigation:navigation-fragment-ktx:$version_navigation"
+    api "androidx.navigation:navigation-ui-ktx:$version_navigation"
+
+    //room
+    api "androidx.room:room-runtime:$version_room"
+    api "androidx.room:room-ktx:$version_room"
+
     /*[START] Retrofit */
     api "com.squareup.retrofit2:retrofit:2.6.2"
     api "com.squareup.retrofit2:converter-gson:2.6.2"
     api "com.squareup.okhttp3:okhttp:4.3.0"
     api "com.squareup.okhttp3:logging-interceptor:4.3.0"
     /*[END] Retrofit */
+
+    /*[START] koin */
     api "org.koin:koin-core:$version_koin"
     api "org.koin:koin-android:$version_koin"
     api "org.koin:koin-androidx-scope:$version_koin"
     api "org.koin:koin-androidx-viewmodel:$version_koin"
+    /*[END] koin */
+
+    api "com.squareup.picasso:picasso:2.71828"
+    api "org.jetbrains.anko:anko:0.10.8"
 
     if (useLeakCanary) {
         debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0'
     }
-
-    api "androidx.room:room-runtime:$version_room"
-    api "androidx.room:room-ktx:$version_room"
+    api "com.jakewharton.timber:timber:4.7.1"
+    debugImplementation "com.facebook.stetho:stetho:1.5.1"
 
     api project(':kotlinlibrary')
 
-    debugImplementation "com.facebook.stetho:stetho:1.5.1"
+
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'
 
 }

@@ -72,7 +72,7 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
     @Test
     fun onCompleteChanged_toActive() = runBlockingTest {
         //GIVEN task
-        repo.saveTask(TaskSamples.sample2Completed)
+        repo.saveTask(TaskSamples.sample1Active.apply { isCompleted = true })
         viewModel.onRefresh()
 
         //WHEN on change to Active

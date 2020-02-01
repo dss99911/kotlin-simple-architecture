@@ -47,7 +47,7 @@ interface TasksDao {
      *
      * @param task the task to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveTask(task: Task)
 
     @Update
