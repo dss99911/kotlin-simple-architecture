@@ -1,3 +1,1 @@
 include ':sample', ':library', ':kotlinlibrary', ':kotlin-sample', ':sample-testing-codelab', ':sample-sunflower', ':androidtesting'
-project(':kotlinlibrary').projectDir = new File("${pathKotlinLibrary}")
-project(':kotlin-sample').projectDir = new File("${pathKotlinSample}")
