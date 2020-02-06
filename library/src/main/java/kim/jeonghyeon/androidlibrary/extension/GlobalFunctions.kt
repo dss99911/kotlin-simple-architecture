@@ -26,7 +26,7 @@ val isDebug: Boolean
 val isProdRelease: Boolean
     inline get() = BuildConfig.isProd && !isDebug
 
-val isTesting = noThrow { Class.forName("android.support.test.espresso.Espresso") } != null
+val isTesting = noThrow { Class.forName("androidx.test.espresso.Espresso") } != null
         || noThrow { Class.forName("org.robolectric.RobolectricTestRunner") } != null
 
 val ctx: Context

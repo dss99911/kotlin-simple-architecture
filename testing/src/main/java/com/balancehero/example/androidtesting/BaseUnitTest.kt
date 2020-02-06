@@ -10,8 +10,11 @@ import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
 import org.koin.test.KoinTest
 
+/**
+ * while unit test, need to start koin module and stop.
+ */
 @ExperimentalCoroutinesApi
-abstract class BaseKoinTest : KoinTest {
+abstract class BaseUnitTest : KoinTest {
     abstract val modules: List<Module>
 
     @get:Rule

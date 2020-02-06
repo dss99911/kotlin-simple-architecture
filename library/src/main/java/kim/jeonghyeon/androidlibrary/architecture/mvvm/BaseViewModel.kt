@@ -12,7 +12,9 @@ import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
@@ -32,12 +34,10 @@ interface IBaseViewModel {
     val eventStartActivity: LiveObject<Intent>
     val eventShowProgressBar: LiveObject<Boolean>
 
-    fun onCreate()
     fun onStart()
     fun onResume()
     fun onPause()
     fun onStop()
-    fun onDestroy()
 
     fun navigateDirection(navDirections: NavDirections)
     fun navigate(action: (NavController) -> Unit)
@@ -107,29 +107,18 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         log("initialized")
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    override fun onCreate() {
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     override fun onStart() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onResume() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     override fun onPause() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     override fun onStop() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    override fun onDestroy() {
-    }
 
     override fun performWithActivity(action: (BaseActivity) -> Unit) {
         val currArray = (eventPerformWithActivity.value ?: emptyArray())

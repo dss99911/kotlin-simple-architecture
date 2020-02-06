@@ -13,6 +13,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
+import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
@@ -20,6 +21,9 @@ import kim.jeonghyeon.androidlibrary.extension.app
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.qualifier.Qualifier
 
 interface IBaseUi : SavedStateRegistryOwner {
     /**
@@ -27,7 +31,7 @@ interface IBaseUi : SavedStateRegistryOwner {
      * if you'd like to change it, override setVariable
      */
     var binding: ViewDataBinding
-    val viewModels: MutableMap<Int, Lazy<BaseViewModel>>
+    val viewModels: MutableList<Pair<Int, Lazy<BaseViewModel>>>
     val layoutId: Int
 
     /**
@@ -87,3 +91,13 @@ fun IBaseUi.getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = thi
 }
 
 internal class SavedStateViewModel(val savedStateHandle: SavedStateHandle) : ViewModel()
+
+inline fun <reified V : BaseViewModel> IBaseUi.bindingViewModel(
+    variableId: Int = BR.model,
+    qualifier: Qualifier? = null,
+    noinline parameters: ParametersDefinition? = null
+): Lazy<V> {
+    return viewModel<V>(qualifier, parameters).also {
+        viewModels.add(Pair(variableId, it))
+    }
+}

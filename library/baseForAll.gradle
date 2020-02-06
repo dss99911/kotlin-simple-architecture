@@ -1,0 +1,103 @@
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+apply plugin: 'androidx.navigation.safeargs'
+
+android {
+    compileSdkVersion compile_sdk_version.toInteger()
+    buildToolsVersion build_tool_version
+    defaultConfig {
+        minSdkVersion min_sdk_version.toInteger()
+        targetSdkVersion target_sdk_version.toInteger()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
+        buildConfigField "String", "freePackageName", "\"$application_id\""
+        resValue "string", "app_version", app_version
+
+        buildConfigField "boolean", "isFree", "false"
+        buildConfigField "boolean", "isPro", "false"
+        buildConfigField "boolean", "isDev", "false"
+        buildConfigField "boolean", "isProd", "false"
+        buildConfigField "boolean", "isMock", "false"
+    }
+
+    flavorDimensions "mode", "stage"
+
+    productFlavors {
+        free {
+            dimension "mode"
+            buildConfigField "boolean", "isPro", "false"
+        }
+
+        pro {
+            dimension "mode"
+            buildConfigField "boolean", "isPro", "true"
+        }
+
+        dev {
+            dimension "stage"
+
+            //optimize build time
+            resConfigs "en", "hdpi"
+            minSdkVersion min_sdk_version.toInteger() > 21 ? min_sdk_version.toInteger() : 21
+        }
+
+        prod {
+            dimension "stage"
+        }
+
+        mock {
+            dimension "stage"
+        }
+    }
+
+    // Remove mockRelease as it's not needed.
+    android.variantFilter { variant ->
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
+            variant.setIgnore(true)
+        }
+    }
+
+    dataBinding {
+        enabled = true
+        enabledForTests = true
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    // Always show the result of every unit test, even if it passes.
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+
+            all {
+                testLogging {
+                    events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                }
+            }
+        }
+        animationsDisabled = true
+    }
+
+
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
+    }
+}

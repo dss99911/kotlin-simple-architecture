@@ -60,19 +60,19 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
 
     override lateinit var binding: ViewDataBinding
-    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
     /**
      * used for startActivityForResult
      */
     val rootViewModel: BaseViewModel
-        get() = viewModels[0]!!.value
+        get() = viewModels[0].second.value
 
     override var stateObserver: Observer<State> = resourceObserverCommon { }
         set(value) {
             val prev = field
             field = value
 
-            viewModels.values.map { it.value }.forEach {
+            viewModels.map { it.second.value }.forEach {
                 it.state.removeObserver(prev)
                 it.state.observe(field)
             }
@@ -91,6 +91,34 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     override fun onViewModelSetup() {
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModels.map { it.second.value }.forEach {
+            it.onStart()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModels.map { it.second.value }.forEach {
+            it.onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModels.map { it.second.value }.forEach {
+            it.onPause()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModels.map { it.second.value }.forEach {
+            it.onStop()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         log("${this::class.simpleName} onDestroy")
@@ -105,7 +133,12 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     }
 
     private fun setupObserver() {
-        viewModels.values.map { it.value }.forEach {
+        //BaseActivity require at least one viewModel for startActivityForResult or permission.
+        if (viewModels.isEmpty()) {
+            viewModels.add(Pair(0, lazy { BaseViewModel() }))
+        }
+
+        viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
 
             it.eventSnackbar.observeEvent {
@@ -143,8 +176,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
             it.eventNavDirection.observeEvent {
                 it.navigate()
             }
-
-            lifecycle.addObserver(it)
         }
     }
 

@@ -21,6 +21,11 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * this is not related to lifecycle. so, using livedata is not the proper option.
+ * just use variable. and it will be updated when binding data only. so if the data should be refreshed to UI not on the binding time.
+ * you have to use mBinding.executePendingBindings();
+ */
 class PlantAndGardenPlantingsViewModel(
     plantings: PlantAndGardenPlantings,
     val onClick: (String) -> Unit
@@ -46,8 +51,8 @@ class PlantAndGardenPlantingsViewModel(
     }
 
     override fun areItemsTheSame(item: PlantAndGardenPlantingsViewModel): Boolean =
-            plant.plantId == item.plant.plantId
+        plant.plantId == item.plant.plantId
 
     override fun areContentsTheSame(item: PlantAndGardenPlantingsViewModel): Boolean =
-            plant == item.plant
+        plant == item.plant
 }

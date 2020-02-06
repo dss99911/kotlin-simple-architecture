@@ -12,7 +12,7 @@ inline fun <reified API> api(baseUrl: String): API {
     val client = OkHttpClient.Builder().apply {
         if (!isProdRelease) {
             addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BASIC
+                level = HttpLoggingInterceptor.Level.BODY
             })
         }
         addInterceptor(BaseInterceptor())

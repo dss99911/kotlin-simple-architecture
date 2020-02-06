@@ -59,7 +59,6 @@ android {
             dimension "stage"
         }
     }
-
 }
 
 dependencies {
@@ -77,12 +76,13 @@ dependencies {
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutine"
 
+    api "org.robolectric:robolectric:4.3.1", {
+        //todo has error when use testing library. https://github.com/robolectric/robolectric/issues/5245
+        exclude group: 'com.google.auto.service', module: 'auto-service'
+    }
+
+    api 'com.google.truth:truth:1.0.1'
+
     api "androidx.room:room-testing:$version_room"
     api "org.koin:koin-test:$version_koin"
-
-
-    //espresso
-    api "androidx.test.espresso:espresso-core:3.2.0"
-    api "androidx.test.espresso:espresso-contrib:3.2.0"
-    api "androidx.test.espresso:espresso-intents:3.2.0"
 }

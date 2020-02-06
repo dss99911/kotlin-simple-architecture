@@ -19,7 +19,7 @@ import timber.log.Timber
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun log(e: Throwable) {
-    if (isDebug) {
+    if (!isProdRelease) {
         if (isTesting) {
             e.printStackTrace()
         } else {
@@ -30,7 +30,7 @@ inline fun log(e: Throwable) {
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun log(vararg obj: Any?) {
-    if (isDebug) {
+    if (!isProdRelease) {
         if (isTesting) {
             println(Gson().toJson(obj))
         } else {

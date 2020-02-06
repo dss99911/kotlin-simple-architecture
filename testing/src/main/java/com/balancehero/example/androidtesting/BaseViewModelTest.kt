@@ -1,23 +1,18 @@
 package com.balancehero.example.androidtesting
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Rule
 import org.junit.runner.RunWith
-import org.koin.test.KoinTest
 import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 
+/**
+ * whenever change test, application is created, so, koin module's also restarted.
+ */
 @RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
-abstract class BaseViewModelTest : KoinTest {
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
+abstract class BaseViewModelTest : BaseRobolectricTest() {
 
     inline fun <reified T : NavDirections> BaseViewModel.captureNavigateDirection(): T {
         if (!Mockito.mockingDetails(this).isSpy) {

@@ -1,25 +1,40 @@
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
-
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'androidx.navigation.safeargs'
-
+apply from: (project(':library').projectDir.toString() + '/baseForAll.gradle')
 android {
-    compileSdkVersion compile_sdk_version
-    buildToolsVersion build_tool_version
     defaultConfig {
-        minSdkVersion min_sdk_version
-        targetSdkVersion target_sdk_version
-        versionCode app_version_code
+        versionCode app_version_code.toInteger()
         versionName app_version
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
-
-        buildConfigField "String", "freePackageName", "\"$application_id\""
-        resValue "string", "app_version", app_version
     }
+
+    flavorDimensions "mode", "stage"
+
+    productFlavors {
+        free {
+            dimension "mode"
+            applicationId application_id
+        }
+
+        pro {
+            dimension "mode"
+            applicationId application_id + ".pro"
+        }
+
+        dev {
+            dimension "stage"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+        }
+
+        prod {
+            dimension "stage"
+        }
+
+        mock {
+            dimension "stage"
+            applicationIdSuffix ".mock"
+            versionNameSuffix "-mock"
+        }
+    }
+
     signingConfigs {
         release {
             keyAlias androidKeyAlias
@@ -38,88 +53,17 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', project(':library').projectDir.toString() + '/proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
-
-    flavorDimensions "mode", "stage"
-
-    productFlavors {
-        free {
-            dimension "mode"
-
-            applicationId application_id
-            buildConfigField "boolean", "isPro", "false"
-        }
-
-        pro {
-            dimension "mode"
-
-            applicationId application_id + ".pro"
-            buildConfigField "boolean", "isPro", "true"
-        }
-
-        dev {
-            dimension "stage"
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-dev"
-
-            //optimize build time
-            resConfigs "en", "hdpi"
-            minSdkVersion min_sdk_version > 21 ? min_sdk_version : 21
-        }
-
-        prod {
-            dimension "stage"
-        }
-
-        mock {
-            dimension "stage"
-            applicationIdSuffix ".mock"
-            versionNameSuffix "-mock"
-        }
-    }
-
-    // Remove mockRelease as it's not needed.
-    android.variantFilter { variant ->
-        if (variant.buildType.name == 'release'
-                && variant.getFlavors().get(0).name == 'mock') {
-            variant.setIgnore(true)
-        }
-    }
-
-    dataBinding {
-        enabled = true
-        enabledForTests = true
-    }
-
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    // Always show the result of every unit test, even if it passes.
-    testOptions.unitTests {
-        includeAndroidResources = true
-        all {
-            testLogging {
-                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-            }
-        }
-    }
-
-    useLibrary 'android.test.runner'
-    useLibrary 'android.test.base'
-    useLibrary 'android.test.mock'
 }
 
 dependencies {
+    //todo will this be working?
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation project(':library')
-    testImplementation project(':androidtesting')
+    testImplementation project(':testing')
     androidTestImplementation project(':androidtesting')
     //todo library, androidtesting, base.gradle can be split in dependency except for this kapt. we have to consider. whether split them or make one package
     kapt "androidx.room:room-compiler:$version_room"

@@ -13,6 +13,7 @@ android {
 //        manifestPlaceholders = [app_name:"sample name"]
 //        //can add resource
 //        resValue "string", "test", "test"
+//        resConfigs("en")
 //    }
 
     //you can add new res folder
@@ -30,7 +31,5 @@ android {
 
 
 dependencies {
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-
     implementation 'com.android.support:customtabs:23.3.0'
 }

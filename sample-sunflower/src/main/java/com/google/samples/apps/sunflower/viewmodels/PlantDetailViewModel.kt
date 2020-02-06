@@ -25,7 +25,6 @@ import com.google.samples.apps.sunflower.data.PlantRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.call
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
 
 /**
  * The ViewModel used in [PlantDetailFragment].
@@ -63,7 +62,7 @@ class PlantDetailViewModel(
     }
 
     fun addPlantToGarden() {
-        launch {
+        state.load {
             gardenPlantingRepository.createGardenPlanting(navArgs.plantId)
         }
     }

@@ -43,7 +43,7 @@ interface IBaseFragment : IBaseUi {
 abstract class BaseFragment : Fragment(),
     IBaseFragment {
     override lateinit var binding: ViewDataBinding
-    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
 
     @MenuRes
     private var menuId: Int = 0
@@ -61,7 +61,7 @@ abstract class BaseFragment : Fragment(),
             val prev = field
             field = value
 
-            viewModels.values.map { it.value }.forEach {
+            viewModels.map { it.second.value }.forEach {
                 it.state.removeObserver(prev)
                 it.state.observe(field)
             }
@@ -113,17 +113,29 @@ abstract class BaseFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         log("${this::class.simpleName}")
+
+        viewModels.map { it.second.value }.forEach {
+            it.onResume()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         log("${this::class.simpleName}")
+
+        viewModels.map { it.second.value }.forEach {
+            it.onPause()
+        }
     }
 
     override fun onStop() {
         super.onStop()
 
         visible = isVisible(selected, false)
+
+        viewModels.map { it.second.value }.forEach {
+            it.onStop()
+        }
     }
 
     override fun onDestroy() {
@@ -160,7 +172,7 @@ abstract class BaseFragment : Fragment(),
     }
 
     private fun setupObserver() {
-        viewModels.values.map { it.value }.forEach {
+        viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
 
             it.eventSnackbar.observeEvent {
@@ -199,8 +211,6 @@ abstract class BaseFragment : Fragment(),
                 }
 
             }
-
-            lifecycle.addObserver(it)
 
             onViewModelSetup()
         }
@@ -246,6 +256,9 @@ abstract class BaseFragment : Fragment(),
         super.onStart()
 
         visible = isVisible(selected, true)
+        viewModels.map { it.second.value }.forEach {
+            it.onStart()
+        }
     }
 
     private fun isVisible(selected: Boolean, isStarted: Boolean): Boolean = selected && isStarted
@@ -255,18 +268,18 @@ abstract class BaseFragment : Fragment(),
     }
 
     override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {
-        observe(this@BaseFragment, onChanged)
+        observe(viewLifecycleOwner, onChanged)
     }
 
     override fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit) {
-        observeEvent(this@BaseFragment, onChanged)
+        observeEvent(viewLifecycleOwner, onChanged)
     }
 
     override fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>) {
-        observeEvent(this@BaseFragment, observer)
+        observeEvent(viewLifecycleOwner, observer)
     }
 
     override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
-        observe(this@BaseFragment.viewLifecycleOwner, observer)
+        observe(viewLifecycleOwner, observer)
     }
 }
