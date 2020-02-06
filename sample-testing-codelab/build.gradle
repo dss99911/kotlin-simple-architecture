@@ -3,25 +3,21 @@ apply from: (project(':library').projectDir.toString() + '/base.gradle')
 android {
     buildTypes {
         release {
+            //todo how to test with proguard?
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
         }
     }
 
-    defaultConfig {
-        applicationId "com.example.android.architecture.blueprints.todomvvmlivekotlin"
-    }
-
-
     productFlavors {
         dev {
             dimension "stage"
-            buildConfigField "String", "SERVER_URL", "\"http://example.com\""
+            buildConfigField "String", "SERVER_URL", "\"https://example.com\""
         }
 
         prod {
             dimension "stage"
-            buildConfigField "String", "SERVER_URL", "\"http://example.com\""
+            buildConfigField "String", "SERVER_URL", "\"https://example.com\""
         }
 
         mock {
@@ -29,24 +25,8 @@ android {
             buildConfigField "String", "SERVER_URL", "\"/\""
         }
     }
-
-    // Always show the result of every unit test, even if it passes.
-    testOptions.unitTests {
-        includeAndroidResources = true
-
-        all {
-            testLogging {
-                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-            }
-        }
-    }
-
-    dataBinding {
-        enabled = true
-        enabledForTests = true
-    }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+
 }
