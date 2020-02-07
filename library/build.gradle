@@ -59,6 +59,7 @@ dependencies {
 
     //    implementation 'kim.jeonghyeon:kotlinlibrary:1.4.4'
 
+    testImplementation project(':testing')
 }
 
 //todo automate gradle task of 'clean build generatePom bintrayUpload'.

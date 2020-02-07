@@ -22,7 +22,6 @@ import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
 import kim.jeonghyeon.androidlibrary.extension.ctx
 
 /**
@@ -66,7 +65,7 @@ class TaskDetailViewModel(
     private fun setCompleted(completed: Boolean) {
         val task: Task = task.getData() ?: return
 
-        launch {
+        state.load {
             if (completed) {
                 tasksRepository.completeTask(task)
                 showSnackbar(R.string.task_marked_complete)

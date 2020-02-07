@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import com.example.android.architecture.blueprints.todoapp.BR
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kim.jeonghyeon.androidlibrary.extension.getNavArgs
@@ -67,7 +66,6 @@ class TasksFragment : BaseFragment() {
 
         // Set the lifecycle owner to the lifecycle of the view
         setupRefreshLayout()
-        setupFab()
     }
 
     override fun onViewModelSetup() {
@@ -98,25 +96,15 @@ class TasksFragment : BaseFragment() {
         }
     }
 
-    private fun setupFab() {
-        activity?.findViewById<FloatingActionButton>(R.id.fab_add_task)?.let {
-            it.setOnClickListener {
-                navigateToAddNewTask()
-            }
-        }
-    }
-
     private fun navigateToAddNewTask() {
         TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
             null,
             resources.getString(R.string.add_task)
-        )
-            .navigate()
+        ).navigate()
     }
 
     private fun openTaskDetails(taskId: String) {
-        TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId)
-            .navigate()
+        TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId).navigate()
     }
 
     private fun setupRefreshLayout() {

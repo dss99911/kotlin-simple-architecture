@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY appname "Android Sample">]>
 <resources>
-    <string name="app_name">Android Sample</string>
+    <string name="app_name">&appname;</string>
+    <string name="app_name2">&appname;2</string>
     <string name="mvvm">MVVM</string>
     <string name="chrome_custom_tab">Chrome Custom Tab</string>
     <string name="api_call">Api call</string>
@@ -15,4 +17,6 @@
     <string name="deeplink">deeplink</string>
     <string name="action_search">search</string>
     <string name="share">share</string>
+    <string name="add">add</string>
+    <string name="input_text">Input text</string>
 </resources>

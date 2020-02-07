@@ -56,8 +56,7 @@ class TasksViewModelTest : BaseViewModelTest() {
 
     @Test
     fun onCreate() {
-        //when
-        viewModel.onCreate()
+        //when init
 
         //then
         assertFilter(R.string.label_all, R.string.no_tasks_all, R.drawable.logo_no_fill, true)

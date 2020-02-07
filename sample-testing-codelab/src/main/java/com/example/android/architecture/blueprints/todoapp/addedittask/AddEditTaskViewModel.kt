@@ -22,7 +22,6 @@ import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.launch
 
 /**
  * ViewModel for the Add/Edit screen.
@@ -38,18 +37,20 @@ class AddEditTaskViewModel(
     private val tasksRepository: TaskRepository
 ) : BaseViewModel() {
 
-    val task = liveResource {
-        val taskid = navArgs.taskid
-        if (taskid == null) {
-            Task()
-        } else {
-            tasksRepository.getTask(taskid) ?: Task()
+    val task = liveResource<Task>().apply {
+        load {
+            val taskid = navArgs.taskid
+            if (taskid == null) {
+                Task()
+            } else {
+                tasksRepository.getTask(taskid) ?: Task()
+            }
         }
     }
 
     // Called when clicking on fab.
     fun onClickFAB() {
-        launch {
+        state.load {
             tasksRepository.saveTask(task.getData()!!)
             navigateToTasksFragment()
         }

@@ -1,6 +1,6 @@
 package com.example.android.architecture.blueprints.todoapp.data.source.remote
 
-import com.example.android.architecture.blueprints.todoapp.TodoKoinTest
+import com.example.android.architecture.blueprints.todoapp.TodoUnitTest
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples.sample1Active
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples.sample2Completed
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples.sample2_2Completed
@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.koin.test.inject
 
-class TaskApiTest : TodoKoinTest() {
+class TaskApiTest : TodoUnitTest() {
     val api: TaskApi by inject()
 
     @Before

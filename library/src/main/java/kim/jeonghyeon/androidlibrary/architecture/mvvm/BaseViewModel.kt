@@ -24,6 +24,7 @@ import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -51,39 +52,41 @@ interface IBaseViewModel {
     fun startPermissionSettingsPage(listener: () -> Unit)
 
     @MainThread
-    fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job
+    fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
 
     @MainThread
     fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
-    ): Job
+    )
 
     @MainThread
-    fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T): Job
+    fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
 
     /**
      * if it is loading, ignore
      */
-    fun <T> LiveResource<T>.loadOneByOne(work: suspend CoroutineScope.() -> T): Job?
+    fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T)
+
+    fun <T> LiveResource<T>.loadDebounce(timeInMillis: Long, work: suspend CoroutineScope.() -> T)
 
     fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U
-    ): Job
+    )
 
     fun <T, U, V> LiveResource<V>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U,
         part3: suspend CoroutineScope.(U) -> V
-    ): Job
+    )
 
     fun <T, U, V, W> LiveResource<W>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U,
         part3: suspend CoroutineScope.(U) -> V,
         part4: suspend CoroutineScope.(V) -> W
-    ): Job
+    )
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
@@ -249,46 +252,67 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     }
 
-    override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T): Job {
-        return viewModelScope.loadResource(this@load, work)
+    override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T) {
+        viewModelScope.loadResource(this@load, work)
     }
 
     override fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
-    ): Job = viewModelScope.loadResource(this@load, work, onResult)
+    ) {
+        viewModelScope.loadResource(this@load, work, onResult)
+    }
 
     @MainThread
     override fun <T> LiveResource<T>.load(
         state: LiveState,
         work: suspend CoroutineScope.() -> T
-    ): Job =
-        viewModelScope.loadResource(this@load, state, work)
+    ) {
 
-    override fun <T> LiveResource<T>.loadOneByOne(work: suspend CoroutineScope.() -> T): Job? {
-        if (value.isLoadingNotNull()) {
-            return null
+        viewModelScope.loadResource(this@load, state, work)
+    }
+
+    override fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
+        if (value.isLoadingState()) {
+            return
         }
-        return load(work)
+        load(work)
+    }
+
+    override fun <T> LiveResource<T>.loadDebounce(
+        timeInMillis: Long,
+        work: suspend CoroutineScope.() -> T
+    ) {
+        value?.onLoading { it.cancel() }
+        load {
+            delay(timeInMillis)
+            work()
+        }
     }
 
     override fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U
-    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2)
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2)
+    }
 
     override fun <T, U, V> LiveResource<V>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U,
         part3: suspend CoroutineScope.(U) -> V
-    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3)
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3)
+    }
 
     override fun <T, U, V, W> LiveResource<W>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U,
         part3: suspend CoroutineScope.(U) -> V,
         part4: suspend CoroutineScope.(V) -> W
-    ): Job = viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3, part4)
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3, part4)
+    }
 }
 
 inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job =

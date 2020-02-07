@@ -58,11 +58,11 @@ class TasksViewModel(
     val openTaskEvent: LiveObject<String> = liveObject()
     val newTaskEvent: LiveObject<Unit> = liveObject()
 
-    override fun onCreate() {
+    init {
         // Set initial state
         setFiltering(TasksFilterType.ALL_TASKS)
 
-        loadTasks(true)
+        loadTasks()
 
         showEditResultMessage(args.userMessage)
     }
@@ -107,7 +107,7 @@ class TasksViewModel(
         state.load {
             tasksRepository.clearCompletedTasks()
             snackbarMessage.postValue(R.string.completed_tasks_cleared)
-            loadTasks(false)
+            loadTasks()
         }
     }
 
@@ -142,15 +142,14 @@ class TasksViewModel(
     }
 
     fun onRefreshMenuClicked() {
-        loadTasks(true)
+        loadTasks()
     }
 
     /**
      * @param forceUpdate   Pass in true to refresh the data in the [TasksDataSource]
      * @param showLoadingUI Pass in true to display a loading icon in the UI
      */
-    private fun loadTasks(forceUpdate: Boolean) {
-        //todo how to force update
+    private fun loadTasks() {
         items.load {
             tasksRepository.getTasks()
                 .filter()
@@ -183,7 +182,11 @@ class TasksViewModel(
                 else -> TasksFilterType.ALL_TASKS
             }
         )
-        loadTasks(false)
+        loadTasks()
 
+    }
+
+    fun onClickFab() {
+        newTaskEvent.call()
     }
 }

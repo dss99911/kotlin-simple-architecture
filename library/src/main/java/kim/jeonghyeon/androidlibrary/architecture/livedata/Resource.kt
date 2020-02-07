@@ -2,10 +2,11 @@ package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 import kim.jeonghyeon.androidlibrary.extension.log
+import kotlinx.coroutines.Job
 
 sealed class Resource<out T> {
     object None : Resource<Nothing>()
-    object Loading : Resource<Nothing>()
+    data class Loading(val job: Job) : Resource<Nothing>()
     data class Success<T>(val data: T) : Resource<T>()
     data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>() {
         init {
@@ -16,6 +17,13 @@ sealed class Resource<out T> {
     fun get(): T? = when (this) {
         is Success -> data
         else -> null
+    }
+
+    fun onLoading(onResult: (job: Job) -> Unit): Resource<T> {
+        if (this is Loading) {
+            onResult(job)
+        }
+        return this
     }
 
     fun onSuccess(onResult: (T) -> Unit): Resource<T> {
@@ -47,20 +55,17 @@ sealed class Resource<out T> {
 }
 
 
-fun Resource<*>?.isLoadingNotNull() = this?.isLoading() ?: false
+fun Resource<*>?.isLoadingState() = this?.isLoading() ?: false
 
-fun Resource<*>?.isSuccessNotNull() = this?.isSuccess() ?: false
+fun Resource<*>?.isSuccessState() = this?.isSuccess() ?: false
 
 
-fun Resource<*>?.isErrorNotNull() = this?.isError() ?: false
-fun Resource<*>?.isResultNotNull() = this?.isResult() ?: false
+fun Resource<*>?.isErrorState() = this?.isError() ?: false
+fun Resource<*>?.isResultState() = this?.isResult() ?: false
 
 fun <T> Resource<T>.asLive() = liveResource(this)
 
 
 typealias State = Resource<Any?>
-
-val ResourceSuccess = Resource.Success(Unit)
-val ResourceLoading = Resource.Loading
 
 class ResourceException(val error: ResourceError) : Exception()
