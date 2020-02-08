@@ -6,7 +6,7 @@ import kotlinx.coroutines.Job
 
 sealed class Resource<out T> {
     object None : Resource<Nothing>()
-    data class Loading(val job: Job) : Resource<Nothing>()
+    data class Loading(val job: Job? = null) : Resource<Nothing>()
     data class Success<T>(val data: T) : Resource<T>()
     data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>() {
         init {
@@ -19,7 +19,7 @@ sealed class Resource<out T> {
         else -> null
     }
 
-    fun onLoading(onResult: (job: Job) -> Unit): Resource<T> {
+    fun onLoading(onResult: (job: Job?) -> Unit): Resource<T> {
         if (this is Loading) {
             onResult(job)
         }

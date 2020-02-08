@@ -165,16 +165,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventNavDirectionId.observeEvent {
-                navigate(it)
-            }
-
             it.eventNav.observeEvent { action ->
                 action(navController)
-            }
-
-            it.eventNavDirection.observeEvent {
-                it.navigate()
             }
         }
     }

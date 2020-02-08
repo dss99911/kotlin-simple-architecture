@@ -21,9 +21,6 @@ import androidx.annotation.StringRes
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
-import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
-import com.example.android.architecture.blueprints.todoapp.util.EDIT_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import java.util.*
@@ -36,10 +33,7 @@ import java.util.*
  * property changes. This is done by assigning a [Bindable] annotation to the property's
  * getter method.
  */
-class TasksViewModel(
-    val args: TasksFragmentArgs,
-    private val tasksRepository: TaskRepository
-) : BaseViewModel() {
+class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewModel() {
 
     val items: LiveResource<List<TaskItemViewModel>> = liveResource()
     val currentFilteringLabel: LiveObject<Int> = liveObject()
@@ -63,8 +57,6 @@ class TasksViewModel(
         setFiltering(TasksFilterType.ALL_TASKS)
 
         loadTasks()
-
-        showEditResultMessage(args.userMessage)
     }
 
     /**
@@ -107,7 +99,6 @@ class TasksViewModel(
         state.load {
             tasksRepository.clearCompletedTasks()
             snackbarMessage.postValue(R.string.completed_tasks_cleared)
-            loadTasks()
         }
     }
 
@@ -128,15 +119,6 @@ class TasksViewModel(
         openTaskEvent.call(taskId)
     }
 
-    private fun showEditResultMessage(result: Int) {
-        when (result) {
-            EDIT_RESULT_OK -> snackbarMessage.call(R.string.successfully_saved_task_message)
-            ADD_EDIT_RESULT_OK -> snackbarMessage.call(R.string.successfully_added_task_message)
-            DELETE_RESULT_OK -> snackbarMessage.call(R.string.successfully_deleted_task_message)
-        }
-
-    }
-
     private fun showSnackbarMessage(message: Int) {
         snackbarMessage.value = message
     }
@@ -150,18 +132,18 @@ class TasksViewModel(
      * @param showLoadingUI Pass in true to display a loading icon in the UI
      */
     private fun loadTasks() {
-        items.load {
-            tasksRepository.getTasks()
-                .filter()
+        items.removeSources()
+        items += tasksRepository.getLiveTasks().successDataMap {
+            it.filter(currentFiltering)
                 .map { TaskItemViewModel(it, this@TasksViewModel) }
         }
     }
 
-    private fun List<Task>.filter(): List<Task> {
+    private fun List<Task>.filter(filterType: TasksFilterType): List<Task> {
         val tasksToShow = ArrayList<Task>()
         // We filter the tasks based on the requestType
         for (task in this) {
-            when (currentFiltering) {
+            when (filterType) {
                 TasksFilterType.ALL_TASKS -> tasksToShow.add(task)
                 TasksFilterType.ACTIVE_TASKS -> if (task.isActive) {
                     tasksToShow.add(task)

@@ -18,8 +18,15 @@ abstract class BaseViewModelTest : BaseRobolectricTest() {
         if (!Mockito.mockingDetails(this).isSpy) {
             error("viewModel should be spy")
         }
-        val argTask = argumentCaptor<NavDirections>()
-        Mockito.verify(this).navigateDirection(capture(argTask))
-        return argTask.value as T
+        val arg = argumentCaptor<NavDirections>()
+        Mockito.verify(this).navigateDirection(capture(arg))
+        return arg.value as T
+    }
+
+    fun BaseViewModel.verifyNavigateUp() {
+        if (!Mockito.mockingDetails(this).isSpy) {
+            error("viewModel should be spy")
+        }
+        Mockito.verify(this).navigateUp()
     }
 }

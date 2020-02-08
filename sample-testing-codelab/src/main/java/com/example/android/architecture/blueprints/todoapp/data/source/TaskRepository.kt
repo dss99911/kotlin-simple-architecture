@@ -1,8 +1,11 @@
 package com.example.android.architecture.blueprints.todoapp.data.source
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 
 interface TaskRepository {
+
+    fun getLiveTasks(): LiveResource<List<Task>>
 
     suspend fun getTasks(): List<Task>
 

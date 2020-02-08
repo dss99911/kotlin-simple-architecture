@@ -16,7 +16,11 @@
 
 package com.example.android.architecture.blueprints.todoapp.data.source.local
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.example.android.architecture.blueprints.todoapp.data.Task
 
 /**
@@ -30,8 +34,11 @@ interface TasksDao {
      *
      * @return all tasks.
      */
-    @Query("SELECT * FROM Tasks")
+    @Query("SELECT * FROM Tasks order by entryid")
     suspend fun getTasks(): List<Task>
+
+    @Query("SELECT * FROM Tasks order by entryid")
+    fun getLiveTasks(): LiveData<List<Task>>
 
     /**
      * Select a task by id.
@@ -49,12 +56,6 @@ interface TasksDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveTask(task: Task)
-
-    @Update
-    suspend fun completeTask(task: Task)
-
-    @Update
-    suspend fun activateTask(task: Task)
 
     @Query("UPDATE Tasks SET completed = 1 WHERE entryid = :taskId")
     suspend fun completeTask(taskId: String)

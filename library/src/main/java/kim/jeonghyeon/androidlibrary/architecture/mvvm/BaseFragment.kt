@@ -191,16 +191,8 @@ abstract class BaseFragment : Fragment(),
                 }
             }
 
-            it.eventNavDirectionId.observeEvent {
-                navigate(it)
-            }
-
             it.eventNav.observeEvent { action ->
                 action(findNavController())
-            }
-
-            it.eventNavDirection.observeEvent {
-                it.navigate()
             }
 
             it.eventPerformWithActivity.observe { array ->

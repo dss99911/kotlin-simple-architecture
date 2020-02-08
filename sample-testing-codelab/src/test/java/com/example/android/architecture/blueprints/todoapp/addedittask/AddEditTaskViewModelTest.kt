@@ -64,9 +64,7 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
 
         //then task added, navigate to home
         assertThat(repo.getTasks()).hasSize(1)
-        val directions =
-            viewModel.captureNavigateDirection<AddEditTaskFragmentDirections.ActionAddEditTaskFragmentToTasksFragment>()
-        assertThat(directions.userMessage).isEqualTo(ADD_EDIT_RESULT_OK)
+        viewModel.verifyNavigateUp()
     }
 
     private fun initViewModel(taskId: String?): AddEditTaskViewModel {

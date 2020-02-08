@@ -15,9 +15,12 @@
  */
 package com.example.android.architecture.blueprints.todoapp.data.source
 
+import androidx.lifecycle.LiveData
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksDao
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TaskApi
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.repository.NetworkBoundResource
 
 /**
  * Concrete implementation to load tasks from the data sources into a cache.
@@ -40,6 +43,14 @@ class TasksRepositoryImpl(
             refreshLocalDataSource(it)
         }
     }
+
+    override fun getLiveTasks(): LiveResource<List<Task>> =
+        object : NetworkBoundResource<List<Task>, List<Task>>() {
+            override fun loadFromDb(): LiveData<List<Task>> = tasksDao.getLiveTasks()
+            override fun shouldFetch(data: List<Task>?): Boolean = data.isNullOrEmpty()
+            override suspend fun createCall(): List<Task> = taskApi.getTasks()
+            override suspend fun saveCallResult(item: List<Task>) = refreshLocalDataSource(item)
+        }
 
     override suspend fun getTask(taskId: String): Task? {
         @Suppress("UNNECESSARY_SAFE_CALL")
@@ -65,7 +76,7 @@ class TasksRepositoryImpl(
     override suspend fun completeTask(task: Task) {
         task.isCompleted = true
         taskApi.completeTask(task.id)
-        tasksDao.completeTask(task)
+        tasksDao.completeTask(task.id)
     }
 
     override suspend fun completeTask(taskId: String) {
@@ -75,7 +86,7 @@ class TasksRepositoryImpl(
     override suspend fun activateTask(task: Task) {
         task.isCompleted = false
         taskApi.activateTask(task.id)
-        tasksDao.activateTask(task)
+        tasksDao.activateTask(task.id)
     }
 
     override suspend fun activateTask(taskId: String) {

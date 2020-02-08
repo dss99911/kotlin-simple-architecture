@@ -9,7 +9,6 @@ import com.example.android.architecture.blueprints.todoapp.data.source.remote.Ta
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsViewModel
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailFragmentArgs
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailViewModel
-import com.example.android.architecture.blueprints.todoapp.tasks.TasksFragmentArgs
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import kim.jeonghyeon.androidlibrary.architecture.net.api
 import kim.jeonghyeon.androidlibrary.architecture.repository.RoomUtil
@@ -20,7 +19,7 @@ val viewModelModule = module {
     viewModel { (args: AddEditTaskFragmentArgs) -> AddEditTaskViewModel(args, get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { (args: TaskDetailFragmentArgs) -> TaskDetailViewModel(args, get()) }
-    viewModel { (args: TasksFragmentArgs) -> TasksViewModel(args, get()) }
+    viewModel { TasksViewModel(get()) }
 }
 
 val dataModule = module {

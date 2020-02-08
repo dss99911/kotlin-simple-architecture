@@ -6,9 +6,11 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
 data class TaskItemViewModel(val task: Task, val parent: TasksViewModel) :
     DiffComparable<TaskItemViewModel> {
 
-    override fun areItemsTheSame(item: TaskItemViewModel) = task.id == item.task.id
+    //if user change title, even if id is same. content is different. but recyclerview consider that if id is same. then no need to draw again.
+    override fun areItemsTheSame(item: TaskItemViewModel) = areContentsTheSame(item)
 
-    override fun areContentsTheSame(item: TaskItemViewModel) = areItemsTheSame(item)
+    override fun areContentsTheSame(item: TaskItemViewModel): Boolean =
+        task.titleForList == item.task.titleForList
 
     fun onCompleteChanged() {
         parent.completeTask(task, task.isCompleted)

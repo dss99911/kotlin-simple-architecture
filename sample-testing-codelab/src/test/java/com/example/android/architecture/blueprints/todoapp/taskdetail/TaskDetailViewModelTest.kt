@@ -93,9 +93,7 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
 
         //THEN delete and navigate to task fragment
         assertThat(repo.getTask(TaskSamples.sample1Active.id)).isNull()
-        val directions =
-            viewModel.captureNavigateDirection<TaskDetailFragmentDirections.ActionTaskDetailFragmentToTasksFragment>()
-        assertThat(directions.userMessage).isEqualTo(DELETE_RESULT_OK)
+        viewModel.verifyNavigateUp()
     }
 
     @Test

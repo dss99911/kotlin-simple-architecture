@@ -29,7 +29,6 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
-import org.koin.core.parameter.parametersOf
 import org.koin.test.inject
 
 /**
@@ -37,11 +36,7 @@ import org.koin.test.inject
  */
 class TasksViewModelTest : BaseViewModelTest() {
 
-    val viewModel: TasksViewModel by inject {
-        parametersOf(TasksFragmentArgs.Builder().apply {
-            userMessage = ADD_EDIT_RESULT_OK
-        }.build())
-    }
+    val viewModel: TasksViewModel by inject()
 
     val repo: TaskRepository by inject()
 

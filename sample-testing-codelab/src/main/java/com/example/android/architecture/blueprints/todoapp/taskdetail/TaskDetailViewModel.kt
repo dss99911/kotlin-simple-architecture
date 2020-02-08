@@ -18,7 +18,6 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
@@ -46,10 +45,7 @@ class TaskDetailViewModel(
     fun onClickDelete() {
         state.load {
             tasksRepository.deleteTask(navArgs.taskid)
-
-            val direction = TaskDetailFragmentDirections
-                .actionTaskDetailFragmentToTasksFragment().setUserMessage(DELETE_RESULT_OK)
-            navigateDirection(direction)
+            navigateUp()
         }
     }
 

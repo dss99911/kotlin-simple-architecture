@@ -18,7 +18,6 @@ package com.example.android.architecture.blueprints.todoapp.addedittask
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
@@ -57,7 +56,6 @@ class AddEditTaskViewModel(
     }
 
     private fun navigateToTasksFragment() {
-        navigateDirection(AddEditTaskFragmentDirections
-            .actionAddEditTaskFragmentToTasksFragment().setUserMessage(ADD_EDIT_RESULT_OK))
+        navigateUp()
     }
 }

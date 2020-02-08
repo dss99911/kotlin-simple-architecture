@@ -38,6 +38,9 @@
         <action
                 android:id="@+id/action_mainFragment_to_apiCallFragment"
                 app:destination="@id/apiCallFragment" />
+        <action
+                android:id="@+id/action_mainFragment_to_debounceFragment"
+                app:destination="@id/debounceFragment" />
 
         <!-- argument example
         <argument

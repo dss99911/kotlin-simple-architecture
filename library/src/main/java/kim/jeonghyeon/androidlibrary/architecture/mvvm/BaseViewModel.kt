@@ -41,7 +41,7 @@ interface IBaseViewModel {
     fun onStop()
 
     fun navigateDirection(navDirections: NavDirections)
-    fun navigate(action: (NavController) -> Unit)
+    fun navigateUp()
     fun navigateDirection(id: Int)
     fun showSnackbar(text: String)
     fun showSnackbar(@StringRes textId: Int)
@@ -97,9 +97,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val eventShowProgressBar by lazy { LiveObject<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventNavDirectionId by lazy { LiveObject<Int>() }
     internal val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
-    internal val eventNavDirection by lazy { LiveObject<NavDirections>() }
     @Suppress("DEPRECATION")
     internal val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
@@ -135,14 +133,18 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     override fun navigateDirection(navDirections: NavDirections) {
-        eventNavDirection.postValue(navDirections)
+        navigate { it.navigate(navDirections) }
     }
 
     override fun navigateDirection(id: Int) {
-        eventNavDirectionId.postValue(id)
+        navigate { it.navigate(id) }
     }
 
-    override fun navigate(action: (NavController) -> Unit) {
+    override fun navigateUp() {
+        navigate { it.navigateUp() }
+    }
+
+    private fun navigate(action: (NavController) -> Unit) {
         eventNav.postValue(action)
     }
 
@@ -283,7 +285,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         timeInMillis: Long,
         work: suspend CoroutineScope.() -> T
     ) {
-        value?.onLoading { it.cancel() }
+        value?.onLoading { it?.cancel() }
         load {
             delay(timeInMillis)
             work()

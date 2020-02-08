@@ -56,9 +56,7 @@ class PlantDetailViewModel(
     }
 
     fun onNavigationClick() {
-        navigate {
-            it.navigateUp()
-        }
+        navigateUp()
     }
 
     fun addPlantToGarden() {
