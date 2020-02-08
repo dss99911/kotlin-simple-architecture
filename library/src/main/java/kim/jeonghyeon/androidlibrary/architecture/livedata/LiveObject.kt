@@ -45,7 +45,8 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
     private val sources by lazy { mutableListOf<LiveData<*>>() }
 
     fun removeSources() {
-        sources.forEach {
+        //concurrent exception. so added toList()
+        sources.toList().forEach {
             removeSource(it)
         }
     }

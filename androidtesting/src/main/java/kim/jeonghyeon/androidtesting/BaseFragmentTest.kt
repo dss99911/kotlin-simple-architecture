@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.androidtesting
 
 import android.os.Bundle
 import android.os.SystemClock

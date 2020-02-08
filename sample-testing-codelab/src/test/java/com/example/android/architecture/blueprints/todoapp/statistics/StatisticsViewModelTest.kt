@@ -15,11 +15,11 @@
  */
 package com.example.android.architecture.blueprints.todoapp.statistics
 
-import com.balancehero.example.androidtesting.BaseViewModelTest
-import com.balancehero.example.androidtesting.awaitData
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.testing.BaseViewModelTest
+import kim.jeonghyeon.testing.awaitData
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.test.inject

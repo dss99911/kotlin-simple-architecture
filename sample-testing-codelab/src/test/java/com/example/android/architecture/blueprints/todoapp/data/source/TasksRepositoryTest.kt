@@ -1,8 +1,8 @@
 package com.example.android.architecture.blueprints.todoapp.data.source
 
-import com.balancehero.example.androidtesting.BaseRobolectricTest
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.testing.BaseRobolectricTest
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.test.inject

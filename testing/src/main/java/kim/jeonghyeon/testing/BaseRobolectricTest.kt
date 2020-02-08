@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.testing
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi

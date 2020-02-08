@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.testing
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource

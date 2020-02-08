@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting;
+package kim.jeonghyeon.androidtesting;
 
 import android.graphics.Bitmap;
 import android.os.Build;

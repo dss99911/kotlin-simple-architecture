@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.testing
 
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
@@ -19,7 +19,11 @@ abstract class BaseViewModelTest : BaseRobolectricTest() {
             error("viewModel should be spy")
         }
         val arg = argumentCaptor<NavDirections>()
-        Mockito.verify(this).navigateDirection(capture(arg))
+        Mockito.verify(this).navigateDirection(
+            capture(
+                arg
+            )
+        )
         return arg.value as T
     }
 

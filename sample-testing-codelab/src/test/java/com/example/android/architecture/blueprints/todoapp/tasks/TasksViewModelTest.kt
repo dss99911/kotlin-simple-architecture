@@ -18,14 +18,13 @@ package com.example.android.architecture.blueprints.todoapp.tasks
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.balancehero.example.androidtesting.BaseViewModelTest
-import com.balancehero.example.androidtesting.await
-import com.balancehero.example.androidtesting.awaitData
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.testing.BaseViewModelTest
+import kim.jeonghyeon.testing.await
+import kim.jeonghyeon.testing.awaitData
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
@@ -55,7 +54,6 @@ class TasksViewModelTest : BaseViewModelTest() {
 
         //then
         assertFilter(R.string.label_all, R.string.no_tasks_all, R.drawable.logo_no_fill, true)
-        assertSnackbar(R.string.successfully_added_task_message)
         assertItemSize(2)
     }
 

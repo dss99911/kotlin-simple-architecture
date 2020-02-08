@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.androidtesting
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE

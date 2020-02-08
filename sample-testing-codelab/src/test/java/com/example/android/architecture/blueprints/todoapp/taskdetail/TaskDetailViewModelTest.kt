@@ -15,13 +15,12 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
-import com.balancehero.example.androidtesting.BaseViewModelTest
-import com.balancehero.example.androidtesting.await
-import com.balancehero.example.androidtesting.awaitData
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.testing.BaseViewModelTest
+import kim.jeonghyeon.testing.await
+import kim.jeonghyeon.testing.awaitData
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.core.parameter.parametersOf

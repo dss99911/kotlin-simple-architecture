@@ -1,4 +1,4 @@
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.testing
 
 import org.mockito.ArgumentCaptor
 

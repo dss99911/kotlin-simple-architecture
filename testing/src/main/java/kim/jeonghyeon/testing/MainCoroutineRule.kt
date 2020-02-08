@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.balancehero.example.androidtesting
+package kim.jeonghyeon.testing
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
