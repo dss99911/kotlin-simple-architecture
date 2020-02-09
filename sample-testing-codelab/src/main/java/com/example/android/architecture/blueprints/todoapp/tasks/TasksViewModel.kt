@@ -23,6 +23,7 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
+import kim.jeonghyeon.androidlibrary.extension.log
 import java.util.*
 
 /**
@@ -40,14 +41,7 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
     val noTasksLabel: LiveObject<Int> = liveObject()
     val noTaskIconRes: LiveObject<Int> = liveObject()
     val tasksAddViewVisible: LiveObject<Boolean> = liveObject()
-    val snackbarMessage: LiveObject<Int> = liveObject<Int>().apply {
-        addSource(items) {
-            if (it.isError()) {
-                call(R.string.loading_tasks_error)
-            }
-        }
 
-    }
     private var currentFiltering = TasksFilterType.ALL_TASKS
     val openTaskEvent: LiveObject<String> = liveObject()
     val newTaskEvent: LiveObject<Unit> = liveObject()
@@ -57,6 +51,11 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
         setFiltering(TasksFilterType.ALL_TASKS)
 
         loadTasks()
+        items.observeForever {
+            if (it.isError()) {
+                showSnackbar(R.string.loading_tasks_error)
+            }
+        }
     }
 
     /**
@@ -98,17 +97,17 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
     fun onClearMenuClicked() {
         state.load {
             tasksRepository.clearCompletedTasks()
-            snackbarMessage.postValue(R.string.completed_tasks_cleared)
+            showSnackbar(R.string.completed_tasks_cleared)
         }
     }
 
     internal fun completeTask(task: Task, completed: Boolean) = state.load {
         if (completed) {
             tasksRepository.completeTask(task)
-            showSnackbarMessage(R.string.task_marked_complete)
+            showSnackbar(R.string.task_marked_complete)
         } else {
             tasksRepository.activateTask(task)
-            showSnackbarMessage(R.string.task_marked_active)
+            showSnackbar(R.string.task_marked_active)
         }
     }
 
@@ -117,10 +116,6 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
      */
     internal fun openTask(taskId: String) {
         openTaskEvent.call(taskId)
-    }
-
-    private fun showSnackbarMessage(message: Int) {
-        snackbarMessage.value = message
     }
 
     fun onRefreshMenuClicked() {
@@ -132,11 +127,14 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
      * @param showLoadingUI Pass in true to display a loading icon in the UI
      */
     private fun loadTasks() {
-        items.removeSources()
-        items += tasksRepository.getLiveTasks().successDataMap {
+        items.replaceSource(tasksRepository.getLiveTasks().successDataMap {
             it.filter(currentFiltering)
                 .map { TaskItemViewModel(it, this@TasksViewModel) }
-        }
+                .also {
+                    log("items are set")
+                }
+
+        })
     }
 
     private fun List<Task>.filter(filterType: TasksFilterType): List<Task> {

@@ -1,6 +1,7 @@
 package kim.jeonghyeon.testing
 
 import androidx.navigation.NavDirections
+import com.google.common.truth.Truth
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.runner.RunWith
@@ -25,6 +26,19 @@ abstract class BaseViewModelTest : BaseRobolectricTest() {
             )
         )
         return arg.value as T
+    }
+
+    inline fun <reified T : NavDirections> BaseViewModel.assertNavigateDirection(expected: T) {
+        if (!Mockito.mockingDetails(this).isSpy) {
+            error("viewModel should be spy")
+        }
+        val arg = argumentCaptor<NavDirections>()
+        Mockito.verify(this).navigateDirection(
+            capture(
+                arg
+            )
+        )
+        Truth.assertThat(arg.value as T).isEqualTo(expected)
     }
 
     fun BaseViewModel.verifyNavigateUp() {

@@ -17,7 +17,7 @@ import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-abstract class BaseAndroidTest : KoinTest {
+open class BaseAndroidTest : KoinTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()

@@ -12,13 +12,18 @@ dependencies {
     api "androidx.test:runner:1.2.0"
 
     //mockito
+    //todo org.mockito:mockito-android is suggested to use but it's not working. so, dexmaker-mockito is used.
+    api "com.linkedin.dexmaker:dexmaker-mockito:2.25.1"
     api "org.mockito:mockito-core:3.2.4"
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutine"
 
     api "androidx.room:room-testing:$version_room"
-    api "org.koin:koin-test:$version_koin"
+    //duplicate class deifinition with dexmaker-mockito
+    api "org.koin:koin-test:$version_koin", { exclude group: 'org.mockito' }
 
+
+    api 'com.google.truth:truth:1.0.1'
 
     //espresso
     api "androidx.test.espresso:espresso-core:3.2.0"

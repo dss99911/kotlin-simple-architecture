@@ -131,7 +131,7 @@ class TasksViewModelTest : BaseViewModelTest() {
     }
 
     private fun assertSnackbar(@StringRes stringResId: Int) {
-        assertThat(viewModel.snackbarMessage.await()).isEqualTo(stringResId)
+        assertThat(viewModel.eventSnackbar.await()).isEqualTo(stringResId)
     }
 
     private fun assertItemSize(size: Int) {

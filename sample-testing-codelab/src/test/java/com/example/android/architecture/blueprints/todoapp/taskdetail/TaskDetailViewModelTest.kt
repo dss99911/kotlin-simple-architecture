@@ -15,9 +15,11 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
+import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.testing.BaseViewModelTest
 import kim.jeonghyeon.testing.await
 import kim.jeonghyeon.testing.awaitData
@@ -103,9 +105,13 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
         viewModel.onClickEdit()
 
         //THEN navigate to edit page
-        val directions =
-            viewModel.captureNavigateDirection<TaskDetailFragmentDirections.ActionTaskDetailFragmentToAddEditTaskFragment>()
-        assertThat(directions.taskid).isEqualTo(TaskSamples.sample1Active.id)
+        viewModel.assertNavigateDirection(
+            TaskDetailFragmentDirections
+                .actionTaskDetailFragmentToAddEditTaskFragment(
+                    TaskSamples.sample1Active.id,
+                    ctx.getString(R.string.edit_task)
+                )
+        )
     }
 
 

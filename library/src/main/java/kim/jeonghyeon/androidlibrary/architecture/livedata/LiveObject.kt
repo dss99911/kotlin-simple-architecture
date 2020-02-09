@@ -82,6 +82,12 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
         return this
     }
 
+    fun replaceSource(other: LiveData<T>) {
+        removeSources()
+        super.addSource(other) {
+            value = it
+        }
+    }
 
     override fun <S : Any?> removeSource(toRemote: LiveData<S>) {
         super.removeSource(toRemote)

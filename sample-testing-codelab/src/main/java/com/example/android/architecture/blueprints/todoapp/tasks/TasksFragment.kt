@@ -34,7 +34,7 @@ class TasksFragment : BaseFragment() {
 
     override val layoutId = R.layout.tasks_frag
 
-    private val viewModel: TasksViewModel by bindingViewModel(BR.viewmodel)
+    val viewModel: TasksViewModel by bindingViewModel(BR.viewmodel)
 
     init {
         setMenu(R.menu.tasks_fragment_menu) {
@@ -66,9 +66,6 @@ class TasksFragment : BaseFragment() {
 
     override fun onViewModelSetup() {
         with(viewModel) {
-            snackbarMessage.observeEvent {
-                showSnackbar(it)
-            }
             openTaskEvent.observeEvent {
                 openTaskDetails(it)
             }
