@@ -21,12 +21,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
-import kim.jeonghyeon.androidlibrary.extension.*
+import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
+import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
+import kim.jeonghyeon.androidlibrary.extension.log
+import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
 interface IBaseActivity : IBaseUi {
     /**
@@ -142,7 +144,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
             it.state.observe(stateObserver)
 
             it.eventSnackbar.observeEvent {
-                binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
+                showSnackbar(it)
             }
 
             it.eventStartActivity.observeEvent {

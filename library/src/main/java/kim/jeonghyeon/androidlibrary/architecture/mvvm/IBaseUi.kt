@@ -14,13 +14,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
+import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
-import kim.jeonghyeon.androidlibrary.extension.app
-import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
-import kim.jeonghyeon.androidlibrary.extension.showSnackbar
-import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import kim.jeonghyeon.androidlibrary.extension.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
@@ -45,6 +43,10 @@ interface IBaseUi : SavedStateRegistryOwner {
 
     fun navigate(@IdRes id: Int)
     fun NavDirections.navigate()
+
+    fun showSnackbar(text: String) {
+        binding.root.showSnackbar(text, Snackbar.LENGTH_SHORT)
+    }
 
     /**
      * when observe LiveData, override this
@@ -76,7 +78,7 @@ fun <T> IBaseUi.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resourc
         }
 
         it.onError {
-            binding.root.showSnackbar("error occurred", Snackbar.LENGTH_SHORT)
+            showSnackbar(ctx.getString(R.string.error_occurred))
         }
 
         it.onSuccess(onSuccess)

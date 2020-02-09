@@ -4,14 +4,22 @@ object TaskSamples {
     val sample1Active
         get() = Task(
             "title1",
-            "description",
+            "description1",
             false,
             "id1"
+        )
+
+    val sample1_2Active
+        get() = Task(
+            "title1-2",
+            "description",
+            false,
+            "id1_2"
         )
     val sample2Completed
         get() = Task(
             "title2",
-            "description",
+            "description2",
             true,
             "id2"
         )
