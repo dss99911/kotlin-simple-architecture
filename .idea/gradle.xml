@@ -11,11 +11,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/androidtesting" />
+            <option value="$PROJECT_DIR$/kotlin-sample" />
+            <option value="$PROJECT_DIR$/kotlinlibrary" />
             <option value="$PROJECT_DIR$/library" />
             <option value="$PROJECT_DIR$/sample" />
             <option value="$PROJECT_DIR$/sample-sunflower" />
-            <option value="$USER_HOME$/IdeaProjects/my/Kotlin/kotlinlibrary/kotlinlibrary" />
-            <option value="$USER_HOME$/IdeaProjects/my/Kotlin/kotlinlibrary/sample" />
+            <option value="$PROJECT_DIR$/sample-testing-codelab" />
+            <option value="$PROJECT_DIR$/testing" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -28,7 +28,13 @@
                 />
         <Button android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="test"
-                app:clickEvent="@={model.clickEvent}"
+                android:onClick="@{() -> model.onClickTest()}"
                 />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="debounce"
+                app:onClickNavigate="@{@id/action_mainFragment_to_debounceFragment}" />
     </LinearLayout>
 </layout>

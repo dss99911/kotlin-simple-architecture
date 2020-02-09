@@ -16,14 +16,13 @@
 
 package com.google.samples.apps.sunflower.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import com.google.samples.apps.sunflower.HomeViewPagerFragmentDirections
 import com.google.samples.apps.sunflower.PlantListFragment
 import com.google.samples.apps.sunflower.data.Plant
 import com.google.samples.apps.sunflower.data.PlantRepository
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
+import kim.jeonghyeon.androidlibrary.architecture.livedata.map
+import kim.jeonghyeon.androidlibrary.architecture.livedata.switchMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
 /**
@@ -31,9 +30,9 @@ import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
  */
 class PlantListViewModel internal constructor(plantRepository: PlantRepository) : BaseViewModel() {
 
-    private val growZoneNumber = MutableLiveData<Int>(NO_GROW_ZONE)
+    private val growZoneNumber = LiveObject(NO_GROW_ZONE)
 
-    val plants: LiveData<List<PlantItemViewModel>> = growZoneNumber.switchMap {
+    val plants: LiveObject<List<PlantItemViewModel>> = growZoneNumber.switchMap {
         if (it == NO_GROW_ZONE) {
             plantRepository.getPlants()
         } else {

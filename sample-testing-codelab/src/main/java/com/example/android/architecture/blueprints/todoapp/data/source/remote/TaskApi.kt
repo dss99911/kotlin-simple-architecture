@@ -1,33 +1,30 @@
 package com.example.android.architecture.blueprints.todoapp.data.source.remote
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import kim.jeonghyeon.androidlibrary.architecture.net.api
+import retrofit2.http.*
 
 interface TaskApi {
-
+    @GET("/tasks")
     suspend fun getTasks(): List<Task>
 
-    suspend fun getTask(taskId: String): Task
+    @GET("/tasks/{taskId}")
+    suspend fun getTask(@Path("taskId") taskId: String): Task?
 
-    suspend fun saveTask(task: Task)
+    @PUT("/tasks/{taskId}")
+    suspend fun saveTask(@Path("taskId") taskId: String, @Body task: Task)
 
-    suspend fun completeTask(task: Task)
+    @PATCH("/tasks/{taskId}/complete")
+    suspend fun completeTask(@Path("taskId") taskId: String)
 
-    suspend fun completeTask(taskId: String)
+    @PATCH("/tasks/{taskId}/activate")
+    suspend fun activateTask(@Path("taskId") taskId: String)
 
-    suspend fun activateTask(task: Task)
-
-    suspend fun activateTask(taskId: String)
-
+    @DELETE("/tasks/complete")
     suspend fun clearCompletedTasks()
 
+    @DELETE("/tasks")
     suspend fun deleteAllTasks()
 
-    suspend fun deleteTask(taskId: String)
-
-    companion object {
-        fun create(): TaskApi {
-            return api("http://example.com")
-        }
-    }
+    @DELETE("/tasks/{taskId}")
+    suspend fun deleteTask(@Path("taskId") taskId: String)
 }

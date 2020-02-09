@@ -1,0 +1,32 @@
+apply plugin: 'com.android.library'
+apply from: (project(':library').projectDir.toString() + '/baseForAll.gradle')
+
+dependencies {
+    implementation project(':library')
+
+    api "androidx.arch.core:core-testing:2.1.0"
+    api "androidx.test.ext:junit-ktx:1.1.1"
+    api "androidx.test:core-ktx:1.2.0"
+    api "androidx.test:core:1.2.0"
+    api "androidx.test:rules:1.2.0"
+    api "androidx.test:runner:1.2.0"
+
+    //mockito
+    //todo org.mockito:mockito-android is suggested to use but it's not working. so, dexmaker-mockito is used.
+    api "com.linkedin.dexmaker:dexmaker-mockito:2.25.1"
+    api "org.mockito:mockito-core:3.2.4"
+
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutine"
+
+    api "androidx.room:room-testing:$version_room"
+    //duplicate class deifinition with dexmaker-mockito
+    api "org.koin:koin-test:$version_koin", { exclude group: 'org.mockito' }
+
+
+    api 'com.google.truth:truth:1.0.1'
+
+    //espresso
+    api "androidx.test.espresso:espresso-core:3.2.0"
+    api "androidx.test.espresso:espresso-contrib:3.2.0"
+    api "androidx.test.espresso:espresso-intents:3.2.0"
+}

@@ -8,37 +8,40 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.SparseArray
+import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
-import kim.jeonghyeon.androidlibrary.architecture.livedata.liveState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 interface IBaseViewModel {
-    val state: LiveData<ResourceState>
-    val eventToast: LiveEvent<String>
-    val eventSnackbar: LiveEvent<String>
-    val eventStartActivity: LiveEvent<Intent>
-    val eventShowProgressBar: LiveEvent<Boolean>
+    val state: LiveState
+    val eventSnackbar: LiveObject<String>
+    val eventStartActivity: LiveObject<Intent>
+    val eventShowProgressBar: LiveObject<Boolean>
 
-    fun onCreate()
     fun onStart()
     fun onResume()
     fun onPause()
     fun onStop()
-    fun onDestroy()
 
     fun navigateDirection(navDirections: NavDirections)
-    fun navigate(action: (NavController) -> Unit)
+    fun navigateUp()
     fun navigateDirection(id: Int)
     fun showSnackbar(text: String)
     fun showSnackbar(@StringRes textId: Int)
@@ -47,48 +50,76 @@ interface IBaseViewModel {
     fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
+
+    @MainThread
+    fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
+
+    @MainThread
+    fun <T> LiveResource<T>.load(
+        work: suspend CoroutineScope.() -> T,
+        onResult: (Resource<T>) -> Resource<T>
+    )
+
+    @MainThread
+    fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
+
+    /**
+     * if it is loading, ignore
+     */
+    fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T)
+
+    fun <T> LiveResource<T>.loadDebounce(timeInMillis: Long, work: suspend CoroutineScope.() -> T)
+
+    fun <T, U> LiveResource<U>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U
+    )
+
+    fun <T, U, V> LiveResource<V>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V
+    )
+
+    fun <T, U, V, W> LiveResource<W>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V,
+        part4: suspend CoroutineScope.(V) -> W
+    )
 }
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
-    override val state by lazy { liveState() }
-    override val eventToast by lazy { LiveEvent<String>() }
-    override val eventSnackbar by lazy { LiveEvent<String>() }
-    override val eventStartActivity by lazy { LiveEvent<Intent>() }
+    override val state by lazy { LiveState() }
+    override val eventSnackbar by lazy { LiveObject<String>() }
+    override val eventStartActivity by lazy { LiveObject<Intent>() }
 
-    override val eventShowProgressBar by lazy { LiveEvent<Boolean>() }
+    override val eventShowProgressBar by lazy { LiveObject<Boolean>() }
 
     //this is not shown on inherited viewModel. use function.
-    internal val eventNavDirectionId by lazy { LiveEvent<Int>() }
-    internal val eventNav by lazy { LiveEvent<(NavController) -> Unit>() }
-    internal val eventNavDirection by lazy { LiveEvent<NavDirections>() }
-    internal val eventPerformWithActivity by lazy { MutableLiveData<Array<Event<(BaseActivity) -> Unit>>>() }
+    internal val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
+    @Suppress("DEPRECATION")
+    internal val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
     private val nextRequestCode by lazy { AtomicInteger(1) }
     private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    override fun onCreate() {
+    init {
+        log("initialized")
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     override fun onStart() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onResume() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     override fun onPause() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     override fun onStop() {
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    override fun onDestroy() {
-    }
 
     override fun performWithActivity(action: (BaseActivity) -> Unit) {
         val currArray = (eventPerformWithActivity.value ?: emptyArray())
@@ -102,23 +133,27 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     override fun navigateDirection(navDirections: NavDirections) {
-        eventNavDirection.call(navDirections)
+        navigate { it.navigate(navDirections) }
     }
 
     override fun navigateDirection(id: Int) {
-        eventNavDirectionId.call(id)
+        navigate { it.navigate(id) }
     }
 
-    override fun navigate(action: (NavController) -> Unit) {
-        eventNav.call(action)
+    override fun navigateUp() {
+        navigate { it.navigateUp() }
+    }
+
+    private fun navigate(action: (NavController) -> Unit) {
+        eventNav.postValue(action)
     }
 
     override fun showSnackbar(text: String) {
-        eventSnackbar.call(text)
+        eventSnackbar.postValue(text)
     }
 
     override fun showSnackbar(@StringRes textId: Int) {
-        eventSnackbar.call(ctx.getString(textId))
+        eventSnackbar.postValue(ctx.getString(textId))
     }
 
     override fun startActivityForResult(
@@ -138,13 +173,16 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         }
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    internal fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         resultListeners[requestCode]?.invoke(resultCode, data)
         resultListeners.remove(requestCode)
     }
 
     @SuppressLint("ObsoleteSdkInt")//this can be used on different minimum sdk
-    override fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener) {
+    override fun requestPermissions(
+        permissions: Array<String>,
+        listener: PermissionResultListener
+    ) {
         //this is called on activity because using requestCode of activity
         performWithActivity { activity ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -179,7 +217,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         }
     }
 
-    fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
+    internal fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         performWithActivity { activity ->
             val deniedPermissions = ArrayList<String>()
             var hasPermanentDenied = false
@@ -216,8 +254,73 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
     }
 
-    internal data class RequestFragment(val containerId: Int, val fragment: Fragment, val tag: String? = null)
+    override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T) {
+        viewModelScope.loadResource(this@load, work)
+    }
+
+    override fun <T> LiveResource<T>.load(
+        work: suspend CoroutineScope.() -> T,
+        onResult: (Resource<T>) -> Resource<T>
+    ) {
+        viewModelScope.loadResource(this@load, work, onResult)
+    }
+
+    @MainThread
+    override fun <T> LiveResource<T>.load(
+        state: LiveState,
+        work: suspend CoroutineScope.() -> T
+    ) {
+
+        viewModelScope.loadResource(this@load, state, work)
+    }
+
+    override fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
+        if (value.isLoadingState()) {
+            return
+        }
+        load(work)
+    }
+
+    override fun <T> LiveResource<T>.loadDebounce(
+        timeInMillis: Long,
+        work: suspend CoroutineScope.() -> T
+    ) {
+        value?.onLoading { it?.cancel() }
+        load {
+            delay(timeInMillis)
+            work()
+        }
+    }
+
+    override fun <T, U> LiveResource<U>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2)
+    }
+
+    override fun <T, U, V> LiveResource<V>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3)
+    }
+
+    override fun <T, U, V, W> LiveResource<W>.loadRetriable(
+        part1: suspend CoroutineScope.() -> T,
+        part2: suspend CoroutineScope.(T) -> U,
+        part3: suspend CoroutineScope.(U) -> V,
+        part4: suspend CoroutineScope.(V) -> W
+    ) {
+        viewModelScope.loadResourcePartialRetryable(this, part1, part2, part3, part4)
+    }
 }
+
+inline fun <T> ViewModel.launch(crossinline work: suspend CoroutineScope.() -> T): Job =
+    viewModelScope.launch {
+        work()
+    }
 
 interface PermissionResultListener {
     /**
@@ -238,4 +341,24 @@ interface PermissionResultListener {
     fun onPermissionDeniedPermanently(deniedPermissions: Array<String>) {}
 
     fun onPermissionException() {}
+}
+
+/**
+ * the reason to use Event instead of SingleLiveEvent is that. SingleLiveEvent is class and difficult to integrate with other livedata
+ */
+internal class Event<out T>(private val content: T) {
+
+    var handled = false
+        private set // Allow external read but not write
+
+    fun handle(): T {
+        handled = true
+        return content
+    }
+
+    /**
+     * Returns the content, even if it's already been handled.
+     * this is used when one time or multi time both are used.
+     */
+    fun get(): T = content
 }

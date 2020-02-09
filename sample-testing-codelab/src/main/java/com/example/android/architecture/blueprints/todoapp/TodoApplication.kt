@@ -1,8 +1,7 @@
 package com.example.android.architecture.blueprints.todoapp
 
-import android.app.Application
-import timber.log.Timber
-import timber.log.Timber.DebugTree
+import kim.jeonghyeon.androidlibrary.BaseApplication
+import org.koin.core.module.Module
 
 /**
  * An application that lazily provides a repository. Note that this Service Locator pattern is
@@ -10,10 +9,8 @@ import timber.log.Timber.DebugTree
  *
  * Also, sets up Timber in the DEBUG BuildConfig. Read Timber's documentation for production setups.
  */
-class TodoApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-        if (BuildConfig.DEBUG) Timber.plant(DebugTree())
+class TodoApplication : BaseApplication() {
+    override fun getKoinModules(): List<Module> {
+        return appModule
     }
 }

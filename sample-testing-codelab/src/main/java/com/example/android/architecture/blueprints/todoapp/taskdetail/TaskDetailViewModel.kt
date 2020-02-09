@@ -17,11 +17,9 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
-import com.example.android.architecture.blueprints.todoapp.util.DELETE_RESULT_OK
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableLiveResource
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.ctx
 
@@ -31,10 +29,10 @@ import kim.jeonghyeon.androidlibrary.extension.ctx
  */
 class TaskDetailViewModel(
     private val navArgs: TaskDetailFragmentArgs,
-    private val tasksRepository: DefaultTasksRepository = DefaultTasksRepository()
+    private val tasksRepository: TaskRepository
 ) : BaseViewModel() {
 
-    val task = MutableLiveResource<Task>()
+    val task = LiveResource<Task>()
 
     override fun onResume() {
         onRefresh()
@@ -44,17 +42,14 @@ class TaskDetailViewModel(
         setCompleted(isChecked)
     }
 
-    fun onDeleteClick() {
-        launch {
+    fun onClickDelete() {
+        state.load {
             tasksRepository.deleteTask(navArgs.taskid)
-
-            val direction = TaskDetailFragmentDirections
-                .actionTaskDetailFragmentToTasksFragment().setUserMessage(DELETE_RESULT_OK)
-            navigateDirection(direction)
+            navigateUp()
         }
     }
 
-    fun editTask() {
+    fun onClickEdit() {
         val direction = TaskDetailFragmentDirections
             .actionTaskDetailFragmentToAddEditTaskFragment(
                 navArgs.taskid,
@@ -63,10 +58,10 @@ class TaskDetailViewModel(
         navigateDirection(direction)
     }
 
-    fun setCompleted(completed: Boolean) {
-        val task: Task = task.value?.data()?:return
+    private fun setCompleted(completed: Boolean) {
+        val task: Task = task.getData() ?: return
 
-        launch {
+        state.load {
             if (completed) {
                 tasksRepository.completeTask(task)
                 showSnackbar(R.string.task_marked_complete)
@@ -78,8 +73,8 @@ class TaskDetailViewModel(
     }
 
     fun onRefresh() {
-        loadResource(task) {
-            tasksRepository.getTask(navArgs.taskid, false)
+        task.load(state) {
+            tasksRepository.getTask(navArgs.taskid)!!
         }
     }
 }

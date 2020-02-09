@@ -1,7 +1,9 @@
 package kim.jeonghyeon.androidlibrary
 
+import android.app.Application
+
 object StethoHelper {
-    fun initialize() {
+    fun initialize(app: Application) {
 
     }
 }

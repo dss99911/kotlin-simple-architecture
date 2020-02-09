@@ -20,3 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
+-keepclasseswithmembers class * {
+    public ** component1();
+    <fields>;
+}

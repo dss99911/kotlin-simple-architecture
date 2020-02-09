@@ -28,20 +28,24 @@ class StatisticsUtilsTest {
 
     @Test
     fun getActiveAndCompletedStats_error() {
-        // When there's an error loading stats
-        // TODO
+        //GIVEN error
+        val tasks = null
+        //WHEN
+        val result = getActiveAndCompletedStats(tasks)
 
-        // Both active and completed tasks are 0
-        // TODO
+        //THEN Both active and completed tasks are 0
+        assertResult(result, 0f, 0f)
     }
 
     @Test
     fun getActiveAndCompletedStats_empty() {
-        // When there are no tasks
-        // TODO
+        //GIVEN there are no tasks
+        val tasks = emptyList<Task>()
+        //WHEN
+        val result = getActiveAndCompletedStats(tasks)
 
-        // Both active and completed tasks are 0
-        // TODO
+        //THEN Both active and completed tasks are 0
+        assertResult(result, 0f, 0f)
     }
 
     @Test
@@ -53,8 +57,7 @@ class StatisticsUtilsTest {
         val result = getActiveAndCompletedStats(tasks)
 
         // Then the percentages are 100 and 0
-        assertThat(result.activeTasksPercent, `is`(100f))
-        assertThat(result.completedTasksPercent, `is`(0f))
+        assertResult(result, 100f, 0f)
     }
 
     @Test
@@ -66,8 +69,7 @@ class StatisticsUtilsTest {
         val result = getActiveAndCompletedStats(tasks)
 
         // Then the percentages are 0 and 100
-        assertThat(result.activeTasksPercent, `is`(0f))
-        assertThat(result.completedTasksPercent, `is`(100f))
+        assertResult(result, 0f, 100f)
     }
 
     @Test
@@ -84,8 +86,7 @@ class StatisticsUtilsTest {
         val result = getActiveAndCompletedStats(tasks)
 
         // Then the result is 40-60
-        assertThat(result.activeTasksPercent, `is`(40f))
-        assertThat(result.completedTasksPercent, `is`(60f))
+        assertResult(result, 40f, 60f)
     }
 
     @Test
@@ -94,9 +95,7 @@ class StatisticsUtilsTest {
         val result = getActiveAndCompletedStats(null)
 
         // Both active and completed tasks are 0
-        val matcher = `is`(0f)
-        assertThat(result.activeTasksPercent, matcher)
-        assertThat(result.completedTasksPercent, `is`(0f))
+        assertResult(result, 0f, 0f)
     }
 
     @Test
@@ -105,7 +104,11 @@ class StatisticsUtilsTest {
         val result = getActiveAndCompletedStats(emptyList())
 
         // Both active and completed tasks are 0
-        assertThat(result.activeTasksPercent, `is`(0f))
-        assertThat(result.completedTasksPercent, `is`(0f))
+        assertResult(result, 0f, 0f)
+    }
+
+    fun assertResult(result: StatsResult, active: Float, completed: Float) {
+        assertThat(result.activeTasksPercent, `is`(active))
+        assertThat(result.completedTasksPercent, `is`(completed))
     }
 }

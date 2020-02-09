@@ -16,14 +16,11 @@
 
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
-import com.example.android.architecture.blueprints.todoapp.ServiceLocator
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.util.ADD_EDIT_RESULT_OK
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.resourceLiveData
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
+import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.extension.ctx
 
 /**
  * ViewModel for the Add/Edit screen.
@@ -36,30 +33,29 @@ import kim.jeonghyeon.androidlibrary.extension.ctx
  */
 class AddEditTaskViewModel(
     private val navArgs: AddEditTaskFragmentArgs,
-    private val tasksRepository: TasksRepository = ServiceLocator.provideTasksRepository(ctx)
+    private val tasksRepository: TaskRepository
 ) : BaseViewModel() {
 
-    val task = resourceLiveData {
-        val taskid = navArgs.taskid
-        if (taskid == null) {
-            Task()
-        } else {
-            tasksRepository.getTask(taskid)
+    val task = liveResource<Task>().apply {
+        load {
+            val taskid = navArgs.taskid
+            if (taskid == null) {
+                Task()
+            } else {
+                tasksRepository.getTask(taskid) ?: Task()
+            }
         }
     }
-    //todo check if two-way binding is working for object's field
-    // Two-way databinding, exposing MutableLiveData
 
     // Called when clicking on fab.
-    fun saveTask() {
-        launch {
+    fun onClickFAB() {
+        state.load {
             tasksRepository.saveTask(task.getData()!!)
             navigateToTasksFragment()
         }
     }
 
     private fun navigateToTasksFragment() {
-        navigateDirection(AddEditTaskFragmentDirections
-            .actionAddEditTaskFragmentToTasksFragment().setUserMessage(ADD_EDIT_RESULT_OK))
+        navigateUp()
     }
 }

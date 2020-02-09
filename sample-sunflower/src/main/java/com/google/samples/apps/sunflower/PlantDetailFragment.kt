@@ -25,7 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.observeEvent
+import kim.jeonghyeon.androidlibrary.extension.getNavArgs
 import kotlinx.android.synthetic.main.fragment_plant_detail.*
 import org.koin.core.parameter.parametersOf
 
@@ -42,11 +42,11 @@ class PlantDetailFragment : BaseFragment() {
 //todo check when use setSupportActionBar and when use just setHasOptionsMenu()
 
     override fun onViewModelSetup() {
-        viewModel.fabHideEvent.observeEvent(this) {
+        viewModel.fabHideEvent.observeEvent {
             hideAppBarFab(fab)
         }
 
-        viewModel.startShareEvent.observeEvent(this) {
+        viewModel.startShareEvent.observeEvent {
             startShareActivity()
         }
     }

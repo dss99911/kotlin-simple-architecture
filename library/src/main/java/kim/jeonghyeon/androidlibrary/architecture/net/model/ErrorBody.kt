@@ -3,7 +3,7 @@ package kim.jeonghyeon.androidlibrary.architecture.net.model
 import androidx.annotation.Keep
 
 @Keep
-//todo is it system error? check the exact use case
+//todo response body and error body is different. sever will devliver it different way.
 data class ErrorBody(
         val status: Int,
         val error: String,

@@ -8,30 +8,27 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
-import androidx.navigation.NavArgs
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
+import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
-import org.jetbrains.anko.support.v4.toast
 
 /**
  * Methods
  * - setMenu()
  */
 
-interface IBaseFragment : IBasePage {
-//  fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
-//fun <reified T : NavArgs> getNavArgs(): T
-
+interface IBaseFragment : IBaseUi {
     /**
      * used on pager. if not used always true.
      */
@@ -46,12 +43,12 @@ interface IBaseFragment : IBasePage {
 abstract class BaseFragment : Fragment(),
     IBaseFragment {
     override lateinit var binding: ViewDataBinding
-    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
 
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
-    internal val progressDialog by lazy { activity?.createProgressDialog() }
+    override val progressDialog by lazy { createProgressDialog() }
 
     override val toolbarId: Int
         get() = R.id.toolbar
@@ -59,14 +56,14 @@ abstract class BaseFragment : Fragment(),
     override val appBarConfiguration: AppBarConfiguration?
         get() = AppBarConfiguration(findNavController().graph)
 
-    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+    override var stateObserver: Observer<State> = resourceObserverCommon { }
         set(value) {
             val prev = field
             field = value
 
-            viewModels.values.map { it.value }.forEach {
+            viewModels.map { it.second.value }.forEach {
                 it.state.removeObserver(prev)
-                it.state.observe(this, field)
+                it.state.observe(field)
             }
         }
 
@@ -116,17 +113,29 @@ abstract class BaseFragment : Fragment(),
     override fun onResume() {
         super.onResume()
         log("${this::class.simpleName}")
+
+        viewModels.map { it.second.value }.forEach {
+            it.onResume()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         log("${this::class.simpleName}")
+
+        viewModels.map { it.second.value }.forEach {
+            it.onPause()
+        }
     }
 
     override fun onStop() {
         super.onStop()
 
         visible = isVisible(selected, false)
+
+        viewModels.map { it.second.value }.forEach {
+            it.onStop()
+        }
     }
 
     override fun onDestroy() {
@@ -163,42 +172,30 @@ abstract class BaseFragment : Fragment(),
     }
 
     private fun setupObserver() {
-        viewModels.values.map { it.value }.forEach {
-            it.state.observe(this, stateObserver)
+        viewModels.map { it.second.value }.forEach {
+            it.state.observe(stateObserver)
 
-            it.eventToast.observeEvent(this) {
-                toast(it)
-            }
-
-            it.eventSnackbar.observeEvent(this) {
+            it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            it.eventStartActivity.observeEvent(this) {
+            it.eventStartActivity.observeEvent {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent(this) {
+            it.eventShowProgressBar.observeEvent {
                 if (it) {
-                    progressDialog?.showWithoutException()
+                    progressDialog.showWithoutException()
                 } else {
-                    progressDialog?.dismissWithoutException()
+                    progressDialog.dismissWithoutException()
                 }
             }
 
-            it.eventNavDirectionId.observeEvent(this) {
-                navigate(it)
-            }
-
-            it.eventNav.observeEvent(this) { action ->
+            it.eventNav.observeEvent { action ->
                 action(findNavController())
             }
 
-            it.eventNavDirection.observeEvent(this) {
-                navigate(it)
-            }
-
-            it.eventPerformWithActivity.observe(this) { array ->
+            it.eventPerformWithActivity.observe { array ->
                 array.forEach { event ->
                     if (!event.handled) {
                         event.handle()(requireActivity() as BaseActivity)
@@ -206,8 +203,6 @@ abstract class BaseFragment : Fragment(),
                 }
 
             }
-
-            lifecycle.addObserver(it)
 
             onViewModelSetup()
         }
@@ -245,30 +240,38 @@ abstract class BaseFragment : Fragment(),
         findNavController().navigate(id)
     }
 
-    override fun navigate(navDirections: NavDirections) {
-        findNavController().navigate(navDirections)
+    override fun NavDirections.navigate() {
+        findNavController().navigate(this)
     }
-
-    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
-        return SavedStateViewModelFactory(
-            app,
-            savedStateRegistryOwner
-        ).create(SavedStateViewModel::class.java)
-            .savedStateHandle
-    }
-
-    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
-
 
     override fun onStart() {
         super.onStart()
 
         visible = isVisible(selected, true)
+        viewModels.map { it.second.value }.forEach {
+            it.onStart()
+        }
     }
 
     private fun isVisible(selected: Boolean, isStarted: Boolean): Boolean = selected && isStarted
 
     open fun onVisibilityChanged(visible: Boolean) {
         log("${this::class.simpleName} : $visible")
+    }
+
+    override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {
+        observe(viewLifecycleOwner, onChanged)
+    }
+
+    override fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit) {
+        observeEvent(viewLifecycleOwner, onChanged)
+    }
+
+    override fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>) {
+        observeEvent(viewLifecycleOwner, observer)
+    }
+
+    override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
+        observe(viewLifecycleOwner, observer)
     }
 }

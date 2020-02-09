@@ -19,6 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.android.architecture.blueprints.todoapp">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="false"
         tools:replace="android:name"
@@ -28,7 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.android.architecture.blueprints.todoapp.tasks.TasksActivity"
+                android:name="com.example.android.architecture.blueprints.todoapp.TasksActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.OverlapSystemBar">
             <intent-filter>

@@ -17,9 +17,8 @@
 package com.example.android.architecture.blueprints.todoapp.statistics
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.loadResource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.MutableLiveResource
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.successDataMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
@@ -33,18 +32,18 @@ import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
  * preferable to having logic in the XML layout.
  */
 class StatisticsViewModel(
-    private val tasksDao: DefaultTasksRepository = DefaultTasksRepository()
+    private val tasksDao: TaskRepository
 ) : BaseViewModel() {
 
-    val tasks = MutableLiveResource<List<Task>>()
+    val tasks = liveResource<List<Task>>()
 
     val statusResult = tasks.successDataMap {
         getActiveAndCompletedStats(it)
     }
 
     override fun onResume() {
-        loadResource(tasks) {
-            tasksDao.getTasks(false)
+        tasks.load {
+            tasksDao.getTasks()
         }
     }
 }

@@ -16,17 +16,19 @@
 
 package com.google.samples.apps.sunflower.data
 
+import kim.jeonghyeon.androidlibrary.architecture.livedata.asBase
+
 /**
  * Repository module for handling data operations.
  */
 class PlantRepository private constructor(private val plantDao: PlantDao) {
 
-    fun getPlants() = plantDao.getPlants()
+    fun getPlants() = plantDao.getPlants().asBase()
 
-    fun getPlant(plantId: String) = plantDao.getPlant(plantId)
+    fun getPlant(plantId: String) = plantDao.getPlant(plantId).asBase()
 
     fun getPlantsWithGrowZoneNumber(growZoneNumber: Int) =
-            plantDao.getPlantsWithGrowZoneNumber(growZoneNumber)
+        plantDao.getPlantsWithGrowZoneNumber(growZoneNumber).asBase()
 
     companion object {
 

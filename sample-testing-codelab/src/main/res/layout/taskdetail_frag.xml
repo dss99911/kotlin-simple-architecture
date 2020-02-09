@@ -31,7 +31,7 @@
         android:layout_height="match_parent">
 
 
-        <com.example.android.architecture.blueprints.todoapp.ScrollChildSwipeRefreshLayout
+        <com.example.android.architecture.blueprints.todoapp.view.ScrollChildSwipeRefreshLayout
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -66,9 +66,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:onClick="@{() -> model.onCompleteChanged(task_detail_complete.isChecked())}"
+                        android:checked="@{model.task.get().isCompleted}"
                     android:paddingTop="1dp"
-                    android:checked="@{model.task.data().isCompleted}" />
+                        android:onClick="@{() -> model.onCompleteChanged(taskDetailComplete.isChecked())}" />
 
                 <TextView
                     android:id="@+id/task_detail_title"
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="1dp"
-                    android:text="@{model.task.data().title}"
+                        android:text="@{model.task.get().title}"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -86,12 +86,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="1dp"
-                    android:text="@{model.task.data().description}"
+                        android:text="@{model.task.get().description}"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 </RelativeLayout>
             </LinearLayout>
-        </com.example.android.architecture.blueprints.todoapp.ScrollChildSwipeRefreshLayout>
+        </com.example.android.architecture.blueprints.todoapp.view.ScrollChildSwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_edit_task"
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_edit"
-            android:onClick="@{model.editTask()}"
+                android:onClick="@{() -> model.onClickEdit()}"
             app:fabSize="normal"
             app:layout_anchor="@id/refresh_layout"
             app:layout_anchorGravity="bottom|right|end"/>

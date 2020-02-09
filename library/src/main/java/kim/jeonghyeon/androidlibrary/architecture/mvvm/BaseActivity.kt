@@ -13,32 +13,27 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.observe
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.savedstate.SavedStateRegistryOwner
 import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
-import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceState
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
+import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.*
 
-interface IBaseActivity : IBasePage {
+interface IBaseActivity : IBaseUi {
     /**
      * if you want to use nav controller, override this
      */
     val navHostId: Int
     val navController: NavController
-
-    //has 'this' default parameter. so, commented out
-    //fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle
-
-    //has reified. so, commented out
-    //fun <reified T : NavArgs> getNavArgs(): T
 }
 
 abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
@@ -57,7 +52,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         get() = if (navHostId != 0) AppBarConfiguration(navController.graph) else null
 
 
-    internal val progressDialog by lazy { createProgressDialog() }
+    override val progressDialog by lazy { createProgressDialog() }
 
     @MenuRes
     private var menuId: Int = 0
@@ -65,21 +60,21 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
 
     override lateinit var binding: ViewDataBinding
-    override val viewModels = mutableMapOf<Int, Lazy<BaseViewModel>>()
+    override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
     /**
      * used for startActivityForResult
      */
     val rootViewModel: BaseViewModel
-        get() = viewModels[0]!!.value
+        get() = viewModels[0].second.value
 
-    override var stateObserver: Observer<ResourceState> = resourceObserverCommon {  }
+    override var stateObserver: Observer<State> = resourceObserverCommon { }
         set(value) {
             val prev = field
             field = value
 
-            viewModels.values.map { it.value }.forEach {
+            viewModels.map { it.second.value }.forEach {
                 it.state.removeObserver(prev)
-                it.state.observe(this, field)
+                it.state.observe(field)
             }
         }
 
@@ -96,6 +91,34 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     override fun onViewModelSetup() {
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModels.map { it.second.value }.forEach {
+            it.onStart()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModels.map { it.second.value }.forEach {
+            it.onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModels.map { it.second.value }.forEach {
+            it.onPause()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModels.map { it.second.value }.forEach {
+            it.onStop()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         log("${this::class.simpleName} onDestroy")
@@ -110,22 +133,23 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     }
 
     private fun setupObserver() {
-        viewModels.values.map { it.value }.forEach {
-            it.state.observe(this, stateObserver)
+        //BaseActivity require at least one viewModel for startActivityForResult or permission.
+        if (viewModels.isEmpty()) {
+            viewModels.add(Pair(0, lazy { BaseViewModel() }))
+        }
 
-            it.eventToast.observeEvent(this) {
-                toast(it)
-            }
+        viewModels.map { it.second.value }.forEach {
+            it.state.observe(stateObserver)
 
-            it.eventSnackbar.observeEvent(this) {
+            it.eventSnackbar.observeEvent {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
 
-            it.eventStartActivity.observeEvent(this) {
+            it.eventStartActivity.observeEvent {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent(this) {
+            it.eventShowProgressBar.observeEvent {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
@@ -133,7 +157,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventPerformWithActivity.observe(this) { array ->
+            it.eventPerformWithActivity.observe { array ->
                 array.forEach { event ->
                     if (!event.handled) {
                         event.handle()(this)
@@ -141,19 +165,9 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 }
             }
 
-            it.eventNavDirectionId.observeEvent(this) {
-                navigate(it)
-            }
-
-            it.eventNav.observeEvent(this) { action ->
+            it.eventNav.observeEvent { action ->
                 action(navController)
             }
-
-            it.eventNavDirection.observeEvent(this) {
-                navigate(it)
-            }
-
-            lifecycle.addObserver(it)
         }
     }
 
@@ -225,17 +239,23 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         navController.navigate(id)
     }
 
-    override fun navigate(navDirections: NavDirections) {
-        navController.navigate(navDirections)
+    override fun NavDirections.navigate() {
+        navController.navigate(this)
     }
 
-    fun getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
-        return SavedStateViewModelFactory(
-            app,
-            savedStateRegistryOwner
-        ).create(SavedStateViewModel::class.java)
-            .savedStateHandle
+    override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {
+        observe(this@BaseActivity, onChanged)
     }
 
-    inline fun <reified T : NavArgs> getNavArgs(): T = navArgs<T>().value
+    override fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit) {
+        observeEvent(this@BaseActivity, onChanged)
+    }
+
+    override fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>) {
+        observeEvent(this@BaseActivity, observer)
+    }
+
+    override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
+        observe(this@BaseActivity, observer)
+    }
 }

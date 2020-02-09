@@ -1,7 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kim.jeonghyeon.androidlibrary">
-
-    <!--tools:replace="android:name"-->
-    <application android:name=".BaseApplication" />
-
-</manifest>

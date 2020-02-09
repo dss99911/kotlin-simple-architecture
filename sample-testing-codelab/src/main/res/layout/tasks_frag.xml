@@ -35,12 +35,12 @@
         android:layout_height="match_parent">
 
 
-        <com.example.android.architecture.blueprints.todoapp.ScrollChildSwipeRefreshLayout
+        <com.example.android.architecture.blueprints.todoapp.view.ScrollChildSwipeRefreshLayout
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:onRefresh="@{viewmodel}"
-            app:refreshing="@{viewmodel.dataLoading}">
+                setOnRefreshListener="@{() -> viewmodel.onRefreshMenuClicked()}"
+                app:refreshing="@{viewmodel.items.isLoading()}">
 
             <RelativeLayout
                 android:id="@+id/tasksContainer"
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}">
+                        android:visibility="@{viewmodel.items.isSuccess() &amp;&amp; !viewmodel.items.get().isEmpty()}">
 
                     <TextView
                         android:id="@+id/filteringLabel"
@@ -68,11 +68,12 @@
                         android:text="@{context.getString(viewmodel.currentFilteringLabel)}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
-                    <ListView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/tasks_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:items="@{viewmodel.items}"/>
+                            itemLayoutId="@{@layout/task_item}"
+                            itemList="@{viewmodel.items.get()}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -81,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:orientation="vertical"
-                    android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}">
+                        android:visibility="@{!viewmodel.items.isSuccess() || viewmodel.items.get().isEmpty()}">
 
                     <ImageView
                         android:id="@+id/noTasksIcon"
@@ -100,7 +101,7 @@
                 </LinearLayout>
             </RelativeLayout>
 
-        </com.example.android.architecture.blueprints.todoapp.ScrollChildSwipeRefreshLayout>
+        </com.example.android.architecture.blueprints.todoapp.view.ScrollChildSwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_task"
@@ -109,6 +110,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_add"
             app:fabSize="normal"
+                android:onClick="@{() -> viewmodel.onClickFab()}"
             app:layout_anchor="@id/refresh_layout"
             app:layout_anchorGravity="bottom|right|end"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,152 +1,78 @@
-/*
- * Copyright 2017, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.android.architecture.blueprints.todoapp.LiveDataTestUtil.getValue
-import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
-import com.example.android.architecture.blueprints.todoapp.R.string
-import com.example.android.architecture.blueprints.todoapp.assertSnackbarMessage
-import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.data.source.FakeRepository
+import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
+import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
-import org.junit.Rule
+import kim.jeonghyeon.testing.BaseViewModelTest
+import kim.jeonghyeon.testing.awaitData
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import org.koin.core.parameter.parametersOf
+import org.koin.test.get
+import org.koin.test.inject
+import org.mockito.Mockito.spy
 
-/**
- * Unit tests for the implementation of [AddEditTaskViewModel].
- */
-@ExperimentalCoroutinesApi
-class AddEditTaskViewModelTest {
+class AddEditTaskViewModelTest : BaseViewModelTest() {
 
-    // Subject under test
-    private lateinit var addEditTaskViewModel: AddEditTaskViewModel
+    val repo: TaskRepository by inject()
 
-    // Use a fake repository to be injected into the viewmodel
-    private lateinit var tasksRepository: FakeRepository
+    @Test
+    fun init_add() = runBlockingTest {
+        //WHEN add case
+        val viewModel1 = initViewModel(null)
 
-    // Set the main coroutines dispatcher for unit testing.
-    @ExperimentalCoroutinesApi
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
-
-    // Executes each task synchronously using Architecture Components.
-    @get:Rule var instantExecutorRule = InstantTaskExecutorRule()
-
-    private val task = Task("Title1", "Description1")
-
-    @Before
-    fun setupViewModel() {
-        // We initialise the repository with no tasks
-        tasksRepository = FakeRepository()
-
-        // Create class under test
-        addEditTaskViewModel = AddEditTaskViewModel(tasksRepository)
+        //THEN new task
+        assertThat(viewModel1.task.awaitData()).isNotNull()
     }
 
     @Test
-    fun saveNewTaskToRepository_showsSuccessMessageUi() {
-        val newTitle = "New Task Title"
-        val newDescription = "Some Task Description"
-        (addEditTaskViewModel).apply {
-            title.value = newTitle
-            description.value = newDescription
-        }
-        addEditTaskViewModel.saveTask()
+    fun init_edit() = runBlockingTest {
+        //GIVEN same task
+        repo.saveTask(TaskSamples.sample1Active)
 
-        val newTask = tasksRepository.tasksServiceData.values.first()
+        //WHEN edit case
+        val viewModel3 = initViewModel(TaskSamples.sample1Active.id)
 
-        // Then a task is saved in the repository and the view updated
-        assertThat(newTask.title).isEqualTo(newTitle)
-        assertThat(newTask.description).isEqualTo(newDescription)
+        //THEN
+        assertThat(viewModel3.task.awaitData()).isNotNull()
+        assertThat(viewModel3.task.awaitData().id).isEqualTo(TaskSamples.sample1Active.id)
     }
 
     @Test
-    fun loadTasks_loading() {
-        // Pause dispatcher so we can verify initial values
-        mainCoroutineRule.pauseDispatcher()
+    fun init_editButNoTask() = runBlockingTest {
+        //GIVEN no task
 
-        // Load the task in the viewmodel
-        addEditTaskViewModel.start(task.id)
+        //WHEN edit case
+        val viewModel2 = initViewModel(TaskSamples.sample1Active.id)
 
-        // Then progress indicator is shown
-        assertThat(getValue(addEditTaskViewModel.dataLoading)).isTrue()
+        //THEN new task
+        assertThat(viewModel2.task.awaitData()).isNotNull()
+        assertThat(viewModel2.task.awaitData().id).isNotEqualTo(TaskSamples.sample1Active.id)
 
-        // Execute pending coroutines actions
-        mainCoroutineRule.resumeDispatcher()
 
-        // Then progress indicator is hidden
-        assertThat(getValue(addEditTaskViewModel.dataLoading)).isFalse()
     }
+
 
     @Test
-    fun loadTasks_taskShown() {
-        // Add task to repository
-        tasksRepository.addTasks(task)
+    fun onClickFAB() = runBlockingTest {
+        //given
+        val viewModel = initViewModel(null)
 
-        // Load the task with the viewmodel
-        addEditTaskViewModel.start(task.id)
+        //when click
+        viewModel.onClickFAB()
 
-        // Verify a task is loaded
-        assertThat(getValue(addEditTaskViewModel.title)).isEqualTo(task.title)
-        assertThat(getValue(addEditTaskViewModel.description)).isEqualTo(task.description)
-        assertThat(getValue(addEditTaskViewModel.dataLoading)).isFalse()
+        //then task added, navigate to home
+        assertThat(repo.getTasks()).hasSize(1)
+        viewModel.verifyNavigateUp()
     }
 
-    @Test
-    fun saveNewTaskToRepository_emptyTitle_error() {
-        saveTaskAndAssertSnackbarError("", "Some Task Description")
-    }
+    private fun initViewModel(taskId: String?): AddEditTaskViewModel {
+        val viewModel = get<AddEditTaskViewModel> {
+            parametersOf(AddEditTaskFragmentArgs.Builder(taskId, "test title").build())
+        }.let { spy(it) }
 
-    @Test
-    fun saveNewTaskToRepository_nullTitle_error() {
-        saveTaskAndAssertSnackbarError(null, "Some Task Description")
-    }
-    @Test
-    fun saveNewTaskToRepository_emptyDescription_error() {
-        saveTaskAndAssertSnackbarError("Title", "")
-    }
-
-    @Test
-    fun saveNewTaskToRepository_nullDescription_error() {
-        saveTaskAndAssertSnackbarError("Title", null)
-    }
-
-    @Test
-    fun saveNewTaskToRepository_nullDescriptionNullTitle_error() {
-        saveTaskAndAssertSnackbarError(null, null)
-    }
-
-    @Test
-    fun saveNewTaskToRepository_emptyDescriptionEmptyTitle_error() {
-        saveTaskAndAssertSnackbarError("", "")
-    }
-
-    private fun saveTaskAndAssertSnackbarError(title: String?, description: String?) {
-        (addEditTaskViewModel).apply {
-            this.title.value = title
-            this.description.value = description
-        }
-
-        // When saving an incomplete task
-        addEditTaskViewModel.saveTask()
-
-        // Then the snackbar shows an error
-        assertSnackbarMessage(addEditTaskViewModel.snackbarMessage, string.empty_task_message)
+        //THEN new task
+        assertThat(viewModel.task.awaitData()).isNotNull()
+        return viewModel
     }
 }

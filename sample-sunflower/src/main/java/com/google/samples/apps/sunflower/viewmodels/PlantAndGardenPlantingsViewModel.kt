@@ -16,13 +16,20 @@
 
 package com.google.samples.apps.sunflower.viewmodels
 
-import androidx.lifecycle.ViewModel
 import com.google.samples.apps.sunflower.data.PlantAndGardenPlantings
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PlantAndGardenPlantingsViewModel(plantings: PlantAndGardenPlantings, val onClick: (String) -> Unit) : ViewModel(),
+/**
+ * this is not related to lifecycle. so, using livedata is not the proper option.
+ * just use variable. and it will be updated when binding data only. so if the data should be refreshed to UI not on the binding time.
+ * you have to use mBinding.executePendingBindings();
+ */
+class PlantAndGardenPlantingsViewModel(
+    plantings: PlantAndGardenPlantings,
+    val onClick: (String) -> Unit
+) :
     DiffComparable<PlantAndGardenPlantingsViewModel> {
     val plant = checkNotNull(plantings.plant)
     val gardenPlanting = plantings.gardenPlantings[0]
@@ -44,8 +51,8 @@ class PlantAndGardenPlantingsViewModel(plantings: PlantAndGardenPlantings, val o
     }
 
     override fun areItemsTheSame(item: PlantAndGardenPlantingsViewModel): Boolean =
-            plant.plantId == item.plant.plantId
+        plant.plantId == item.plant.plantId
 
     override fun areContentsTheSame(item: PlantAndGardenPlantingsViewModel): Boolean =
-            plant == item.plant
+        plant == item.plant
 }

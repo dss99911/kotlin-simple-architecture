@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
-
 android {
 //    buildTypes {
 //        //inherit other build type
@@ -14,6 +13,7 @@ android {
 //        manifestPlaceholders = [app_name:"sample name"]
 //        //can add resource
 //        resValue "string", "test", "test"
+//        resConfigs("en")
 //    }
 
     //you can add new res folder
@@ -28,10 +28,8 @@ android {
 //    }
 }
 
-apply from: (project(':library').projectDir.toString() + '/dependencies.gradle')
+
 
 dependencies {
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-
     implementation 'com.android.support:customtabs:23.3.0'
 }

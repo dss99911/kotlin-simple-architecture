@@ -1,0 +1,83 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+group = 'kim.jeonghyeon'
+version = '1.0'
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+
+def pomConfig = {
+    licenses {
+        license {
+            //noinspection GroovyAssignabilityCheck
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "hyun-kim"
+            //noinspection GroovyAssignabilityCheck
+            name "Hyun Kim"
+            email "dss99911@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/dss99911/kotlinlibrary"
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId group
+            artifactId project.name
+            version = project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Kotlin Library')
+                root.appendNode('name', 'Kotlin Library')
+                root.appendNode('url', 'https://github.com/dss99911/kotlinlibrary')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    publications = ['MyPublication']
+    publish = true
+    pkg {
+
+        repo = 'maven'
+        name = 'kotlin-library'
+        userOrg = bintrayUser
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/dss99911/kotlinlibrary.git'
+        version {
+            name = version.name
+            desc = 'Kotlin Library'
+//            vcsTag = tag link?
+            released  = new Date()
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}

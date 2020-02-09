@@ -17,152 +17,98 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import android.os.Bundle
-import android.view.*
+import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
-import com.example.android.architecture.blueprints.todoapp.EventObserver
+import com.example.android.architecture.blueprints.todoapp.BR
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
-import com.example.android.architecture.blueprints.todoapp.databinding.TasksFragBinding
-import com.example.android.architecture.blueprints.todoapp.util.obtainViewModel
-import com.example.android.architecture.blueprints.todoapp.util.setupSnackbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.MvvmFragment
-import timber.log.Timber
-import java.util.*
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
+import kotlinx.android.synthetic.main.tasks_frag.*
 
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
  */
-class TasksFragment : MvvmFragment() {
+class TasksFragment : BaseFragment() {
 
-    private lateinit var viewDataBinding: TasksFragBinding
-    private lateinit var listAdapter: TasksAdapter
+    override val layoutId = R.layout.tasks_frag
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?): View? {
-        viewDataBinding = TasksFragBinding.inflate(inflater, container, false).apply {
-            viewmodel = obtainViewModel(TasksViewModel::class.java)
+    val viewModel: TasksViewModel by bindingViewModel(BR.viewmodel)
+
+    init {
+        setMenu(R.menu.tasks_fragment_menu) {
+            when (it.itemId) {
+                R.id.menu_clear -> {
+                    viewModel.onClearMenuClicked()
+                    true
+                }
+                R.id.menu_filter -> {
+                    onFilterMenuClicked()
+                    true
+                }
+                R.id.menu_refresh -> {
+                    viewModel.onRefreshMenuClicked()
+                    true
+                }
+                else -> false
+            }
         }
-        setHasOptionsMenu(true)
-        return viewDataBinding.root
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.menu_clear -> {
-                viewDataBinding.viewmodel?.clearCompletedTasks()
-                true
-            }
-            R.id.menu_filter -> {
-                showFilteringPopUpMenu()
-                true
-            }
-            R.id.menu_refresh -> {
-                viewDataBinding.viewmodel?.loadTasks(true)
-                true
-            }
-            else -> false
-        }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         // Set the lifecycle owner to the lifecycle of the view
-        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        setupSnackbar()
-        setupListAdapter()
         setupRefreshLayout()
-        setupNavigation()
-        setupFab()
-        viewDataBinding.viewmodel?.loadTasks(true)
     }
 
-    private fun setupNavigation() {
-        viewDataBinding.viewmodel?.openTaskEvent?.observe(this, EventObserver {
-            openTaskDetails(it)
-        })
-        viewDataBinding.viewmodel?.newTaskEvent?.observe(this, EventObserver {
-            navigateToAddNewTask()
-        })
-    }
-
-    private fun setupSnackbar() {
-        viewDataBinding.viewmodel?.let {
-            view?.setupSnackbar(this, it.snackbarMessage, Snackbar.LENGTH_SHORT)
-        }
-        arguments?.let {
-            val message = TasksFragmentArgs.fromBundle(it).userMessage
-            viewDataBinding.viewmodel?.showEditResultMessage(message)
+    override fun onViewModelSetup() {
+        with(viewModel) {
+            openTaskEvent.observeEvent {
+                openTaskDetails(it)
+            }
+            newTaskEvent.observeEvent {
+                navigateToAddNewTask()
+            }
         }
     }
 
-    private fun showFilteringPopUpMenu() {
+    private fun onFilterMenuClicked() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
         PopupMenu(requireContext(), view).run {
             menuInflater.inflate(R.menu.filter_tasks, menu)
 
             setOnMenuItemClickListener {
-                viewDataBinding.viewmodel?.run {
-                    setFiltering(
-                            when (it.itemId) {
-                                R.id.active -> TasksFilterType.ACTIVE_TASKS
-                                R.id.completed -> TasksFilterType.COMPLETED_TASKS
-                                else -> TasksFilterType.ALL_TASKS
-                            }
-                    )
-                    loadTasks(false)
-                }
+                viewModel.onMenuItemClicked(it.itemId)
+
                 true
             }
             show()
         }
     }
 
-    private fun setupFab() {
-        activity?.findViewById<FloatingActionButton>(R.id.fab_add_task)?.let {
-            it.setOnClickListener {
-                navigateToAddNewTask()
-            }
-        }
-    }
-
     private fun navigateToAddNewTask() {
-        val action = TasksFragmentDirections
-            .actionTasksFragmentToAddEditTaskFragment(null,
-                resources.getString(R.string.add_task))
-        findNavController().navigate(action)
+        TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
+            null,
+            resources.getString(R.string.add_task)
+        ).navigate()
     }
 
     private fun openTaskDetails(taskId: String) {
-        val action = TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId)
-        findNavController().navigate(action)
-    }
-
-    private fun setupListAdapter() {
-        val viewModel = viewDataBinding.viewmodel
-        if (viewModel != null) {
-            listAdapter = TasksAdapter(ArrayList(0), viewModel)
-            viewDataBinding.tasksList.adapter = listAdapter
-        } else {
-            Timber.w("ViewModel not initialized when attempting to set up adapter.")
-        }
+        TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(taskId).navigate()
     }
 
     private fun setupRefreshLayout() {
-        viewDataBinding.refreshLayout.run {
+        refresh_layout.run {
             setColorSchemeColors(
-                    ContextCompat.getColor(requireActivity(), R.color.colorPrimary),
-                    ContextCompat.getColor(requireActivity(), R.color.colorAccent),
-                    ContextCompat.getColor(requireActivity(), R.color.colorPrimaryDark)
+                ContextCompat.getColor(requireActivity(), R.color.colorPrimary),
+                ContextCompat.getColor(requireActivity(), R.color.colorAccent),
+                ContextCompat.getColor(requireActivity(), R.color.colorPrimaryDark)
             )
             // Set the scrolling view in the custom SwipeRefreshLayout.
-            scrollUpChild = viewDataBinding.tasksList
+            scrollUpChild = tasks_list
         }
     }
 }

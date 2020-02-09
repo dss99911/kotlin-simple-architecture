@@ -22,10 +22,9 @@ import com.google.samples.apps.sunflower.PlantDetailFragmentArgs
 import com.google.samples.apps.sunflower.R
 import com.google.samples.apps.sunflower.data.GardenPlantingRepository
 import com.google.samples.apps.sunflower.data.PlantRepository
-import kim.jeonghyeon.androidlibrary.architecture.coroutine.launch
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
+import kim.jeonghyeon.androidlibrary.architecture.livedata.call
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.LiveEvent
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.call
 
 /**
  * The ViewModel used in [PlantDetailFragment].
@@ -39,8 +38,8 @@ class PlantDetailViewModel(
     val isPlanted = gardenPlantingRepository.isPlanted(navArgs.plantId)
     val plant = plantRepository.getPlant(navArgs.plantId)
 
-    val fabHideEvent = LiveEvent<Unit>()
-    val startShareEvent = LiveEvent<Unit>()
+    val fabHideEvent = LiveObject<Unit>()
+    val startShareEvent = LiveObject<Unit>()
 
     fun onFabClick() {
         fabHideEvent.call()
@@ -57,13 +56,11 @@ class PlantDetailViewModel(
     }
 
     fun onNavigationClick() {
-        navigate {
-            it.navigateUp()
-        }
+        navigateUp()
     }
 
     fun addPlantToGarden() {
-        launch {
+        state.load {
             gardenPlantingRepository.createGardenPlanting(navArgs.plantId)
         }
     }
