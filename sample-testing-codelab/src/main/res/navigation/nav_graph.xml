@@ -51,7 +51,7 @@
     <fragment
             android:id="@+id/taskDetailFragment"
             android:name="com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailFragment"
-            android:label="Task Details">
+            android:label="@string/task_details">
         <action
                 android:id="@+id/action_taskDetailFragment_to_addEditTaskFragment"
                 app:destination="@id/addEditTaskFragment" />

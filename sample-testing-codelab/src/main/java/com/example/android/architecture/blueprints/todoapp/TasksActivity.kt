@@ -28,7 +28,7 @@ class TasksActivity : BaseActivity() {
 
     override val appBarConfiguration by lazy {
         AppBarConfiguration.Builder(R.id.tasksFragment, R.id.statisticsFragment)
-            .setDrawerLayout(drawerLayout)
+            .setDrawerLayout(drawer_layout)
             .build()
     }
 
@@ -39,7 +39,7 @@ class TasksActivity : BaseActivity() {
     }
 
     private fun setupNavigationDrawer() {
-        drawerLayout.setStatusBarBackground(R.color.colorPrimaryDark)
+        drawer_layout.setStatusBarBackground(R.color.colorPrimaryDark)
         navView.setupWithNavController(navController)
     }
 }

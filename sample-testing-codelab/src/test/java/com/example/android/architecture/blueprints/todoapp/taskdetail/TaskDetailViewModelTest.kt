@@ -94,7 +94,7 @@ class TaskDetailViewModelTest : BaseViewModelTest() {
 
         //THEN delete and navigate to task fragment
         assertThat(repo.getTask(TaskSamples.sample1Active.id)).isNull()
-        viewModel.verifyNavigateUp()
+        viewModel.assertNavigateUp()
     }
 
     @Test

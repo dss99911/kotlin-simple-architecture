@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="1dp"
-                    android:text="@{@string/statistics_completed_tasks(model.statusResult.get().activeTasksPercent)}"
+                    android:text="@{@string/statistics_completed_tasks(model.statusResult.get().completedTasksPercent)}"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                     android:visibility="@{!model.tasks.get().isEmpty()}" />
 

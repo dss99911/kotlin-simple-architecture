@@ -30,7 +30,7 @@ android {
     productFlavors {
         free {
             dimension "mode"
-            buildConfigField "boolean", "isPro", "false"
+            buildConfigField "boolean", "isFree", "true"
         }
 
         pro {
@@ -40,7 +40,7 @@ android {
 
         dev {
             dimension "stage"
-
+            buildConfigField "boolean", "isDev", "true"
             //optimize build time
             resConfigs "en", "hdpi"
             minSdkVersion min_sdk_version.toInteger() > 21 ? min_sdk_version.toInteger() : 21
@@ -48,10 +48,12 @@ android {
 
         prod {
             dimension "stage"
+            buildConfigField "boolean", "isProd", "true"
         }
 
         mock {
             dimension "stage"
+            buildConfigField "boolean", "isMock", "true"
         }
     }
 

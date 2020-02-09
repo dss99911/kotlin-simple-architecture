@@ -1,8 +1,10 @@
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
+import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.androidlibrary.architecture.livedata.setSuccess
 import kim.jeonghyeon.testing.BaseViewModelTest
 import kim.jeonghyeon.testing.awaitData
 import kotlinx.coroutines.test.runBlockingTest
@@ -19,10 +21,10 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
     @Test
     fun init_add() = runBlockingTest {
         //WHEN add case
-        val viewModel1 = initViewModel(null)
+        val viewModel = initViewModel(null)
 
         //THEN new task
-        assertThat(viewModel1.task.awaitData()).isNotNull()
+        assertThat(viewModel.task.awaitData()).isNotNull()
     }
 
     @Test
@@ -31,11 +33,11 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
         repo.saveTask(TaskSamples.sample1Active)
 
         //WHEN edit case
-        val viewModel3 = initViewModel(TaskSamples.sample1Active.id)
+        val viewModel = initViewModel(TaskSamples.sample1Active.id)
 
         //THEN
-        assertThat(viewModel3.task.awaitData()).isNotNull()
-        assertThat(viewModel3.task.awaitData().id).isEqualTo(TaskSamples.sample1Active.id)
+        assertThat(viewModel.task.awaitData()).isNotNull()
+        assertThat(viewModel.task.awaitData().id).isEqualTo(TaskSamples.sample1Active.id)
     }
 
     @Test
@@ -43,27 +45,42 @@ class AddEditTaskViewModelTest : BaseViewModelTest() {
         //GIVEN no task
 
         //WHEN edit case
-        val viewModel2 = initViewModel(TaskSamples.sample1Active.id)
+        val viewModel = initViewModel(TaskSamples.sample1Active.id)
 
         //THEN new task
-        assertThat(viewModel2.task.awaitData()).isNotNull()
-        assertThat(viewModel2.task.awaitData().id).isNotEqualTo(TaskSamples.sample1Active.id)
+        assertThat(viewModel.task.awaitData()).isNotNull()
+        assertThat(viewModel.task.awaitData().id).isNotEqualTo(TaskSamples.sample1Active.id)
 
 
     }
 
 
     @Test
-    fun onClickFAB() = runBlockingTest {
+    fun onClickFAB_notEmpty() = runBlockingTest {
         //given
         val viewModel = initViewModel(null)
+        viewModel.task.setSuccess(TaskSamples.sample1Active)
+
+        //when click
+        viewModel.onClickFAB()
+
+        //then task not added, navigate to home
+        assertThat(repo.getTasks()).hasSize(1)
+        viewModel.assertNavigateUp()
+    }
+
+    @Test
+    fun onClickFAB_empty() = runBlockingTest {
+        //given
+        val viewModel = initViewModel(null)
+        viewModel.task.setSuccess(TaskSamples.sample3TitleEmpty)
 
         //when click
         viewModel.onClickFAB()
 
         //then task added, navigate to home
-        assertThat(repo.getTasks()).hasSize(1)
-        viewModel.verifyNavigateUp()
+        viewModel.assertSnackbar(R.string.empty_task_message)
+        assertThat(repo.getTasks()).hasSize(0)
     }
 
     private fun initViewModel(taskId: String?): AddEditTaskViewModel {

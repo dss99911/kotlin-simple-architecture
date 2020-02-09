@@ -16,6 +16,7 @@
 
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
+import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
@@ -49,6 +50,11 @@ class AddEditTaskViewModel(
 
     // Called when clicking on fab.
     fun onClickFAB() {
+        if (task.getData()?.isEmpty != false) {
+            showSnackbar(R.string.empty_task_message)
+            return
+        }
+
         state.load {
             tasksRepository.saveTask(task.getData()!!)
             navigateToTasksFragment()

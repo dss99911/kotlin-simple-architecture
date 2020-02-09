@@ -9,6 +9,10 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import java.util.*
 
+/**
+ * there is the ticket request Espresso make Rule for same purpose
+ * https://github.com/android/android-test/issues/317
+ */
 class DataBindingIdlingResourceRule(
     getFragment: () -> Fragment?
 ) : TestWatcher() {

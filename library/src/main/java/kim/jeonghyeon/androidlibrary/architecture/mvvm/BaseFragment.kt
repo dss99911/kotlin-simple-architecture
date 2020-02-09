@@ -16,12 +16,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
-import kim.jeonghyeon.androidlibrary.extension.*
+import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
+import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
+import kim.jeonghyeon.androidlibrary.extension.log
+import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
 /**
  * Methods
@@ -176,7 +178,7 @@ abstract class BaseFragment : Fragment(),
             it.state.observe(stateObserver)
 
             it.eventSnackbar.observeEvent {
-                binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
+                showSnackbar(it)
             }
 
             it.eventStartActivity.observeEvent {

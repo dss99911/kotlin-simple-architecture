@@ -15,10 +15,13 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
+import android.os.Bundle
 import com.example.android.architecture.blueprints.todoapp.R
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kim.jeonghyeon.androidlibrary.extension.getNavArgs
+import kim.jeonghyeon.androidlibrary.extension.log
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.koin.core.parameter.parametersOf
 
 /**
@@ -41,5 +44,15 @@ class TaskDetailFragment : BaseFragment() {
                 else -> false
             }
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        runOnUiThread {
+            log("snackbar")
+//            showSnackbar("aa")
+        }
+
+
     }
 }

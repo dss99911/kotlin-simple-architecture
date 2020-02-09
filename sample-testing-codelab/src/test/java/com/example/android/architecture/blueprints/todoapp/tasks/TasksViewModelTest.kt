@@ -22,8 +22,8 @@ import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
+import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.testing.BaseViewModelTest
-import kim.jeonghyeon.testing.await
 import kim.jeonghyeon.testing.awaitData
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
@@ -67,7 +67,7 @@ class TasksViewModelTest : BaseViewModelTest() {
 
         //then
         assertItemSize(1)
-        assertSnackbar(R.string.completed_tasks_cleared)
+        viewModel.assertSnackbar(ctx.getString(R.string.completed_tasks_cleared))
     }
 
     @Test
@@ -128,10 +128,6 @@ class TasksViewModelTest : BaseViewModelTest() {
         assertThat(viewModel.noTasksLabel.value).isEqualTo(noTasksLabelString)
         assertThat(viewModel.noTaskIconRes.value).isEqualTo(noTaskIconDrawable)
         assertThat(viewModel.tasksAddViewVisible.value).isEqualTo(tasksAddVisible)
-    }
-
-    private fun assertSnackbar(@StringRes stringResId: Int) {
-        assertThat(viewModel.eventSnackbar.await()).isEqualTo(stringResId)
     }
 
     private fun assertItemSize(size: Int) {
