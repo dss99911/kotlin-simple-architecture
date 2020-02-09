@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package kim.jeonghyeon.androidtesting
+package kim.jeonghyeon.androidtesting.rule
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

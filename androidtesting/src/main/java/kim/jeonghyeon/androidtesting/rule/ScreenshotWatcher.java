@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidtesting;
+package kim.jeonghyeon.androidtesting.rule;
 
 import android.graphics.Bitmap;
 import android.os.Build;

@@ -20,7 +20,9 @@ import androidx.test.espresso.util.HumanReadables
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
+import kim.jeonghyeon.androidtesting.rule.DataBindingIdlingResourceRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 
@@ -33,10 +35,17 @@ import org.mockito.Mockito
 abstract class BaseFragmentTest<F : BaseFragment> : BaseAndroidTest() {
     abstract val theme: Int
     abstract val clazz: Class<F>
+    //todo is this good approach? currently fragment is created by each test. and sometimes create activity as well. so, implemention is like this.
+    //todo but, consider that BaseFragmentTest create fragment automatically. however, consider how to set data or set arguments before create fragment
+    var fragment: F? = null
+
+    @get:Rule
+    val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule { fragment }
 
     fun launchFragment(
         fragmentArgs: Bundle = Bundle(), onFragment: (F) -> Unit = {}
     ) = FragmentScenario.launchInContainer(clazz, fragmentArgs, theme, null).onFragment {
+        fragment = it
         //sleep for screenshot. if test completed without ui interaction. screenshot is taken before ui drawn.
         SystemClock.sleep(100)
         Navigation.setViewNavController(it.requireView(), Mockito.mock(NavController::class.java))
@@ -46,11 +55,10 @@ abstract class BaseFragmentTest<F : BaseFragment> : BaseAndroidTest() {
     fun launchFragmentWithFragment(
         fragmentArgs: Bundle = Bundle(), onFragment: (F) -> Unit = {}
     ): F {
-        lateinit var fragment: F
         launchFragment(fragmentArgs) {
             fragment = it
         }
-        return fragment
+        return fragment!!
     }
 
     fun assertIdDisplayed(@IdRes id: Int) {
@@ -118,3 +126,5 @@ fun isNotDisplayed(): ViewAssertion {
         }
     }
 }
+
+
