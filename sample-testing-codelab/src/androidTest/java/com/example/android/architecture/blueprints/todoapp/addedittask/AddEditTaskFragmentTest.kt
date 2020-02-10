@@ -2,9 +2,11 @@ package com.example.android.architecture.blueprints.todoapp.addedittask
 
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.TodoFragmentTest
+import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidtesting.EspressoUtil
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import org.koin.test.inject
@@ -18,11 +20,7 @@ class AddEditTaskFragmentTest : TodoFragmentTest<AddEditTaskFragment>() {
     @Test
     fun init_add() = runBlockingTest {
         //GIVEN null args
-        val bundle = AddEditTaskFragmentArgs.Builder(null, ctx.getString(R.string.add_task)).build()
-            .toBundle()
-
-        //WHEN
-        launchFragment(bundle)
+        launchWith(null)
 
         //THEN no title description shown
         assertHintDisplayed(ctx.getString(R.string.title_hint))
@@ -33,67 +31,85 @@ class AddEditTaskFragmentTest : TodoFragmentTest<AddEditTaskFragment>() {
     fun init_edit() = runBlockingTest {
         //GIVEN task args
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle = AddEditTaskFragmentArgs.Builder(
-            TaskSamples.sample1Active.id,
-            ctx.getString(R.string.edit_task)
-        ).build().toBundle()
 
         //WHEN
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //THEN title description shown
-        assertTextDisplayed(TaskSamples.sample1Active.title)
-        assertTextDisplayed(TaskSamples.sample1Active.description)
+        isTitleAndDescriptionDisplayed(TaskSamples.sample1Active)
     }
 
     @Test
     fun onClickFAB_emptyTitleTask() = runBlockingTest {
         //GIVEN empty title
         repo.saveTask(TaskSamples.sample3TitleEmpty)
-        val bundle = AddEditTaskFragmentArgs.Builder(
-            TaskSamples.sample3TitleEmpty.id,
-            ctx.getString(R.string.edit_task)
-        ).build().toBundle()
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample3TitleEmpty)
 
         //WHEN
-        performClickById(R.id.fab_save_task)
+        clickSave()
 
         //THEN show error and also keep the page
-        assertTextDisplayed(TaskSamples.sample3TitleEmpty.description)
+        isShown()
     }
 
     @Test
     fun onClickFAB_emptyDescriptionTask() = runBlockingTest {
         //GIVEN empty title
         repo.saveTask(TaskSamples.sample4DescriptionEmpty)
-        val bundle = AddEditTaskFragmentArgs.Builder(
-            TaskSamples.sample4DescriptionEmpty.id,
-            ctx.getString(R.string.edit_task)
-        ).build().toBundle()
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample4DescriptionEmpty)
 
         //WHEN
-        performClickById(R.id.fab_save_task)
+        clickSave()
 
         //THEN show error and also keep the page
-        assertTextDisplayed(TaskSamples.sample4DescriptionEmpty.title)
+        isShown()
     }
 
     @Test
     fun onClickFAB_notEmptyTask() = runBlockingTest {
         //GIVEN emptyDescription
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle = AddEditTaskFragmentArgs.Builder(
-            TaskSamples.sample1Active.id,
-            ctx.getString(R.string.edit_task)
-        ).build().toBundle()
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //WHEN
-        performClickById(R.id.fab_save_task)
+        clickSave()
 
         //THEN navigateUp
         assertNavigateUp()
+    }
+
+    private fun launchWith(task: Task?) {
+        val bundle =
+            AddEditTaskFragmentArgs.Builder(task?.id, ctx.getString(R.string.add_task)).build()
+                .toBundle()
+
+        //WHEN
+        launchFragment(bundle)
+    }
+
+
+    companion object : EspressoUtil {
+        fun typeTitleAndDescription(task: Task) {
+            performTypeText(R.id.add_task_title, task.title)
+            performTypeText(R.id.add_task_description, task.description)
+        }
+
+        fun replaceTitleAndDescription(task: Task) {
+            performReplaceText(R.id.add_task_title, task.title)
+            performReplaceText(R.id.add_task_description, task.description)
+        }
+
+        fun clickSave() {
+            performClickById(R.id.fab_save_task)
+        }
+
+        fun isTitleAndDescriptionDisplayed(task: Task) {
+            assertTextDisplayed(task.title)
+            assertTextDisplayed(task.description)
+        }
+
+        fun isShown() {
+            assertIdDisplayed(R.id.add_task_title)
+        }
     }
 }

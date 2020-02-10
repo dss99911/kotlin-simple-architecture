@@ -1,14 +1,22 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.swipeDown
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.TodoFragmentTest
+import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
+import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidtesting.EspressoUtil
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Test
 import org.koin.test.inject
@@ -38,7 +46,7 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
 
 
         //THEN has title of the task
-        assertTextDisplayed(TaskSamples.sample5completed.titleForList)
+        isItemDisplayed(TaskSamples.sample5completed)
     }
 
     @Test
@@ -51,8 +59,8 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         launchFragment()
 
         //THEN has title of the task
-        assertTextDisplayed(TaskSamples.sample5completed.titleForList)
-        assertTextDisplayed(TaskSamples.sample6completed.titleForList)
+        isItemDisplayed(TaskSamples.sample5completed)
+        isItemDisplayed(TaskSamples.sample6completed)
     }
 
     @Test
@@ -63,7 +71,7 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         launchFragment()
 
         //THEN shows no task layout
-        assertIdDisplayed(R.id.noTasks)
+        hasNoTask()
     }
 
     @Test
@@ -71,16 +79,19 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         //GIVEN data is different
         repo.saveTask(TaskSamples.sample1Active)
         launchFragment()
-        assertTextDisplayed(TaskSamples.sample1Active.titleForList)
+
+        isItemDisplayed(TaskSamples.sample1Active)
+
+        //set items ui empty
         getFragment().viewModel.items.value = Resource.Success(emptyList())
 
-        assertTextNotDisplayed(TaskSamples.sample1Active.titleForList)
-        //WHEN
-        onView(withId(R.id.refresh_layout)).perform(swipeDown())
+        isItemNotDisplayed(TaskSamples.sample1Active)
 
+        //WHEN
+        swipeDown()
 
         //THEN
-        assertTextDisplayed(TaskSamples.sample1Active.titleForList)
+        isItemDisplayed(TaskSamples.sample1Active)
     }
 
     @Test
@@ -90,12 +101,12 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         launchFragment()
 
         //WHEN click
-        performClickByText(TaskSamples.sample5completed.titleForList)
+        clickTaskItem(TaskSamples.sample5completed)
 
         //THEN redirect to detail fragment
         assertNavigateDirection(
             TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(
-                "id5"
+                TaskSamples.sample5completed.id
             )
         )
 
@@ -107,7 +118,7 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         launchFragment()
 
         //WHEN click
-        performClickById(R.id.fab_add_task)
+        clickAdd()
 
         //THEN go to add page
         assertNavigateDirection(
@@ -116,5 +127,86 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
                 "New Task"
             )
         )
+    }
+
+    companion object : EspressoUtil {
+        fun clickAdd() {
+            performClickById(R.id.fab_add_task)
+        }
+
+        fun clickTaskItem(task: Task) {
+            performClickByText(task.titleForList)
+        }
+
+        fun isItemDisplayed(task: Task) {
+            assertTextDisplayed(task.titleForList)
+        }
+
+        fun isItemNotDisplayed(task: Task) {
+            assertTextNotDisplayed(task.titleForList)
+        }
+
+        fun clickFilterAll() {
+            clickMenuFilter()
+            performClickByText(R.string.nav_all)
+        }
+
+        fun clickFilterActive() {
+            clickMenuFilter()
+            performClickByText(R.string.nav_active)
+        }
+
+        fun clickFilterCompleted() {
+            clickMenuFilter()
+            performClickByText(R.string.nav_completed)
+        }
+
+        fun isCompleted(task: Task) {
+            onView(
+                Matchers.allOf(
+                    withId(R.id.complete),
+                    ViewMatchers.hasSibling(ViewMatchers.withText(task.titleForList))
+                )
+            ).check(ViewAssertions.matches(ViewMatchers.isChecked()))
+        }
+
+        fun isActive(task: Task) {
+            onView(
+                Matchers.allOf(
+                    withId(R.id.complete),
+                    ViewMatchers.hasSibling(ViewMatchers.withText(task.titleForList))
+                )
+            ).check(ViewAssertions.matches(Matchers.not(ViewMatchers.isChecked())))
+        }
+
+        fun clickMenuFilter() {
+            performClickById(R.id.menu_filter)
+        }
+
+        fun clickMenuClear() {
+            Espresso.openActionBarOverflowOrOptionsMenu(ctx)
+            performClickByText(R.string.menu_clear)
+        }
+
+        fun clickRefresh() {
+            Espresso.openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+            performClickByText(R.string.refresh)
+        }
+
+        fun hasNoTask() {
+            assertIdDisplayed(R.id.noTasks)
+        }
+
+        fun scroll(index: Int) {
+            scrollRecyclerView(R.id.tasks_list, index)
+        }
+
+        fun isShown() {
+            assertIdDisplayed(R.id.tasks_container)
+        }
+
+        fun swipeDown() {
+            onView(withId(R.id.refresh_layout)).perform(ViewActions.swipeDown())
+        }
     }
 }

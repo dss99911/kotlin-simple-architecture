@@ -1,15 +1,18 @@
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.Lifecycle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.TodoFragmentTest
+import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import com.google.common.truth.Truth.assertThat
 import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidtesting.EspressoUtil
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
@@ -29,57 +32,45 @@ class TaskDetailFragmentTest : TodoFragmentTest<TaskDetailFragment>() {
     fun init_active() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
 
         //WHEN launch
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //THEN show title, description
-        assertIdNotChecked(R.id.task_detail_complete)
-        assertTextDisplayed(TaskSamples.sample1Active.title)
-        assertTextDisplayed(TaskSamples.sample1Active.description)
+        isCompleted(false)
+        isTitleAndDescriptionDisplayed(TaskSamples.sample1Active)
     }
 
     @Test
     fun init_completed() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample2Completed)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample2Completed.id).build().toBundle()
 
         //WHEN launch
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample2Completed)
 
         //THEN show title, description
-        assertIdChecked(R.id.task_detail_complete)
-        assertTextDisplayed(TaskSamples.sample2Completed.title)
-        assertTextDisplayed(TaskSamples.sample2Completed.description)
+        isCompleted(true)
+        isTitleAndDescriptionDisplayed(TaskSamples.sample2Completed)
     }
 
     @Test
     fun init_error() = runBlockingTest {
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
-
         //WHEN launch
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //THEN show nothing
-        assertIdNotDisplayed(R.id.task_detail_title)
-
+        isNotShown()
     }
 
     @Test
     fun onClickEdit() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //WHEN click edit
-        performClickById(R.id.fab_edit_task)
+        clickEdit()
 
         //THEN go to edit page
         assertNavigateDirection(
@@ -98,19 +89,20 @@ class TaskDetailFragmentTest : TodoFragmentTest<TaskDetailFragment>() {
 
         //GIVEN task changed
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
-        val fragmentScenario = launchFragment(bundle)
-        repo.saveTask(TaskSamples.sample1Active.apply {
+
+        val fragmentScenario = launchWith(TaskSamples.sample1Active)
+
+        val changedTask = TaskSamples.sample1Active.apply {
             title = TITLE_TEST
-        })
+        }
+        repo.saveTask(changedTask)
 
         //WHEN resume
         fragmentScenario.moveToState(Lifecycle.State.CREATED)
         fragmentScenario.moveToState(Lifecycle.State.RESUMED)
 
         //THEN updated
-        assertTextDisplayed(TITLE_TEST)
+        isTitleAndDescriptionDisplayed(changedTask)
     }
 
     @Test
@@ -119,34 +111,84 @@ class TaskDetailFragmentTest : TodoFragmentTest<TaskDetailFragment>() {
 
         //GIVEN task changed
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
-        launchFragment(bundle)
-        repo.saveTask(TaskSamples.sample1Active.apply {
+        launchWith(TaskSamples.sample1Active)
+
+        val changedTask = TaskSamples.sample1Active.apply {
             title = TITLE_TEST
-        })
+        }
+        repo.saveTask(changedTask)
 
         //WHEN swipe down
-        onView(withId(R.id.refresh_layout)).perform(ViewActions.swipeDown())
+
+        swipeDown()
 
         //THEN updated
-        assertTextDisplayed(TITLE_TEST)
+        isTitleAndDescriptionDisplayed(changedTask)
     }
 
     @Test
     fun onCheckCompleted() = runBlockingTest {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
-        val bundle =
-            TaskDetailFragmentArgs.Builder(TaskSamples.sample1Active.id).build().toBundle()
-        launchFragment(bundle)
+        launchWith(TaskSamples.sample1Active)
 
         //WHEN checked
-        performClickById(R.id.task_detail_complete)
+        clickCheckButton()
 
         //THEN task changed
-        assertIdChecked(R.id.task_detail_complete)
+        isCompleted(true)
         assertThat(repo.getTask(TaskSamples.sample1Active.id)!!.isCompleted).isTrue()
     }
 
+    private fun launchWith(task: Task): FragmentScenario<TaskDetailFragment> {
+        val bundle =
+            TaskDetailFragmentArgs.Builder(task.id).build().toBundle()
+
+        //WHEN launch
+        return launchFragment(bundle)
+    }
+
+    companion object : EspressoUtil {
+        fun isTitleAndDescriptionDisplayed(task: Task) {
+            assertIdMatchedText(R.id.task_detail_title, task.title)
+            assertIdMatchedText(R.id.task_detail_description, task.description)
+        }
+
+        fun isTitleAndDescriptionNotDisplayed(task: Task) {
+            assertTextNotDisplayed(task.title)
+            assertTextNotDisplayed(task.description)
+        }
+
+        fun isCompleted(completed: Boolean) {
+            if (completed) {
+                assertIdChecked(R.id.task_detail_complete)
+            } else {
+                assertIdNotChecked(R.id.task_detail_complete)
+            }
+        }
+
+        fun clickEdit() {
+            performClickById(R.id.fab_edit_task)
+        }
+
+        fun clickDelete() {
+            performClickById(R.id.menu_delete)
+        }
+
+        fun clickCheckButton() {
+            performClickById(R.id.task_detail_complete)
+        }
+
+        fun isShown() {
+            assertIdDisplayed(R.id.task_detail_title)
+        }
+
+        fun isNotShown() {
+            assertIdNotDisplayed(R.id.task_detail_title)
+        }
+
+        fun swipeDown() {
+            onView(withId(R.id.refresh_layout)).perform(ViewActions.swipeDown())
+        }
+    }
 }

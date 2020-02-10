@@ -1,22 +1,24 @@
-package com.example.android.architecture.blueprints.todoapp.tasks
+package com.example.android.architecture.blueprints.todoapp
 
 import android.view.Gravity
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.DrawerMatchers.isOpen
-import androidx.test.espresso.matcher.ViewMatchers.*
-import com.example.android.architecture.blueprints.todoapp.R
-import com.example.android.architecture.blueprints.todoapp.TasksActivity
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskFragmentTest
+import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsFragmentTest
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailFragmentTest
+import com.example.android.architecture.blueprints.todoapp.tasks.TasksFragmentTest
 import com.google.common.truth.Truth
+import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidtesting.BaseActivityTest
+import kim.jeonghyeon.androidtesting.EspressoUtil
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
 import org.koin.test.inject
@@ -37,13 +39,12 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the "+" button, add details, and save
-        performClickById(R.id.fab_add_task)
-        performTypeText(R.id.add_task_title, "title123")
-        performTypeText(R.id.add_task_description, "description123")
-        performClickById(R.id.fab_save_task)
+        TasksFragmentTest.clickAdd()
+        AddEditTaskFragmentTest.typeTitleAndDescription(Task("title123", "description123"))
+        AddEditTaskFragmentTest.clickSave()
 
         // Then verify task is displayed on screen
-        onView(withText("title123")).check(matches(isDisplayed()))
+        assertTextDisplayed("title123")
     }
 
     @Test
@@ -54,27 +55,23 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list and verify that all the data is correct
-        performClickByText(TaskSamples.sample1Active.titleForList)
-        assertIdMatchedText(R.id.task_detail_title, TaskSamples.sample1Active.title)
-        assertIdMatchedText(R.id.task_detail_description, TaskSamples.sample1Active.description)
-        assertIdNotChecked(R.id.task_detail_complete)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
+        TaskDetailFragmentTest.isTitleAndDescriptionDisplayed(TaskSamples.sample1Active)
+        TaskDetailFragmentTest.isCompleted(false)
 
         // Click on the edit button, edit, and save
-        performClickById(R.id.fab_edit_task)
-        performReplaceText(R.id.add_task_title, TaskSamples.sample2Completed.title)
-        performReplaceText(R.id.add_task_description, TaskSamples.sample2Completed.description)
-        performClickById(R.id.fab_save_task)
+        TaskDetailFragmentTest.clickEdit()
+        AddEditTaskFragmentTest.replaceTitleAndDescription(TaskSamples.sample2Completed)
+        AddEditTaskFragmentTest.clickSave()
 
         // Verify task is displayed on screen in the task detail.
-        assertTextDisplayed(TaskSamples.sample2Completed.title)
-        assertTextDisplayed(TaskSamples.sample2Completed.description)
-        assertTextNotDisplayed(TaskSamples.sample1Active.title)
-        assertTextNotDisplayed(TaskSamples.sample1Active.description)
+        TaskDetailFragmentTest.isTitleAndDescriptionDisplayed(TaskSamples.sample2Completed)
+        TaskDetailFragmentTest.isTitleAndDescriptionNotDisplayed(TaskSamples.sample1Active)
 
         // Verify task is displayed on screen in the task list.
         pressBack()
-        assertTextDisplayed(TaskSamples.sample2Completed.titleForList)
-        assertTextNotDisplayed(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample2Completed)
+        TasksFragmentTest.isItemNotDisplayed(TaskSamples.sample1Active)
     }
 
     @Test
@@ -83,20 +80,19 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Add active task
-        performClickById(R.id.fab_add_task)
-        performTypeText(R.id.add_task_title, "TITLE1")
-        performTypeText(R.id.add_task_description, "DESCRIPTION")
-        performClickById(R.id.fab_save_task)
+        val task = Task("TITLE1", "DESCRIPTION")
+        TasksFragmentTest.clickAdd()
+        AddEditTaskFragmentTest.typeTitleAndDescription(task)
+        AddEditTaskFragmentTest.clickSave()
 
         // Open it in details view
-        performClickByText("TITLE1")
+        TasksFragmentTest.clickTaskItem(task)
         // Click delete task in menu
-        performClickById(R.id.menu_delete)
+        TaskDetailFragmentTest.clickDelete()
 
         // Verify it was deleted
-        performClickById(R.id.menu_filter)
-        performClickByText(R.string.nav_all)
-        assertTextNotDisplayed("TITLE1")
+        TasksFragmentTest.clickFilterAll()
+        TasksFragmentTest.isItemNotDisplayed(task)
     }
 
     @Test
@@ -108,15 +104,14 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Open the second task in details view
-        performClickByText(TaskSamples.sample2Completed.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample2Completed)
         // Click delete task in menu
-        performClickById(R.id.menu_delete)
+        TaskDetailFragmentTest.clickDelete()
 
         // Verify only one task was deleted
-        performClickById(R.id.menu_filter)
-        performClickByText(R.string.nav_all)
-        assertTextNotDisplayed(TaskSamples.sample2Completed.titleForList)
-        assertTextDisplayed(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickFilterAll()
+        TasksFragmentTest.isItemNotDisplayed(TaskSamples.sample2Completed)
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample1Active)
     }
 
     @Test
@@ -128,21 +123,16 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
 
         // Click on the checkbox in task details screen
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Press back button to go back to the list
         pressBack()
 
         // Check that the task is marked as completed
-        onView(
-            allOf(
-                withId(R.id.complete),
-                hasSibling(withText(TaskSamples.sample1Active.titleForList))
-            )
-        ).check(matches(isChecked()))
+        TasksFragmentTest.isCompleted(TaskSamples.sample1Active)
     }
 
     @Test
@@ -154,20 +144,15 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample2Completed.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample2Completed)
         // Click on the checkbox in task details screen
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Press back button to go back to the list
         pressBack()
 
         // Check that the task is marked as active
-        onView(
-            allOf(
-                withId(R.id.complete),
-                hasSibling(withText(TaskSamples.sample2Completed.titleForList))
-            )
-        ).check(matches(not(isChecked())))
+        TasksFragmentTest.isActive(TaskSamples.sample2Completed)
     }
 
     @Test
@@ -179,24 +164,19 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
 
         // Click on the checkbox in task details screen
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Click again to restore it to original state
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Press back button to go back to the list
         pressBack()
 
-        // Check that the task is marked as completed
-        onView(
-            allOf(
-                withId(R.id.complete),
-                hasSibling(withText(TaskSamples.sample1Active.titleForList))
-            )
-        ).check(matches(not(isChecked())))
+        // Check that the task is marked as active
+        TasksFragmentTest.isActive(TaskSamples.sample1Active)
     }
 
     @Test
@@ -208,41 +188,35 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample2Completed.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample2Completed)
 
         // Click on the checkbox in task details screen
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Click again to restore it to original state
-        performClickById(R.id.task_detail_complete)
+        TaskDetailFragmentTest.clickCheckButton()
 
         // Press back button to go back to the list
         pressBack()
 
-        // Check that the task is marked as active
-        onView(
-            allOf(
-                withId(R.id.complete),
-                hasSibling(withText(TaskSamples.sample2Completed.titleForList))
-            )
-        ).check(matches(isChecked()))
+        // Check that the task is marked as completed
+        TasksFragmentTest.isCompleted(TaskSamples.sample2Completed)
     }
 
 
     @Test
     fun tasksFragment_onClickMenu_clearAll() = runBlockingTest {
-        //GIVEN 1 task
+        //GIVEN 2 task
         repo.saveTask(TaskSamples.sample5completed)
         repo.saveTask(TaskSamples.sample6completed)
 
         //WHEN clear completed
         launchActivity()
 
-        openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
-        performClickByText(R.string.menu_clear)
+        TasksFragmentTest.clickMenuClear()
 
         //THEN shows no task layout
-        assertIdDisplayed(R.id.noTasks)
+        TasksFragmentTest.hasNoTask()
     }
 
     @Test
@@ -250,22 +224,21 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         //GIVEN 0 task
         launchActivity()
 
-        assertIdDisplayed(R.id.noTasks)
+        TasksFragmentTest.hasNoTask()
 
         //WHEN refresh
         repo.saveTask(TaskSamples.sample5completed)
-        openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
-        performClickByText(R.string.refresh)
+        TasksFragmentTest.clickRefresh()
 
-        //THEN shows no task layout
-        assertTextDisplayed(TaskSamples.sample5completed.titleForList)
+        //THEN shows the task layout
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample5completed)
     }
 
     @Test
     fun tasksFragment_onClickMenu_filter() = runBlockingTest {
         //when click filter
         launchActivity()
-        performClickById(R.id.menu_filter)
+        TasksFragmentTest.clickMenuFilter()
 
         //THEN shows filters
         assertTextDisplayed(R.string.nav_all)
@@ -287,8 +260,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
         //when click filter all
         launchActivity()
-        performClickById(R.id.menu_filter)
-        performClickByText(R.string.nav_all)
+        TasksFragmentTest.clickFilterAll()
 
         //THEN shows all
         list.forEach { assertTextDisplayed(it.titleForList) }
@@ -307,13 +279,12 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
         //when click filter active
         launchActivity()
-        performClickById(R.id.menu_filter)
-        performClickByText(R.string.nav_active)
+        TasksFragmentTest.clickFilterActive()
 
         //THEN shows active only
-        assertTextDisplayed(TaskSamples.sample1Active.titleForList)
-        assertTextNotDisplayed(TaskSamples.sample2Completed.titleForList)
-        assertTextNotDisplayed(TaskSamples.sample2_2Completed.titleForList)
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample1Active)
+        TasksFragmentTest.isItemNotDisplayed(TaskSamples.sample2Completed)
+        TasksFragmentTest.isItemNotDisplayed(TaskSamples.sample2_2Completed)
     }
 
     @Test
@@ -330,21 +301,20 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         //when click filter active
         launchActivity()
 
-        performClickById(R.id.menu_filter)
-        performClickByText(R.string.nav_completed)
+        TasksFragmentTest.clickFilterCompleted()
 
         //THEN shows completed only
-        scrollRecyclerView(R.id.tasks_list, 2)
-        assertTextNotDisplayed(TaskSamples.sample1Active.titleForList)
-        assertTextDisplayed(TaskSamples.sample2Completed.titleForList)
-        assertTextDisplayed(TaskSamples.sample2_2Completed.titleForList)
+        TasksFragmentTest.scroll(2)
+        TasksFragmentTest.isItemNotDisplayed(TaskSamples.sample1Active)
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample2Completed)
+        TasksFragmentTest.isItemDisplayed(TaskSamples.sample2_2Completed)
     }
 
     @Test
     fun tasksFragment_onClickOverFlowMenu() {
         launchActivity()
 
-        openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
+        openActionBarOverflowOrOptionsMenu(ctx)
 
         assertTextDisplayed(R.string.menu_clear)
         assertTextDisplayed(R.string.refresh)
@@ -356,14 +326,14 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
         launchActivity()
-        performClickByText(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
 
         //WHEN click delete
-        performClickById(R.id.menu_delete)
+        TaskDetailFragmentTest.clickDelete()
 
         //THEN go back
         Truth.assertThat(repo.getTasks()).hasSize(0)
-        assertIdDisplayed(R.id.tasks_container)
+        TasksFragmentTest.isShown()
     }
 
 
@@ -372,17 +342,13 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         // start up Tasks screen
         launchActivity()
 
-        goStatPage()
+        clickStatistics()
+        StatisticsFragmentTest.isShown()
 
-        onView(withId(R.id.drawer_layout))
-            .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
-            .perform(DrawerActions.open()) // Open Drawer
-
-        // Start tasks screen.
-        performClickByText(R.string.list_title)
+        clickTaskList()
 
         // Check that tasks screen was opened.
-        assertIdDisplayed(R.id.tasks_container)
+        TasksFragmentTest.isShown()
     }
 
     @Test
@@ -408,18 +374,17 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
         launchActivity()
 
-        goStatPage()
+        clickStatistics()
+        StatisticsFragmentTest.isShown()
 
         // Then check that left drawer is closed at startup
-        onView(withId(R.id.drawer_layout))
-            .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
+        isDrawerClose()
 
         // When the drawer is opened
         clickToolbarNavigationIcon(R.id.toolbar)
 
         // Then check that the drawer is open
-        onView(withId(R.id.drawer_layout))
-            .check(matches(isOpen(Gravity.START))) // Left drawer is open open.
+        isDrawerOpened()
     }
 
     @Test
@@ -430,20 +395,20 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
 
         // Click on the edit task button
-        performClickById(R.id.fab_edit_task)
+        TaskDetailFragmentTest.clickEdit()
 
         // Confirm that if we click "<-" once, we end up back at the task details page
         clickToolbarNavigationIcon(R.id.toolbar)
 
-        assertIdDisplayed(R.id.task_detail_title)
+        TaskDetailFragmentTest.isShown()
 
         // Confirm that if we click "<-" a second time, we end up back at the home screen
         clickToolbarNavigationIcon(R.id.toolbar)
 
-        assertIdDisplayed(R.id.tasks_container)
+        TasksFragmentTest.isShown()
     }
 
     @Test
@@ -454,28 +419,46 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
         launchActivity()
 
         // Click on the task on the list
-        performClickByText(TaskSamples.sample1Active.titleForList)
+        TasksFragmentTest.clickTaskItem(TaskSamples.sample1Active)
         // Click on the edit task button
-        performClickById(R.id.fab_edit_task)
+        TaskDetailFragmentTest.clickEdit()
 
         // Confirm that if we click back once, we end up back at the task details page
         pressBack()
-        assertIdDisplayed(R.id.task_detail_title)
+        TaskDetailFragmentTest.isShown()
 
         // Confirm that if we click back a second time, we end up back at the home screen
         pressBack()
-        assertIdDisplayed(R.id.tasks_container)
+        TasksFragmentTest.isShown()
     }
 
-    private fun goStatPage() {
-        onView(withId(R.id.drawer_layout))
-            .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
-            .perform(DrawerActions.open()) // Open Drawer
+    companion object : EspressoUtil {
+        fun openDrawer() {
+            onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
+                .perform(DrawerActions.open()) // Open Drawer
+        }
 
-        // Start statistics screen.
-        performClickByText(R.string.statistics_title)
+        fun isDrawerClose() {
+            onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.START))) // Left Drawer should be closed.
+        }
 
-        // Check that statistics screen was opened.
-        assertIdDisplayed(R.id.statistics)
+        fun isDrawerOpened() {
+            onView(withId(R.id.drawer_layout))
+                .check(matches(isOpen(Gravity.START))) // Left Drawer should be closed.
+        }
+
+        fun clickStatistics() {
+            openDrawer()
+
+            // Start statistics screen.
+            performClickByText(R.string.statistics_title)
+        }
+
+        fun clickTaskList() {
+            openDrawer()
+            performClickByText(R.string.list_title)
+        }
     }
 }
