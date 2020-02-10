@@ -6,6 +6,7 @@ import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.TodoFragmentTest
 import com.example.android.architecture.blueprints.todoapp.data.TaskSamples
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import kim.jeonghyeon.androidtesting.EspressoUtil
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
@@ -35,8 +36,7 @@ class StatisticsFragmentTest : TodoFragmentTest<StatisticsFragment>() {
             .getString(R.string.statistics_active_tasks, 100f)
         val expectedCompletedTaskText = ApplicationProvider.getApplicationContext<Context>()
             .getString(R.string.statistics_completed_tasks, 0f)
-        assertTextDisplayed(expectedActiveTaskText)
-        assertTextDisplayed(expectedCompletedTaskText)
+        assertStatText(expectedActiveTaskText, expectedCompletedTaskText)
     }
 
     @Test
@@ -53,8 +53,7 @@ class StatisticsFragmentTest : TodoFragmentTest<StatisticsFragment>() {
             .getString(R.string.statistics_active_tasks, 0f)
         val expectedCompletedTaskText = ApplicationProvider.getApplicationContext<Context>()
             .getString(R.string.statistics_completed_tasks, 100f)
-        assertTextDisplayed(expectedActiveTaskText)
-        assertTextDisplayed(expectedCompletedTaskText)
+        assertStatText(expectedActiveTaskText, expectedCompletedTaskText)
     }
 
     @Test
@@ -71,7 +70,20 @@ class StatisticsFragmentTest : TodoFragmentTest<StatisticsFragment>() {
             .getString(R.string.statistics_active_tasks, 50f)
         val expectedCompletedTaskText = ApplicationProvider.getApplicationContext<Context>()
             .getString(R.string.statistics_completed_tasks, 50f)
+        assertStatText(expectedActiveTaskText, expectedCompletedTaskText)
+    }
+
+    private fun assertStatText(
+        expectedActiveTaskText: String,
+        expectedCompletedTaskText: String
+    ) {
         assertTextDisplayed(expectedActiveTaskText)
         assertTextDisplayed(expectedCompletedTaskText)
+    }
+
+    companion object : EspressoUtil {
+        fun isShown() {
+            assertIdDisplayed(R.id.statistics)
+        }
     }
 }
