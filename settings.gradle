@@ -1,1 +1,1 @@
-include ':sample', ':library', ':kotlinlibrary', ':kotlin-sample', ':sample-testing-codelab', ':sample-sunflower', ':androidtesting', ':testing'
+include ':sample', ':library', ':kotlinlibrary', ':kotlin-sample', ':sample-testing-codelab', ':sample-sunflower'

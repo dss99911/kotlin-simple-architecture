@@ -23,7 +23,6 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.extension.log
 import java.util.*
 
 /**
@@ -130,10 +129,6 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
         items.replaceSource(tasksRepository.getLiveTasks().successDataMap {
             it.filter(currentFiltering)
                 .map { TaskItemViewModel(it, this@TasksViewModel) }
-                .also {
-                    log("items are set")
-                }
-
         })
     }
 

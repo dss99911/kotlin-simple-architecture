@@ -1,19 +1,22 @@
 package kim.jeonghyeon.androidlibrary.architecture.repository
 
-import androidx.room.*
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
 
 interface BaseDao<T> {
     @Insert
-    fun insert(vararg obj: T)
+    suspend fun insert(vararg obj: T)
     @Insert
-    fun insert(obj: List<T>)
+    suspend fun insert(obj: List<T>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun replace(vararg obj: T)
+    suspend fun replace(obj: T)
 
     @Delete
-    fun delete(obj: T)
+    suspend fun delete(obj: T)
 
     @Update
-    fun update(obj: T)
+    suspend fun update(obj: T)
 }

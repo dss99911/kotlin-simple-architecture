@@ -11,6 +11,7 @@ import kim.jeonghyeon.androidtesting.rule.MainCoroutineRule
 import kim.jeonghyeon.androidtesting.rule.ScreenshotWatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.koin.test.KoinTest
@@ -43,5 +44,9 @@ open class BaseAndroidTest : KoinTest, EspressoUtil {
         }
     }
 
+    @Test
+    fun empty() {
+        //to prevent crash
+    }
 
 }
