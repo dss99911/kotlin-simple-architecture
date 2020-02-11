@@ -25,13 +25,15 @@ class ScreenshotWatcher : TestWatcher() {
     }
 
     private fun captureScreenshot(name: String) {
-        val capture = Screenshot.capture()
-        capture.format = Bitmap.CompressFormat.PNG
-        capture.name = name
         try {
+            val capture = Screenshot.capture()
+            capture.format = Bitmap.CompressFormat.PNG
+            capture.name = name
             capture.process()
         } catch (ex: IOException) {
             throw IllegalStateException(ex)
+        } catch (ex: IllegalStateException) {
+            //without launch activity or fragment. test is finished. then this exception occurs. so, ignore this
         }
     }
 

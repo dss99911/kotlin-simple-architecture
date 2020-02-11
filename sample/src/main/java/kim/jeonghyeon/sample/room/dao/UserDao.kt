@@ -51,7 +51,7 @@ interface UserDao : BaseDao<User> {
     fun deleteAll()
 
     @Transaction
-    fun clearAndInsert(users: List<User>) {
+    suspend fun clearAndInsert(users: List<User>) {
         deleteAll()
         insert(users)
     }
