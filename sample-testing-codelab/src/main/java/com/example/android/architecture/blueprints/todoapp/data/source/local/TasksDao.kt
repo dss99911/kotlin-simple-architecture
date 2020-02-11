@@ -18,16 +18,15 @@ package com.example.android.architecture.blueprints.todoapp.data.source.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.android.architecture.blueprints.todoapp.data.Task
+import kim.jeonghyeon.androidlibrary.architecture.repository.BaseDao
 
 /**
  * Data Access Object for the tasks table.
  */
 @Dao
-interface TasksDao {
+interface TasksDao : BaseDao<Task> {
 
     /**
      * Select all tasks from the tasks table.
@@ -48,14 +47,6 @@ interface TasksDao {
      */
     @Query("SELECT * FROM Tasks WHERE entryid = :taskId")
     suspend fun getTask(taskId: String): Task?
-
-    /**
-     * Insert a task in the database. If the task already exists, abort it
-     *
-     * @param task the task to be inserted.
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveTask(task: Task)
 
     @Query("UPDATE Tasks SET completed = 1 WHERE entryid = :taskId")
     suspend fun completeTask(taskId: String)

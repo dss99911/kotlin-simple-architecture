@@ -70,7 +70,7 @@ class TasksRepositoryImpl(
 
     override suspend fun saveTask(task: Task) {
         taskApi.saveTask(task.id, task)
-        tasksDao.saveTask(task)
+        tasksDao.replace(task)
     }
 
     override suspend fun completeTask(task: Task) {
@@ -106,10 +106,10 @@ class TasksRepositoryImpl(
     private suspend fun refreshLocalDataSource(tasks: List<Task>) {
         tasksDao.deleteAllTasks()
         for (task in tasks) {
-            tasksDao.saveTask(task)
+            tasksDao.replace(task)
         }
     }
     private suspend fun refreshLocalDataSource(task: Task) {
-        tasksDao.saveTask(task)
+        tasksDao.replace(task)
     }
 }

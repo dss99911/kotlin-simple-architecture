@@ -23,7 +23,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun getTasks_size1() = runBlockingTest {
         //when size 1
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
         assertThat(dao.getTasks()).hasSize(1)
     }
 
@@ -31,8 +31,8 @@ class TasksDaoTest : BaseRobolectricTest() {
     fun getTasks_size2() = runBlockingTest {
 
         //when size 2
-        dao.saveTask(TaskSamples.sample2Completed)
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample1Active)
         //then
         assertThat(dao.getTasks()).hasSize(2)
     }
@@ -40,7 +40,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun getTask_exists() = runBlockingTest {
         //when exists
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
         //no error occurs
         assertThat(dao.getTask(TaskSamples.sample1Active.id)).isEqualTo(TaskSamples.sample1Active)
     }
@@ -57,7 +57,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun saveTask_add1() = runBlockingTest {
         //when add
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
 
         //then size 1
         assertThat(dao.getTasks()).hasSize(1)
@@ -66,8 +66,8 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun saveTask_add2() = runBlockingTest {
         //when add 2 item
-        dao.saveTask(TaskSamples.sample2Completed)
-        dao.saveTask(TaskSamples.sample3TitleEmpty)
+        dao.replace(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample3TitleEmpty)
 
         //then 2 size increased
         assertThat(dao.getTasks()).hasSize(2)
@@ -76,8 +76,8 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun saveTask_addSame() = runBlockingTest {
         //when add same task id
-        dao.saveTask(TaskSamples.sample1Active)
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
 
         //then size 1
         assertThat(dao.getTasks()).hasSize(1)
@@ -86,7 +86,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun completeTask() = runBlockingTest {
         //given
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
 
         //when complete
         dao.completeTask(TaskSamples.sample1Active.id)
@@ -98,7 +98,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun completeTask_already() = runBlockingTest {
         //given
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample1Active)
         dao.completeTask(TaskSamples.sample1Active.id)
 
         //when complete the already completed task
@@ -112,7 +112,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun activateTask() = runBlockingTest {
         //given
-        dao.saveTask(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample2Completed)
 
         //when activate
         dao.activateTask(TaskSamples.sample2Completed.id)
@@ -124,7 +124,7 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun activateTask_already() = runBlockingTest {
         //given
-        dao.saveTask(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample2Completed)
         dao.activateTask(TaskSamples.sample2Completed.id)
 
         //when activate the already activated task
@@ -137,9 +137,9 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun clearCompletedTasks() = runBlockingTest {
         //given 2 completed, 1 active
-        dao.saveTask(TaskSamples.sample2Completed)
-        dao.saveTask(TaskSamples.sample2_2Completed)
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample2_2Completed)
+        dao.replace(TaskSamples.sample1Active)
 
         //when clear Completed task
         dao.clearCompletedTasks()
@@ -151,8 +151,8 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun deleteAllTasks() = runBlockingTest {
         //given 2 task
-        dao.saveTask(TaskSamples.sample2Completed)
-        dao.saveTask(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample1Active)
 
         //when delete all
         dao.deleteAllTasks()
@@ -164,8 +164,8 @@ class TasksDaoTest : BaseRobolectricTest() {
     @Test
     fun deleteTask() = runBlockingTest {
         //given 2 task
-        dao.saveTask(TaskSamples.sample1Active)
-        dao.saveTask(TaskSamples.sample2Completed)
+        dao.replace(TaskSamples.sample1Active)
+        dao.replace(TaskSamples.sample2Completed)
 
         //when delete 1
         dao.deleteTask(TaskSamples.sample1Active.id)
