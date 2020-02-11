@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import kim.jeonghyeon.androidlibrary.architecture.repository.BaseRoomDatabase
 import kim.jeonghyeon.androidlibrary.architecture.repository.Converters
-import kim.jeonghyeon.androidlibrary.architecture.repository.RoomUtil
+import kim.jeonghyeon.androidlibrary.architecture.repository.createDatabase
 import kim.jeonghyeon.sample.room.dao.UserDao
 import kim.jeonghyeon.sample.room.entity.User
 
@@ -18,7 +18,7 @@ abstract class UserDatabase : BaseRoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
-        val instance by lazy { RoomUtil.getDatabase<UserDatabase>() }
+        val instance by lazy { createDatabase<UserDatabase>() }
     }
 
 }
