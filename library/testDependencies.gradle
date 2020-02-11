@@ -1,0 +1,23 @@
+dependencies {
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "androidx.test.ext:junit-ktx:1.1.1"
+    testImplementation "androidx.test:core-ktx:1.2.0"
+    testImplementation "androidx.test:core:1.2.0"
+    testImplementation "androidx.test:rules:1.2.0"
+    testImplementation "androidx.test:runner:1.2.0"
+
+    //mockito
+    testImplementation "org.mockito:mockito-core:3.2.4"
+
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutine"
+
+    testImplementation "org.robolectric:robolectric:4.3.1", {
+        //todo has error when use testing library. https://github.com/robolectric/robolectric/issues/5245
+        exclude group: 'com.google.auto.service', module: 'auto-service'
+    }
+
+    testImplementation 'com.google.truth:truth:1.0.1'
+
+    testImplementation "androidx.room:room-testing:$version_room"
+    testImplementation "org.koin:koin-test:$version_koin"
+}
