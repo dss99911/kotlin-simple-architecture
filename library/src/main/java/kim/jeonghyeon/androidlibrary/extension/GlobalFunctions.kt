@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import kim.jeonghyeon.androidlibrary.BaseApplication
 import kim.jeonghyeon.androidlibrary.BuildConfig
 import org.jetbrains.anko.telephonyManager
+import org.koin.core.context.GlobalContext
 
 
 val isDebug: Boolean
@@ -95,3 +96,5 @@ val pref: SharedPreferences by lazy {
 annotation class VersionParam
 
 fun isFromVersion(@VersionParam version: Int): Boolean = Build.VERSION.SDK_INT >= version
+
+val koin get() = GlobalContext.get().koin

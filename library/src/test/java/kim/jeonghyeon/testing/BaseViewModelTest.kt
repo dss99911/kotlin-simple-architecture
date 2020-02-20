@@ -38,10 +38,10 @@ abstract class BaseViewModelTest : BaseRobolectricTest() {
     }
 
     fun BaseViewModel.assertSnackbar(expected: String) {
-        Truth.assertThat(eventSnackbar.await()).isEqualTo(expected)
+        Truth.assertThat(eventSnackbarByString.await()).isEqualTo(expected)
     }
 
     fun BaseViewModel.assertSnackbar(@StringRes expected: Int) {
-        Truth.assertThat(eventSnackbar.await()).isEqualTo(ctx.getString(expected))
+        Truth.assertThat(eventSnackbarById.await()).isEqualTo(ctx.getString(expected))
     }
 }

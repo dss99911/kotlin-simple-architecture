@@ -31,7 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 interface IBaseViewModel {
     val state: LiveState
-    val eventSnackbar: LiveObject<String>
+    val eventSnackbarById: LiveObject<Int>
+    val eventSnackbarByString: LiveObject<String>
     val eventStartActivity: LiveObject<Intent>
     val eventShowProgressBar: LiveObject<Boolean>
 
@@ -63,6 +64,9 @@ interface IBaseViewModel {
     @MainThread
     fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
 
+    @MainThread
+    fun <T> LiveObject<T>.loadData(state: LiveState, work: suspend CoroutineScope.() -> T): Job
+
     /**
      * if it is loading, ignore
      */
@@ -91,7 +95,8 @@ interface IBaseViewModel {
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
-    override val eventSnackbar by lazy { LiveObject<String>() }
+    override val eventSnackbarByString by lazy { LiveObject<String>() }
+    override val eventSnackbarById by lazy { LiveObject<Int>() }
     override val eventStartActivity by lazy { LiveObject<Intent>() }
 
     override val eventShowProgressBar by lazy { LiveObject<Boolean>() }
@@ -149,11 +154,11 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     override fun showSnackbar(text: String) {
-        eventSnackbar.postValue(text)
+        eventSnackbarByString.call(text)
     }
 
     override fun showSnackbar(@StringRes textId: Int) {
-        eventSnackbar.postValue(ctx.getString(textId))
+        eventSnackbarById.call(textId)
     }
 
     override fun startActivityForResult(
@@ -273,6 +278,13 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
 
         viewModelScope.loadResource(this@load, state, work)
     }
+
+    @MainThread
+    override fun <T> LiveObject<T>.loadData(
+        state: LiveState,
+        work: suspend CoroutineScope.() -> T
+    ): Job =
+        viewModelScope.loadData(this@loadData, state, work)
 
     override fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (value.isLoadingState()) {

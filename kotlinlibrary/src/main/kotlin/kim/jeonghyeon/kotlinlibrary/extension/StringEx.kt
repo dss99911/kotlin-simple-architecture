@@ -22,3 +22,5 @@ fun String?.toDouble(defValue: Double): Double = try {
 } catch (e: NumberFormatException) {
     defValue
 }
+
+inline fun CharSequence?.isNotNullNotEmpty(): Boolean = this != null && length > 0

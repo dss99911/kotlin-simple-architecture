@@ -15,18 +15,18 @@ import kim.jeonghyeon.androidlibrary.architecture.repository.createDatabase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val viewModelModule = module {
+val koinModuleViewModel = module {
     viewModel { (args: AddEditTaskFragmentArgs) -> AddEditTaskViewModel(args, get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { (args: TaskDetailFragmentArgs) -> TaskDetailViewModel(args, get()) }
     viewModel { TasksViewModel(get()) }
 }
 
-val dataModule = module {
+val koinModuleData = module {
     single<ToDoDatabase> { createDatabase() }
     single { get<ToDoDatabase>().taskDao() }
     single<TaskApi> { api(BuildConfig.SERVER_URL) }
     single<TaskRepository> { TasksRepositoryImpl(get(), get()) }
 }
 
-val appModule = viewModelModule + dataModule + mockModule
+val koinModuleApp = koinModuleViewModel + koinModuleData + koinModuleMock

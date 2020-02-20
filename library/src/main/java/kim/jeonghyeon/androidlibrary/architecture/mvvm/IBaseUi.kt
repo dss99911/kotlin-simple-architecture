@@ -5,10 +5,12 @@ import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.savedstate.SavedStateRegistryOwner
@@ -19,6 +21,8 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.extension.*
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
@@ -43,6 +47,7 @@ interface IBaseUi : SavedStateRegistryOwner {
 
     fun navigate(@IdRes id: Int)
     fun NavDirections.navigate()
+    val navController: NavController
 
     fun showSnackbar(text: String) {
         binding.root.showSnackbar(text, Snackbar.LENGTH_SHORT)
@@ -59,7 +64,7 @@ interface IBaseUi : SavedStateRegistryOwner {
     /**
      * set state observer to change loading and error on state liveData
      */
-    var stateObserver: Observer<State>
+    val stateObserver: Observer<State>
 
     val progressDialog: AlertDialog
 
@@ -102,4 +107,19 @@ inline fun <reified V : BaseViewModel> IBaseUi.bindingViewModel(
     return viewModel<V>(qualifier, parameters).also {
         viewModels.add(Pair(variableId, it))
     }
+}
+
+inline fun <reified V : BaseViewModel> BaseFragment.bindingActivityViewModel(
+    variableId: Int = BR.model,
+    qualifier: Qualifier? = null
+): Lazy<V> {
+    return sharedViewModel<V>(qualifier).also {
+        viewModels.add(Pair(variableId, it))
+    }
+}
+
+inline fun <reified T : ViewModel> Fragment.getActivityViewModel(
+    qualifier: Qualifier? = null
+): T {
+    return getSharedViewModel(qualifier)
 }

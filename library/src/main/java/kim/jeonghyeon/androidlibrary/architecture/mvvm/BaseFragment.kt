@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
+import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -25,25 +26,57 @@ import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
+
 /**
- * Methods
- * - setMenu()
+ *
+ * [layoutId] : input activity layout
+ *
+ * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
+ *
+ * [bindingViewModel] : bind view and viewModel
+ *                      val viewModel by bindingViewModel<>()
+ *
+ * [bindingActivityViewModel] : bind activity's view model
+ *                      val viewModel by bindingActivityViewModel<>()
+ *
+ * [getActivityViewModel] : get activity's view model
+ *                          val viewModel by bindingViewModel<> {
+ *                              parameterOf(getActivityViewModel())
+ *                          }
+ *
+ * [toolbarId] : if you use toolbar, define toolbar's id as 'toolbar' or override this property
+ *
+ * [appBarConfiguration] : todo need more explanation
+ *
+ * [setMenu] : set menu
+ *
+ * [showSnackbar] : show snackbar
+ *
+ * [navigate] : navigate
+ *              fun navigate(@IdRes id: Int) : with action Id.
+ *              fun NavDirections.navigate() : with NavDirections
+ * [navController] : use this if [navigate] is not enough
+ *
+ * [onViewModelSetup] : override this when observe viewModel's liveData
+ *
+ * [observe] : observe livedata
+ *            fun <T> AliveData<T>.observe(onChanged: (T) -> Unit)
+ *            fun <T> AliveData<T>.observe(observer: Observer<in T>)
+ *
+ * [observeEvent] : observe one time event like redirect to other page or show popup,
+ *            fun <T> AliveData<T>.observeEvent(onChanged: (T) -> Unit)
+ *            fun <T> AliveData<T>.observeEvent(observer: Observer<in T>)
+ *
+ * [stateObserver] : set state observer to change loading and error on state liveData
+ *
+ * [progressDialog] : progress dialog
+ *
+ * [selected] : used on pager. if not used always true.
+ *
+ * [visible] : whether fragment is visible. considering fragment lifecycle and pager
  */
-
-interface IBaseFragment : IBaseUi {
-    /**
-     * used on pager. if not used always true.
-     */
-    var selected: Boolean
-    /**
-     * whether fragment is visible.
-     * considering fragment lifecycle and pager
-     */
-    var visible: Boolean
-}
-
 abstract class BaseFragment : Fragment(),
-    IBaseFragment {
+    IBaseUi {
     override lateinit var binding: ViewDataBinding
     override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
 
@@ -54,31 +87,23 @@ abstract class BaseFragment : Fragment(),
 
     override val toolbarId: Int
         get() = R.id.toolbar
+    override val navController: NavController by lazy { findNavController() }
 
     override val appBarConfiguration: AppBarConfiguration?
-        get() = AppBarConfiguration(findNavController().graph)
+        get() = AppBarConfiguration(navController.graph)
 
-    override var stateObserver: Observer<State> = resourceObserverCommon { }
-        set(value) {
-            val prev = field
-            field = value
-
-            viewModels.map { it.second.value }.forEach {
-                it.state.removeObserver(prev)
-                it.state.observe(field)
-            }
-        }
+    override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
 
     /**
      * used on pager. if not used always true.
      */
-    override var selected = true
+    var selected = true
         set(value) {
             field = value
             visible = isVisible(value, lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED))
         }
 
-    override var visible = false
+    var visible = false
         set(value) {
             if (value != field) {
                 onVisibilityChanged(value)
@@ -157,7 +182,7 @@ abstract class BaseFragment : Fragment(),
         }
 
         //if menu id and nav's fragment id is same, then redirect
-        if (item.onNavDestinationSelected(findNavController())) {
+        if (item.onNavDestinationSelected(navController)) {
             return true
         }
 
@@ -177,8 +202,12 @@ abstract class BaseFragment : Fragment(),
         viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
 
-            it.eventSnackbar.observeEvent {
+            it.eventSnackbarByString.observeEvent {
                 showSnackbar(it)
+            }
+
+            it.eventSnackbarById.observeEvent {
+                showSnackbar(getString(it))
             }
 
             it.eventStartActivity.observeEvent {
@@ -194,7 +223,7 @@ abstract class BaseFragment : Fragment(),
             }
 
             it.eventNav.observeEvent { action ->
-                action(findNavController())
+                action(navController)
             }
 
             it.eventPerformWithActivity.observe { array ->
@@ -228,7 +257,7 @@ abstract class BaseFragment : Fragment(),
         appBarConfiguration?.let {
             //the title in the action bar will automatically be updated when the destination changes
             // [AppBarConfiguration] you provide controls how the Navigation button is displayed.
-            setupActionBarWithNavController(activity, findNavController(), it)
+            setupActionBarWithNavController(activity, navController, it)
         }
 
 
@@ -239,11 +268,11 @@ abstract class BaseFragment : Fragment(),
     }
 
     override fun navigate(id: Int) {
-        findNavController().navigate(id)
+        navController.navigate(id)
     }
 
     override fun NavDirections.navigate() {
-        findNavController().navigate(this)
+        navController.navigate(this)
     }
 
     override fun onStart() {

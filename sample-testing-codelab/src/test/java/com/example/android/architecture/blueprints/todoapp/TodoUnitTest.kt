@@ -5,5 +5,5 @@ import org.koin.core.module.Module
 
 abstract class TodoUnitTest : BaseUnitTest() {
     override val modules: List<Module>
-        get() = appModule
+        get() = koinModuleApp
 }

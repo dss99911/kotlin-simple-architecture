@@ -30,17 +30,48 @@ import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
-interface IBaseActivity : IBaseUi {
-    /**
-     * if you want to use nav controller, override this
-     */
-    val navHostId: Int
-    val navController: NavController
-}
+/**
+ *
+ * [layoutId] : input activity layout
+ *
+ * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
+ *
+ * [bindingViewModel] : bind view and viewModel
+ *                      val viewModel by bindingViewModel<>()
+ *
+ * [toolbarId] : if you use toolbar, define toolbar's id as 'toolbar' or override this property
+ *
+ * [appBarConfiguration] : todo need more explanation
+ *
+ * [setMenu] : set menu
+ *
+ * [showSnackbar] : show snackbar
+ *
+ * [navigate] : navigate
+ *              fun navigate(@IdRes id: Int) : with action Id.
+ *              fun NavDirections.navigate() : with NavDirections
+ * [navController] : use this if [navigate] is not enough
+ *
+ * [navHostId] : if you want to use nav controller, override this
+ *
+ * [onViewModelSetup] : override this when observe viewModel's liveData
+ *
+ * [observe] : observe livedata
+ *            fun <T> AliveData<T>.observe(onChanged: (T) -> Unit)
+ *            fun <T> AliveData<T>.observe(observer: Observer<in T>)
+ *
+ * [observeEvent] : observe one time event like redirect to other page or show popup,
+ *            fun <T> AliveData<T>.observeEvent(onChanged: (T) -> Unit)
+ *            fun <T> AliveData<T>.observeEvent(observer: Observer<in T>)
+ *
+ * [stateObserver] : set state observer to change loading and error on state liveData
+ *
+ * [progressDialog] : progress dialog
+ *
+ */
+abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
-abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
-
-    override val navHostId: Int = 0
+    open val navHostId: Int = 0
     override val navController: NavController
         get() {
             require(navHostId != 0) { "navHostId is not set" }
@@ -69,16 +100,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
     val rootViewModel: BaseViewModel
         get() = viewModels[0].second.value
 
-    override var stateObserver: Observer<State> = resourceObserverCommon { }
-        set(value) {
-            val prev = field
-            field = value
 
-            viewModels.map { it.second.value }.forEach {
-                it.state.removeObserver(prev)
-                it.state.observe(field)
-            }
-        }
+    override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,8 +109,11 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
 
         setupView()
         setupActionbar()
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
         setupObserver()
-        onViewModelSetup()
     }
 
     override fun onViewModelSetup() {
@@ -143,8 +169,12 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
         viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
 
-            it.eventSnackbar.observeEvent {
+            it.eventSnackbarByString.observeEvent {
                 showSnackbar(it)
+            }
+
+            it.eventSnackbarById.observeEvent {
+                showSnackbar(getString(it))
             }
 
             it.eventStartActivity.observeEvent {
@@ -171,6 +201,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseActivity {
                 action(navController)
             }
         }
+
+        onViewModelSetup()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

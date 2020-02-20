@@ -90,7 +90,7 @@ class PlantDetailFragment : BaseFragment() {
                 getString(R.string.share_text_plant, plant.name)
             }
         }
-        val shareIntent = ShareCompat.IntentBuilder.from(activity)
+        val shareIntent = ShareCompat.IntentBuilder.from(activity ?: return)
             .setText(shareText)
             .setType("text/plain")
             .createChooserIntent()

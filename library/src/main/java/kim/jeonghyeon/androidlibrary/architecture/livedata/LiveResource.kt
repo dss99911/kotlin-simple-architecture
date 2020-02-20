@@ -100,6 +100,30 @@ fun <T> CoroutineScope.loadResource(
     }
 }
 
+@MainThread
+fun <T> CoroutineScope.loadData(
+    liveData: LiveObject<T>,
+    state: LiveState,
+    work: suspend CoroutineScope.() -> T
+): Job {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    return launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
+        getResource(work) {
+            loadData(liveData, state, work)
+        }?.also {
+            it.onSuccess {
+                liveData.postValue(it)
+            }
+            state.postValue(it)
+        }
+
+    }.also {
+        state.setLoading(it)
+        it.start()
+    }
+}
+
+
 /**
  * @return if it's cancelled, return null for ignoring
  */
