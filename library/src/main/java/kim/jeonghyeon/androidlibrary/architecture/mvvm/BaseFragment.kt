@@ -8,8 +8,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
@@ -17,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
+import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
@@ -25,6 +28,9 @@ import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.core.qualifier.Qualifier
 
 
 /**
@@ -93,6 +99,8 @@ abstract class BaseFragment : Fragment(),
         get() = AppBarConfiguration(navController.graph)
 
     override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
+
+    val permissionStartActivityViewModel by activityViewModels<PermissionAndStartActivityViewModel>()
 
     /**
      * used on pager. if not used always true.
@@ -226,17 +234,18 @@ abstract class BaseFragment : Fragment(),
                 action(navController)
             }
 
-            it.eventPerformWithActivity.observe { array ->
-                array.forEach { event ->
-                    if (!event.handled) {
-                        event.handle()(requireActivity() as BaseActivity)
-                    }
-                }
-
+            it.eventStartActivityForResult.observeEvent {
+                permissionStartActivityViewModel.startActivityForResult(it.intent, it.onResult)
             }
-
-            onViewModelSetup()
+            it.eventRequestPermission.observeEvent {
+                permissionStartActivityViewModel.requestPermissions(it.permissions, it.listener)
+            }
+            it.eventPermissionSettingPage.observeEvent {
+                permissionStartActivityViewModel.startPermissionSettingsPage(it)
+            }
         }
+
+        onViewModelSetup()
     }
 
     private fun setupActionbar() {
@@ -304,5 +313,20 @@ abstract class BaseFragment : Fragment(),
 
     override fun <T> LiveObject<T>.observe(observer: Observer<in T>) {
         observe(viewLifecycleOwner, observer)
+    }
+
+    inline fun <reified V : BaseViewModel> bindingActivityViewModel(
+        variableId: Int = BR.model,
+        qualifier: Qualifier? = null
+    ): Lazy<V> {
+        return sharedViewModel<V>(qualifier).also {
+            viewModels.add(Pair(variableId, it))
+        }
+    }
+
+    inline fun <reified T : ViewModel> getActivityViewModel(
+        qualifier: Qualifier? = null
+    ): T {
+        return getSharedViewModel(qualifier)
     }
 }

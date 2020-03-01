@@ -56,7 +56,7 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
         sources.add(source)
     }
 
-    fun addSources(vararg source: LiveData<Any?>, onChanged: () -> Unit): LiveObject<T> {
+    fun addSources(vararg source: LiveData<*>, onChanged: () -> Unit): LiveObject<T> {
         source.forEach {
             addSource(it) {
                 onChanged()
@@ -77,14 +77,13 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
 
     fun <S : Any?> replaceSource(source: LiveData<S>, onChanged: Observer<in S>): LiveObject<T> {
         removeSources()
-        super.addSource(source, onChanged)
-        sources.add(source)
+        addSource(source, onChanged)
         return this
     }
 
     fun replaceSource(other: LiveData<T>) {
         removeSources()
-        super.addSource(other) {
+        addSource(other) {
             value = it
         }
     }

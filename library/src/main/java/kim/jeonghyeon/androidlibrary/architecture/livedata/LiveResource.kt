@@ -51,7 +51,7 @@ fun <T> CoroutineScope.loadResource(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         getResource(work) {
-            loadResource(liveData, work)
+            this@loadResource.loadResource(liveData, work)
         }?.also { liveData?.postValue(it) }
 
     }.also {
@@ -69,7 +69,7 @@ fun <T> CoroutineScope.loadResource(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         getResource(work) {
-            loadResource(liveData, work, onResult)
+            this@loadResource.loadResource(liveData, work, onResult)
         }?.also { liveData?.postValue(onResult(it)) }
 
     }.also {
@@ -87,7 +87,7 @@ fun <T> CoroutineScope.loadResource(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         getResource(work) {
-            loadResource(liveData, state, work)
+            this@loadResource.loadResource(liveData, state, work)
         }?.also {
             liveData?.postValue(it)
             state?.postValue(it)
@@ -109,7 +109,7 @@ fun <T> CoroutineScope.loadData(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     return launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         getResource(work) {
-            loadData(liveData, state, work)
+            this@loadData.loadData(liveData, state, work)
         }?.also {
             it.onSuccess {
                 liveData.postValue(it)
@@ -229,10 +229,10 @@ fun <T, U> CoroutineScope.loadResourcePartialRetryable(
     launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
-            loadResourcePartialRetryable(liveData, part1, part2)
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(liveData, part1, part2)
         } ?: return@launch//if it's cancelled, ignore next
         val result2 = getNextResource(result1, part2) {
-            loadResource(liveData) {
+            this@loadResourcePartialRetryable.loadResource(liveData) {
                 part2((result1 as Resource.Success).data)
             }
         } ?: return@launch
@@ -254,17 +254,22 @@ fun <T, U, V> CoroutineScope.loadResourcePartialRetryable(
     launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
-            loadResourcePartialRetryable(liveData, part1, part2, part3)
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(
+                liveData,
+                part1,
+                part2,
+                part3
+            )
         } ?: return@launch
 
         val result2 = getNextResource(result1, part2) {
-            loadResourcePartialRetryable(liveData, {
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(liveData, {
                 part2((result1 as Resource.Success).data)
             }, part3)
         } ?: return@launch
 
         val result3 = getNextResource(result2, part3) {
-            loadResource(liveData) {
+            this@loadResourcePartialRetryable.loadResource(liveData) {
                 part3((result2 as Resource.Success).data)
             }
         } ?: return@launch
@@ -289,23 +294,29 @@ fun <T, U, V, W> CoroutineScope.loadResourcePartialRetryable(
     launch(CoroutineExceptionHandler { _, _ -> }) {
 
         val result1 = getResource(part1) {
-            loadResourcePartialRetryable(liveData, part1, part2, part3, part4)
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(
+                liveData,
+                part1,
+                part2,
+                part3,
+                part4
+            )
         } ?: return@launch
 
         val result2 = getNextResource(result1, part2) {
-            loadResourcePartialRetryable(liveData, {
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(liveData, {
                 part2((result1 as Resource.Success).data)
             }, part3, part4)
         } ?: return@launch
 
         val result3 = getNextResource(result2, part3) {
-            loadResourcePartialRetryable(liveData, {
+            this@loadResourcePartialRetryable.loadResourcePartialRetryable(liveData, {
                 part3((result2 as Resource.Success).data)
             }, part4)
         } ?: return@launch
 
         val result4 = getNextResource(result3, part4) {
-            loadResource(liveData) {
+            this@loadResourcePartialRetryable.loadResource(liveData) {
                 part4((result3 as Resource.Success).data)
             }
         } ?: return@launch

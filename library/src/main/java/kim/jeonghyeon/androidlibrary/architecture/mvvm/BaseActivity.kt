@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.annotation.CallSuper
 import androidx.annotation.MenuRes
 import androidx.annotation.NonNull
@@ -94,11 +95,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
     override lateinit var binding: ViewDataBinding
     override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
-    /**
-     * used for startActivityForResult
-     */
-    val rootViewModel: BaseViewModel
-        get() = viewModels[0].second.value
+
+    val permissionStartActivityViewModel by viewModels<PermissionAndStartActivityViewModel>()
 
 
     override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
@@ -161,9 +159,12 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
     }
 
     private fun setupObserver() {
-        //BaseActivity require at least one viewModel for startActivityForResult or permission.
-        if (viewModels.isEmpty()) {
-            viewModels.add(Pair(0, lazy { BaseViewModel() }))
+        permissionStartActivityViewModel.eventPerformWithActivity.observe { array ->
+            array.forEach { event ->
+                if (!event.handled) {
+                    event.handle()(this)
+                }
+            }
         }
 
         viewModels.map { it.second.value }.forEach {
@@ -189,16 +190,17 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
                 }
             }
 
-            it.eventPerformWithActivity.observe { array ->
-                array.forEach { event ->
-                    if (!event.handled) {
-                        event.handle()(this)
-                    }
-                }
-            }
-
             it.eventNav.observeEvent { action ->
                 action(navController)
+            }
+            it.eventStartActivityForResult.observeEvent {
+                permissionStartActivityViewModel.startActivityForResult(it.intent, it.onResult)
+            }
+            it.eventRequestPermission.observeEvent {
+                permissionStartActivityViewModel.requestPermissions(it.permissions, it.listener)
+            }
+            it.eventPermissionSettingPage.observeEvent {
+                permissionStartActivityViewModel.startPermissionSettingsPage(it)
             }
         }
 
@@ -207,13 +209,17 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        rootViewModel.onActivityResult(requestCode, resultCode, data)
+        permissionStartActivityViewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     @CallSuper
     override fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        rootViewModel.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionStartActivityViewModel.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
     }
 
     private fun setupActionbar() {
