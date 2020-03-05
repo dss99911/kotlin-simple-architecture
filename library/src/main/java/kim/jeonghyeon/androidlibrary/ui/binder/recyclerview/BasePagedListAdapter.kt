@@ -5,11 +5,12 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import kim.jeonghyeon.androidlibrary.BR
 
-abstract class BasePagedListAdapter<VM : DiffComparable<VM>> :
+abstract class BasePagedListAdapter<VM : DiffComparable<VM>>(val lifecycleOwner: LifecycleOwner? = null) :
     PagedListAdapter<VM, BaseRecyclerViewHolder<VM>>(object : DiffUtil.ItemCallback<VM>() {
         override fun areItemsTheSame(oldItem: VM, newItem: VM) = oldItem.areItemsTheSame(newItem)
         override fun areContentsTheSame(oldItem: VM, newItem: VM) =
@@ -17,7 +18,9 @@ abstract class BasePagedListAdapter<VM : DiffComparable<VM>> :
     }) {
 
     @LayoutRes
-    abstract fun getLayoutId(viewType: Int): Int
+    abstract fun getItemLayoutId(position: Int): Int
+
+    final override fun getItemViewType(position: Int): Int = getItemLayoutId(position)
 
     /**
      * if viewModel Id is different. override this
@@ -33,21 +36,18 @@ abstract class BasePagedListAdapter<VM : DiffComparable<VM>> :
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
             layoutInflater,
-            getLayoutId(viewType),
+            viewType,
             parent,
             false
         )
 
-        return object : BaseRecyclerViewHolder<VM>(binding) {
-
-            override fun getViewModelId(): Int {
-                return this@BasePagedListAdapter.viewModelId
-            }
+        return object : BaseRecyclerViewHolder<VM>(binding, lifecycleOwner) {
+            override val viewModelId: Int = this@BasePagedListAdapter.viewModelId
         }
     }
 
     final override fun onBindViewHolder(holder: BaseRecyclerViewHolder<VM>, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position) ?: return)
     }
 
     final override fun onBindViewHolder(

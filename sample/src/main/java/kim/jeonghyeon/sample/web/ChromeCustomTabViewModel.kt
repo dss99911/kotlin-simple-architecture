@@ -1,11 +1,11 @@
 package kim.jeonghyeon.sample.web
 
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
+import kim.jeonghyeon.androidlibrary.extension.ctx
 
 class ChromeCustomTabViewModel : BaseViewModel() {
     init {
-        performWithActivity {
-            ChromeCustomTabSample.showCustomTab(it, "http://google.com")
-        }
+        //todo move to fragment
+        ChromeCustomTabSample.showCustomTab(ctx, "http://google.com")
     }
 }

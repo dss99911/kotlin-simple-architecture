@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
@@ -20,7 +21,7 @@ import kim.jeonghyeon.androidlibrary.BR
  * limitation
  * - if item count is different with list size. just extending this class may not work properly. need to test
  */
-abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
+abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>>(val lifecycleOwner: LifecycleOwner? = null) :
     ListAdapter<VM, BaseRecyclerViewHolder<VM>>(object : DiffUtil.ItemCallback<VM>() {
         override fun areItemsTheSame(oldItem: VM, newItem: VM): Boolean =
             oldItem.areItemsTheSame(newItem)
@@ -52,11 +53,8 @@ abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>> :
             false
         )
 
-        return object : BaseRecyclerViewHolder<VM>(binding) {
-
-            override fun getViewModelId(): Int {
-                return this@BaseRecyclerViewAdapter.viewModelId
-            }
+        return object : BaseRecyclerViewHolder<VM>(binding, lifecycleOwner) {
+            override val viewModelId: Int = this@BaseRecyclerViewAdapter.viewModelId
         }
     }
 

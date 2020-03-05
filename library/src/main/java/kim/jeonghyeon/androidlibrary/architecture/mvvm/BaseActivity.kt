@@ -42,7 +42,7 @@ import kim.jeonghyeon.androidlibrary.extension.showWithoutException
  *
  * [toolbarId] : if you use toolbar, define toolbar's id as 'toolbar' or override this property
  *
- * [appBarConfiguration] : todo need more explanation
+ * [appBarConfiguration] : for controlling top page(showing up button or drawer button)
  *
  * [setMenu] : set menu
  *
