@@ -16,7 +16,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
 interface IBaseViewModel {
+    /**
+     * normally used for user action. and not hide page
+     */
     val state: LiveState
+    /**
+     * hide if it's not success
+     * normally used for page init.
+     * but if need to hide page. you can use this
+     */
+    val initState: LiveState
 
     fun onStart()
     fun onResume()
@@ -39,9 +48,6 @@ interface IBaseViewModel {
     fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
 
     @MainThread
-    fun <T> load(work: suspend CoroutineScope.() -> T)
-
-    @MainThread
     fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
@@ -51,8 +57,8 @@ interface IBaseViewModel {
     fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
 
     @MainThread
-    fun <T> LiveObject<T>.loadData(
-        state2: LiveState = state,
+    fun <T> LiveObject<T>.loadDataAndState(
+        state2: LiveState?,
         work: suspend CoroutineScope.() -> T
     ): Job
 
@@ -86,6 +92,7 @@ interface IBaseViewModel {
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
+    override val initState by lazy { LiveState() }
     internal val eventSnackbarByString by lazy { LiveObject<String>() }
     internal val eventSnackbarById by lazy { LiveObject<Int>() }
     internal val eventStartActivity by lazy { LiveObject<Intent>() }
@@ -169,10 +176,6 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         viewModelScope.loadResource(this@load, work)
     }
 
-    override fun <T> load(work: suspend CoroutineScope.() -> T) {
-        state.load(work)
-    }
-
     override fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
         onResult: (Resource<T>) -> Resource<T>
@@ -190,11 +193,11 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 
     @MainThread
-    override fun <T> LiveObject<T>.loadData(
-        state2: LiveState,
+    override fun <T> LiveObject<T>.loadDataAndState(
+        state2: LiveState?,
         work: suspend CoroutineScope.() -> T
     ): Job =
-        viewModelScope.loadData(this@loadData, state2, work)
+        viewModelScope.loadDataAndState(this@loadDataAndState, state2, work)
 
     override fun <T> LiveResource<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (value.isLoadingState()) {

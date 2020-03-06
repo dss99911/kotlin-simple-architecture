@@ -18,7 +18,7 @@ package com.example.android.architecture.blueprints.todoapp.statistics
 
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.successDataMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
@@ -35,7 +35,7 @@ class StatisticsViewModel(
     private val tasksDao: TaskRepository
 ) : BaseViewModel() {
 
-    val tasks = liveResource<List<Task>>()
+    val tasks = LiveResource<List<Task>>()
 
     val statusResult = tasks.successDataMap {
         getActiveAndCompletedStats(it)

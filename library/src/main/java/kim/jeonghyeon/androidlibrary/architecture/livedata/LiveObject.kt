@@ -124,10 +124,6 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
     //endregion event
 }
 
-fun <T> liveObject(value: T) = LiveObject(value)
-
-fun <T> liveObject() = LiveObject<T>()
-
 fun <T> LiveObject<T>.observeEvent(owner: LifecycleOwner, onChanged: (T) -> Unit) {
     observeEvent(owner, Observer {
         onChanged(it)

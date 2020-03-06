@@ -67,6 +67,8 @@ import kim.jeonghyeon.androidlibrary.extension.showWithoutException
  *
  * [stateObserver] : set state observer to change loading and error on state liveData
  *
+ * [initStateObserver] : set state observer to change loading and error on initState liveData
+ *
  * [progressDialog] : progress dialog
  *
  */
@@ -98,8 +100,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
     val permissionStartActivityViewModel by viewModels<PermissionAndStartActivityViewModel>()
 
-
-    override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
+    override val stateObserver: Observer<State> by lazy { resourceObserverCommon() }
+    override val initStateObserver: Observer<State> by lazy { resourceObserverInit() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,6 +171,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
         viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
+            it.initState.observe(initStateObserver)
 
             it.eventSnackbarByString.observeEvent {
                 showSnackbar(it)

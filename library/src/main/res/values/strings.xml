@@ -10,4 +10,5 @@
     <string name="toast_fingerprint_wrong">Too many attempt with wrong fingerprint.\nPlease try later</string>
     <string name="toast_no_activity">no activity</string>
     <string name="error_occurred">error occurred</string>
+    <string name="retry">retry</string>
 </resources>

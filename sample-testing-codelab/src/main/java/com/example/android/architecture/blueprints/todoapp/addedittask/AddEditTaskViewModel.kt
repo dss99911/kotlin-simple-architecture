@@ -19,8 +19,8 @@ package com.example.android.architecture.blueprints.todoapp.addedittask
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.getData
-import kim.jeonghyeon.androidlibrary.architecture.livedata.liveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
 /**
@@ -37,7 +37,7 @@ class AddEditTaskViewModel(
     private val tasksRepository: TaskRepository
 ) : BaseViewModel() {
 
-    val task = liveResource<Task>().apply {
+    val task = LiveResource<Task>().apply {
         load {
             val taskid = navArgs.taskid
             if (taskid == null) {

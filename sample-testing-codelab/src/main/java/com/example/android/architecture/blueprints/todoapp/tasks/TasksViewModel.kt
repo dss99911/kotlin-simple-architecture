@@ -21,7 +21,10 @@ import androidx.annotation.StringRes
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TaskRepository
-import kim.jeonghyeon.androidlibrary.architecture.livedata.*
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
+import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.call
+import kim.jeonghyeon.androidlibrary.architecture.livedata.successDataMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import java.util.*
 
@@ -35,15 +38,15 @@ import java.util.*
  */
 class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewModel() {
 
-    val items: LiveResource<List<TaskItemViewModel>> = liveResource()
-    val currentFilteringLabel: LiveObject<Int> = liveObject()
-    val noTasksLabel: LiveObject<Int> = liveObject()
-    val noTaskIconRes: LiveObject<Int> = liveObject()
-    val tasksAddViewVisible: LiveObject<Boolean> = liveObject()
+    val items: LiveResource<List<TaskItemViewModel>> = LiveResource()
+    val currentFilteringLabel: LiveObject<Int> = LiveObject()
+    val noTasksLabel: LiveObject<Int> = LiveObject()
+    val noTaskIconRes: LiveObject<Int> = LiveObject()
+    val tasksAddViewVisible: LiveObject<Boolean> = LiveObject()
 
     private var currentFiltering = TasksFilterType.ALL_TASKS
-    val openTaskEvent: LiveObject<String> = liveObject()
-    val newTaskEvent: LiveObject<Unit> = liveObject()
+    val openTaskEvent: LiveObject<String> = LiveObject()
+    val newTaskEvent: LiveObject<Unit> = LiveObject()
 
     init {
         // Set initial state

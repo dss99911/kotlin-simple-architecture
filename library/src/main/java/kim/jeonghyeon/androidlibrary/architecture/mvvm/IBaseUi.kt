@@ -2,6 +2,7 @@ package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.app.AlertDialog
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
@@ -17,7 +18,6 @@ import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
-import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.extension.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -62,6 +62,10 @@ interface IBaseUi : SavedStateRegistryOwner {
      * set state observer to change loading and error on state liveData
      */
     val stateObserver: Observer<State>
+    /**
+     * hide layout by showing full error fragment if not success,
+     */
+    val initStateObserver: Observer<State>
 
     val progressDialog: AlertDialog
 
@@ -71,20 +75,42 @@ interface IBaseUi : SavedStateRegistryOwner {
     fun <T> LiveObject<T>.observe(observer: Observer<in T>)
 }
 
-fun <T> IBaseUi.resourceObserverCommon(onSuccess: (T) -> Unit): Observer<Resource<T>> =
+fun IBaseUi.resourceObserverCommon(onResult: (State) -> Boolean = { false }): Observer<State> =
     Observer {
+        if (onResult(it)) {
+            return@Observer
+        }
         if (it.isLoading()) {
             progressDialog.showWithoutException()
         } else {
             progressDialog.dismissWithoutException()
         }
 
+        dismissSnackbar(binding.root)// if state is changed, dismiss snackbar if it's shown.
+
         it.onError {
-            showSnackbar(ctx.getString(R.string.error_occurred))
+            showErrorSnackbar(binding.root, it.retry)
         }
 
-        it.onSuccess(onSuccess)
     }
+
+fun IBaseUi.resourceObserverInit(onResult: (State) -> Boolean = { false }): Observer<State> =
+    resourceObserverCommon {
+        binding.root.visibility = if (it.isSuccess()) View.VISIBLE else View.GONE
+        false
+    }
+
+fun dismissSnackbar(view: View) {
+    val snackbar = view.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
+    snackbar.dismiss()
+    view.setTag(R.id.view_tag_snackbar, null)
+}
+
+fun showErrorSnackbar(view: View, retry: () -> Unit) {
+    view.showSnackbar(ctx.getString(R.string.error_occurred), Snackbar.LENGTH_SHORT, retry).also {
+        view.setTag(R.id.view_tag_snackbar, it)
+    }
+}
 
 fun IBaseUi.getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
     return SavedStateViewModelFactory(

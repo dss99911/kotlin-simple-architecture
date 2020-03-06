@@ -75,6 +75,8 @@ import org.koin.core.qualifier.Qualifier
  *
  * [stateObserver] : set state observer to change loading and error on state liveData
  *
+ * [initStateObserver] : set state observer to change loading and error on initState liveData
+ *
  * [progressDialog] : progress dialog
  *
  * [selected] : used on pager. if not used always true.
@@ -98,7 +100,8 @@ abstract class BaseFragment : Fragment(),
     override val appBarConfiguration: AppBarConfiguration?
         get() = AppBarConfiguration(navController.graph)
 
-    override val stateObserver: Observer<State> by lazy { resourceObserverCommon<Any?> { } }
+    override val stateObserver: Observer<State> by lazy { resourceObserverCommon() }
+    override val initStateObserver: Observer<State> by lazy { resourceObserverInit() }
 
     val permissionStartActivityViewModel by activityViewModels<PermissionAndStartActivityViewModel>()
 
@@ -209,6 +212,7 @@ abstract class BaseFragment : Fragment(),
     private fun setupObserver() {
         viewModels.map { it.second.value }.forEach {
             it.state.observe(stateObserver)
+            it.initState.observe(initStateObserver)
 
             it.eventSnackbarByString.observeEvent {
                 showSnackbar(it)

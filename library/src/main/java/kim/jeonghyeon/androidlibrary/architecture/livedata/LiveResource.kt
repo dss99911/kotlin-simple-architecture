@@ -12,10 +12,6 @@ typealias LiveState = LiveObject<State>
 
 //region functions
 
-fun <T> liveResource(value: Resource<T> = Resource.None): LiveResource<T> {
-    return LiveResource(value)
-}
-
 fun <T> LiveResource<T>.setSuccess(data: T) {
     value = Resource.Success(data)
 }
@@ -34,7 +30,7 @@ fun <T> LiveResource<T>.postError(data: ResourceError) {
 
 fun <T> LiveResource<T>.getData(): T? = value?.get()
 
-fun <T> LiveData<Resource<T>>.asResource(): LiveResource<T> = liveResource<T>().apply {
+fun <T> LiveData<Resource<T>>.asResource(): LiveResource<T> = LiveResource<T>().apply {
     plusAssign(this@asResource)
 }
 
@@ -101,24 +97,24 @@ fun <T> CoroutineScope.loadResource(
 }
 
 @MainThread
-fun <T> CoroutineScope.loadData(
+fun <T> CoroutineScope.loadDataAndState(
     liveData: LiveObject<T>,
-    state: LiveState,
+    state: LiveState?,
     work: suspend CoroutineScope.() -> T
 ): Job {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     return launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         getResource(work) {
-            this@loadData.loadData(liveData, state, work)
+            this@loadDataAndState.loadDataAndState(liveData, state, work)
         }?.also {
             it.onSuccess {
                 liveData.postValue(it)
             }
-            state.postValue(it)
+            state?.postValue(it)
         }
 
     }.also {
-        state.setLoading(it)
+        state?.setLoading(it)
         it.start()
     }
 }

@@ -5,7 +5,6 @@ import kim.jeonghyeon.androidlibrary.extension.log
 import kotlinx.coroutines.Job
 
 sealed class Resource<out T> {
-    object None : Resource<Nothing>()
     data class Loading(val job: Job? = null) : Resource<Nothing>()
     data class Success<T>(val data: T) : Resource<T>()
     data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>() {
@@ -33,9 +32,9 @@ sealed class Resource<out T> {
         return this
     }
 
-    fun onError(onResult: (ResourceError) -> Unit): Resource<T> {
+    fun onError(onResult: (Error) -> Unit): Resource<T> {
         if (this is Error) {
-            onResult(error)
+            onResult(this)
         }
         return this
     }
@@ -63,7 +62,7 @@ fun Resource<*>?.isSuccessState() = this?.isSuccess() ?: false
 fun Resource<*>?.isErrorState() = this?.isError() ?: false
 fun Resource<*>?.isResultState() = this?.isResult() ?: false
 
-fun <T> Resource<T>.asLive() = liveResource(this)
+fun <T> Resource<T>.asLive() = LiveResource(this)
 
 
 typealias State = Resource<Any?>
