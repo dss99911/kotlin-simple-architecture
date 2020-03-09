@@ -2,6 +2,8 @@ package kim.jeonghyeon.androidtesting
 
 import android.os.Bundle
 import android.os.SystemClock
+import androidx.annotation.IdRes
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
@@ -11,6 +13,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidtesting.rule.DataBindingIdlingResourceRule
+import kim.jeonghyeon.androidtesting.rule.MainCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -30,6 +33,12 @@ abstract class BaseFragmentTest<F : BaseFragment> : BaseAndroidTest() {
     private var fragment: F? = null
 
     @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
+
+    @get:Rule
     val dataBindingIdlingResourceRule = DataBindingIdlingResourceRule { fragment }
 
     fun launchFragment(
@@ -44,7 +53,7 @@ abstract class BaseFragmentTest<F : BaseFragment> : BaseAndroidTest() {
 
     fun getFragment() = fragment!!
 
-    inline fun <reified T : NavDirections> assertNavigateDirection(expected: T) {
+    inline fun <reified T : NavDirections> assertNavigate(expected: T) {
         val navController = getFragment().findNavController()
         if (!Mockito.mockingDetails(navController).isMock) {
             error("navController should be Mocked")
@@ -54,6 +63,29 @@ abstract class BaseFragmentTest<F : BaseFragment> : BaseAndroidTest() {
             capture(arg)
         )
         Truth.assertThat(arg.value as T).isEqualTo(expected)
+    }
+
+    fun assertNavigate(@IdRes expected: Int) {
+        val navController = getFragment().findNavController()
+        if (!Mockito.mockingDetails(navController).isMock) {
+            error("navController should be Mocked")
+        }
+        val arg = argumentCaptor<Int>()
+        Mockito.verify(navController).navigate(
+            capture(arg)
+        )
+        Truth.assertThat(arg.value).isEqualTo(expected)
+    }
+
+    fun assertNeverNavigate() {
+        val navController = getFragment().findNavController()
+        if (!Mockito.mockingDetails(navController).isMock) {
+            error("navController should be Mocked")
+        }
+        val arg = argumentCaptor<Int>()
+        Mockito.verify(navController, Mockito.never()).navigate(
+            capture(arg)
+        )
     }
 
     fun assertNavigateUp() {

@@ -18,7 +18,7 @@ import com.google.common.truth.Truth
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidtesting.BaseActivityTest
 import kim.jeonghyeon.androidtesting.EspressoUtil
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.koin.test.inject
@@ -29,7 +29,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     val repo: TaskRepository by inject()
 
     @Before
-    fun before() = runBlockingTest {
+    fun before() = runBlocking {
         repo.deleteAllTasks()
     }
 
@@ -48,7 +48,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun editTask() = runBlockingTest {
+    fun editTask() = runBlocking {
         repo.saveTask(TaskSamples.sample1Active)
 
         // start up Tasks screen
@@ -96,7 +96,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun createTwoTasks_deleteOneTask() = runBlockingTest {
+    fun createTwoTasks_deleteOneTask() = runBlocking {
         repo.saveTask(TaskSamples.sample1Active)
         repo.saveTask(TaskSamples.sample2Completed)
 
@@ -115,7 +115,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun markTaskAsCompleteOnDetailScreen_taskIsCompleteInList() = runBlockingTest {
+    fun markTaskAsCompleteOnDetailScreen_taskIsCompleteInList() = runBlocking {
         // Add 1 active task
         repo.saveTask(TaskSamples.sample1Active)
 
@@ -136,7 +136,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun markTaskAsActiveOnDetailScreen_taskIsActiveInList() = runBlockingTest {
+    fun markTaskAsActiveOnDetailScreen_taskIsActiveInList() = runBlocking {
         // Add 1 completed task
         repo.saveTask(TaskSamples.sample2Completed)
 
@@ -156,7 +156,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun markTaskAsCompleteAndActiveOnDetailScreen_taskIsActiveInList() = runBlockingTest {
+    fun markTaskAsCompleteAndActiveOnDetailScreen_taskIsActiveInList() = runBlocking {
         // Add 1 active task
         repo.saveTask(TaskSamples.sample1Active)
 
@@ -180,7 +180,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun markTaskAsActiveAndCompleteOnDetailScreen_taskIsCompleteInList() = runBlockingTest {
+    fun markTaskAsActiveAndCompleteOnDetailScreen_taskIsCompleteInList() = runBlocking {
         // Add 1 completed task
         repo.saveTask(TaskSamples.sample2Completed)
 
@@ -205,7 +205,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
 
     @Test
-    fun tasksFragment_onClickMenu_clearAll() = runBlockingTest {
+    fun tasksFragment_onClickMenu_clearAll() = runBlocking {
         //GIVEN 2 task
         repo.saveTask(TaskSamples.sample5completed)
         repo.saveTask(TaskSamples.sample6completed)
@@ -220,7 +220,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun tasksFragment_onClickMenu_refresh() = runBlockingTest {
+    fun tasksFragment_onClickMenu_refresh() = runBlocking {
         //GIVEN 0 task
         launchActivity()
 
@@ -235,7 +235,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun tasksFragment_onClickMenu_filter() = runBlockingTest {
+    fun tasksFragment_onClickMenu_filter() = runBlocking {
         //when click filter
         launchActivity()
         TasksFragmentTest.clickMenuFilter()
@@ -248,7 +248,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
 
     @Test
-    fun tasksFragment_onClickMenu_filter_all() = runBlockingTest {
+    fun tasksFragment_onClickMenu_filter_all() = runBlocking {
         //GIVEN 2 completed task 1 active task
         val list = listOf(
             TaskSamples.sample1Active,
@@ -267,7 +267,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun tasksFragment_onClickMenu_filter_active() = runBlockingTest {
+    fun tasksFragment_onClickMenu_filter_active() = runBlocking {
         //GIVEN 2 completed task 1 active task
         val list = listOf(
             TaskSamples.sample1Active,
@@ -288,7 +288,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun tasksFragment_onClickMenu_filter_completed() = runBlockingTest {
+    fun tasksFragment_onClickMenu_filter_completed() = runBlocking {
         //GIVEN 2 completed task 1 active task
         val list = listOf(
             TaskSamples.sample1Active,
@@ -322,7 +322,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
 
 
     @Test
-    fun detailFragment_onClickDelete() = runBlockingTest {
+    fun detailFragment_onClickDelete() = runBlocking {
         //GIVEN task
         repo.saveTask(TaskSamples.sample1Active)
         launchActivity()
@@ -388,7 +388,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun taskDetailScreen_doubleUIBackButton() = runBlockingTest {
+    fun taskDetailScreen_doubleUIBackButton() = runBlocking {
         repo.saveTask(TaskSamples.sample1Active)
 
         // start up Tasks screen
@@ -412,7 +412,7 @@ class TasksActivityTest : BaseActivityTest<TasksActivity>() {
     }
 
     @Test
-    fun taskDetailScreen_doubleBackButton() = runBlockingTest {
+    fun taskDetailScreen_doubleBackButton() = runBlocking {
         repo.saveTask(TaskSamples.sample1Active)
 
         // start up Tasks screen

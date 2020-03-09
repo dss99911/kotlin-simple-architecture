@@ -73,7 +73,7 @@ class TaskDetailFragmentTest : TodoFragmentTest<TaskDetailFragment>() {
         clickEdit()
 
         //THEN go to edit page
-        assertNavigateDirection(
+        assertNavigate(
             TaskDetailFragmentDirections
                 .actionTaskDetailFragmentToAddEditTaskFragment(
                     TaskSamples.sample1Active.id,

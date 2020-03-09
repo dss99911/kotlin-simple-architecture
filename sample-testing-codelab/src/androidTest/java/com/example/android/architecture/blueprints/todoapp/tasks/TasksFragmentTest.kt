@@ -104,7 +104,7 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         clickTaskItem(TaskSamples.sample5completed)
 
         //THEN redirect to detail fragment
-        assertNavigateDirection(
+        assertNavigate(
             TasksFragmentDirections.actionTasksFragmentToTaskDetailFragment(
                 TaskSamples.sample5completed.id
             )
@@ -121,7 +121,7 @@ class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
         clickAdd()
 
         //THEN go to add page
-        assertNavigateDirection(
+        assertNavigate(
             TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
                 null,
                 "New Task"

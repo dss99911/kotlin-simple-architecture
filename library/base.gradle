@@ -20,6 +20,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
+        vectorDrawables.useSupportLibrary = true
+
         buildConfigField "String", "freePackageName", "\"$application_id\""
         resValue "string", "app_version", app_version
 
