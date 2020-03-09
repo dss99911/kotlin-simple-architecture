@@ -2,7 +2,7 @@
 
 this library is focusing on how to develop simple.
 
-library achieves the belows.
+this library achieves the belows.
 1. Simple to read : even non-developer can understand
 2. Simple to write : no boilerplate code, 1 line of code means 1 business logic. able to focus on business logic only
 3. Simple learning curve : easy to remember usage. even it's easy, if you forget?, you can find where to see. and also it provides the sample as well.
