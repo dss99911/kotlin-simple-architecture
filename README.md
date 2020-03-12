@@ -1,10 +1,13 @@
-# Android Library
+# Simple architecture
 
-this library is focusing on how to develop easier way reducing knowledge of framework or architecture component
-so that this library will achieve the belows
-1. every developer write code of business logic only reducing boilerplate code as much as possible
-2. every developer can read code easily and straight-forwardly. and even non-developer can understand business logic.
-3. every developer can remember the way to write code easily.
+this library is focusing on how to develop simple.
+
+this library achieves the belows.
+1. Simple to read : even non-developer can understand
+2. Simple to write : no boilerplate code, 1 line of code means 1 business logic. able to focus on business logic only
+3. Simple learning curve : easy to remember usage. even it's easy, if you forget?, you can find where to see. and also it provides the sample as well.
+4. Simple to use latest architecture : you don't need to spend a lot of time for what is latest architecture, how to make good code. just follow sample, then you'll write code at least not bad.
+5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
 # Planning
 Currently this is focusing on only android development.
