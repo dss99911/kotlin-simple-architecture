@@ -5,6 +5,7 @@ import kim.jeonghyeon.sample.list.paging.PagingViewModel
 import kim.jeonghyeon.sample.list.paging.api.GithubService
 import kim.jeonghyeon.sample.list.radiobox.RadioBoxListViewModel
 import kim.jeonghyeon.sample.list.simple.SimpleListViewModel
+import kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListViewModel
 import kim.jeonghyeon.sample.view.ViewViewModel
 import kim.jeonghyeon.sample.view.menu.MenuViewModel
 import kim.jeonghyeon.sample.viewmodel.ViewModelViewModel
@@ -23,6 +24,7 @@ val appModule = module {
     //list
     viewModel { ListViewModel() }
     viewModel { SimpleListViewModel() }
+    viewModel { SimpleComparableListViewModel() }
     viewModel { PagingViewModel(get()) }
     viewModel { RadioBoxListViewModel() }
 

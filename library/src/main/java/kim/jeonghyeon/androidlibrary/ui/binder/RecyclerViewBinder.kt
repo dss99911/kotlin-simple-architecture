@@ -19,6 +19,17 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
  * @param itemList  Item Model
  * @param layoutId  Item's layout id
  * */
+@BindingAdapter("itemList", "itemLayoutId")
+fun <VM : Any> RecyclerView.bindData(
+    itemList: List<VM>?,
+    layoutId: Int
+) {
+    bindData(itemList, layoutId, null)
+}
+
+/**
+ * use DiffComparable<VM> if invalidate item ui only when it is changed.
+ */
 @BindingAdapter("itemListComparable", "itemLayoutId")
 fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
     itemList: List<VM>?,
@@ -28,27 +39,25 @@ fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
 }
 
 
+/**
+ * for PagedList
+ */
 @BindingAdapter("itemList", "itemLayoutId")
 fun <VM : Any> RecyclerView.bindData(
-    itemList: List<VM>?,
+    itemList: PagedList<VM>?,
     layoutId: Int
 ) {
     bindData(itemList, layoutId, null)
 }
 
+/**
+ * for PagedList, DiffComparable
+ */
 @BindingAdapter("itemListComparable", "itemLayoutId")
 fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
     itemList: PagedList<VM>?,
     layoutId: Int
 ) {
     bindDiffComparable(itemList, layoutId, null)
-}
-
-@BindingAdapter("itemList", "itemLayoutId")
-fun <VM : Any> RecyclerView.bindData(
-    itemList: PagedList<VM>?,
-    layoutId: Int
-) {
-    bindData(itemList, layoutId, null)
 }
 

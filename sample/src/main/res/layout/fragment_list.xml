@@ -21,6 +21,12 @@
                 android:text="@string/simple_list" />
 
         <Button
+                onClickNavigate="@{@id/action_listFragment_to_simpleComparableListFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/comparable_list" />
+
+        <Button
                 onClickNavigate="@{@id/action_listFragment_to_pagingFragment}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

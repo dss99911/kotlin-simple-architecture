@@ -19,6 +19,9 @@
         <action
                 android:id="@+id/action_listFragment_to_radioBoxListFragment"
                 app:destination="@id/radioBoxListFragment" />
+        <action
+                android:id="@+id/action_listFragment_to_simpleComparableListFragment"
+                app:destination="@id/simpleComparableListFragment" />
     </fragment>
 
     <fragment
@@ -26,6 +29,11 @@
             android:name="kim.jeonghyeon.sample.list.simple.SimpleListFragment"
             android:label="SimpleListFragment"
             tools:layout="@layout/fragment_simple_list" />
+    <fragment
+            android:id="@+id/simpleComparableListFragment"
+            android:name="kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListFragment"
+            android:label="SimpleComparaleListFragment"
+            tools:layout="@layout/fragment_comparable_simple_list" />
     <fragment
             android:id="@+id/pagingFragment"
             android:name="kim.jeonghyeon.sample.list.paging.PagingFragment"
