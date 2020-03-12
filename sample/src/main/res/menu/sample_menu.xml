@@ -16,9 +16,6 @@
             android:title="@string/help"
             app:showAsAction="ifRoom" />
 
-    <item android:id="@id/settingsFragment"
-            android:title="@string/setting"
-            app:showAsAction="ifRoom" />
     <item android:id="@+id/action_search"
             android:title="@string/action_search"
             android:icon="@android:drawable/ic_menu_search"

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph_view"
+        app:startDestination="@id/viewFragment">
+
+    <fragment
+            android:id="@+id/viewFragment"
+            android:name="kim.jeonghyeon.sample.view.ViewFragment"
+            android:label="@string/view_related"
+            tools:layout="@layout/fragment_view">
+        <action
+                android:id="@+id/action_viewFragment_to_menuFragment"
+                app:destination="@id/menuFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/menuFragment"
+            android:name="kim.jeonghyeon.sample.view.menu.MenuFragment"
+            android:label="MenuFragment"
+            tools:layout="@layout/fragment_menu" />
+
+</navigation>

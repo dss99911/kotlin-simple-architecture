@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+                name="model"
+                type="kim.jeonghyeon.sample.viewmodel.ViewModelViewModel" />
+
+    </data>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <Button
+                onClickNavigate="@{@id/action_viewModelFragment_to_debounceFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/debounce" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> model.onClickNavAgrs()}"
+                android:text="@string/navargs" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewModelFragment_to_parentFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/parent_viewmodel" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewModelFragment_to_otherViewModelFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/other_viewmodel" />
+    </LinearLayout>
+</layout>

@@ -22,25 +22,17 @@
     <fragment
             android:id="@+id/mainFragment"
             android:name="kim.jeonghyeon.sample.MainFragment"
-            tools:layout="@layout/fragment_main"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            tools:layout="@layout/fragment_main">
         <action
-                android:id="@+id/action_mainFragment_to_sampleMVVMFragment"
-                app:destination="@id/sampleMVVMFragment" />
+                android:id="@+id/action_mainFragment_to_nav_graph_view_mdoel"
+                app:destination="@id/nav_graph_view_mdoel" />
         <action
-                android:id="@+id/action_mainFragment_to_chromeCustomTabFragment2"
-                app:destination="@id/chromeCustomTabFragment"
-                app:launchSingleTop="false"
-                app:popUpToInclusive="false" />
+                android:id="@+id/action_mainFragment_to_nav_graph_view"
+                app:destination="@id/nav_graph_view" />
         <action
-                android:id="@+id/action_mainFragment_to_navigationFragment"
-                app:destination="@id/navigateFragment" />
-        <action
-                android:id="@+id/action_mainFragment_to_apiCallFragment"
-                app:destination="@id/apiCallFragment" />
-        <action
-                android:id="@+id/action_mainFragment_to_debounceFragment"
-                app:destination="@id/debounceFragment" />
+                android:id="@+id/action_mainFragment_to_nav_graph_list"
+                app:destination="@id/nav_graph_list" />
 
         <!-- argument example
         <argument
@@ -55,56 +47,20 @@
             app:argType="integer"
             android:defaultValue="0"/>
                 -->
-        <!-- todo, what is popUpTo?
+        <!-- popUpTo
         <action
                 android:id="@+id/action_statisticsFragment_to_tasksFragment"
                 app:destination="@id/tasksFragment"
                 app:popUpTo="@+id/tasksFragment"/>-->
     </fragment>
 
-    <fragment
-            android:id="@+id/sampleMVVMFragment"
-            android:name="kim.jeonghyeon.sample.mvvm.SampleBaseFragment"
-            android:label="MVVM Fragment"
-            tools:layout="@layout/fragment_mvvm"></fragment>
-    <fragment
-            android:id="@+id/chromeCustomTabFragment"
-            android:name="kim.jeonghyeon.sample.web.ChromeCustomTabFragment"
-            android:label="ChromeCustomTabFragment"
-            tools:layout="@layout/empty_layout">
-
-    </fragment>
-    <fragment
-            android:id="@+id/navigateFragment"
-            android:name="kim.jeonghyeon.sample.mvvm.NavigationFragment"
-            android:label="navigateFragment"
-            tools:layout="@layout/fragment_nav">
-        <argument
-                android:name="abc"
-                android:defaultValue="1"
-                app:argType="integer" />
-    </fragment>
-    <fragment
-            android:id="@+id/settingsFragment"
-            android:name="kim.jeonghyeon.sample.SettingsFragment"
-            tools:layout="@layout/settings_fragment"
-            android:label="SettingsFragment" />
+    <include app:graph="@navigation/nav_graph_view_model" />
+    <include app:graph="@navigation/nav_graph_view" />
+    <include app:graph="@navigation/nav_graph_list" />
 
     <fragment
             android:id="@+id/deeplink_dest"
-            android:name="kim.jeonghyeon.sample.MainFragment"
-            />
-    <fragment
-            android:id="@+id/apiCallFragment"
-            android:name="kim.jeonghyeon.sample.feature.apicall.ApiCallFragment"
-            android:label="ApiCallFragment"
-            tools:layout="@layout/fragment_api_call"/>
-
-    <fragment
-            android:id="@+id/debounceFragment"
-            android:name="kim.jeonghyeon.sample.viewmodel.DebounceFragment"
-            android:label="DebounceFragment"
-            tools:layout="@layout/fragment_debounce" />
+            android:name="kim.jeonghyeon.sample.MainFragment" />
 
     <!-- use argument for attribute value
     <fragment

@@ -10,12 +10,14 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import kim.jeonghyeon.androidlibrary.BR
 
-abstract class BasePagedListAdapter<VM : DiffComparable<VM>>(val lifecycleOwner: LifecycleOwner? = null) :
-    PagedListAdapter<VM, BaseRecyclerViewHolder<VM>>(object : DiffUtil.ItemCallback<VM>() {
-        override fun areItemsTheSame(oldItem: VM, newItem: VM) = oldItem.areItemsTheSame(newItem)
-        override fun areContentsTheSame(oldItem: VM, newItem: VM) =
-            oldItem.areContentsTheSame(newItem)
-    }) {
+abstract class BasePagedListAdapter<VM : Any>(
+    val lifecycleOwner: LifecycleOwner? = null,
+    diffUtil: DiffUtil.ItemCallback<VM> = object : DiffUtil.ItemCallback<VM>() {
+        override fun areItemsTheSame(oldItem: VM, newItem: VM): Boolean = oldItem == newItem
+        override fun areContentsTheSame(oldItem: VM, newItem: VM): Boolean =
+            areItemsTheSame(oldItem, newItem)
+    }
+) : PagedListAdapter<VM, BaseRecyclerViewHolder<VM>>(diffUtil) {
 
     @LayoutRes
     abstract fun getItemLayoutId(position: Int): Int

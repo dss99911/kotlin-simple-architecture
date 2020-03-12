@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph_list"
+        app:startDestination="@id/listFragment">
+
+    <fragment
+            android:id="@+id/listFragment"
+            android:name="kim.jeonghyeon.sample.list.ListFragment"
+            android:label="ListFragment"
+            tools:layout="@layout/fragment_list">
+        <action
+                android:id="@+id/action_listFragment_to_simpleListFragment"
+                app:destination="@id/simpleListFragment" />
+        <action
+                android:id="@+id/action_listFragment_to_pagingFragment"
+                app:destination="@id/pagingFragment" />
+        <action
+                android:id="@+id/action_listFragment_to_radioBoxListFragment"
+                app:destination="@id/radioBoxListFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/simpleListFragment"
+            android:name="kim.jeonghyeon.sample.list.simple.SimpleListFragment"
+            android:label="SimpleListFragment"
+            tools:layout="@layout/fragment_simple_list" />
+    <fragment
+            android:id="@+id/pagingFragment"
+            android:name="kim.jeonghyeon.sample.list.paging.PagingFragment"
+            android:label="PagingFragment"
+            tools:layout="@layout/fragment_paging" />
+    <fragment
+            android:id="@+id/radioBoxListFragment"
+            android:name="kim.jeonghyeon.sample.list.radiobox.RadioBoxListFragment"
+            android:label="RadioBoxListFragment"
+            tools:layout="@layout/fragment_radio_box_list" />
+</navigation>

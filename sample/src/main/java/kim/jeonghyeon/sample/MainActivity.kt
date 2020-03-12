@@ -12,23 +12,17 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseActivity
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
-import kim.jeonghyeon.androidlibrary.architecture.mvvm.getSavedState
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.core.parameter.parametersOf
 
 
 class MainActivity : BaseActivity() {
 
-    val viewModel: MainActivityViewModel by bindingViewModel {
-        parametersOf(getSavedState())
-    }
+    override val layoutId: Int = R.layout.activity_main
 
-    override val layoutId: Int
-        get() = R.layout.activity_main
+    val viewModel: MainActivityViewModel by bindingViewModel()
 
-    override val navHostId: Int
-        get() = R.id.my_nav_host_fragment
+    override val navHostId: Int = R.id.my_nav_host_fragment
 
     init {
         setMenu(R.menu.sample_menu) {

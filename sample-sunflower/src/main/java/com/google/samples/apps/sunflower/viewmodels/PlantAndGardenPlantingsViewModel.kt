@@ -29,8 +29,7 @@ import java.util.*
 class PlantAndGardenPlantingsViewModel(
     plantings: PlantAndGardenPlantings,
     val onClick: (String) -> Unit
-) :
-    DiffComparable<PlantAndGardenPlantingsViewModel> {
+) : DiffComparable<PlantAndGardenPlantingsViewModel> {
     val plant = checkNotNull(plantings.plant)
     val gardenPlanting = plantings.gardenPlantings[0]
 

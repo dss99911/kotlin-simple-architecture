@@ -40,7 +40,7 @@
                 android:layout_marginEnd="@dimen/card_side_margin"
                 android:clipToPadding="false"
                 app:isGone="@{model.plantAndGardengPlantingsViewModel.isEmpty()}"
-                app:itemList="@{model.plantAndGardengPlantingsViewModel}"
+                app:itemListComparable="@{model.plantAndGardengPlantingsViewModel}"
                 app:itemLayoutId="@{@layout/list_item_garden_planting}"
 
                 app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"

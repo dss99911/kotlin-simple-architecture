@@ -73,7 +73,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                             itemLayoutId="@{@layout/task_item}"
-                            itemList="@{viewmodel.items.get()}" />
+                            itemListComparable="@{viewmodel.items.get()}" />
                 </LinearLayout>
 
                 <LinearLayout

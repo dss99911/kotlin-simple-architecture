@@ -4,6 +4,7 @@ import androidx.databinding.BindingAdapter
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import kim.jeonghyeon.androidlibrary.extension.bindData
+import kim.jeonghyeon.androidlibrary.extension.bindDiffComparable
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
 
 /**
@@ -18,18 +19,36 @@ import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
  * @param itemList  Item Model
  * @param layoutId  Item's layout id
  * */
+@BindingAdapter("itemListComparable", "itemLayoutId")
+fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
+    itemList: List<VM>?,
+    layoutId: Int
+) {
+    bindDiffComparable(itemList, layoutId, null)
+}
+
+
 @BindingAdapter("itemList", "itemLayoutId")
-fun <VM : DiffComparable<VM>> RecyclerView.bindData(
+fun <VM : Any> RecyclerView.bindData(
     itemList: List<VM>?,
     layoutId: Int
 ) {
     bindData(itemList, layoutId, null)
 }
 
+@BindingAdapter("itemListComparable", "itemLayoutId")
+fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
+    itemList: PagedList<VM>?,
+    layoutId: Int
+) {
+    bindDiffComparable(itemList, layoutId, null)
+}
+
 @BindingAdapter("itemList", "itemLayoutId")
-fun <VM : DiffComparable<VM>> RecyclerView.bindData(
+fun <VM : Any> RecyclerView.bindData(
     itemList: PagedList<VM>?,
     layoutId: Int
 ) {
     bindData(itemList, layoutId, null)
 }
+

@@ -21,14 +21,14 @@ import kim.jeonghyeon.androidlibrary.BR
  * limitation
  * - if item count is different with list size. just extending this class may not work properly. need to test
  */
-abstract class BaseRecyclerViewAdapter<VM : DiffComparable<VM>>(val lifecycleOwner: LifecycleOwner? = null) :
-    ListAdapter<VM, BaseRecyclerViewHolder<VM>>(object : DiffUtil.ItemCallback<VM>() {
-        override fun areItemsTheSame(oldItem: VM, newItem: VM): Boolean =
-            oldItem.areItemsTheSame(newItem)
-
+abstract class BaseRecyclerViewAdapter<VM : Any>(
+    val lifecycleOwner: LifecycleOwner? = null,
+    diffUtil: DiffUtil.ItemCallback<VM> = object : DiffUtil.ItemCallback<VM>() {
+        override fun areItemsTheSame(oldItem: VM, newItem: VM): Boolean = oldItem == newItem
         override fun areContentsTheSame(oldItem: VM, newItem: VM): Boolean =
-            oldItem.areContentsTheSame(newItem)
-    }) {
+            areItemsTheSame(oldItem, newItem)
+    }
+) : ListAdapter<VM, BaseRecyclerViewHolder<VM>>(diffUtil) {
 
     @LayoutRes
     abstract fun getItemLayoutId(position: Int): Int

@@ -29,14 +29,14 @@ public class SpinnerBinder {
      * @param dropdownResourceId dropdown resource id.
      * @param <T>                object type to be converted to string.
      */
-    @BindingAdapter({"android:entries", "itemResId", "dropdownResId"})
+    @BindingAdapter({"android:entries", "itemLayoutId", "dropdownResId"})
     public static <T> void bindSpinner(Spinner view, @NonNull ArrayList<T> list, int resourceId, int dropdownResourceId) {
         ArrayAdapter<T> arrayAdapter = new ArrayAdapter<>(view.getContext(), resourceId, list);
         arrayAdapter.setDropDownViewResource(dropdownResourceId);
         view.setAdapter(arrayAdapter);
     }
 
-    @BindingAdapter({"android:entries", "itemResId", "dropdownResId"})
+    @BindingAdapter({"android:entries", "itemLayoutId", "dropdownResId"})
     public static <T> void bindSpinnerArray(Spinner view, @NonNull T[] list, int resourceId, int dropdownResourceId) {
         ArrayAdapter<T> arrayAdapter = new ArrayAdapter<>(view.getContext(), resourceId, list);
         arrayAdapter.setDropDownViewResource(dropdownResourceId);

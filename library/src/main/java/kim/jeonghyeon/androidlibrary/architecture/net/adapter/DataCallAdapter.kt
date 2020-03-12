@@ -1,21 +1,23 @@
 package kim.jeonghyeon.androidlibrary.architecture.net.adapter
 
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kim.jeonghyeon.androidlibrary.architecture.net.error.*
-import kim.jeonghyeon.androidlibrary.architecture.net.model.ResponseBody
-import kim.jeonghyeon.androidlibrary.architecture.net.model.isSuccess
+import kim.jeonghyeon.androidlibrary.architecture.net.model.ErrorBody
+import kim.jeonghyeon.androidlibrary.architecture.net.model.ResponseCodeConstants.ERROR_CUSTOM
 import okhttp3.Request
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
-import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
-class DataCallAdapter<U, T : ResponseBody<U>>(
-    private val type: ParameterizedType
-) : CallAdapter<T, Call<U>> {
+class DataCallAdapter<U>(
+    private val type: Type
+) : CallAdapter<U, Call<U>> {
     override fun responseType() = type
-    override fun adapt(call: Call<T>): Call<U> = DataCall(type, call)
+    override fun adapt(call: Call<U>): Call<U> = DataCall(type, call)
 
     abstract class CallDelegate<TIn, TOut>(
         protected val proxy: Call<TIn>
@@ -35,11 +37,11 @@ class DataCallAdapter<U, T : ResponseBody<U>>(
         abstract fun cloneImpl(): Call<TOut>
     }
 
-    class DataCall<U, T : ResponseBody<U>>(val type: ParameterizedType, proxy: Call<T>) :
-        CallDelegate<T, U>(proxy) {
+    class DataCall<U>(val type: Type, proxy: Call<U>) :
+        CallDelegate<U, U>(proxy) {
         override fun enqueueImpl(callback: Callback<U>) {
-            proxy.enqueue(object : Callback<T> {
-                override fun onFailure(call: Call<T>, t: Throwable) {
+            proxy.enqueue(object : Callback<U> {
+                override fun onFailure(call: Call<U>, t: Throwable) {
                     val resourceError = when (t) {
                         is IOException -> NoNetworkError(t)
                         else -> UnknownError(t)
@@ -47,35 +49,30 @@ class DataCallAdapter<U, T : ResponseBody<U>>(
                     callback.onFailure(this@DataCall, resourceError)
                 }
 
-                override fun onResponse(call: Call<T>, response: Response<T>) {
+                override fun onResponse(call: Call<U>, response: Response<U>) {
                     onResponse(response, callback)
                 }
             })
         }
 
-        private fun onResponse(response: Response<T>, callback: Callback<U>) {
+        private fun onResponse(response: Response<U>, callback: Callback<U>) {
             val body = response.body()
             if (response.isSuccessful && body != null) {
-                if (body.isSuccess()) {
-                    callback.onResponse(this, Response.success(body.data.convertUnit()))
-                } else {
-                    callback.onFailure(this, MessageCodeError(body.code, body.message ?: ""))
-                }
+                callback.onResponse(this, Response.success(body.convertUnit()))
             } else {
-                callback.onFailure(this, getHttpError(response))
-                //TODO  : remove ResponseBody and split success and error. and reflect on sample test as well
-//                val errorBodyString = response.errorBody()?.string()
-//                if (!errorBodyString.isNullOrEmpty()) {
-//                    try {
-//                        val errorBody = Gson().fromJson(errorBodyString, ErrorBody::class.java)
-//                        ErrorBodyError(errorBody)
-//                    } catch (e: JsonSyntaxException) {
-//                        e.printStackTrace()
-//                        getHttpError(response)
-//                    }
-//                } else {
-//                    getHttpError(response)
-//                }
+                val errorBodyString = response.errorBody()?.string()
+                if (response.code() == ERROR_CUSTOM && !errorBodyString.isNullOrEmpty()) {
+                    try {
+                        ErrorBodyError(Gson().fromJson(errorBodyString, ErrorBody::class.java))
+                    } catch (e: JsonSyntaxException) {
+                        e.printStackTrace()
+                        getHttpError(response)
+                    }
+                } else {
+                    getHttpError(response)
+                }.let {
+                    callback.onFailure(this, it)
+                }
             }
         }
 
@@ -83,14 +80,15 @@ class DataCallAdapter<U, T : ResponseBody<U>>(
          * if return type is omit, then return type is Unit. but server may return null or other value. in that case, we ignore the value and return just Unit
          */
         private fun U.convertUnit(): U {
-            val returnType = type.actualTypeArguments[0]!!
+            val returnType = type
+            //TODO : is equal okay?
             return if (returnType == Unit.javaClass) {
                 @Suppress("UNCHECKED_CAST")
                 Unit as U
             } else this
         }
 
-        private fun getHttpError(response: Response<T>): ResourceError {
+        private fun getHttpError(response: Response<U>): ResourceError {
             val msg = response.message()
 
             return if (msg.isNullOrEmpty()) {

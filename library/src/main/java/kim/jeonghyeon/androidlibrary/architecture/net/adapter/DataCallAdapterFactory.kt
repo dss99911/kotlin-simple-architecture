@@ -1,6 +1,5 @@
 package kim.jeonghyeon.androidlibrary.architecture.net.adapter
 
-import kim.jeonghyeon.androidlibrary.architecture.net.model.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
@@ -18,27 +17,9 @@ class DataCallAdapterFactory : CallAdapter.Factory() {
         }
 
         val genericType = getParameterUpperBound(0, returnType as ParameterizedType)
-        val genericClass = getRawType(genericType)
-        if (genericClass == ResponseBody::class.java) {
-            return null//ex) Call<ResponseBody<Data>>
-        }
 
-        val baseResponseBodyGenericType = object : ParameterizedType {
-            override fun getRawType(): Type {
-                return ResponseBody::class.java
-            }
-
-            override fun getOwnerType(): Type? {
-                return null
-            }
-
-            override fun getActualTypeArguments(): Array<Type> {
-                return arrayOf(genericType)
-            }
-        }
-
-        return DataCallAdapter<Any, ResponseBody<Any>>(
-            baseResponseBodyGenericType
+        return DataCallAdapter<Any>(
+            genericType
         )
     }
 }

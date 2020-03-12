@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph_view_mdoel"
+        app:startDestination="@id/viewModelFragment">
+
+    <fragment
+            android:id="@+id/viewModelFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.ViewModelFragment"
+            android:label="@string/view_model_related"
+            tools:layout="@layout/fragment_view_model">
+        <action
+                android:id="@+id/action_viewModelFragment_to_debounceFragment"
+                app:destination="@id/debounceFragment" />
+        <action
+                android:id="@+id/action_viewModelFragment_to_navArgsFragment"
+                app:destination="@id/navArgsFragment" />
+        <action
+                android:id="@+id/action_viewModelFragment_to_parentFragment"
+                app:destination="@id/parentFragment" />
+        <action
+                android:id="@+id/action_viewModelFragment_to_otherViewModelFragment"
+                app:destination="@id/otherViewModelFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/debounceFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.debounce.DebounceFragment"
+            android:label="DebounceFragment"
+            tools:layout="@layout/fragment_debounce" />
+    <fragment
+            android:id="@+id/navArgsFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.navargs.NavArgsFragment"
+            android:label="NavArgsFragment"
+            tools:layout="@layout/fragment_nav">
+        <argument
+                android:name="abc"
+                android:defaultValue="1"
+                app:argType="integer" />
+    </fragment>
+    <fragment
+            android:id="@+id/parentFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.parent.ParentFragment"
+            android:label="ParentFragment"
+            tools:layout="@layout/fragment_parent" />
+
+    <fragment
+            android:id="@+id/otherViewModelFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelFragment"
+            android:label="OtherViewModelFragment"
+            tools:layout="@layout/fragment_other_view_model" />
+</navigation>

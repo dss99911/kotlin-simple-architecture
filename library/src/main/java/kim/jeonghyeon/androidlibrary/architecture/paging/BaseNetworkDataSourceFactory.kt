@@ -4,7 +4,9 @@ import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
 import androidx.paging.toLiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageSize: Int) : DataSource.Factory<String, ITEM>() {
 
@@ -18,7 +20,7 @@ abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageS
     abstract fun getListFromResponseData(data: RDATA): List<ITEM>
 
     /**
-     * if next page doesn't exist, return is null
+     * if next page doesn't exist, returns null
      */
     abstract fun getNextPageFromResponseData(data: RDATA, currentPage: Int, currentRequestedPageSize: Int): Int?
 
@@ -71,23 +73,31 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
     abstract fun getNextPageFromResponseData(data: RDATA, currentPage: Int, currentRequestedPageSize: Int): Int?
 
     /**
-     * todo at first time, it calls pageSize * 3. and then call pageSize
+     * todo at first time, it calls pageSize * 3. and then call pageSize. need to check pageSize * 3 is fixed amount
+     * now error occurs.
      * on loadAfter, how do we know that, at first time, it is
      */
     override fun loadInitial(params: LoadInitialParams<String>, callback: LoadInitialCallback<String, ITEM>) {
-        GlobalScope.loadResource(loadState, {
-            createCall(1, params.requestedLoadSize)
-        }, {
-            it.onSuccess {
-                @Suppress("UNCHECKED_CAST")
-                it as RDATA
-                callback.onResult(getListFromResponseData(it), null,  getNextPageFromResponseData(it, 1, params.requestedLoadSize).toString())
-            }.onError {
-                retry = {
-                    loadInitial(params, callback)
+        GlobalScope.launch(Dispatchers.Main) {
+            loadResource(loadState, {
+                createCall(1, params.requestedLoadSize)
+            }, {
+                it.onSuccess {
+                    @Suppress("UNCHECKED_CAST")
+                    it as RDATA
+                    callback.onResult(
+                        getListFromResponseData(it),
+                        null,
+                        getNextPageFromResponseData(it, 1, params.requestedLoadSize)?.toString()
+                    )
+                }.onError {
+                    retry = {
+                        loadInitial(params, callback)
+                    }
                 }
-            }
-        })
+            })
+        }
+
     }
 
     override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<String, ITEM>) {
@@ -95,18 +105,27 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
     }
 
     override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<String, ITEM>) {
-        GlobalScope.loadResource(loadState, {
-            createCall(params.key.toInt(), params.requestedLoadSize)
-        }, {
-            it.onSuccess {
-                @Suppress("UNCHECKED_CAST")
-                it as RDATA
-                callback.onResult(getListFromResponseData(it), getNextPageFromResponseData(it, params.key.toInt(), params.requestedLoadSize).toString())
-            }.onError {
-                retry = {
-                    loadAfter(params, callback)
+        GlobalScope.launch(Dispatchers.Main) {
+            loadResource(loadState, {
+                createCall(params.key.toInt(), params.requestedLoadSize)
+            }, {
+                it.onSuccess {
+                    @Suppress("UNCHECKED_CAST")
+                    it as RDATA
+                    callback.onResult(
+                        getListFromResponseData(it),
+                        getNextPageFromResponseData(
+                            it,
+                            params.key.toInt(),
+                            params.requestedLoadSize
+                        ).toString()
+                    )
+                }.onError {
+                    retry = {
+                        loadAfter(params, callback)
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 }

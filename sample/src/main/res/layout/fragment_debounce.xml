@@ -5,7 +5,7 @@
 
         <variable
                 name="model"
-                type="kim.jeonghyeon.sample.viewmodel.DebounceViewModel" />
+                type="kim.jeonghyeon.sample.viewmodel.debounce.DebounceViewModel" />
 
     </data>
 
