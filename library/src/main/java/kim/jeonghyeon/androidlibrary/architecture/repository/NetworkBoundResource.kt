@@ -4,7 +4,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
-import kim.jeonghyeon.androidlibrary.architecture.livedata.asBase
+import kim.jeonghyeon.androidlibrary.architecture.livedata.asLiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.loadResource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> :
 
     init {
         @Suppress("LeakingThis")
-        val dbSource = loadFromDb().asBase()
+        val dbSource = loadFromDb().asLiveObject()
         //this will be active on observe
         addSource(dbSource) { dbData ->
             removeSource(dbSource)//load from data on init. it's no need more. so remove

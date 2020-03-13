@@ -72,6 +72,11 @@ class TasksFragment : BaseFragment() {
             newTaskEvent.observeEvent {
                 navigateToAddNewTask()
             }
+            items.observe {
+                if (it.isError()) {
+                    showSnackbar(R.string.loading_tasks_error)
+                }
+            }
         }
     }
 

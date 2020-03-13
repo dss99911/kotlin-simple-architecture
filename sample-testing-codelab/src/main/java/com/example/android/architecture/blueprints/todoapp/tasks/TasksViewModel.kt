@@ -51,13 +51,7 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
     init {
         // Set initial state
         setFiltering(TasksFilterType.ALL_TASKS)
-
         loadTasks()
-        items.observeForever {
-            if (it.isError()) {
-                showSnackbar(R.string.loading_tasks_error)
-            }
-        }
     }
 
     /**

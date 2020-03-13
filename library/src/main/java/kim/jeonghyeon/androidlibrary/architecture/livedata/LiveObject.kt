@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  *  - but we have to use Event. and understand new concept of Event.
  *  - and sometimes event and not event both case can be happen.
  *
- * BaseLiveData<>
- * .asBase()
+ * LiveObject<>
+ * .asLiveObject()
  *  - view side decide if it is event or not. viewModel doesn't need to know it.
  */
 open class LiveObject<T>() : MediatorLiveData<T>() {
@@ -205,8 +205,8 @@ fun <T> LiveObject<T>.observeUntil(@NonNull func: (T) -> Boolean) {
     })
 }
 
-fun <T> LiveData<T>.asBase(): LiveObject<T> = LiveObject<T>().apply {
-    plusAssign(this@asBase)
+fun <T> LiveData<T>.asLiveObject(): LiveObject<T> = LiveObject<T>().apply {
+    plusAssign(this@asLiveObject)
 }
 
 fun <T> LiveObject<T>.call(value: T) {

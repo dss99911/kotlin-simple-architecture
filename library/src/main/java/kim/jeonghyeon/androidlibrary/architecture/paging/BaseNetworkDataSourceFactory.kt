@@ -44,7 +44,7 @@ abstract class BaseNetworkDataSourceFactory<ITEM, RDATA : Any>(private val pageS
         get() {
             val livePagedList = toLiveData(pageSize)
             return Listing(
-                data = livePagedList.asBase(),
+                data = livePagedList.asLiveObject(),
                     loadState = sourceLiveData.switchMap { it.loadState },
                     retry = { sourceLiveData.value?.retryFailed() },
                     refresh = { sourceLiveData.value?.invalidate() }
