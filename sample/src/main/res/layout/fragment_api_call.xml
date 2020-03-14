@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_threadingApiCallFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/threading" />
+
+        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_callbackApiCallFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/callback" />
+
+        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_chainingApiCallFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/chaining" />
+
+        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_reactiveApiCallFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reactive" />
+
+        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_coroutineApiCallFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/coroutine" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/multiple_parallel_call" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/polling" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/debounce" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/call_in_idle" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/retry" />
+
+
+    </LinearLayout>
+</layout>

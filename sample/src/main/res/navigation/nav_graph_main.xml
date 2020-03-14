@@ -33,6 +33,9 @@
         <action
                 android:id="@+id/action_mainFragment_to_nav_graph_list"
                 app:destination="@id/nav_graph_list" />
+        <action
+                android:id="@+id/action_mainFragment_to_nav_graph_api_call"
+                app:destination="@id/nav_graph_api_call" />
 
         <!-- argument example
         <argument
@@ -61,6 +64,7 @@
     <fragment
             android:id="@+id/deeplink_dest"
             android:name="kim.jeonghyeon.sample.MainFragment" />
+    <include app:graph="@navigation/nav_graph_api_call" />
 
     <!-- use argument for attribute value
     <fragment

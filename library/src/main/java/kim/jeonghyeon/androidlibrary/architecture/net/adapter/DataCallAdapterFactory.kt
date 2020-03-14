@@ -12,6 +12,8 @@ class DataCallAdapterFactory : CallAdapter.Factory() {
             annotations: Array<Annotation>,
             retrofit: Retrofit
     ): CallAdapter<*, *>? {
+        //case1. return type is Call<T>
+        //case2. return type is T + suspend
         if (getRawType(returnType) != Call::class.java) {
             return null
         }

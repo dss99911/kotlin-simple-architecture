@@ -71,6 +71,7 @@ interface IBaseViewModel {
 
     fun <T> LiveResource<T>.loadDebounce(timeInMillis: Long, work: suspend CoroutineScope.() -> T)
 
+    //TODO HYUN : this has learning curve which is not straight-forward to understand. consider to delete
     fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
         part2: suspend CoroutineScope.(T) -> U

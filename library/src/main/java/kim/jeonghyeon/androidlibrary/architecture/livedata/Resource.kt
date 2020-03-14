@@ -67,4 +67,4 @@ fun <T> Resource<T>.asLive() = LiveResource(this)
 
 typealias State = Resource<Any?>
 
-class ResourceException(val error: ResourceError) : Exception()
+class ResourceException(val error: ResourceError) : RuntimeException(error)

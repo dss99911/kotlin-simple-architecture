@@ -44,7 +44,7 @@ class DataCallAdapter<U>(
                 override fun onFailure(call: Call<U>, t: Throwable) {
                     val resourceError = when (t) {
                         is IOException -> NoNetworkError(t)
-                        else -> UnknownError(t)
+                        else -> UnknownResourceError(t)
                     }
                     callback.onFailure(this@DataCall, resourceError)
                 }
@@ -57,8 +57,8 @@ class DataCallAdapter<U>(
 
         private fun onResponse(response: Response<U>, callback: Callback<U>) {
             val body = response.body()
-            if (response.isSuccessful && body != null) {
-                callback.onResponse(this, Response.success(body.convertUnit()))
+            if (response.isSuccessful) {
+                callback.onResponse(this, Response.success(body?.convertUnit() as U))
             } else {
                 val errorBodyString = response.errorBody()?.string()
                 if (response.code() == ERROR_CUSTOM && !errorBodyString.isNullOrEmpty()) {
@@ -92,7 +92,7 @@ class DataCallAdapter<U>(
             val msg = response.message()
 
             return if (msg.isNullOrEmpty()) {
-                UnknownError()
+                UnknownResourceError()
             } else {
                 HttpError(response.code(), msg)
             }

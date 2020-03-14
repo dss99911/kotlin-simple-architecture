@@ -4,7 +4,7 @@ import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
-import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownError
+import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownResourceError
 import kotlinx.coroutines.*
 
 typealias LiveResource<T> = LiveObject<Resource<T>>
@@ -134,7 +134,7 @@ private suspend fun <T> CoroutineScope.getResource(
 } catch (e: ResourceException) {
     Resource.Error(e.error, retry)
 } catch (e: Exception) {
-    Resource.Error(UnknownError(e), retry)
+    Resource.Error(UnknownResourceError(e), retry)
 }
 
 //endregion loadResource
@@ -147,7 +147,7 @@ fun <X, Y> LiveResource<X>.successDataMap(@NonNull func: (X) -> Y): LiveResource
         is Resource.Success -> try {
             Resource.Success(func(it.data))
         } catch (e: Exception) {
-            val error = e as? ResourceError ?: UnknownError(e)
+            val error = e as? ResourceError ?: UnknownResourceError(e)
             error.asResource()
         }
         else -> it as Resource<Y>
@@ -161,7 +161,7 @@ fun <X, Y> LiveResource<X>.successSwitchMap(@NonNull func: (X) -> LiveResource<Y
             is Resource.Success -> try {
                 func(it.data)
             } catch (e: Exception) {
-                val error = e as? ResourceError ?: UnknownError(e)
+                val error = e as? ResourceError ?: UnknownResourceError(e)
                 error.asLiveResource<Y>()
             }
             else -> (it as Resource<Y>).asLive()
@@ -175,7 +175,7 @@ fun <X, Y> LiveResource<X>.successMap(@NonNull func: (X) -> Resource<Y>): LiveRe
         is Resource.Success -> try {
             func(it.data)
         } catch (e: Exception) {
-            val error = e as? ResourceError ?: UnknownError(e)
+            val error = e as? ResourceError ?: UnknownResourceError(e)
             error.asResource()
         }
         else -> it as Resource<Y>

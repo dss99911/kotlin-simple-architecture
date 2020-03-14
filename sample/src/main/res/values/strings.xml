@@ -34,4 +34,13 @@
     <string name="keyword">keyword</string>
     <string name="search">Search</string>
     <string name="comparable_list">comparable list</string>
+    <string name="multiple_sequential_call">multiple sequential call</string>
+    <string name="polling">polling</string>
+    <string name="multiple_parallel_call">multiple parallel call</string>
+    <string name="call_in_idle">call in idle</string>
+    <string name="threading">Threading</string>
+    <string name="callback">Callback</string>
+    <string name="chaining">Chaining</string>
+    <string name="reactive">Reactive</string>
+    <string name="coroutine">coroutine</string>
 </resources>

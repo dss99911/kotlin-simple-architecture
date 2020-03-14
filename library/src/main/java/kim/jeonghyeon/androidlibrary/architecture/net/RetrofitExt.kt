@@ -9,6 +9,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 inline fun <reified API> api(baseUrl: String): API {
+    return apiBuilder(baseUrl)
+        .build()
+        .create(API::class.java)
+}
+
+fun apiBuilder(baseUrl: String): Retrofit.Builder {
     val client = OkHttpClient.Builder().apply {
         if (!isProdRelease) {
             addInterceptor(HttpLoggingInterceptor().apply {
@@ -19,10 +25,8 @@ inline fun <reified API> api(baseUrl: String): API {
     }.build()
 
     return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(DataCallAdapterFactory())
-            .build()
-            .create(API::class.java)
+        .baseUrl(baseUrl)
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(DataCallAdapterFactory())
 }
