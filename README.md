@@ -9,6 +9,10 @@ this library achieves the belows.
 4. Simple to use latest architecture : you don't need to spend a lot of time for what is latest architecture, how to make good code. just follow sample, then you'll write code at least not bad.
 5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
+# Articles
+- [LiveData And Event](livedata)
+- [RecyclerView](recyclerview)
+
 # Planning
 Currently this is focusing on only android development.
 but with Kotlin multiplatform, will support spring, ktor, ios, frontend.
@@ -31,3 +35,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+[livedata]: https://medium.com/@dss99911/simple-android-architecture-livedata-and-event-92f5f4b04af7
+[recyclerview]: https://medium.com/@dss99911/simple-android-architecture-recyclerview-ef5fdd7dac0a
