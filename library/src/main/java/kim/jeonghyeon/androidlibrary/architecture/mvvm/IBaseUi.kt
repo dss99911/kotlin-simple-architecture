@@ -19,6 +19,7 @@ import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
+import kim.jeonghyeon.androidlibrary.architecture.net.error.MessageError
 import kim.jeonghyeon.androidlibrary.extension.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
@@ -89,7 +90,8 @@ fun IBaseUi.resourceObserverCommon(onResult: (State) -> Boolean = { false }): Ob
         dismissSnackbar(binding.root)// if state is changed, dismiss snackbar if it's shown.
 
         it.onError {
-            showErrorSnackbar(binding.root, it.retry)
+            val errorMessage = if (it.error is MessageError) it.error.errorMessage else null
+            showErrorSnackbar(binding.root, errorMessage, it.retry)
         }
 
     }
@@ -106,8 +108,10 @@ fun dismissSnackbar(view: View) {
     view.setTag(R.id.view_tag_snackbar, null)
 }
 
-fun showErrorSnackbar(view: View, retry: () -> Unit) {
-    view.showSnackbar(ctx.getString(R.string.error_occurred), Snackbar.LENGTH_SHORT, retry).also {
+fun showErrorSnackbar(view: View, message: String? = null, retry: () -> Unit) {
+    val snackbarText =
+        ctx.getString(R.string.error_occurred) + if (message == null) "" else " : $message"
+    view.showSnackbar(snackbarText, Snackbar.LENGTH_INDEFINITE, retry).also {
         view.setTag(R.id.view_tag_snackbar, it)
     }
 }

@@ -5,7 +5,7 @@
 
         <variable
                 name="model"
-                type="kim.jeonghyeon.sample.viewmodel.debounce.DebounceViewModel" />
+                type="kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel" />
 
     </data>
 
@@ -15,15 +15,8 @@
             android:orientation="vertical">
 
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{model.result.get()}" />
-
-        <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/input_text"
-                android:text="@={model.inputText}" />
-
+                android:text="@{model.result.toString()}" />
     </LinearLayout>
 </layout>

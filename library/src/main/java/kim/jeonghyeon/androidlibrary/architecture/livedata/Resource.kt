@@ -13,6 +13,7 @@ sealed class Resource<out T> {
         }
     }
 
+
     fun get(): T? = when (this) {
         is Success -> data
         else -> null
@@ -67,4 +68,5 @@ fun <T> Resource<T>.asLive() = LiveResource(this)
 
 typealias State = Resource<Any?>
 
+//TODO : is this required? ResourceError seems enough.
 class ResourceException(val error: ResourceError) : RuntimeException(error)

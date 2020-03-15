@@ -2,6 +2,7 @@ package kim.jeonghyeon.androidlibrary.architecture.net.adapter
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceException
 import kim.jeonghyeon.androidlibrary.architecture.net.error.*
 import kim.jeonghyeon.androidlibrary.architecture.net.model.ErrorBody
 import kim.jeonghyeon.androidlibrary.architecture.net.model.ResponseCodeConstants.ERROR_CUSTOM
@@ -71,7 +72,7 @@ class DataCallAdapter<U>(
                 } else {
                     getHttpError(response)
                 }.let {
-                    callback.onFailure(this, it)
+                    callback.onFailure(this, ResourceException(it))
                 }
             }
         }

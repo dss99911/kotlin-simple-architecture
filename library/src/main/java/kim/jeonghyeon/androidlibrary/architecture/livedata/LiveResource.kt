@@ -3,6 +3,7 @@ package kim.jeonghyeon.androidlibrary.architecture.livedata
 import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
+import kim.jeonghyeon.androidlibrary.architecture.net.error.PollingError
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
 import kim.jeonghyeon.androidlibrary.architecture.net.error.UnknownResourceError
 import kotlinx.coroutines.*
@@ -189,8 +190,9 @@ fun <X, Y> LiveResource<X>.successMap(@NonNull func: (X) -> Resource<Y>): LiveRe
 /**
  * don't use this after other async(), if the async() error occrus, this should be stopped but because of try catch, this is not stopped.
  * @param action returns data and not polling again. but if exception occurs, polling
+ * can you handle polling fail by [PollingError] on view side
  */
-@Throws(PollingException::class)
+@Throws(ResourceException::class)
 suspend inline fun <T> polling(
     count: Int,
     initialDelay: Long,
@@ -206,10 +208,8 @@ suspend inline fun <T> polling(
             delay(delayMillis)
         }
     }
-    throw PollingException()
+    throw ResourceException(PollingError())
 }
-
-class PollingException : RuntimeException()
 
 //endregion polling
 

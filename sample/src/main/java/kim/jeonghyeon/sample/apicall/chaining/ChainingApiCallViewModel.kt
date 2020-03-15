@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.apicall.chaining
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.plusAssign
 import kim.jeonghyeon.androidlibrary.architecture.livedata.successSwitchMap
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.sample.apicall.Item
@@ -14,9 +15,8 @@ class ChainingApiCallViewModel(val api: ChainingApi) : BaseViewModel() {
     }
 
     fun postItem(item: Item) {
-        api.getToken()
+        result += api.getToken()
             .successSwitchMap { token -> api.submitPost(PostRequestBody(token, item)) }
-            .let { result.addSource(it, result::setValue) }
     }
 }
 

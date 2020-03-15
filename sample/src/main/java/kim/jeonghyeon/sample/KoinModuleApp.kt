@@ -10,8 +10,12 @@ import kim.jeonghyeon.sample.apicall.chaining.ChainingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.chaining.LiveDataCallAdapterFactory
 import kim.jeonghyeon.sample.apicall.coroutine.CoroutineApi
 import kim.jeonghyeon.sample.apicall.coroutine.CoroutineApiCallViewModel
+import kim.jeonghyeon.sample.apicall.debounce.DebounceApiCallViewModel
+import kim.jeonghyeon.sample.apicall.parallel.ParallelApiCallViewModel
+import kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApi
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApiCallViewModel
+import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
 import kim.jeonghyeon.sample.list.ListViewModel
@@ -23,7 +27,6 @@ import kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListViewModel
 import kim.jeonghyeon.sample.view.ViewViewModel
 import kim.jeonghyeon.sample.view.menu.MenuViewModel
 import kim.jeonghyeon.sample.viewmodel.ViewModelViewModel
-import kim.jeonghyeon.sample.viewmodel.debounce.DebounceViewModel
 import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsFragmentArgs
 import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsViewModel
 import kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelViewModel
@@ -52,7 +55,6 @@ val appModule = module {
     viewModel { ViewModelViewModel() }
     viewModel { (args: NavArgsFragmentArgs) -> NavArgsViewModel(args) }
     viewModel { (parent: MainActivityViewModel) -> ParentViewModel(parent) }
-    viewModel { DebounceViewModel() }
     viewModel { (mainViewModel: MainViewModel) -> OtherViewModelViewModel(mainViewModel) }
 
     //api call
@@ -61,6 +63,10 @@ val appModule = module {
     viewModel { ChainingApiCallViewModel(get()) }
     viewModel { ReactiveApiCallViewModel(get()) }
     viewModel { CoroutineApiCallViewModel(get()) }
+    viewModel { ParallelApiCallViewModel(get()) }
+    viewModel { PollingApiCallViewModel(get()) }
+    viewModel { DebounceApiCallViewModel(get()) }
+    viewModel { RetryApiCallViewModel(get()) }
     factory {
         apiBuilder("http://demo7661478.mockable.io/")
             .addCallAdapterFactory(ThreadingCallAdapterFactory())

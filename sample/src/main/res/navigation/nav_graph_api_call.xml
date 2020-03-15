@@ -25,6 +25,18 @@
         <action
                 android:id="@+id/action_apiCallFragment_to_coroutineApiCallFragment"
                 app:destination="@id/coroutineApiCallFragment" />
+        <action
+                android:id="@+id/action_apiCallFragment_to_parallelApiCallFragment"
+                app:destination="@id/parallelApiCallFragment" />
+        <action
+                android:id="@+id/action_apiCallFragment_to_pollingApiCallFragment"
+                app:destination="@id/pollingApiCallFragment" />
+        <action
+                android:id="@+id/action_apiCallFragment_to_debounceApiCallFragment"
+                app:destination="@id/debounceApiCallFragment" />
+        <action
+                android:id="@+id/action_apiCallFragment_to_retryApiCallFragment"
+                app:destination="@id/retryApiCallFragment" />
     </fragment>
     <fragment
             android:id="@+id/threadingApiCallFragment"
@@ -51,4 +63,24 @@
             android:name="kim.jeonghyeon.sample.apicall.coroutine.CoroutineApiCallFragment"
             android:label="CoroutineApiCallFragment"
             tools:layout="@layout/fragment_coroutine_api_call" />
+    <fragment
+            android:id="@+id/parallelApiCallFragment"
+            android:name="kim.jeonghyeon.sample.apicall.parallel.ParallelApiCallFragment"
+            android:label="ParallelApiCallFragment"
+            tools:layout="@layout/fragment_parallel_api_call" />
+    <fragment
+            android:id="@+id/pollingApiCallFragment"
+            android:name="kim.jeonghyeon.sample.apicall.polling.PollingApiCallFragment"
+            android:label="PollingApiCallFragment"
+            tools:layout="@layout/fragment_polling_api_call" />
+    <fragment
+            android:id="@+id/debounceApiCallFragment"
+            android:name="kim.jeonghyeon.sample.apicall.debounce.DebounceApiCallFragment"
+            android:label="DebounceApiCallFragment"
+            tools:layout="@layout/fragment_debounce_api_call" />
+    <fragment
+            android:id="@+id/retryApiCallFragment"
+            android:name="kim.jeonghyeon.sample.apicall.retry.RetryApiCallFragment"
+            android:label="RetryApiCallFragment"
+            tools:layout="@layout/fragment_retry_api_call" />
 </navigation>

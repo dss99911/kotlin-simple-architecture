@@ -11,9 +11,6 @@
             android:label="@string/view_model_related"
             tools:layout="@layout/fragment_view_model">
         <action
-                android:id="@+id/action_viewModelFragment_to_debounceFragment"
-                app:destination="@id/debounceFragment" />
-        <action
                 android:id="@+id/action_viewModelFragment_to_navArgsFragment"
                 app:destination="@id/navArgsFragment" />
         <action
@@ -23,11 +20,6 @@
                 android:id="@+id/action_viewModelFragment_to_otherViewModelFragment"
                 app:destination="@id/otherViewModelFragment" />
     </fragment>
-    <fragment
-            android:id="@+id/debounceFragment"
-            android:name="kim.jeonghyeon.sample.viewmodel.debounce.DebounceFragment"
-            android:label="DebounceFragment"
-            tools:layout="@layout/fragment_debounce" />
     <fragment
             android:id="@+id/navArgsFragment"
             android:name="kim.jeonghyeon.sample.viewmodel.navargs.NavArgsFragment"

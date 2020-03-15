@@ -17,15 +17,5 @@ class CoroutineApiCallViewModel(val api: CoroutineApi) : BaseViewModel() {
             api.submitPost(PostRequestBody(api.getToken(), item))
         }
     }
-
-//    fun <T> LiveResource<T>.load(action: suspend () -> T) {
-//        viewModelScope.launch {
-//            try {
-//                postSuccess(action())
-//            } catch (e: Exception) {
-//                postError(kim.jeonghyeon.androidlibrary.architecture.net.error.MessageError("error occurs"))
-//            }
-//        }
-//    }
 }
 

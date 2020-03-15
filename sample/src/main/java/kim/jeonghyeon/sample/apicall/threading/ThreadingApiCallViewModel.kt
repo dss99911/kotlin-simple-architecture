@@ -5,7 +5,6 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.ResourceException
 import kim.jeonghyeon.androidlibrary.architecture.livedata.postError
 import kim.jeonghyeon.androidlibrary.architecture.livedata.postSuccess
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.sample.apicall.Item
 import kim.jeonghyeon.sample.apicall.PostRequestBody
 
@@ -28,7 +27,6 @@ fun <T> LiveResource<T>.loadData(action: () -> T) {
         try {
             postSuccess(action())
         } catch (e: ResourceException) {
-            log(e)
             postError(e.error)
         }
     }.start()

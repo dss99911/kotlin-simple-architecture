@@ -37,26 +37,25 @@
                 android:text="@string/coroutine" />
 
         <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_parallelApiCallFragment}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/multiple_parallel_call" />
 
         <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_pollingApiCallFragment}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/polling" />
 
         <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_debounceApiCallFragment}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/debounce" />
 
         <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/call_in_idle" />
-
-        <Button
+                onClickNavigate="@{@id/action_apiCallFragment_to_retryApiCallFragment}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/retry" />
