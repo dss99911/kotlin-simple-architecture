@@ -1,4 +1,4 @@
-# Simple architecture
+# Simple Android Architecture
 
 this library is focusing on how to develop simple.
 
@@ -10,8 +10,14 @@ this library achieves the belows.
 5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
 # Articles
-- [LiveData And Event](livedata)
-- [RecyclerView](recyclerview)
+- [Remove boilerplate code of RecyclerView][recyclerview]
+- [LiveData and event][livedata]
+- [Coroutine Api call and error handling in Retrofit2][coroutine]
+
+# Samples
+- [Sample][sample] : shows usage of Simple Android Architecture one by one
+- [Sunflower Sample][sample-sunflower] : this is converted version of [Android Sunflower sample][android-sunflower]
+- [Testing Sample][sample-testing] : this is converted version of [Android Testing Codelab][android-testing]
 
 # Planning
 Currently this is focusing on only android development.
@@ -37,3 +43,9 @@ limitations under the License.
 ```
 [livedata]: https://medium.com/@dss99911/simple-android-architecture-livedata-and-event-92f5f4b04af7
 [recyclerview]: https://medium.com/@dss99911/simple-android-architecture-recyclerview-ef5fdd7dac0a
+[sample]: https://github.com/dss99911/simple-android-architecture/tree/master/sample
+[sample-sunflower]: https://github.com/dss99911/simple-android-architecture/tree/master/sample-sunflower
+[sample-testing]: https://github.com/dss99911/simple-android-architecture/tree/master/sample-testing-codelab
+[android-sunflower]: https://github.com/android/sunflower
+[android-testing]: https://github.com/googlecodelabs/android-testing
+[coroutine]: https://medium.com/@dss99911/simple-android-architecture-coroutine-api-call-and-error-handling-in-retrofit2-1677d0f84f56
