@@ -10,7 +10,7 @@ this library achieves the belows.
 5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
 # Articles
-- [LiveData And Event](livedata)
+- [LiveData And Event][livedata]
 - [RecyclerView](recyclerview)
 
 # Samples
