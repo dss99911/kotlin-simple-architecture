@@ -11,12 +11,12 @@ this library achieves the belows.
 
 # Articles
 - [LiveData And Event][livedata]
-- [RecyclerView](recyclerview)
+- [RecyclerView][recyclerview]
 
 # Samples
-- [Sample](sample) : shows usage of Simple Android Architecture one by one
-- [Sunflower Sample](sample-sunflower) : this is converted version of [Android Sunflower sample](android-sunflower)
-- [Testing Sample](sample-testing) : this is converted version of [Android Testing Codelab](android-testing)
+- [Sample][sample] : shows usage of Simple Android Architecture one by one
+- [Sunflower Sample][sample-sunflower] : this is converted version of [Android Sunflower sample][android-sunflower]
+- [Testing Sample][sample-testing] : this is converted version of [Android Testing Codelab][android-testing]
 
 # Planning
 Currently this is focusing on only android development.
