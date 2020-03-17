@@ -16,7 +16,7 @@
             tools:context="kim.jeonghyeon.sample.MainFragment">
 
         <Button
-                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view_mdoel}"
+                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view_model}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/view_model_related" />

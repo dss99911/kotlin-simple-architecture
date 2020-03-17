@@ -2,4 +2,6 @@ package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 
-class MainActivityViewModel : BaseViewModel()
+class MainActivityViewModel : BaseViewModel() {
+    val text = "parent"
+}

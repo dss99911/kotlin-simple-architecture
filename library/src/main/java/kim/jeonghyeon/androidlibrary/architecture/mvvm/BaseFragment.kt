@@ -1,7 +1,9 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -16,6 +18,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
@@ -35,7 +38,7 @@ import org.koin.core.qualifier.Qualifier
 
 /**
  *
- * [layoutId] : input activity layout
+ * [layoutId] : override and input fragment layout
  *
  * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
  *
@@ -49,10 +52,14 @@ import org.koin.core.qualifier.Qualifier
  *                          val viewModel by bindingViewModel<> {
  *                              parameterOf(getActivityViewModel())
  *                          }
+ * [getNavGraphViewModel] : get other fragment's view model
+ *                          val viewModel by bindingViewModel<> {
+ *                              parameterOf(getNavGraphViewModel<SomethingFragment>(R.id.fragment_something))
+ *                          }
  *
  * [toolbarId] : if you use toolbar, define toolbar's id as 'toolbar' or override this property
  *
- * [appBarConfiguration] : todo need more explanation
+ * [appBarConfiguration] : for controlling top page(showing up button or drawer button)
  *
  * [setMenu] : set menu
  *
@@ -73,11 +80,11 @@ import org.koin.core.qualifier.Qualifier
  *            fun <T> AliveData<T>.observeEvent(onChanged: (T) -> Unit)
  *            fun <T> AliveData<T>.observeEvent(observer: Observer<in T>)
  *
- * [stateObserver] : set state observer to change loading and error on state liveData
+ * [stateObserver] : set state observer to change loading and error on state liveData. you can override this for changing error ui.
  *
- * [initStateObserver] : set state observer to change loading and error on initState liveData
+ * [initStateObserver] : set state observer to change loading and error on initState liveData. you can override this for changing error ui.
  *
- * [progressDialog] : progress dialog
+ * [progressDialog] : progress dialog. override this if need to change loading ui
  *
  * [selected] : used on pager. if not used always true.
  *
@@ -87,12 +94,11 @@ abstract class BaseFragment : Fragment(),
     IBaseUi {
     override lateinit var binding: ViewDataBinding
     override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
-
+    override val viewContext: Context? get() = context
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
     override val progressDialog by lazy { createProgressDialog() }
-
     override val toolbarId: Int
         get() = R.id.toolbar
     override val navController: NavController by lazy { findNavController() }
@@ -233,6 +239,9 @@ abstract class BaseFragment : Fragment(),
                     progressDialog.dismissWithoutException()
                 }
             }
+            it.eventShowOkDialog.observeEvent {
+                showOkDialog(it.message, it.onClick)
+            }
 
             it.eventNav.observeEvent { action ->
                 action(navController)
@@ -246,6 +255,18 @@ abstract class BaseFragment : Fragment(),
             }
             it.eventPermissionSettingPage.observeEvent {
                 permissionStartActivityViewModel.startPermissionSettingsPage(it)
+            }
+            it.eventFinish.observeEvent {
+                activity?.finish()
+            }
+            it.eventFinishWithResult.observeEvent {
+                val activity = activity ?: return@observeEvent
+                if (it.data == null) {
+                    activity.setResult(it.resultCode)
+                } else {
+                    activity.setResult(it.resultCode, it.data)
+                }
+                activity.finish()
             }
         }
 
@@ -330,7 +351,12 @@ abstract class BaseFragment : Fragment(),
 
     inline fun <reified T : ViewModel> getActivityViewModel(
         qualifier: Qualifier? = null
-    ): T {
-        return getSharedViewModel(qualifier)
-    }
+    ): T = getSharedViewModel(qualifier)
+
+    /**
+     *    you can call different fragment's viewModel if it's in back stack
+     */
+    inline fun <reified T : ViewModel> getNavGraphViewModel(
+        @IdRes navGraphId: Int
+    ): T = navGraphViewModels<T>(navGraphId).value
 }

@@ -134,6 +134,7 @@ fun Fragment.createProgressDialog(): AlertDialog = AlertDialog.Builder(context)
     .create()
     .apply { window?.setBackgroundDrawable(ColorDrawable(0)) }
 
+
 fun Activity.buildListDialog(title: String, items: Array<String>, itemClickListener: (dialog:DialogInterface, which: Int) -> Unit): AlertDialog.Builder =
         AlertDialog.Builder(this)
                 .setTitle(title)

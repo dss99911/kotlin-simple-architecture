@@ -5,7 +5,7 @@
 
         <variable
                 name="model"
-                type="kim.jeonghyeon.sample.viewmodel.parent.ParentViewModel" />
+                type="kim.jeonghyeon.sample.viewmodel.permission.PermissionViewModel" />
 
     </data>
 
@@ -14,10 +14,10 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <TextView
+        <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{model.parent.text}" />
-
+                android:onClick="@{() -> model.onClickPermission()}"
+                android:text="@string/request_permission" />
     </LinearLayout>
 </layout>

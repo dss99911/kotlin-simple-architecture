@@ -17,7 +17,11 @@ inline fun <reified API> api(baseUrl: String): API {
 fun apiBuilder(baseUrl: String): Retrofit.Builder {
     val client = OkHttpClient.Builder().apply {
         if (!isProdRelease) {
-            addInterceptor(HttpLoggingInterceptor().apply {
+            addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+                override fun log(message: String) {
+                    kim.jeonghyeon.androidlibrary.extension.log(message)
+                }
+            }).apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
         }

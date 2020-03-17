@@ -1,5 +1,6 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -33,7 +34,7 @@ import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
 /**
  *
- * [layoutId] : input activity layout
+ * [layoutId] : override and input activity layout
  *
  * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
  *
@@ -69,11 +70,12 @@ import kim.jeonghyeon.androidlibrary.extension.showWithoutException
  *
  * [initStateObserver] : set state observer to change loading and error on initState liveData
  *
- * [progressDialog] : progress dialog
+ * [progressDialog] : progress dialog. override this if need to change loading ui
  *
  */
 abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
+    override val viewContext: Context? get() = this
     open val navHostId: Int = 0
     override val navController: NavController
         get() {
@@ -192,6 +194,9 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
                     progressDialog.dismissWithoutException()
                 }
             }
+            it.eventShowOkDialog.observeEvent {
+                showOkDialog(it.message, it.onClick)
+            }
 
             it.eventNav.observeEvent { action ->
                 action(navController)
@@ -204,6 +209,17 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
             }
             it.eventPermissionSettingPage.observeEvent {
                 permissionStartActivityViewModel.startPermissionSettingsPage(it)
+            }
+            it.eventFinish.observeEvent {
+                finish()
+            }
+            it.eventFinishWithResult.observeEvent {
+                if (it.data == null) {
+                    setResult(it.resultCode)
+                } else {
+                    setResult(it.resultCode, it.data)
+                }
+                finish()
             }
         }
 

@@ -1,6 +1,7 @@
 package kim.jeonghyeon.androidlibrary.architecture.mvvm
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,14 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class PermissionAndStartActivityViewModel : ViewModel() {
     private val nextRequestCode by lazy { AtomicInteger(1) }
-    private val resultListeners by lazy { SparseArray<(resultCode: Int, data: Intent?) -> Unit>() }
+    private val resultListeners by lazy { SparseArray<(StartActivityResult) -> Unit>() }
     private val permissionResultListeners by lazy { SparseArray<PermissionResultListener>() }
     @Suppress("DEPRECATION")
     internal val eventPerformWithActivity by lazy { LiveObject<Array<Event<(BaseActivity) -> Unit>>>() }
 
     fun startActivityForResult(
         intent: Intent,
-        onResult: (resultCode: Int, data: Intent?) -> Unit
+        onResult: (StartActivityResult) -> Unit
     ) {
         nextRequestCode.getAndIncrement()
         val requestCode = nextRequestCode.getAndIncrement()
@@ -55,7 +56,7 @@ class PermissionAndStartActivityViewModel : ViewModel() {
     }
 
     internal fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        resultListeners[requestCode]?.invoke(resultCode, data)
+        resultListeners[requestCode]?.invoke(StartActivityResult(resultCode, data))
         resultListeners.remove(requestCode)
     }
 
@@ -79,9 +80,25 @@ class PermissionAndStartActivityViewModel : ViewModel() {
 
         //this is called on activity because using requestCode of activity
         performWithActivity { activity ->
+            if (shouldShowRequestPermissionRationale(activity, permissions)) {
+                listener.onPermissionRationaleShouldBeShown(object : PermissionRequester {
+                    override fun request() {
+                        ActivityCompat.requestPermissions(activity, permissions, requestCode)
+                    }
+                })
+                return@performWithActivity
+            }
             ActivityCompat.requestPermissions(activity, permissions, requestCode)
         }
     }
+
+    fun shouldShowRequestPermissionRationale(
+        activity: Activity,
+        permissions: Array<String>
+    ): Boolean =
+        permissions.any {
+            ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
+        }
 
     internal fun onRequestPermissionsResult(requestCode: Int, @NonNull permissions: Array<String>, @NonNull grantResults: IntArray) {
         performWithActivity { activity ->
@@ -128,32 +145,39 @@ class PermissionAndStartActivityViewModel : ViewModel() {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
 
-        startActivityForResult(intent) { _, _ ->
+        startActivityForResult(intent) {
             listener()
         }
     }
-
 }
+
+data class StartActivityResult(val resultCode: Int, val data: Intent?)
 
 interface PermissionResultListener {
     /**
      * this will be invoked if all permission granted.
      */
-    fun onPermissionGranted() {}
+    fun onPermissionGranted()
 
     /**
      * if there is at least one permission is denied, this will be invoked.
      * @param deniedPermissions
      */
-    fun onPermissionDenied(deniedPermissions: Array<String>) {}
+    fun onPermissionDenied(deniedPermissions: Array<String>)
 
     /**
      * if there is denied permission and permanently denied permission both.
      * if at least one permanent permission exists, this method is invoked.
      */
-    fun onPermissionDeniedPermanently(deniedPermissions: Array<String>) {}
+    fun onPermissionDeniedPermanently(deniedPermissions: Array<String>)
 
-    fun onPermissionException() {}
+    fun onPermissionRationaleShouldBeShown(requester: PermissionRequester)
+
+    fun onPermissionException()
+}
+
+interface PermissionRequester {
+    fun request()
 }
 
 /**

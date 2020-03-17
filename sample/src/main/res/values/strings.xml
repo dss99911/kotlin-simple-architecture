@@ -43,4 +43,8 @@
     <string name="chaining">Chaining</string>
     <string name="reactive">Reactive</string>
     <string name="coroutine">coroutine</string>
+    <string name="start_activity">Start Activity For Result</string>
+    <string name="success">success</string>
+    <string name="cancel">cancel</string>
+    <string name="request_permission">request permission</string>
 </resources>

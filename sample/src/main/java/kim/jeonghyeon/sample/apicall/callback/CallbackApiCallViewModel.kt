@@ -47,6 +47,7 @@ fun <T> Call<T>.load(onSuccess: (T) -> Unit, onError: (ResourceError) -> Unit) {
 class ResourceCallback<T>(val onSuccess: (T) -> Unit, val onError: (ResourceError) -> Unit) :
     Callback<T> {
     override fun onResponse(call: Call<T>, response: Response<T>) {
+        @Suppress("UNCHECKED_CAST")
         onSuccess(response.body() as T)
     }
 

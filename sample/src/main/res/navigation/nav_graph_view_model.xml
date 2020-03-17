@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/nav_graph_view_mdoel"
+        android:id="@+id/nav_graph_view_model"
         app:startDestination="@id/viewModelFragment">
 
     <fragment
@@ -19,6 +19,12 @@
         <action
                 android:id="@+id/action_viewModelFragment_to_otherViewModelFragment"
                 app:destination="@id/otherViewModelFragment" />
+        <action
+                android:id="@+id/action_viewModelFragment_to_startActivityFragment"
+                app:destination="@id/startActivityFragment" />
+        <action
+                android:id="@+id/action_viewModelFragment_to_permissionFragment"
+                app:destination="@id/permissionFragment" />
     </fragment>
     <fragment
             android:id="@+id/navArgsFragment"
@@ -41,4 +47,14 @@
             android:name="kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelFragment"
             android:label="OtherViewModelFragment"
             tools:layout="@layout/fragment_other_view_model" />
+    <fragment
+            android:id="@+id/startActivityFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.startactivity.StartActivityFragment"
+            android:label="StartActivityFragment"
+            tools:layout="@layout/fragment_start_activity" />
+    <fragment
+            android:id="@+id/permissionFragment"
+            android:name="kim.jeonghyeon.sample.viewmodel.permission.PermissionFragment"
+            android:label="PermissionFragment"
+            tools:layout="@layout/fragment_permission" />
 </navigation>

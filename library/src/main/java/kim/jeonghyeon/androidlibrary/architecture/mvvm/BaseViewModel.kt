@@ -14,6 +14,8 @@ import kim.jeonghyeon.androidlibrary.extension.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 interface IBaseViewModel {
     /**
@@ -39,10 +41,13 @@ interface IBaseViewModel {
     fun showSnackbar(@StringRes textId: Int)
     fun showProgressbar()
     fun hideProgressbar()
+    fun showOkDialog(message: String, onClick: () -> Unit)
 
-    fun startActivityForResult(intent: Intent, onResult: (resultCode: Int, data: Intent?) -> Unit)
+    suspend fun startActivityForResult(intent: Intent): StartActivityResult
     fun requestPermissions(permissions: Array<String>, listener: PermissionResultListener)
     fun startPermissionSettingsPage(listener: () -> Unit)
+    fun finish()
+    fun finish(resultCode: Int, intent: Intent? = null)
 
     @MainThread
     fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
@@ -56,6 +61,10 @@ interface IBaseViewModel {
     @MainThread
     fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
 
+    /**
+     * if call several times, and after success, if error occurs, data is not changed even if it's error.
+     * use this be carefully.
+     */
     @MainThread
     fun <T> LiveObject<T>.loadDataAndState(
         state2: LiveState?,
@@ -97,11 +106,15 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     internal val eventSnackbarByString by lazy { LiveObject<String>() }
     internal val eventSnackbarById by lazy { LiveObject<Int>() }
     internal val eventStartActivity by lazy { LiveObject<Intent>() }
-    internal val eventStartActivityForResult by lazy { LiveObject<StartActivityResultData>() }
+    internal val eventStartActivityForResult by lazy { LiveObject<RequestStartActivityResult>() }
     internal val eventRequestPermission by lazy { LiveObject<PermissionData>() }
     internal val eventPermissionSettingPage by lazy { LiveObject<() -> Unit>() }
+    internal val eventFinish by lazy { LiveObject<Unit>() }
+    internal val eventFinishWithResult by lazy { LiveObject<StartActivityResult>() }
+
 
     internal val eventShowProgressBar by lazy { LiveObject<Boolean>() }
+    internal val eventShowOkDialog by lazy { LiveObject<OkDialogData>() }
 
     //this is not shown on inherited viewModel. use function.
     internal val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
@@ -146,12 +159,12 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         eventSnackbarById.call(textId)
     }
 
-    override fun startActivityForResult(
-        intent: Intent,
-        onResult: (resultCode: Int, data: Intent?) -> Unit
-    ) {
-        eventStartActivityForResult.call(StartActivityResultData(intent, onResult))
-    }
+    override suspend fun startActivityForResult(intent: Intent): StartActivityResult =
+        suspendCoroutine { continuation ->
+            eventStartActivityForResult.call(RequestStartActivityResult(intent) {
+                continuation.resume(it)
+            })
+        }
 
     @SuppressLint("ObsoleteSdkInt")//this can be used on different minimum sdk
     override fun requestPermissions(
@@ -165,12 +178,24 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
         eventPermissionSettingPage.call(listener)
     }
 
+    override fun finish() {
+        eventFinish.call()
+    }
+
+    override fun finish(resultCode: Int, intent: Intent?) {
+        eventFinishWithResult.call(StartActivityResult(resultCode, intent))
+    }
+
     override fun showProgressbar() {
         eventShowProgressBar.call(true)
     }
 
     override fun hideProgressbar() {
         eventShowProgressBar.call(false)
+    }
+
+    override fun showOkDialog(message: String, onClick: () -> Unit) {
+        eventShowOkDialog.call(OkDialogData(message, onClick))
     }
 
     override fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T) {
@@ -247,12 +272,14 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 }
 
-internal data class StartActivityResultData(
+internal data class RequestStartActivityResult(
     val intent: Intent,
-    val onResult: (resultCode: Int, data: Intent?) -> Unit
+    val onResult: (StartActivityResult) -> Unit
 )
 
 internal data class PermissionData(
     val permissions: Array<String>,
     val listener: PermissionResultListener
 )
+
+internal data class OkDialogData(val message: String, val onClick: () -> Unit)

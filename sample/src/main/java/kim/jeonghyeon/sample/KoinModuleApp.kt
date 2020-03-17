@@ -31,6 +31,9 @@ import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsFragmentArgs
 import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsViewModel
 import kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelViewModel
 import kim.jeonghyeon.sample.viewmodel.parent.ParentViewModel
+import kim.jeonghyeon.sample.viewmodel.permission.PermissionViewModel
+import kim.jeonghyeon.sample.viewmodel.startactivity.StartActivityActivityViewModel
+import kim.jeonghyeon.sample.viewmodel.startactivity.StartActivityViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -56,6 +59,9 @@ val appModule = module {
     viewModel { (args: NavArgsFragmentArgs) -> NavArgsViewModel(args) }
     viewModel { (parent: MainActivityViewModel) -> ParentViewModel(parent) }
     viewModel { (mainViewModel: MainViewModel) -> OtherViewModelViewModel(mainViewModel) }
+    viewModel { StartActivityViewModel(get()) }
+    viewModel { PermissionViewModel() }
+    viewModel { (text: String) -> StartActivityActivityViewModel(text) }
 
     //api call
     viewModel { ThreadingApiCallViewModel(get()) }

@@ -25,8 +25,8 @@
             android:label="@string/app_name"
             tools:layout="@layout/fragment_main">
         <action
-                android:id="@+id/action_mainFragment_to_nav_graph_view_mdoel"
-                app:destination="@id/nav_graph_view_mdoel" />
+                android:id="@+id/action_mainFragment_to_nav_graph_view_model"
+                app:destination="@id/nav_graph_view_model" />
         <action
                 android:id="@+id/action_mainFragment_to_nav_graph_view"
                 app:destination="@id/nav_graph_view" />
