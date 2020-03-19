@@ -18,6 +18,7 @@ package kim.jeonghyeon.testing
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
+import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -30,6 +31,22 @@ fun <T> LiveObject<T>.await(count: Int = 1, seconds: Long = 2): T {
 
     @Suppress("UNCHECKED_CAST")
     return value as T
+}
+
+fun <T> LiveResource<T>.awaitResult(seconds: Long = 2): Resource<T> {
+    //if already value exists, countdown 2 times
+
+    val oldVersion = version
+    val latch = CountDownLatch(1)
+    observeForever {
+        if (!it.isResult() || version == oldVersion) {
+            return@observeForever
+        }
+        latch.countDown()
+    }
+    latch.await(seconds, TimeUnit.SECONDS)
+    @Suppress("UNCHECKED_CAST")
+    return value!!
 }
 
 fun <T> LiveResource<T>.awaitData(seconds: Long = 2): T {

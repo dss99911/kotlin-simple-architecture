@@ -59,6 +59,7 @@ class DataCallAdapter<U>(
         private fun onResponse(response: Response<U>, callback: Callback<U>) {
             val body = response.body()
             if (response.isSuccessful) {
+                //response body null is not available by retrofit.
                 callback.onResponse(this, Response.success(body?.convertUnit() as U))
             } else {
                 val errorBodyString = response.errorBody()?.string()
@@ -82,7 +83,6 @@ class DataCallAdapter<U>(
          */
         private fun U.convertUnit(): U {
             val returnType = type
-            //TODO : is equal okay?
             return if (returnType == Unit.javaClass) {
                 @Suppress("UNCHECKED_CAST")
                 Unit as U

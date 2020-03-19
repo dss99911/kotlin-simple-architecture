@@ -103,10 +103,10 @@ interface IBaseViewModel {
 open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
     override val initState by lazy { LiveState() }
-    internal val eventSnackbarByString by lazy { LiveObject<String>() }
-    internal val eventSnackbarById by lazy { LiveObject<Int>() }
+    val eventSnackbarByString by lazy { LiveObject<String>() }
+    val eventSnackbarById by lazy { LiveObject<Int>() }
     internal val eventStartActivity by lazy { LiveObject<Intent>() }
-    internal val eventStartActivityForResult by lazy { LiveObject<RequestStartActivityResult>() }
+    val eventStartActivityForResult by lazy { LiveObject<RequestStartActivityResult>() }
     internal val eventRequestPermission by lazy { LiveObject<PermissionData>() }
     internal val eventPermissionSettingPage by lazy { LiveObject<() -> Unit>() }
     internal val eventFinish by lazy { LiveObject<Unit>() }
@@ -272,7 +272,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
     }
 }
 
-internal data class RequestStartActivityResult(
+data class RequestStartActivityResult(
     val intent: Intent,
     val onResult: (StartActivityResult) -> Unit
 )

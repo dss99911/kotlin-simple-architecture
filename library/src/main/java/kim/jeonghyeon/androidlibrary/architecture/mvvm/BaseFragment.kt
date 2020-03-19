@@ -38,7 +38,7 @@ import org.koin.core.qualifier.Qualifier
 
 /**
  *
- * [layoutId] : override and input fragment layout
+ * [layoutId] : override and input fragment layout. if you don't want to show layout. set as 0
  *
  * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
  *
@@ -138,6 +138,8 @@ abstract class BaseFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        if (layoutId == 0) return null
+
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         viewModels.forEach { (variableId, viewModel) ->
             binding.setVariable(variableId, viewModel.value)
@@ -274,6 +276,10 @@ abstract class BaseFragment : Fragment(),
     }
 
     private fun setupActionbar() {
+        if (!::binding.isInitialized) {
+            return
+        }
+
         val toolbar = binding.root.findViewById<View>(toolbarId)
         if (toolbar == null || toolbar !is Toolbar) {
             return

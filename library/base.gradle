@@ -6,9 +6,6 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: 'androidx.navigation.safeargs'
 
-apply from: (project(':library').projectDir.toString() + '/androidTestDependencies.gradle')
-apply from: (project(':library').projectDir.toString() + '/testDependencies.gradle')
-
 android {
     compileSdkVersion compile_sdk_version.toInteger()
     buildToolsVersion build_tool_version
@@ -147,9 +144,10 @@ android {
 }
 
 dependencies {
-    //todo will this be working?
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation project(':library')
+    testImplementation project(':testing')
+    androidTestImplementation project(':androidtesting')
     //todo library, androidtesting, base.gradle can be split in dependency except for this kapt. we have to consider. whether split them or make one package
     kapt "androidx.room:room-compiler:$version_room"
 }

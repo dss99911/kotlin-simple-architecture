@@ -19,5 +19,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/menu" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_layout" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutActivity}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_activity" />
     </LinearLayout>
 </layout>

@@ -34,9 +34,9 @@ import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
 /**
  *
- * [layoutId] : override and input activity layout
+ * [layoutId] : override and input activity layout. if you don't want to show layout. set as 0
  *
- * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable
+ * [binding] : viewModel name should be "model" for auto binding, if you'd like to change it, override setVariable.
  *
  * [bindingViewModel] : bind view and viewModel
  *                      val viewModel by bindingViewModel<>()
@@ -155,6 +155,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
     }
 
     private fun setupView() {
+        if (layoutId == 0) return
+
         binding = DataBindingUtil.setContentView(this, layoutId)
         viewModels.forEach { (variableId, viewModel) ->
             binding.setVariable(variableId, viewModel.value)

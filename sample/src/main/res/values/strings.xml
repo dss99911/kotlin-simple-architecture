@@ -47,4 +47,6 @@
     <string name="success">success</string>
     <string name="cancel">cancel</string>
     <string name="request_permission">request permission</string>
+    <string name="empty_layout">empty layout</string>
+    <string name="empty_activity">Empty Activity</string>
 </resources>

@@ -1,10 +1,13 @@
 package kim.jeonghyeon.testing
 
+import android.content.Intent
 import androidx.annotation.StringRes
+import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
 import com.google.common.truth.Truth
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.androidlibrary.extension.ctx
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.RequestStartActivityResult
+import kim.jeonghyeon.androidlibrary.architecture.mvvm.StartActivityResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -42,6 +45,22 @@ abstract class BaseViewModelTest : BaseRobolectricTest() {
     }
 
     fun BaseViewModel.assertSnackbar(@StringRes expected: Int) {
-        Truth.assertThat(eventSnackbarById.await()).isEqualTo(ctx.getString(expected))
+        Truth.assertThat(eventSnackbarById.await()).isEqualTo(expected)
+    }
+
+    /**
+     * for asserting intent is correct.
+     */
+    fun BaseViewModel.getStartActivityIntent(): Intent {
+        return eventStartActivityForResult.await().intent
+    }
+
+    fun BaseViewModel.mockStartActivityResult(result: StartActivityResult) {
+        eventStartActivityForResult.observeForever(object : Observer<RequestStartActivityResult> {
+            override fun onChanged(t: RequestStartActivityResult?) {
+                t!!.onResult(result)
+                eventStartActivityForResult.removeObserver(this)
+            }
+        })
     }
 }

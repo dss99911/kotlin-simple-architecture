@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".viewmodel.startactivity.StartActivityActivity" />
+        <activity android:name=".view.emptylayout.EmptyLayoutActivity" />
 
         <service
                 android:name="kim.jeonghyeon.sample.etc.job.SampleJobIntentService"
