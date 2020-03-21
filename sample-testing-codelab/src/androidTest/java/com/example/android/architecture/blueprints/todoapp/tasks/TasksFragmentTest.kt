@@ -25,7 +25,6 @@ import org.koin.test.inject
 /**
  * Integration test for the Task List screen.
  */
-// TODO - Use FragmentScenario, see: https://github.com/android/android-test/issues/291
 class TasksFragmentTest : TodoFragmentTest<TasksFragment>() {
     override val fragmentClass = TasksFragment::class.java
 
