@@ -9,6 +9,15 @@ this library achieves the belows.
 4. Simple to use latest architecture : you don't need to spend a lot of time for what is latest architecture, how to make good code. just follow sample, then you'll write code at least not bad.
 5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
+# Prerequisite
+- MVVM
+- Kotlin, Coroutine
+- Koin
+- Jetpack : Navigation, Data Binding, LiveData, Paging, Room, ViewModel
+- Retrofit
+- [Resource](https://developer.android.com/jetpack/docs/guide#addendum)
+- AndroidX testing
+
 # Articles
 - [Remove boilerplate code of RecyclerView][recyclerview]
 - [LiveData and event][livedata]
