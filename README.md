@@ -14,6 +14,7 @@ this library achieves the belows.
 - [LiveData and event][livedata]
 - [Coroutine Api call and error handling in Retrofit2][coroutine]
 - [MVVM concept and reduce boilerplate code on Activity/Fragment/ViewModel][mvvm]
+- [Testing efficiently with Android X][testing]
 
 # Samples
 - [Sample][sample] : shows usage of Simple Android Architecture one by one
@@ -51,3 +52,4 @@ limitations under the License.
 [android-testing]: https://github.com/googlecodelabs/android-testing
 [coroutine]: https://medium.com/@dss99911/simple-android-architecture-coroutine-api-call-and-error-handling-in-retrofit2-1677d0f84f56
 [mvvm]: https://medium.com/@dss99911/simple-android-architecture-mvvm-concept-and-reduce-boilerplate-code-on-8ff1912286a8
+[testing]: https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20
