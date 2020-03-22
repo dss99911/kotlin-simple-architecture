@@ -24,6 +24,7 @@ this library achieves the belows.
 - [Coroutine Api call and error handling in Retrofit2][coroutine]
 - [MVVM concept and reduce boilerplate code on Activity/Fragment/ViewModel][mvvm]
 - [Testing efficiently with Android X][testing]
+- [Refactoring to new architecture][refactoring]
 
 # Samples
 - [Sample][sample] : shows usage of Simple Android Architecture one by one
@@ -62,3 +63,4 @@ limitations under the License.
 [coroutine]: https://medium.com/@dss99911/simple-android-architecture-coroutine-api-call-and-error-handling-in-retrofit2-1677d0f84f56
 [mvvm]: https://medium.com/@dss99911/simple-android-architecture-mvvm-concept-and-reduce-boilerplate-code-on-8ff1912286a8
 [testing]: https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20
+[refactoring]: https://medium.com/@dss99911/simple-android-architecture-refactoring-to-new-architecture-c0a786caddf7
