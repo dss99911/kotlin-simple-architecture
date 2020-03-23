@@ -90,7 +90,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
         get() = if (navHostId != 0) AppBarConfiguration(navController.graph) else null
 
 
-    override val progressDialog by lazy { createProgressDialog() }
+    private val progressDialogLazy = lazy { createProgressDialog() }
+    override val progressDialog by progressDialogLazy
 
     @MenuRes
     private var menuId: Int = 0
@@ -152,6 +153,9 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
     override fun onDestroy() {
         super.onDestroy()
         log("${this::class.simpleName} onDestroy")
+        if (progressDialogLazy.isInitialized()) {
+            progressDialog.dismissWithoutException()
+        }
     }
 
     private fun setupView() {

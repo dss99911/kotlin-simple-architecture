@@ -98,7 +98,8 @@ abstract class BaseFragment : Fragment(),
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
-    override val progressDialog by lazy { createProgressDialog() }
+    private val progressDialogLazy = lazy { createProgressDialog() }
+    override val progressDialog by progressDialogLazy
     override val toolbarId: Int
         get() = R.id.toolbar
     override val navController: NavController by lazy { findNavController() }
@@ -187,6 +188,9 @@ abstract class BaseFragment : Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         log("${this::class.simpleName}")
+        if (progressDialogLazy.isInitialized()) {
+            progressDialog.dismissWithoutException()
+        }
     }
 
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
