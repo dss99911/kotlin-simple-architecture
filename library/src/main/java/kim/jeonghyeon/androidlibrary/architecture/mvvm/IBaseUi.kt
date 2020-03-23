@@ -94,6 +94,10 @@ fun IBaseUi.getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = thi
         .savedStateHandle
 }
 
+fun IBaseUi.savedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): Lazy<SavedStateHandle> {
+    return lazy { getSavedState(savedStateRegistryOwner) }
+}
+
 internal class SavedStateViewModel(val savedStateHandle: SavedStateHandle) : ViewModel()
 
 inline fun <reified V : BaseViewModel> IBaseUi.bindingViewModel(
