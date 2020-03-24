@@ -191,6 +191,8 @@ abstract class BaseFragment : Fragment(),
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()
         }
+
+        dismissErrorSnackbar()
     }
 
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {

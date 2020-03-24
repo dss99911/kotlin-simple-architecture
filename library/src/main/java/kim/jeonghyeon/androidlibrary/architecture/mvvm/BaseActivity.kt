@@ -156,6 +156,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()
         }
+
+        dismissErrorSnackbar()
     }
 
     private fun setupView() {

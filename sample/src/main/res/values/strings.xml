@@ -49,4 +49,5 @@
     <string name="request_permission">request permission</string>
     <string name="empty_layout">empty layout</string>
     <string name="empty_activity">Empty Activity</string>
+    <string name="no_navigation">No Navigation</string>
 </resources>

@@ -22,11 +22,11 @@ fun IBaseUi.resourceObserverCommon(onResult: (State) -> Boolean = { false }): Ob
             progressDialog.dismissWithoutException()
         }
 
-        dismissSnackbar(binding.root)// if state is changed, dismiss snackbar if it's shown.
+        dismissErrorSnackbar()// if state is changed, dismiss snackbar if it's shown.
 
         it.onError {
             val errorMessage = if (it.error is MessageError) it.error.errorMessage else null
-            showErrorSnackbar(binding.root, errorMessage, it.retry)
+            showErrorSnackbar(errorMessage, it.retry)
         }
 
     }
@@ -41,16 +41,16 @@ fun IBaseUi.resourceObserverInit(onResult: (State) -> Boolean = { false }): Obse
         false
     }
 
-fun dismissSnackbar(view: View) {
-    val snackbar = view.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
+fun IBaseUi.dismissErrorSnackbar() {
+    val snackbar = binding.root.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
     snackbar.dismiss()
-    view.setTag(R.id.view_tag_snackbar, null)
+    binding.root.setTag(R.id.view_tag_snackbar, null)
 }
 
-fun showErrorSnackbar(view: View, message: String? = null, retry: () -> Unit) {
+fun IBaseUi.showErrorSnackbar(message: String? = null, retry: () -> Unit) {
     val snackbarText =
         ctx.getString(R.string.error_occurred) + if (message == null) "" else " : $message"
-    view.showSnackbar(snackbarText, Snackbar.LENGTH_INDEFINITE, retry).also {
-        view.setTag(R.id.view_tag_snackbar, it)
+    binding.root.showSnackbar(snackbarText, Snackbar.LENGTH_INDEFINITE, retry).also {
+        binding.root.setTag(R.id.view_tag_snackbar, it)
     }
 }

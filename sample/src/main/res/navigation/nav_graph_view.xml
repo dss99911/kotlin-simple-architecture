@@ -19,6 +19,9 @@
         <action
                 android:id="@+id/action_viewFragment_to_emptyLayoutActivity"
                 app:destination="@id/emptyLayoutActivity" />
+        <action
+                android:id="@+id/action_viewFragment_to_noNavigationActivity"
+                app:destination="@id/noNavigationActivity" />
     </fragment>
     <fragment
             android:id="@+id/menuFragment"
@@ -33,5 +36,9 @@
             android:id="@+id/emptyLayoutActivity"
             android:name="kim.jeonghyeon.sample.view.emptylayout.EmptyLayoutActivity"
             android:label="EmptyLayoutActivity" />
+    <activity
+            android:id="@+id/noNavigationActivity"
+            android:name="kim.jeonghyeon.sample.view.nonavigation.NoNavigationActivity"
+            android:label="NoNavigationActivity" />
 
 </navigation>

@@ -30,6 +30,7 @@
         </activity>
         <activity android:name=".viewmodel.startactivity.StartActivityActivity" />
         <activity android:name=".view.emptylayout.EmptyLayoutActivity" />
+        <activity android:name=".view.nonavigation.NoNavigationActivity" />
 
         <service
                 android:name="kim.jeonghyeon.sample.etc.job.SampleJobIntentService"

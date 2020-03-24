@@ -31,5 +31,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/empty_activity" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewFragment_to_noNavigationActivity}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_navigation" />
     </LinearLayout>
 </layout>
