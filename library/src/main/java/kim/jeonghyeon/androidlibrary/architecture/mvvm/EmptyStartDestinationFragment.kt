@@ -8,29 +8,19 @@ import androidx.navigation.fragment.findNavController
  */
 class EmptyStartDestinationFragment : BaseFragment() {
 
-    companion object {
-        private const val SAVED_STATE_KEY_START_DESTINATION_PASSED =
-            "SAVED_STATE_KEY_START_DESTINATION_PASSED"
-    }
-
     override val layoutId: Int = 0
 
-    private val savedState by savedState()
+    var startDestinationPassed by savedStateDelegate(false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         findNavController().addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == destination.parent?.startDestination && savedState.get<Boolean>(
-                    SAVED_STATE_KEY_START_DESTINATION_PASSED
-                ) == true
-            ) {
+            if (destination.id == destination.parent?.startDestination && startDestinationPassed) {
                 activity?.finish()
             }
 
-            savedState[SAVED_STATE_KEY_START_DESTINATION_PASSED] = true
+            startDestinationPassed = true
         }
     }
-
-
 }

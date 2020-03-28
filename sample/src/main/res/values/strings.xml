@@ -50,4 +50,6 @@
     <string name="empty_layout">empty layout</string>
     <string name="empty_activity">Empty Activity</string>
     <string name="no_navigation">No Navigation</string>
+    <string name="saved_state">Saved state</string>
+    <string name="reset">Reset</string>
 </resources>

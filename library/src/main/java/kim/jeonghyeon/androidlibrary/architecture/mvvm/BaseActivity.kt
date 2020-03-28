@@ -106,6 +106,8 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
     override val stateObserver: Observer<State> by lazy { resourceObserverCommon() }
     override val initStateObserver: Observer<State> by lazy { resourceObserverInit() }
 
+    override val savedState by savedState()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         log("${this::class.simpleName} onCreate")

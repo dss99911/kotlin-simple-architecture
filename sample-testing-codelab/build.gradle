@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+
+application_id = "kim.jeonghyeon.sample.codelab"
+
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
 android {
     productFlavors {

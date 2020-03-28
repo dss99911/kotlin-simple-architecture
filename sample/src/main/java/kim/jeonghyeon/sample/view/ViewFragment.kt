@@ -7,5 +7,4 @@ import kim.jeonghyeon.sample.R
 class ViewFragment : BaseFragment() {
     override val layoutId: Int = R.layout.fragment_view
     val viewModel: ViewViewModel by bindingViewModel()
-
 }

@@ -22,6 +22,9 @@
         <action
                 android:id="@+id/action_viewFragment_to_noNavigationActivity"
                 app:destination="@id/noNavigationActivity" />
+        <action
+                android:id="@+id/action_viewFragment_to_savedStateFragment"
+                app:destination="@id/savedStateFragment" />
     </fragment>
     <fragment
             android:id="@+id/menuFragment"
@@ -40,5 +43,10 @@
             android:id="@+id/noNavigationActivity"
             android:name="kim.jeonghyeon.sample.view.nonavigation.NoNavigationActivity"
             android:label="NoNavigationActivity" />
+    <fragment
+            android:id="@+id/savedStateFragment"
+            android:name="kim.jeonghyeon.sample.view.savedState.SavedStateFragment"
+            android:label="SavedStateFragment"
+            tools:layout="@layout/fragment_saved_state" />
 
 </navigation>

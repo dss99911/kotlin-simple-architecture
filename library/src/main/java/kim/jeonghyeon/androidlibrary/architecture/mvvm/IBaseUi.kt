@@ -8,8 +8,6 @@ import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
@@ -18,7 +16,6 @@ import com.google.android.material.snackbar.Snackbar
 import kim.jeonghyeon.androidlibrary.BR
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.architecture.livedata.State
-import kim.jeonghyeon.androidlibrary.extension.app
 import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
@@ -68,6 +65,8 @@ interface IBaseUi : SavedStateRegistryOwner {
      */
     val initStateObserver: Observer<State>
 
+    val savedState: SavedStateHandle
+
     val progressDialog: AlertDialog
 
     fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit)
@@ -83,22 +82,6 @@ fun IBaseUi.showOkDialog(message: String, onClick: () -> Unit): AlertDialog =
             onClick()
             dialog?.dismiss()
         }.show()
-
-
-
-fun IBaseUi.getSavedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): SavedStateHandle {
-    return SavedStateViewModelFactory(
-        app,
-        savedStateRegistryOwner
-    ).create(SavedStateViewModel::class.java)
-        .savedStateHandle
-}
-
-fun IBaseUi.savedState(savedStateRegistryOwner: SavedStateRegistryOwner = this): Lazy<SavedStateHandle> {
-    return lazy { getSavedState(savedStateRegistryOwner) }
-}
-
-internal class SavedStateViewModel(val savedStateHandle: SavedStateHandle) : ViewModel()
 
 inline fun <reified V : BaseViewModel> IBaseUi.bindingViewModel(
     variableId: Int = BR.model,

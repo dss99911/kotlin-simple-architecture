@@ -2,10 +2,7 @@ package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import androidx.annotation.MainThread
 import androidx.annotation.NonNull
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -117,7 +114,7 @@ open class LiveObject<T>() : MediatorLiveData<T>() {
     }
 
     @MainThread
-    final override fun setValue(t: T?) {
+    override fun setValue(t: T?) {
         version += 1
         super.setValue(t)
     }
@@ -209,10 +206,24 @@ fun <T> LiveData<T>.asLiveObject(): LiveObject<T> = LiveObject<T>().apply {
     plusAssign(this@asLiveObject)
 }
 
+fun <T> MutableLiveData<T>.asLiveObject(): LiveObject<T> = MutableLiveObject(this)
+
 fun <T> LiveObject<T>.call(value: T) {
     postValue(value)
 }
 
 fun LiveObject<Unit>.call() {
     postValue(Unit)
+}
+
+private class MutableLiveObject<T>(val liveData: MutableLiveData<T>) : LiveObject<T>() {
+    init {
+        addSource(liveData) {
+            super.setValue(it)
+        }
+    }
+
+    override fun setValue(t: T?) {
+        liveData.value = t
+    }
 }

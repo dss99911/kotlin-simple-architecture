@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -100,7 +101,8 @@ interface IBaseViewModel {
     )
 }
 
-open class BaseViewModel : ViewModel(), IBaseViewModel, LifecycleObserver {
+open class BaseViewModel(val savedStateHandle: SavedStateHandle? = null) : ViewModel(),
+    IBaseViewModel, LifecycleObserver {
     override val state by lazy { LiveState() }
     override val initState by lazy { LiveState() }
     val eventSnackbarByString by lazy { LiveObject<String>() }

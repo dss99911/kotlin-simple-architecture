@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+
+application_id = "kim.jeonghyeon.sample"
 apply from: (project(':library').projectDir.toString() + '/base.gradle')
 android {
 //    buildTypes {

@@ -37,5 +37,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/no_navigation" />
+
+        <Button
+                onClickNavigate="@{@id/action_viewFragment_to_savedStateFragment}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/saved_state" />
     </LinearLayout>
 </layout>

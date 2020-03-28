@@ -110,6 +110,8 @@ abstract class BaseFragment : Fragment(),
     override val stateObserver: Observer<State> by lazy { resourceObserverCommon() }
     override val initStateObserver: Observer<State> by lazy { resourceObserverInit() }
 
+    override val savedState by savedState()
+
     val permissionStartActivityViewModel by activityViewModels<PermissionAndStartActivityViewModel>()
 
     /**
@@ -305,8 +307,6 @@ abstract class BaseFragment : Fragment(),
             // [AppBarConfiguration] you provide controls how the Navigation button is displayed.
             setupActionBarWithNavController(activity, navController, it)
         }
-
-
     }
 
     override fun onViewModelSetup() {

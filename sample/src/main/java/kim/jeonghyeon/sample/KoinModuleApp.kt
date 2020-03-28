@@ -1,5 +1,6 @@
 package kim.jeonghyeon.sample
 
+import androidx.lifecycle.SavedStateHandle
 import kim.jeonghyeon.androidlibrary.architecture.net.adapter.ThreadingCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.api
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
@@ -26,6 +27,7 @@ import kim.jeonghyeon.sample.list.simple.SimpleListViewModel
 import kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListViewModel
 import kim.jeonghyeon.sample.view.ViewViewModel
 import kim.jeonghyeon.sample.view.menu.MenuViewModel
+import kim.jeonghyeon.sample.view.savedState.SavedStateViewModel
 import kim.jeonghyeon.sample.viewmodel.ViewModelViewModel
 import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsFragmentArgs
 import kim.jeonghyeon.sample.viewmodel.navargs.NavArgsViewModel
@@ -53,6 +55,7 @@ val appModule = module {
     //view
     viewModel { ViewViewModel() }
     viewModel { MenuViewModel() }
+    viewModel { (savedStateHandle: SavedStateHandle) -> SavedStateViewModel(savedStateHandle) }
 
     //viewmodel
     viewModel { ViewModelViewModel() }
