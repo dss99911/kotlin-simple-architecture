@@ -12,7 +12,7 @@ class StartActivityViewModel(val api: CoroutineApi) : BaseViewModel() {
     val result = LiveResource<String>()
 
     fun onClick() {
-        result.load(state) {
+        result(state) {
             val token = api.getToken()
             val (resultCode) = startActivityForResult(
                 StartActivityActivity.getStartIntent(

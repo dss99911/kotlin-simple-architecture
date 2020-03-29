@@ -43,7 +43,7 @@ class TaskDetailViewModel(
     }
 
     fun onClickDelete() {
-        state.load {
+        state {
             tasksRepository.deleteTask(navArgs.taskid)
             navigateUp()
         }
@@ -61,7 +61,7 @@ class TaskDetailViewModel(
     private fun setCompleted(completed: Boolean) {
         val task: Task = task.getData() ?: return
 
-        state.load {
+        state {
             if (completed) {
                 tasksRepository.completeTask(task)
                 showSnackbar(R.string.task_marked_complete)
@@ -73,7 +73,7 @@ class TaskDetailViewModel(
     }
 
     fun onRefresh() {
-        task.load(state) {
+        task(state) {
             tasksRepository.getTask(navArgs.taskid)!!
         }
     }

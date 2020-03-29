@@ -38,7 +38,7 @@ class AddEditTaskViewModel(
 ) : BaseViewModel() {
 
     val task = LiveResource<Task>().apply {
-        load {
+        this {
             val taskid = navArgs.taskid
             if (taskid == null) {
                 Task()
@@ -55,7 +55,7 @@ class AddEditTaskViewModel(
             return
         }
 
-        state.load {
+        state {
             tasksRepository.saveTask(task.getData()!!)
             navigateToTasksFragment()
         }

@@ -14,7 +14,7 @@ class RetryApiCallViewModel(val api: CoroutineApi) : BaseViewModel() {
     fun call() {
         //status is set on initState LiveData. and it's observed by BaseFragment.
         //on error, shows Snackbar, and if user click retry button on snackbar. api is called again.
-        result.load(initState) {
+        result(initState) {
             //server throw error
             api.getError()
         }

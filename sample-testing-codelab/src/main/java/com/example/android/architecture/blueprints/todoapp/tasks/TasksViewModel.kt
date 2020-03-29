@@ -91,13 +91,13 @@ class TasksViewModel(private val tasksRepository: TaskRepository) : BaseViewMode
     }
 
     fun onClearMenuClicked() {
-        state.load {
+        state {
             tasksRepository.clearCompletedTasks()
             showSnackbar(R.string.completed_tasks_cleared)
         }
     }
 
-    internal fun completeTask(task: Task, completed: Boolean) = state.load {
+    internal fun completeTask(task: Task, completed: Boolean) = state {
         if (completed) {
             tasksRepository.completeTask(task)
             showSnackbar(R.string.task_marked_complete)

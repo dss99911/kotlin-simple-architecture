@@ -60,7 +60,7 @@ class PlantDetailViewModel(
     }
 
     fun addPlantToGarden() {
-        state.load {
+        state {
             gardenPlantingRepository.createGardenPlanting(navArgs.plantId)
         }
     }

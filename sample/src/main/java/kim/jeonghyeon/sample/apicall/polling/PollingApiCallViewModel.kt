@@ -18,7 +18,7 @@ class PollingApiCallViewModel(val api: CoroutineApi) : BaseViewModel() {
     }
 
     fun postItems() {
-        result.load {
+        result {
             //change result to true
             launch {
                 delay(3000)

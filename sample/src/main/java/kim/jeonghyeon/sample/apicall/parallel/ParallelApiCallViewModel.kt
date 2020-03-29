@@ -15,7 +15,7 @@ class ParallelApiCallViewModel(val api: CoroutineApi) : BaseViewModel() {
     }
 
     fun postItems() {
-        result.load {
+        result {
             val token = api.getToken()
 
             val result1 = async { api.submitPost(PostRequestBody(token, Item(1, "name1"))) }

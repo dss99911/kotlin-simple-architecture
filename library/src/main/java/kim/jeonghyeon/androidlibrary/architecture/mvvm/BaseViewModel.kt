@@ -53,6 +53,10 @@ interface IBaseViewModel {
     @MainThread
     fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
 
+    operator fun <T> LiveResource<T>.invoke(work: suspend CoroutineScope.() -> T) {
+        load(work)
+    }
+
     @MainThread
     fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
@@ -61,6 +65,13 @@ interface IBaseViewModel {
 
     @MainThread
     fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
+
+    operator fun <T> LiveResource<T>.invoke(
+        state: LiveState,
+        work: suspend CoroutineScope.() -> T
+    ) {
+        load(state, work)
+    }
 
     /**
      * if call several times, and after success, if error occurs, data is not changed even if it's error.
