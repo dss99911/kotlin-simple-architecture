@@ -173,7 +173,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
     }
 
     private fun setupObserver() {
-        permissionStartActivityViewModel.eventPerformWithActivity.observe { array ->
+        permissionStartActivityViewModel.eventPerformWithActivity { array ->
             array.forEach { event ->
                 if (!event.handled) {
                     event.handle()(this)
@@ -182,48 +182,48 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
         }
 
         viewModels.map { it.second.value }.forEach {
-            it.state.observe(stateObserver)
-            it.initState.observe(initStateObserver)
+            it.state(stateObserver)
+            it.initState(initStateObserver)
 
-            it.eventSnackbarByString.observeEvent {
+            it.eventSnackbarByString(true) {
                 showSnackbar(it)
             }
 
-            it.eventSnackbarById.observeEvent {
+            it.eventSnackbarById(true) {
                 showSnackbar(getString(it))
             }
 
-            it.eventStartActivity.observeEvent {
+            it.eventStartActivity(true) {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent {
+            it.eventShowProgressBar(true) {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
                     progressDialog.dismissWithoutException()
                 }
             }
-            it.eventShowOkDialog.observeEvent {
+            it.eventShowOkDialog(true) {
                 showOkDialog(it.message, it.onClick)
             }
 
-            it.eventNav.observeEvent { action ->
+            it.eventNav(true) { action ->
                 action(navController)
             }
-            it.eventStartActivityForResult.observeEvent {
+            it.eventStartActivityForResult(true) {
                 permissionStartActivityViewModel.startActivityForResult(it.intent, it.onResult)
             }
-            it.eventRequestPermission.observeEvent {
+            it.eventRequestPermission(true) {
                 permissionStartActivityViewModel.requestPermissions(it.permissions, it.listener)
             }
-            it.eventPermissionSettingPage.observeEvent {
+            it.eventPermissionSettingPage(true) {
                 permissionStartActivityViewModel.startPermissionSettingsPage(it)
             }
-            it.eventFinish.observeEvent {
+            it.eventFinish(true) {
                 finish()
             }
-            it.eventFinishWithResult.observeEvent {
+            it.eventFinishWithResult(true) {
                 if (it.data == null) {
                     setResult(it.resultCode)
                 } else {

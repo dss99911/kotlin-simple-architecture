@@ -65,14 +65,14 @@ class TasksFragment : BaseFragment() {
     }
 
     override fun onViewModelSetup() {
-        with(viewModel) {
-            openTaskEvent.observeEvent {
+        viewModel {
+            openTaskEvent(true) {
                 openTaskDetails(it)
             }
-            newTaskEvent.observeEvent {
+            newTaskEvent(true) {
                 navigateToAddNewTask()
             }
-            items.observe {
+            items(true) {
                 if (it.isError()) {
                     showSnackbar(R.string.loading_tasks_error)
                 }

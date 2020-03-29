@@ -23,12 +23,13 @@ class SavedStateFragment : BaseFragment() {
     }
 
     override fun onViewModelSetup() {
-        viewModel.liveData.observe {
-            toast("data1 changed : $it")
-        }
-
-        viewModel.data2.observe {
-            toast("data2 changed : $it")
+        viewModel {
+            liveData {
+                toast("data1 changed : $it")
+            }
+            data2 {
+                toast("data2 changed : $it")
+            }
         }
     }
 }

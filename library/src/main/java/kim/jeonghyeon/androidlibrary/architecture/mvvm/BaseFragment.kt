@@ -230,47 +230,47 @@ abstract class BaseFragment : Fragment(),
             it.state.observe(stateObserver)
             it.initState.observe(initStateObserver)
 
-            it.eventSnackbarByString.observeEvent {
+            it.eventSnackbarByString(true) {
                 showSnackbar(it)
             }
 
-            it.eventSnackbarById.observeEvent {
+            it.eventSnackbarById(true) {
                 showSnackbar(getString(it))
             }
 
-            it.eventStartActivity.observeEvent {
+            it.eventStartActivity(true) {
                 startActivity(it)
             }
 
-            it.eventShowProgressBar.observeEvent {
+            it.eventShowProgressBar(true) {
                 if (it) {
                     progressDialog.showWithoutException()
                 } else {
                     progressDialog.dismissWithoutException()
                 }
             }
-            it.eventShowOkDialog.observeEvent {
+            it.eventShowOkDialog(true) {
                 showOkDialog(it.message, it.onClick)
             }
 
-            it.eventNav.observeEvent { action ->
+            it.eventNav(true) { action ->
                 action(navController)
             }
 
-            it.eventStartActivityForResult.observeEvent {
+            it.eventStartActivityForResult(true) {
                 permissionStartActivityViewModel.startActivityForResult(it.intent, it.onResult)
             }
-            it.eventRequestPermission.observeEvent {
+            it.eventRequestPermission(true) {
                 permissionStartActivityViewModel.requestPermissions(it.permissions, it.listener)
             }
-            it.eventPermissionSettingPage.observeEvent {
+            it.eventPermissionSettingPage(true) {
                 permissionStartActivityViewModel.startPermissionSettingsPage(it)
             }
-            it.eventFinish.observeEvent {
+            it.eventFinish(true) {
                 activity?.finish()
             }
-            it.eventFinishWithResult.observeEvent {
-                val activity = activity ?: return@observeEvent
+            it.eventFinishWithResult(true) {
+                val activity = activity ?: return@eventFinishWithResult
                 if (it.data == null) {
                     activity.setResult(it.resultCode)
                 } else {

@@ -33,7 +33,7 @@ class GardenFragment : BaseFragment() {
     }
 
     override fun onViewModelSetup() {
-        viewModel.itemClickEvent.observeEvent {
+        viewModel.itemClickEvent(true) {
             val direction = HomeViewPagerFragmentDirections
                 .actionViewPagerFragmentToPlantDetailFragment(it)
             findNavController().navigate(direction)

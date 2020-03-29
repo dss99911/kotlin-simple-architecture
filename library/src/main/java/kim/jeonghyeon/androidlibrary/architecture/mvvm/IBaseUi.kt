@@ -73,6 +73,31 @@ interface IBaseUi : SavedStateRegistryOwner {
     fun <T> LiveObject<T>.observeEvent(onChanged: (T) -> Unit)
     fun <T> LiveObject<T>.observeEvent(observer: Observer<in T>)
     fun <T> LiveObject<T>.observe(observer: Observer<in T>)
+
+    operator fun <T> LiveObject<T>.invoke(isEvent: Boolean = false, onChanged: (T) -> Unit) {
+        if (isEvent) {
+            observeEvent(onChanged)
+        } else {
+            observe(onChanged)
+        }
+    }
+
+
+    operator fun <T> LiveObject<T>.invoke(isEvent: Boolean, observer: Observer<in T>) {
+        if (isEvent) {
+            observeEvent(observer)
+        } else {
+            observe(observer)
+        }
+    }
+
+    operator fun <T> LiveObject<T>.invoke(observer: Observer<in T>) {
+        observe(observer)
+    }
+
+    operator fun <T : BaseViewModel> T.invoke(action: T.() -> Unit) {
+        with(this, action)
+    }
 }
 
 fun IBaseUi.showOkDialog(message: String, onClick: () -> Unit): AlertDialog =

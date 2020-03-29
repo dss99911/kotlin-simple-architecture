@@ -42,12 +42,13 @@ class PlantDetailFragment : BaseFragment() {
 //todo check when use setSupportActionBar and when use just setHasOptionsMenu()
 
     override fun onViewModelSetup() {
-        viewModel.fabHideEvent.observeEvent {
-            hideAppBarFab(fab)
-        }
-
-        viewModel.startShareEvent.observeEvent {
-            startShareActivity()
+        viewModel {
+            fabHideEvent(true) {
+                hideAppBarFab(fab)
+            }
+            startShareEvent(true) {
+                startShareActivity()
+            }
         }
     }
 

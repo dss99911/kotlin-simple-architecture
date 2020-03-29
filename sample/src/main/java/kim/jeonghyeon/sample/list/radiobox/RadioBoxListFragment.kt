@@ -12,7 +12,7 @@ class RadioBoxListFragment : BaseFragment() {
 
 
     override fun onViewModelSetup() {
-        viewModel.sampleList.observe {
+        viewModel.sampleList {
             recycler_view.bindData(it, R.layout.item_radio_number, viewLifecycleOwner)
         }
     }
