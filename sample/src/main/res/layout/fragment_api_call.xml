@@ -2,63 +2,63 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            onClickNavigate="@{@id/action_apiCallFragment_to_threadingApiCallFragment}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="@string/threading" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_threadingApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/threading" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_callbackApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/callback" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_callbackApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/callback" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_chainingApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/chaining" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_chainingApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/chaining" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_reactiveApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reactive" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_reactiveApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/reactive" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_coroutineApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/coroutine" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_coroutineApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/coroutine" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_parallelApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/multiple_parallel_call" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_parallelApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/multiple_parallel_call" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_pollingApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/polling" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_pollingApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/polling" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_debounceApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/debounce" />
 
         <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_debounceApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/debounce" />
-
-        <Button
-                onClickNavigate="@{@id/action_apiCallFragment_to_retryApiCallFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/retry" />
+            onClickNavigate="@{@id/action_apiCallFragment_to_retryApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/retry" />
 
 
     </LinearLayout>

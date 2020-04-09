@@ -4,15 +4,15 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel" />
 
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     </LinearLayout>
 </layout>

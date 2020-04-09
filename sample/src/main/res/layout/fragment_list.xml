@@ -4,39 +4,39 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.list.ListViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.list.ListViewModel" />
 
     </data>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            onClickNavigate="@{@id/action_listFragment_to_simpleListFragment}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="@string/simple_list" />
 
         <Button
-                onClickNavigate="@{@id/action_listFragment_to_simpleListFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/simple_list" />
+            onClickNavigate="@{@id/action_listFragment_to_simpleComparableListFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/comparable_list" />
 
         <Button
-                onClickNavigate="@{@id/action_listFragment_to_simpleComparableListFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/comparable_list" />
+            onClickNavigate="@{@id/action_listFragment_to_pagingFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paging_list" />
 
         <Button
-                onClickNavigate="@{@id/action_listFragment_to_pagingFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/paging_list" />
-
-        <Button
-                onClickNavigate="@{@id/action_listFragment_to_radioBoxListFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_box_list" />
+            onClickNavigate="@{@id/action_listFragment_to_radioBoxListFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_box_list" />
 
     </LinearLayout>
 </layout>

@@ -19,7 +19,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.google.samples.apps.sunflower.data.Plant"/>
+
+        <import type="com.google.samples.apps.sunflower.data.Plant" />
+
         <variable
             name="model"
             type="com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel" />
@@ -77,8 +79,8 @@
                     app:contentInsetStartWithNavigation="0dp"
                     app:navigationIcon="@drawable/ic_detail_back"
                     app:menu="@menu/menu_plant_detail"
-                        app:onMenuItemClickListener="@{model::onMenuClick}"
-                        app:navigationOnClickListener="@{() -> model.onNavigationClick()}"/>
+                    app:onMenuItemClickListener="@{model::onMenuClick}"
+                    app:navigationOnClickListener="@{() -> model.onNavigationClick()}" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -164,8 +166,8 @@
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-                android:layout_margin="@dimen/fab_margin"
-                android:onClick="@{() -> model.onFabClick()}"
+            android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{() -> model.onFabClick()}"
             android:tint="@android:color/white"
             app:shapeAppearance="@style/ShapeAppearance.Sunflower.FAB"
             app:isGone="@{model.isPlanted}"

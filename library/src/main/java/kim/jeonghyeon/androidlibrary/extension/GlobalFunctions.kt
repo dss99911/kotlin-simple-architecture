@@ -16,16 +16,9 @@ import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
 import kim.jeonghyeon.androidlibrary.BaseApplication
-import kim.jeonghyeon.androidlibrary.BuildConfig
 import org.jetbrains.anko.telephonyManager
 import org.koin.core.context.GlobalContext
 
-
-val isDebug: Boolean
-    inline get() = BuildConfig.DEBUG
-
-val isProdRelease: Boolean
-    inline get() = BuildConfig.isProd && !isDebug
 
 val isTesting = noThrow { Class.forName("androidx.test.espresso.Espresso") } != null
         || noThrow { Class.forName("org.robolectric.RobolectricTestRunner") } != null

@@ -6,9 +6,9 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
-import kim.jeonghyeon.androidlibrary.extension.isProdRelease
 import kim.jeonghyeon.androidlibrary.extension.isTesting
-import kim.jeonghyeon.androidlibrary.extension.log
+import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.kotlinlibrary.extension.ignoreException
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,33 +16,43 @@ import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
 import timber.log.Timber
 
-open class BaseApplication : Application(), LifecycleObserver {
+/**
+ * [onCreated] : use this, intead of [onCreate]
+ * [name] : application name
+ * [installTime] : application install time
+ * [processLifecycle] : if application is foreground or not.
+ * [isForeground] : if application is foreground or not.
+ */
+abstract class BaseApplication : Application(), LifecycleObserver {
     companion object {
         @JvmStatic
         lateinit var instance: BaseApplication
             private set
     }
 
+    abstract val isProd: Boolean
+    abstract val isMock: Boolean
+    abstract val isDebug: Boolean
+
     val name: String by lazy {
         packageManager.getApplicationLabel(applicationInfo).toString()
     }
 
-    val defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-    val installTime: Long get() = packageManager.getPackageInfo(packageName, 0).firstInstallTime
+    val installTime: Long by lazy {
+        packageManager.getPackageInfo(packageName, 0).firstInstallTime
+    }
+
     val processLifecycle = LiveObject<Lifecycle.Event>()
+
+    val defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
     @Suppress("RedundantModalityModifier")
     final override fun onCreate() {
         super.onCreate()
         instance = this
 
-        if (!isProdRelease) {
+        if (!isProd || isDebug) {
             initTimber()
-
-            if (!isTesting) {
-                //has exception on testing
-                StethoHelper.initialize(this)
-            }
         }
         initExceptionHandler()
 
@@ -53,25 +63,16 @@ open class BaseApplication : Application(), LifecycleObserver {
         // Normal app init code...
     }
 
-    private fun initLifecycle() {
-        //you can use Application.ActivityLifecycleCallbacks if handling different way by activities
-        ProcessLifecycleOwner
-            .get()
-            .lifecycle
-            .addObserver(this)
+    @Suppress("MemberVisibilityCanBePrivate")
+    open fun onCreated() {
+
     }
 
     private fun initExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            log(e)
+            Logger.log(e)
             defaultUncaughtExceptionHandler.uncaughtException(t, e)
         }
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-
-        terminateKoin()
     }
 
     private fun initTimber() {
@@ -87,8 +88,19 @@ open class BaseApplication : Application(), LifecycleObserver {
         })
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    open fun onCreated(){}
+    private fun initLifecycle() {
+        //you can use Application.ActivityLifecycleCallbacks if handling different way by activities
+        ProcessLifecycleOwner
+            .get()
+            .lifecycle
+            .addObserver(this)
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+
+        terminateKoin()
+    }
 
     open fun getKoinModules(): List<Module> = emptyList()
 
@@ -123,5 +135,4 @@ open class BaseApplication : Application(), LifecycleObserver {
     fun isForeground(): Boolean {
         return processLifecycle.value == Lifecycle.Event.ON_START
     }
-
 }

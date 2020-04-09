@@ -1,3 +1,0 @@
-include ':library', ':kotlinlibrary'
-include ':testing', ':androidtesting'
-include ':sample', ':kotlin-sample', ':sample-testing-codelab', ':sample-sunflower'

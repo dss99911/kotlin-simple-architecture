@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.MainViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.MainViewModel" />
     </data>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="kim.jeonghyeon.sample.MainFragment">
+
+        <Button
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view_model}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:context="kim.jeonghyeon.sample.MainFragment">
+            android:layout_height="wrap_content"
+            android:text="@string/view_model_related" />
 
         <Button
-                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view_model}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/view_model_related" />
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/view_related" />
 
         <Button
-                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/view_related" />
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_list}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/list" />
 
         <Button
-                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_list}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/list" />
-
-        <Button
-                onClickNavigate="@{@id/action_mainFragment_to_nav_graph_api_call}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/api_call" />
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_api_call}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/api_call" />
     </LinearLayout>
 </layout>

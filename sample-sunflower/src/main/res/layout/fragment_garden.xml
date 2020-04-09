@@ -15,61 +15,61 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-                name="model"
-                type="com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel" />
+            name="model"
+            type="com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel" />
 
 
     </data>
 
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/garden_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/card_side_margin"
-                android:layout_marginTop="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/card_side_margin"
-                android:clipToPadding="false"
-                app:isGone="@{model.plantAndGardengPlantingsViewModel.isEmpty()}"
-                app:itemListComparable="@{model.plantAndGardengPlantingsViewModel}"
-                app:itemLayoutId="@{@layout/list_item_garden_planting}"
+            android:id="@+id/garden_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/card_side_margin"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/card_side_margin"
+            android:clipToPadding="false"
+            app:isGone="@{model.plantAndGardengPlantingsViewModel.isEmpty()}"
+            app:itemListComparable="@{model.plantAndGardengPlantingsViewModel}"
+            app:itemLayoutId="@{@layout/list_item_garden_planting}"
 
-                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                app:spanCount="@integer/grid_columns"
-                tools:listitem="@layout/list_item_garden_planting" />
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            app:spanCount="@integer/grid_columns"
+            tools:listitem="@layout/list_item_garden_planting" />
 
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:isGone="@{!model.plantAndGardengPlantingsViewModel.isEmpty()}">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:isGone="@{!model.plantAndGardengPlantingsViewModel.isEmpty()}">
 
             <TextView
-                    android:id="@+id/empty_garden"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/garden_empty"
-                    android:textAppearance="?attr/textAppearanceHeadline5" />
+                android:id="@+id/empty_garden"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/garden_empty"
+                android:textAppearance="?attr/textAppearanceHeadline5" />
 
             <com.google.android.material.button.MaterialButton
-                    android:id="@+id/add_plant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/add_plant"
-                    android:onClick="@{() -> model.onClickAdd()}"
-                    android:textColor="?attr/colorPrimary"
-                    app:backgroundTint="?attr/colorOnPrimary"
-                    app:shapeAppearance="@style/ShapeAppearance.Sunflower.Button.Add" />
+                android:id="@+id/add_plant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_plant"
+                android:onClick="@{() -> model.onClickAdd()}"
+                android:textColor="?attr/colorPrimary"
+                app:backgroundTint="?attr/colorOnPrimary"
+                app:shapeAppearance="@style/ShapeAppearance.Sunflower.Button.Add" />
 
         </LinearLayout>
 

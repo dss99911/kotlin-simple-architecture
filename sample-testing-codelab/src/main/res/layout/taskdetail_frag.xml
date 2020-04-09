@@ -14,15 +14,15 @@
   ~ limitations under the License.
   -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="model"
-            type="com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailViewModel"/>
+            type="com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -58,36 +58,36 @@
                     android:paddingBottom="@dimen/activity_vertical_margin"
                     android:visibility="@{model.task.isSuccess()}">
 
-                <!-- android:paddingTop specified to temporarily work around -->
-                <!-- https://github.com/robolectric/robolectric/issues/4588 -->
-                <CheckBox
-                    android:id="@+id/task_detail_complete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    <!-- android:paddingTop specified to temporarily work around -->
+                    <!-- https://github.com/robolectric/robolectric/issues/4588 -->
+                    <CheckBox
+                        android:id="@+id/task_detail_complete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/activity_horizontal_margin"
                         android:checked="@{model.task.get().isCompleted}"
-                    android:paddingTop="1dp"
+                        android:paddingTop="1dp"
                         android:onClick="@{() -> model.onCompleteChanged(taskDetailComplete.isChecked())}" />
 
-                <TextView
-                    android:id="@+id/task_detail_title"
-                    android:layout_toRightOf="@id/task_detail_complete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="1dp"
+                    <TextView
+                        android:id="@+id/task_detail_title"
+                        android:layout_toRightOf="@id/task_detail_complete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="1dp"
                         android:text="@{model.task.get().title}"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                <TextView
-                    android:id="@+id/task_detail_description"
-                    android:layout_toRightOf="@id/task_detail_complete"
-                    android:layout_below="@id/task_detail_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="1dp"
+                    <TextView
+                        android:id="@+id/task_detail_description"
+                        android:layout_toRightOf="@id/task_detail_complete"
+                        android:layout_below="@id/task_detail_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="1dp"
                         android:text="@{model.task.get().description}"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 </RelativeLayout>
             </LinearLayout>
@@ -99,10 +99,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_edit"
-                android:onClick="@{() -> model.onClickEdit()}"
+            android:onClick="@{() -> model.onClickEdit()}"
             app:fabSize="normal"
             app:layout_anchor="@id/refresh_layout"
-            app:layout_anchorGravity="bottom|right|end"/>
+            app:layout_anchorGravity="bottom|right|end" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
