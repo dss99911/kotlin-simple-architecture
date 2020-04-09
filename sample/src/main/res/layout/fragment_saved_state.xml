@@ -4,31 +4,31 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.view.savedState.SavedStateViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.view.savedState.SavedStateViewModel" />
 
     </data>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="@={model.liveData}" />
 
         <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@={model.liveData}" />
-
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@={model.data2}" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={model.data2}" />
 
         <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{() -> model.onResetClick()}"
-                android:text="@string/reset" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> model.onResetClick()}"
+            android:text="@string/reset" />
 
     </LinearLayout>
 </layout>

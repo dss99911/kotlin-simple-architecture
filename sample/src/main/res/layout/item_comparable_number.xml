@@ -4,13 +4,13 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListItemViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListItemViewModel" />
     </data>
 
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> model.onClick()}"
-            android:text="@{model.number}" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> model.onClick()}"
+        android:text="@{model.number}" />
 </layout>

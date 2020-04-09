@@ -4,20 +4,20 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.viewmodel.otherview.OtherViewModelViewModel" />
 
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.mainViewModel.test}" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{model.mainViewModel.test}" />
 
     </LinearLayout>
 </layout>

@@ -29,8 +29,8 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
-import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import kim.jeonghyeon.androidlibrary.util.Logger
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.qualifier.Qualifier
@@ -133,7 +133,7 @@ abstract class BaseFragment : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log("${this::class.simpleName}")
+        Logger.log()
     }
 
     final override fun onCreateView(
@@ -154,14 +154,12 @@ abstract class BaseFragment : Fragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        log("${this::class.simpleName}")
         setupActionbar()
         setupObserver()
     }
 
     override fun onResume() {
         super.onResume()
-        log("${this::class.simpleName}")
 
         viewModels.map { it.second.value }.forEach {
             it.onResume()
@@ -170,7 +168,6 @@ abstract class BaseFragment : Fragment(),
 
     override fun onPause() {
         super.onPause()
-        log("${this::class.simpleName}")
 
         viewModels.map { it.second.value }.forEach {
             it.onPause()
@@ -189,7 +186,7 @@ abstract class BaseFragment : Fragment(),
 
     override fun onDestroy() {
         super.onDestroy()
-        log("${this::class.simpleName}")
+        Logger.log()
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()
         }
@@ -333,7 +330,6 @@ abstract class BaseFragment : Fragment(),
     private fun isVisible(selected: Boolean, isStarted: Boolean): Boolean = selected && isStarted
 
     open fun onVisibilityChanged(visible: Boolean) {
-        log("${this::class.simpleName} : $visible")
     }
 
     override fun <T> LiveObject<T>.observe(onChanged: (T) -> Unit) {

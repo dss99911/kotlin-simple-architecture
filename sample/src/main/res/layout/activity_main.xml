@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.MainActivityViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.MainActivityViewModel" />
 
     </data>
 
 
     <androidx.drawerlayout.widget.DrawerLayout
-            android:id="@+id/drawer_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".MainActivity">
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
 
         <!--
             1. The app:defaultNavHost="true"
@@ -28,32 +28,34 @@
             2. how to add this : add from palette, then all configuration will be set
         -->
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
             <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:elevation="4dp"
-                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-                    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
             <fragment
-                    android:id="@+id/my_nav_host_fragment"
-                    android:name="androidx.navigation.fragment.NavHostFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    app:defaultNavHost="true"
-                    android:layout_weight="1"
-                    app:navGraph="@navigation/nav_graph_main" />
+                android:id="@+id/my_nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph_main" />
         </LinearLayout>
+
         <com.google.android.material.navigation.NavigationView
-                android:id="@+id/nav_view"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                app:menu="@menu/nav_drawer_menu" />
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:menu="@menu/nav_drawer_menu" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

@@ -4,26 +4,26 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.apicall.debounce.DebounceApiCallViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.apicall.debounce.DebounceApiCallViewModel" />
 
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.result.get()}" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{model.result.get()}" />
 
         <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="@string/input_text"
-                android:text="@={model.inputText}" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/input_text"
+            android:text="@={model.inputText}" />
 
     </LinearLayout>
 </layout>

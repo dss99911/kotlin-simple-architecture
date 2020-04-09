@@ -29,8 +29,8 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.State
 import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
-import kim.jeonghyeon.androidlibrary.extension.log
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
+import kim.jeonghyeon.androidlibrary.util.Logger
 
 /**
  *
@@ -110,7 +110,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log("${this::class.simpleName} onCreate")
+        Logger.log("onCreate")
 
         setupView()
         setupActionbar()
@@ -154,7 +154,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
 
     override fun onDestroy() {
         super.onDestroy()
-        log("${this::class.simpleName} onDestroy")
+        Logger.log("onDestroy")
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()
         }

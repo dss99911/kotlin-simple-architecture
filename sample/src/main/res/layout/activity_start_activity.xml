@@ -4,32 +4,32 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.viewmodel.startactivity.StartActivityActivityViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.viewmodel.startactivity.StartActivityActivityViewModel" />
 
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.text}" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{model.text}" />
 
         <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{() -> model.onSuccess()}"
-                android:text="@string/success" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> model.onSuccess()}"
+            android:text="@string/success" />
 
         <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="@{() -> model.onCancel()}"
-                android:text="@string/cancel" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> model.onCancel()}"
+            android:text="@string/cancel" />
 
     </LinearLayout>
 </layout>

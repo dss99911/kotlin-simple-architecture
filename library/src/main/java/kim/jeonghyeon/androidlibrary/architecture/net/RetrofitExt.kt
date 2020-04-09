@@ -2,7 +2,8 @@ package kim.jeonghyeon.androidlibrary.architecture.net
 
 import kim.jeonghyeon.androidlibrary.architecture.net.adapter.DataCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.interceptor.BaseInterceptor
-import kim.jeonghyeon.androidlibrary.extension.isProdRelease
+import kim.jeonghyeon.androidlibrary.extension.app
+import kim.jeonghyeon.androidlibrary.util.Logger
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,10 +17,10 @@ inline fun <reified API> api(baseUrl: String): API {
 
 fun apiBuilder(baseUrl: String): Retrofit.Builder {
     val client = OkHttpClient.Builder().apply {
-        if (!isProdRelease) {
+        if (!app.isProd || app.isDebug) {
             addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
                 override fun log(message: String) {
-                    kim.jeonghyeon.androidlibrary.extension.log(message)
+                    Logger.log(message)
                 }
             }).apply {
                 level = HttpLoggingInterceptor.Level.BODY

@@ -4,20 +4,20 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.list.simplecomparable.SimpleComparableListViewModel" />
 
     </data>
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
-                itemLayoutId="@{@layout/item_comparable_number}"
-                itemListComparable="@{model.sampleList}"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            itemLayoutId="@{@layout/item_comparable_number}"
+            itemListComparable="@{model.sampleList}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 </layout>

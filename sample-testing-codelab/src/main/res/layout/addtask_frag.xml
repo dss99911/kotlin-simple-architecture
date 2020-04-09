@@ -15,15 +15,15 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="viewmodel"
-            type="com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskViewModel"/>
+            type="com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -60,9 +60,9 @@
                         android:hint="@string/title_hint"
                         android:imeOptions="flagNoExtractUi"
                         android:maxLines="1"
-                            android:text="@={viewmodel.task.get().title}"
+                        android:text="@={viewmodel.task.get().title}"
                         android:textStyle="bold"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                     <EditText
                         android:id="@+id/add_task_description"
@@ -72,7 +72,7 @@
                         android:gravity="top"
                         android:hint="@string/description_hint"
                         android:imeOptions="flagNoExtractUi"
-                            android:text="@={viewmodel.task.get().description}" />
+                        android:text="@={viewmodel.task.get().description}" />
 
                 </LinearLayout>
             </ScrollView>
@@ -84,9 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_done"
-                android:onClick="@{() -> viewmodel.onClickFAB()}"
+            android:onClick="@{() -> viewmodel.onClickFAB()}"
             app:fabSize="normal"
             app:layout_anchor="@id/refresh_layout"
-            app:layout_anchorGravity="bottom|right|end"/>
+            app:layout_anchorGravity="bottom|right|end" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

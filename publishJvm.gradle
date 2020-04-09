@@ -1,10 +1,11 @@
+// extras
+// artifact_id : ex) jvm
+// artifact_name : ex) JVM
+// publish_version : ex) 1.0.1
+
+
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
-
-group = 'kim.jeonghyeon'
-version = '1.0'
-
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -15,6 +16,17 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+
+
+
+group = 'kim.jeonghyeon'
+version = publish_version
+def packageName = "kotlin-simple-architecture-$artifact_id"
 
 
 def pomConfig = {
@@ -36,24 +48,25 @@ def pomConfig = {
     }
 
     scm {
-        url "https://github.com/dss99911/kotlinlibrary"
+        url "https://github.com/dss99911/kotlin-simple-architecture"
     }
 }
 
+
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        Production(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
             groupId group
-            artifactId project.name
+            artifactId packageName
             version = project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'Kotlin Library')
-                root.appendNode('name', 'Kotlin Library')
-                root.appendNode('url', 'https://github.com/dss99911/kotlinlibrary')
+                root.appendNode('description', "Kotlin Simple Architecture - $artifact_name")
+                root.appendNode('name', "Kotlin Simple Architecture - $artifact_name")
+                root.appendNode('url', "https://github.com/dss99911/kotlin-simple-architecture")
                 root.children().last() + pomConfig
             }
         }
@@ -63,21 +76,18 @@ publishing {
 bintray {
     user = bintrayUser
     key = bintrayApiKey
-    publications = ['MyPublication']
+    publications = ['Production']
     publish = true
     pkg {
 
-        repo = 'maven'
-        name = 'kotlin-library'
-        userOrg = bintrayUser
+        repo = 'kotlin-simple-architecture'
+        name = packageName
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/dss99911/kotlinlibrary.git'
+        vcsUrl = 'https://github.com/dss99911/kotlin-simple-architecture.git'
         version {
             name = version.name
-            desc = 'Kotlin Library'
-//            vcsTag = tag link?
+//            vcsTag = ""//git tag
             released  = new Date()
-            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }
 }

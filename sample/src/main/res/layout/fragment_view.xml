@@ -4,44 +4,44 @@
     <data>
 
         <variable
-                name="model"
-                type="kim.jeonghyeon.sample.view.ViewViewModel" />
+            name="model"
+            type="kim.jeonghyeon.sample.view.ViewViewModel" />
 
     </data>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            onClickNavigate="@{@id/action_viewFragment_to_menuFragment}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:text="@string/menu" />
 
         <Button
-                onClickNavigate="@{@id/action_viewFragment_to_menuFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/menu" />
+            onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_layout" />
 
         <Button
-                onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/empty_layout" />
+            onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutActivity}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_activity" />
 
         <Button
-                onClickNavigate="@{@id/action_viewFragment_to_emptyLayoutActivity}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/empty_activity" />
+            onClickNavigate="@{@id/action_viewFragment_to_noNavigationActivity}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_navigation" />
 
         <Button
-                onClickNavigate="@{@id/action_viewFragment_to_noNavigationActivity}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/no_navigation" />
-
-        <Button
-                onClickNavigate="@{@id/action_viewFragment_to_savedStateFragment}"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/saved_state" />
+            onClickNavigate="@{@id/action_viewFragment_to_savedStateFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/saved_state" />
     </LinearLayout>
 </layout>

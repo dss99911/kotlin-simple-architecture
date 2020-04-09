@@ -11,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.architecture.livedata.*
-import kim.jeonghyeon.androidlibrary.extension.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -131,10 +130,6 @@ open class BaseViewModel(val savedStateHandle: SavedStateHandle? = null) : ViewM
 
     //this is not shown on inherited viewModel. use function.
     internal val eventNav by lazy { LiveObject<(NavController) -> Unit>() }
-
-    init {
-        log("initialized")
-    }
 
     override fun onStart() {
     }

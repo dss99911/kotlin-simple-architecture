@@ -1,0 +1,118 @@
+// extras
+// artifact_id : ex) jvm
+// artifact_name : ex) JVM
+// publish_version : ex) 1.0.1
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+tasks.withType(Javadoc) {
+    failOnError false
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+
+
+
+group = 'kim.jeonghyeon'
+version = publish_version
+def packageName = "kotlin-simple-architecture-$artifact_id"
+
+
+def pomConfig = {
+    licenses {
+        license {
+            //noinspection GroovyAssignabilityCheck
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "hyun-kim"
+            //noinspection GroovyAssignabilityCheck
+            name "Hyun Kim"
+            email "dss99911@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/dss99911/kotlin-simple-architecture"
+    }
+}
+
+
+publishing {
+    publications {
+        Production(MavenPublication) {
+            artifact("$buildDir/outputs/aar/${project.name}-release.aar")
+            artifact sourcesJar
+            artifact javadocJar
+            groupId group
+            artifactId packageName
+            version = project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', "Kotlin Simple Architecture - $artifact_name")
+                root.appendNode('name', "Kotlin Simple Architecture - $artifact_name")
+                root.appendNode('url', "https://github.com/dss99911/kotlin-simple-architecture")
+                root.children().last() + pomConfig
+
+                def dependenciesNode = root.getAt('dependencies')[0] ?: root.appendNode('dependencies')
+
+                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    publications = ['Production']
+    configurations = ['archives']
+    publish = true
+    pkg {
+
+        repo = 'kotlin-simple-architecture'
+        name = packageName
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/dss99911/kotlin-simple-architecture.git'
+        version {
+            name = version.name
+//            vcsTag = ""//git tag
+            released  = new Date()
+        }
+    }
+}
