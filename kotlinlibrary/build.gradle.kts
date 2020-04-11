@@ -18,6 +18,7 @@ dependencies {
     api(deps.kotlin.stdlibJdk8)
     api(deps.ktor.clientSerializationJvm)
     api(deps.ktor.clientGson)
+    api(deps.ktor.clientLoggingJvm)
     api(deps.kotlin.serializationRuntime)
     api(deps.kotlin.coroutineCore)
     api(deps.kotlin.reflect)

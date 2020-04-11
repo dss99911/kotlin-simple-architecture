@@ -1,7 +1,6 @@
 package kim.jeonghyeon.common.net.error
 
 import io.ktor.http.HttpStatusCode
-import kotlinx.serialization.Serializable
 
 class ApiError(body: ApiErrorBody, cause: Throwable? = null) : RuntimeException("${body.code}:${body.message}", cause)
 
