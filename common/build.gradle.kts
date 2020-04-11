@@ -93,8 +93,7 @@ kotlin {
         }
     }
 
-    //todo what is this?
-    val frameworkName = "What is this?"
+    val frameworkName = "KotlinApi"
 
     configure(listOf(iosArm32, iosArm64, iosX64)) {
         compilations {

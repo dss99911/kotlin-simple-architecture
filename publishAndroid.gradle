@@ -108,7 +108,7 @@ bintray {
         repo = 'kotlin-simple-architecture'
         name = packageName
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/dss99911/kotlin-simple-architecture.git'
+        vcsUrl = 'https://github.com/dss99911/kotlin-simple-architecture'
         version {
             name = version.name
 //            vcsTag = ""//git tag
