@@ -37,6 +37,12 @@
             android:text="@string/coroutine" />
 
         <Button
+            onClickNavigate="@{@id/action_apiCallFragment_to_simpleApiCallFragment}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/simple" />
+
+        <Button
             onClickNavigate="@{@id/action_apiCallFragment_to_parallelApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

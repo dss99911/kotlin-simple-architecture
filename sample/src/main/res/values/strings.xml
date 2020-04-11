@@ -52,4 +52,5 @@
     <string name="no_navigation">No Navigation</string>
     <string name="saved_state">Saved state</string>
     <string name="reset">Reset</string>
+    <string name="simple">Simple</string>
 </resources>
