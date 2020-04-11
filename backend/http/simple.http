@@ -1,0 +1,12 @@
+POST http://0.0.0.0:8080/kim-jeonghyeon-common-net-api-SimpleApi/submitPost
+Content-Type: application/json
+
+["token", {"id": 1, "name": "d"}]
+
+###
+POST http://localhost:8080/kim-jeonghyeon-common-net-api-SimpleApi/getToken
+Content-Type: application/json
+
+[1, 1.1, 1.0, "dd", {"id": 1, "name": "d"}, null]
+
+###

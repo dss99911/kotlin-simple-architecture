@@ -2,8 +2,8 @@ package kim.jeonghyeon.sample.apicall.simple
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveResource
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
-import kim.jeonghyeon.sample.apicall.Item
-import kim.jeonghyeon.sample.apicall.PostRequestBody
+import kim.jeonghyeon.common.net.api.Item
+import kim.jeonghyeon.common.net.api.SimpleApi
 
 class SimpleApiCallViewModel(val api: SimpleApi) : BaseViewModel() {
 

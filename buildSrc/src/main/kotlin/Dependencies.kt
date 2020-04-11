@@ -10,6 +10,8 @@ object Dependencies {
     val bintrary = BintraryDependencies
     val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"
     val gson = "com.google.code.gson:gson:2.8.6"
+    val logback = "ch.qos.logback:logback-classic:1.2.3"
+    val junit = "junit:junit:4.12"
 }
 
 object KotlinDependencies {
@@ -27,9 +29,14 @@ object KotlinDependencies {
     val serializationRuntime = depKotlinx("serialization-runtime", versions.kotlin.serialization)
     val serializationRuntimeNative = depKotlinx("serialization-runtime", versions.kotlin.serialization)
     val reflect = depKotlin("reflect", versions.kotlin.version)
+    val testJunit = depKotlin("test-junit", versions.kotlin.version)
+    val test = depKotlin("test", versions.kotlin.version)
 }
 
 object KtorDependencies {
+    val gson = "io.ktor:ktor-gson:${versions.kotlin.ktor}"
+    val serialization = "io.ktor:ktor-serialization:${versions.kotlin.ktor}"
+    val serverNetty = "io.ktor:ktor-server-netty:${versions.kotlin.ktor}"
     val clientCore = "io.ktor:ktor-client-core:${versions.kotlin.ktor}"
     val clientCoreJvm = "io.ktor:ktor-client-core-jvm:${versions.kotlin.ktor}"
     val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"

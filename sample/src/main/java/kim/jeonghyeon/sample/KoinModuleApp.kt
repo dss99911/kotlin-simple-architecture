@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import kim.jeonghyeon.androidlibrary.architecture.net.adapter.ThreadingCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.api
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
+import kim.jeonghyeon.common.net.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
 import kim.jeonghyeon.sample.apicall.chaining.ChainingApi
@@ -17,7 +18,6 @@ import kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApi
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApiCallViewModel
 import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
-import kim.jeonghyeon.sample.apicall.simple.SimpleApi
 import kim.jeonghyeon.sample.apicall.simple.SimpleApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
@@ -100,6 +100,7 @@ val appModule = module {
     }
     factory { api<CoroutineApi>("http://demo7661478.mockable.io/") }
 
-    factory { kim.jeonghyeon.common.net.api<SimpleApi>("http://demo7661478.mockable.io/") }
+    //change to your server address.
+    factory { kim.jeonghyeon.common.net.api<SimpleApi>("http://192.168.1.26:8080") }
 
 }

@@ -55,7 +55,7 @@ inline fun <reified T> HttpClient.create(baseUrl: String) =
         if (returnType.classifier == Unit::class) {
             Unit
         } else {
-            response.readText().toJsonObject(returnType.javaType)
+            response.readText().toJsonObject<Any?>(returnType.javaType)
         }
     }
 
