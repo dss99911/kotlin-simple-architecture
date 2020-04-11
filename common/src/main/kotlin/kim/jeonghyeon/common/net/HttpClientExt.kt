@@ -3,14 +3,17 @@ package kim.jeonghyeon.common.net
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
+import kim.jeonghyeon.androidlibrary.extension.app
 
 
 inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)
 
 val clientAndroid = httpClientDefault {
-    install(Logging) {
-        logger = AndroidLogger()
-        level = LogLevel.ALL
+    if (!app.isProd || app.isDebug) {
+        install(Logging) {
+            logger = AndroidLogger()
+            level = LogLevel.ALL
+        }
     }
 }
 
