@@ -35,6 +35,8 @@ object KtorDependencies {
     val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
     val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
     val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
+    val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
+    val clientLoggingJvm = "io.ktor:ktor-client-logging-jvm:${versions.kotlin.ktor}"
     val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
     val clientSerializationJvm = "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
     val clientSerializationNative = "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
@@ -109,6 +111,7 @@ object SimpleArchitecture {
 
 private fun depKotlin(module: String, version: String? = null): String =
     "org.jetbrains.kotlin:kotlin-$module${version?.let { ":$version" } ?: ""}"
+
 
 private fun depKotlinx(module: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$module${version?.let { ":$version" } ?: ""}"

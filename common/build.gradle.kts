@@ -1,4 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.*
+import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 //todo what is this?
 val ideaActive = System.getProperty("idea.active") == "true"
@@ -39,6 +40,7 @@ kotlin {
 
                 implementation(deps.ktor.clientCore)
                 implementation(deps.ktor.clientSerialization)
+                implementation(deps.ktor.clientLogging)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -51,6 +53,7 @@ kotlin {
                 api(deps.simpleArch.jvm)
                 //todo hyun : remove this after jvm library update
                 api(deps.ktor.clientGson)
+                api(deps.ktor.clientLoggingJvm)
             }
         }
 

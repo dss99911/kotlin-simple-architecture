@@ -1,12 +1,14 @@
+import PublishConfig.publishModeLibrary
+import PublishConfig.publishModeTest
+import PublishConfig.versionLibraryForPublish
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.kotlin.dsl.apply
 
 /**
  * Step to publish
  * Todo : consider to make task or shell script
  * 0. Let's say current version is 0.2
- * 1. [publishModeLibrary]=true, [publishModeTest]=false. increase [versionLibraryForPublish] to 0.3
+ * 1. [publishModeLibrary]=true, [publishModeTest]=false. increase [versionLibraryForPublish] to 0.3 //todo android library depends on jvm library. so, should be released after android library
  * 2. build android library => ./gradlew bintrayUpload
  * 3. publishModeLibrary=false, publishModeTest=true. increase test publish version to 0.3 and library version to 0.3
  * 4. build testing, androidTesting module => ./gradlew bintrayUpload
