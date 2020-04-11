@@ -37,6 +37,9 @@
         <action
                 android:id="@+id/action_apiCallFragment_to_retryApiCallFragment"
                 app:destination="@id/retryApiCallFragment" />
+        <action
+            android:id="@+id/action_apiCallFragment_to_simpleApiCallFragment"
+            app:destination="@id/simpleApiCallFragment" />
     </fragment>
     <fragment
             android:id="@+id/threadingApiCallFragment"
@@ -83,4 +86,9 @@
             android:name="kim.jeonghyeon.sample.apicall.retry.RetryApiCallFragment"
             android:label="RetryApiCallFragment"
             tools:layout="@layout/fragment_retry_api_call" />
+    <fragment
+        android:id="@+id/simpleApiCallFragment"
+        android:name="kim.jeonghyeon.sample.apicall.simple.SimpleApiCallFragment"
+        android:label="SimpleApiCallFragment"
+        tools:layout="@layout/fragment_simple_api_call"/>
 </navigation>

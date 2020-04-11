@@ -3,7 +3,6 @@ package kim.jeonghyeon.sample.viewmodel.navargs
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseFragment
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kim.jeonghyeon.androidlibrary.extension.getNavArgs
-import kim.jeonghyeon.common.CommonClass
 import kim.jeonghyeon.sample.R
 import org.koin.core.parameter.parametersOf
 

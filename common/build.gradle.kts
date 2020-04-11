@@ -41,7 +41,7 @@ kotlin {
                 implementation(deps.ktor.clientSerialization)
             }
         }
-
+        //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
         val mobileMain by creating {
             dependsOn(commonMain)
         }
@@ -49,12 +49,8 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(deps.simpleArch.jvm)
-                api(deps.kotlin.stdlibWithVersion)
-                api(deps.kotlin.stdlibJdk8)
-                api(deps.ktor.clientSerializationJvm)
-                api(deps.kotlin.serializationRuntime)
-                api(deps.kotlin.coroutineCore)
-                api(deps.ktor.clientCoreJvm)
+                //todo hyun : remove this after jvm library update
+                api(deps.ktor.clientGson)
             }
         }
 
@@ -124,5 +120,9 @@ kotlin {
         description = "Builds a universal (release) debug framework"
 
         from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
     }
 }

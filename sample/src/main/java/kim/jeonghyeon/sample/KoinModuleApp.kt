@@ -17,6 +17,8 @@ import kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApi
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApiCallViewModel
 import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
+import kim.jeonghyeon.sample.apicall.simple.SimpleApi
+import kim.jeonghyeon.sample.apicall.simple.SimpleApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
 import kim.jeonghyeon.sample.list.ListViewModel
@@ -76,6 +78,7 @@ val appModule = module {
     viewModel { PollingApiCallViewModel(get()) }
     viewModel { DebounceApiCallViewModel(get()) }
     viewModel { RetryApiCallViewModel(get()) }
+    viewModel { SimpleApiCallViewModel(get()) }
     factory {
         apiBuilder("http://demo7661478.mockable.io/")
             .addCallAdapterFactory(ThreadingCallAdapterFactory())
@@ -96,5 +99,7 @@ val appModule = module {
             .create(ReactiveApi::class.java)
     }
     factory { api<CoroutineApi>("http://demo7661478.mockable.io/") }
+
+    factory { kim.jeonghyeon.common.net.api<SimpleApi>("http://demo7661478.mockable.io/") }
 
 }
