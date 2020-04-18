@@ -159,7 +159,9 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
             progressDialog.dismissWithoutException()
         }
 
-        dismissErrorSnackbar()
+        if (::binding.isInitialized) {
+            dismissErrorSnackbar(binding.root)
+        }
     }
 
     private fun setupView() {

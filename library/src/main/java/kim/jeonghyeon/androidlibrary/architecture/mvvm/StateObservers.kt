@@ -22,7 +22,7 @@ fun IBaseUi.resourceObserverCommon(onResult: (State) -> Boolean = { false }): Ob
             progressDialog.dismissWithoutException()
         }
 
-        dismissErrorSnackbar()// if state is changed, dismiss snackbar if it's shown.
+        dismissErrorSnackbar(binding.root)// if state is changed, dismiss snackbar if it's shown.
 
         it.onError {
             val errorMessage = if (it.error is MessageError) it.error.errorMessage else null
@@ -41,10 +41,10 @@ fun IBaseUi.resourceObserverInit(onResult: (State) -> Boolean = { false }): Obse
         false
     }
 
-fun IBaseUi.dismissErrorSnackbar() {
-    val snackbar = binding.root.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
+fun IBaseUi.dismissErrorSnackbar(view: View) {
+    val snackbar = view.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
     snackbar.dismiss()
-    binding.root.setTag(R.id.view_tag_snackbar, null)
+    view.setTag(R.id.view_tag_snackbar, null)
 }
 
 fun IBaseUi.showErrorSnackbar(message: String? = null, retry: () -> Unit) {

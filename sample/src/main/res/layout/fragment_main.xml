@@ -19,19 +19,25 @@
             onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view_model}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_model_related" />
+            android:text="@string/view_model_related"/>
 
         <Button
             onClickNavigate="@{@id/action_mainFragment_to_nav_graph_view}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_related" />
+            android:text="@string/view_related"/>
+
+        <Button
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_ui}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ui"/>
 
         <Button
             onClickNavigate="@{@id/action_mainFragment_to_nav_graph_list}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/list" />
+            android:text="@string/list"/>
 
         <Button
             onClickNavigate="@{@id/action_mainFragment_to_nav_graph_api_call}"

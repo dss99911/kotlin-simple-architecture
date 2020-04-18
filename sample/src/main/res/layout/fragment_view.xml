@@ -6,7 +6,6 @@
         <variable
             name="model"
             type="kim.jeonghyeon.sample.view.ViewViewModel" />
-
     </data>
 
     <LinearLayout
@@ -36,12 +35,18 @@
             onClickNavigate="@{@id/action_viewFragment_to_noNavigationActivity}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_navigation" />
+            android:text="@string/no_navigation"/>
 
         <Button
             onClickNavigate="@{@id/action_viewFragment_to_savedStateFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/saved_state" />
+            android:text="@string/saved_state"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> model.onClickParcelable()}"
+            android:text="@string/parcelable"/>
     </LinearLayout>
 </layout>

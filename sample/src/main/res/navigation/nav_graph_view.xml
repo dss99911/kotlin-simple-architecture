@@ -14,17 +14,20 @@
                 android:id="@+id/action_viewFragment_to_menuFragment"
                 app:destination="@id/menuFragment" />
         <action
-                android:id="@+id/action_viewFragment_to_emptyLayoutFragment"
-                app:destination="@id/emptyLayoutFragment" />
+            android:id="@+id/action_viewFragment_to_emptyLayoutFragment"
+            app:destination="@id/emptyLayoutFragment"/>
         <action
-                android:id="@+id/action_viewFragment_to_emptyLayoutActivity"
-                app:destination="@id/emptyLayoutActivity" />
+            android:id="@+id/action_viewFragment_to_emptyLayoutActivity"
+            app:destination="@id/emptyLayoutActivity"/>
         <action
-                android:id="@+id/action_viewFragment_to_noNavigationActivity"
-                app:destination="@id/noNavigationActivity" />
+            android:id="@+id/action_viewFragment_to_noNavigationActivity"
+            app:destination="@id/noNavigationActivity"/>
         <action
-                android:id="@+id/action_viewFragment_to_savedStateFragment"
-                app:destination="@id/savedStateFragment" />
+            android:id="@+id/action_viewFragment_to_savedStateFragment"
+            app:destination="@id/savedStateFragment"/>
+        <action
+            android:id="@+id/action_viewFragment_to_parcelableFragment"
+            app:destination="@id/parcelableFragment"/>
     </fragment>
     <fragment
             android:id="@+id/menuFragment"
@@ -36,17 +39,24 @@
             android:name="kim.jeonghyeon.sample.view.emptylayout.EmptyLayoutFragment"
             android:label="EmptyLayoutFragment" />
     <activity
-            android:id="@+id/emptyLayoutActivity"
-            android:name="kim.jeonghyeon.sample.view.emptylayout.EmptyLayoutActivity"
-            android:label="EmptyLayoutActivity" />
+        android:id="@+id/emptyLayoutActivity"
+        android:name="kim.jeonghyeon.sample.view.emptylayout.EmptyLayoutActivity"
+        android:label="EmptyLayoutActivity"/>
     <activity
-            android:id="@+id/noNavigationActivity"
-            android:name="kim.jeonghyeon.sample.view.nonavigation.NoNavigationActivity"
-            android:label="NoNavigationActivity" />
+        android:id="@+id/noNavigationActivity"
+        android:name="kim.jeonghyeon.sample.view.nonavigation.NoNavigationActivity"
+        android:label="NoNavigationActivity"/>
     <fragment
-            android:id="@+id/savedStateFragment"
-            android:name="kim.jeonghyeon.sample.view.savedState.SavedStateFragment"
-            android:label="SavedStateFragment"
-            tools:layout="@layout/fragment_saved_state" />
+        android:id="@+id/savedStateFragment"
+        android:name="kim.jeonghyeon.sample.view.savedState.SavedStateFragment"
+        android:label="SavedStateFragment"
+        tools:layout="@layout/fragment_saved_state"/>
+    <fragment
+        android:id="@+id/parcelableFragment"
+        android:name="kim.jeonghyeon.sample.view.parcelable.ParcelableFragment"
+        android:label="ParcelableFragment">
+        <argument android:name="data"
+                  app:argType="kim.jeonghyeon.sample.view.parcelable.ParcelableData"/>
+    </fragment>
 
 </navigation>

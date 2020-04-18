@@ -22,6 +22,7 @@ interface IBaseViewModel {
      * normally used for user action. and not hide page
      */
     val state: LiveState
+
     /**
      * hide if it's not success
      * normally used for page init.
@@ -35,6 +36,7 @@ interface IBaseViewModel {
     fun onStop()
 
     fun navigateDirection(navDirections: NavDirections)
+    fun NavDirections.navigate()
     fun navigateUp()
     fun navigateDirection(id: Int)
     fun showSnackbar(text: String)
@@ -91,6 +93,9 @@ interface IBaseViewModel {
 
     fun <T> LiveResource<T>.loadDebounce(timeInMillis: Long, work: suspend CoroutineScope.() -> T)
 
+    fun <T> LiveResource(work: suspend CoroutineScope.() -> T): LiveResource<T>
+    fun <T> LiveObject(state2: LiveState?, work: suspend CoroutineScope.() -> T): LiveObject<T>
+
     //TODO HYUN : this has learning curve which is not straight-forward to understand. consider to delete
     fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
@@ -145,6 +150,10 @@ open class BaseViewModel(val savedStateHandle: SavedStateHandle? = null) : ViewM
 
     override fun navigateDirection(navDirections: NavDirections) {
         navigate { it.navigate(navDirections) }
+    }
+
+    override fun NavDirections.navigate() {
+        navigateDirection(this)
     }
 
     override fun navigateDirection(id: Int) {
@@ -254,6 +263,14 @@ open class BaseViewModel(val savedStateHandle: SavedStateHandle? = null) : ViewM
             work()
         }
     }
+
+    override fun <T> LiveResource(work: suspend CoroutineScope.() -> T): LiveResource<T> =
+        LiveResource<T>().apply { this(work) }
+
+    override fun <T> LiveObject(
+        state2: LiveState?,
+        work: suspend CoroutineScope.() -> T
+    ): LiveObject<T> = LiveObject(state2, work)
 
     override fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
