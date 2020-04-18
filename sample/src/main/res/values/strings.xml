@@ -53,4 +53,7 @@
     <string name="saved_state">Saved state</string>
     <string name="reset">Reset</string>
     <string name="simple">Simple</string>
+    <string name="ui">UI</string>
+    <string name="parcelable">Parcelable</string>
+    <string name="action">action</string>
 </resources>

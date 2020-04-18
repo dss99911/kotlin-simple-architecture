@@ -201,4 +201,14 @@ dependencies {
         debugImplementation("com.squareup.leakcanary:leakcanary-android:2.0")
     }
     debugImplementation("com.facebook.stetho:stetho:1.5.1")
+
+    //todo after upgrade kotlin from 1.3.61 to 1.3.71. there were the build error below
+    //it's strange. let's try after moving to multimplatform module
+    /** https://github.com/google/dagger/issues/95
+     * /Users/hyun.kim/AndroidstudioProjects/my/androidLibrary/sample/build/generated/source/kapt/freeDevDebug/androidx/databinding/library/baseAdapters/BR.java:5: error: cannot find symbol
+    @Generated("Android Data Binding")
+    ^
+    symbol: class Generated
+     */
+    implementation("org.glassfish:javax.annotation:10.0-b28")
 }

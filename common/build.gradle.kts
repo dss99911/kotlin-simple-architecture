@@ -98,12 +98,14 @@ kotlin {
     configure(listOf(iosArm32, iosArm64, iosX64)) {
         compilations {
             val main by getting {
-                extraOpts("-Xobjc-generics")
+                //for supporting kotlin generic in swift. there were discussion that it'll be applied on kotlin 1.3.40. let's see if this script is required or not.
+//                extraOpts("-Xobjc-generics")
             }
         }
 
         binaries.framework {
             export(deps.kotlin.coroutineCoreCommon)
+            //native will use this name to refer the multiplatform library
             baseName = frameworkName
         }
     }

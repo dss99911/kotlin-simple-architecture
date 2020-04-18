@@ -9,9 +9,9 @@ object DependencyVersion {
 }
 
 object KotlinVersion {
-    val version= "1.3.61"
+    val version = "1.3.71"
     val coroutine = "1.3.3"
-    val ktor = "1.3.0-beta-2"
+    val ktor = "1.3.2"
     val serialization = "0.12.0"
 }
 

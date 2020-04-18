@@ -191,7 +191,9 @@ abstract class BaseFragment : Fragment(),
             progressDialog.dismissWithoutException()
         }
 
-        dismissErrorSnackbar()
+        if (::binding.isInitialized) {
+            dismissErrorSnackbar(binding.root)
+        }
     }
 
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
