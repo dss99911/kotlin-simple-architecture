@@ -13,11 +13,11 @@ val koinModuleApp = module {
     viewModel { GardenViewModel() }
 
     // ViewModel for Result View
-    viewModel { param -> GardenPlantingListViewModel(param[0], get()) }
+    viewModel { GardenPlantingListViewModel(it[0], get()) }
 
-    viewModel { (parent: GardenViewModel) -> HomeViewPagerViewModel(parent) }
+    viewModel { HomeViewPagerViewModel(it[0]) }
 
-    viewModel { param -> PlantDetailViewModel(get(), get(), param[0]) }
+    viewModel { PlantDetailViewModel(get(), get(), it[0]) }
 
     viewModel { PlantListViewModel(get()) }
 

@@ -13,7 +13,8 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveState
  */
 data class Listing<T>(
     val data: LiveObject<PagedList<T>>,
-    val loadState: LiveState,
-    val retry: () -> Unit,//it will work only if load is failed
+    val initState: LiveState,//first api call state
+    val afterState: LiveState,//call state after first api
+    val isEmpty: LiveObject<Boolean>,//after api call, if there is no item, true.
     val refresh: () -> Unit//invalidate and load again
 )

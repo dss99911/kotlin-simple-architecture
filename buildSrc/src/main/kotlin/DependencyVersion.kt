@@ -16,7 +16,7 @@ object KotlinVersion {
 }
 
 object AndroidVersion {
-    val buildTool = "3.5.0"
+    val buildTool = "3.6.0"
     val xBase = "1.1.0"
     val xUi = "2.2.0"
     val xTest = "1.2.0"

@@ -11,28 +11,41 @@ import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showSnackbar
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 
-fun IBaseUi.resourceObserverCommon(onResult: (State) -> Boolean = { false }): Observer<State> =
+fun IBaseUi.resourceObserverCommon(
+    showProgressBar: Boolean = true,
+    showSnackbar: Boolean = true,
+    onResult: (State) -> Boolean = { false }
+): Observer<State> =
     Observer {
         if (onResult(it)) {
             return@Observer
         }
-        if (it.isLoading()) {
-            progressDialog.showWithoutException()
-        } else {
-            progressDialog.dismissWithoutException()
+
+        if (showProgressBar) {
+            if (it.isLoading()) {
+                progressDialog.showWithoutException()
+            } else {
+                progressDialog.dismissWithoutException()
+            }
         }
 
-        dismissErrorSnackbar(binding.root)// if state is changed, dismiss snackbar if it's shown.
+        dismissErrorSnackbar()// if state is changed, dismiss snackbar if it's shown.
 
-        it.onError {
-            val errorMessage = if (it.error is MessageError) it.error.errorMessage else null
-            showErrorSnackbar(errorMessage, it.retry)
+        if (showSnackbar) {
+            it.onError {
+                val errorMessage = if (it.error is MessageError) it.error.errorMessage else null
+                showErrorSnackbar(errorMessage, it.retry)
+            }
         }
 
     }
 
-fun IBaseUi.resourceObserverInit(onResult: (State) -> Boolean = { false }): Observer<State> =
-    resourceObserverCommon {
+fun IBaseUi.resourceObserverInit(
+    showProgressBar: Boolean = true,
+    showSnackbar: Boolean = true,
+    onResult: (State) -> Boolean = { false }
+): Observer<State> =
+    resourceObserverCommon(showProgressBar, showSnackbar) {
         if (onResult(it)) {
             return@resourceObserverCommon true
         }
@@ -41,10 +54,10 @@ fun IBaseUi.resourceObserverInit(onResult: (State) -> Boolean = { false }): Obse
         false
     }
 
-fun IBaseUi.dismissErrorSnackbar(view: View) {
-    val snackbar = view.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
+fun IBaseUi.dismissErrorSnackbar() {
+    val snackbar = binding.root.getTag(R.id.view_tag_snackbar) as? Snackbar? ?: return
     snackbar.dismiss()
-    view.setTag(R.id.view_tag_snackbar, null)
+    binding.root.setTag(R.id.view_tag_snackbar, null)
 }
 
 fun IBaseUi.showErrorSnackbar(message: String? = null, retry: () -> Unit) {

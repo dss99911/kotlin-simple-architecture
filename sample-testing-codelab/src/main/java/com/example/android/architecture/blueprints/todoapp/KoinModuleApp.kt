@@ -16,9 +16,9 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val koinModuleViewModel = module {
-    viewModel { (args: AddEditTaskFragmentArgs) -> AddEditTaskViewModel(args, get()) }
+    viewModel { AddEditTaskViewModel(it[0], get()) }
     viewModel { StatisticsViewModel(get()) }
-    viewModel { (args: TaskDetailFragmentArgs) -> TaskDetailViewModel(args, get()) }
+    viewModel { TaskDetailViewModel(it[0], get()) }
     viewModel { TasksViewModel(get()) }
 }
 

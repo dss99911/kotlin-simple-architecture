@@ -44,5 +44,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_keyword" />
+
+        <!-- todo hyun <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_data_exists"
+            android:visibility="@{model.listing.isEmpty}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_keyword" />-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
