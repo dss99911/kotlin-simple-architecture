@@ -87,3 +87,9 @@ inline fun <C> C.letIf(predicate: (C) -> Boolean, action: (C) -> C): C {
 
     return this
 }
+
+inline fun <C> C.letIf(predicate: (C) -> Boolean, data: C): C {
+    if (predicate(this)) data
+
+    return this
+}

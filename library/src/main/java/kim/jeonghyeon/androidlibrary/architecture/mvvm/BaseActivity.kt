@@ -31,6 +31,7 @@ import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.kotlinlibrary.extension.letIf
 
 /**
  *
@@ -159,13 +160,11 @@ abstract class BaseActivity : AppCompatActivity(), IBaseUi {
             progressDialog.dismissWithoutException()
         }
 
-        if (::binding.isInitialized) {
-            dismissErrorSnackbar(binding.root)
-        }
+        dismissErrorSnackbar()
     }
 
     private fun setupView() {
-        if (layoutId == 0) return
+        val layoutId = layoutId.letIf(layoutId == 0) { R.layout.empty_layout }
 
         binding = DataBindingUtil.setContentView(this, layoutId)
         viewModels.forEach { (variableId, viewModel) ->

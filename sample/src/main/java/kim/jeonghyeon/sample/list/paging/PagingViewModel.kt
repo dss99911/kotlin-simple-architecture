@@ -20,6 +20,9 @@ class PagingViewModel(val api: GithubService) : BaseViewModel() {
 
         listing.value = RepoDataSourceFactory(keyword.value!!, api).asListing.also {
             state += it.loadState
+            //TODO HYUN [multi-platform2] : remove the code above and use the below after library update
+//            initState.replaceSource(it.initState)
+//            state.replaceSource(it.afterState)
         }
 
     }

@@ -31,6 +31,7 @@ import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
 import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.kotlinlibrary.extension.letIf
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.qualifier.Qualifier
@@ -141,7 +142,7 @@ abstract class BaseFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (layoutId == 0) return null
+        val layoutId = layoutId.letIf(layoutId == 0) { R.layout.empty_layout }
 
         binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         viewModels.forEach { (variableId, viewModel) ->
@@ -187,13 +188,12 @@ abstract class BaseFragment : Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         Logger.log()
+
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()
         }
 
-        if (::binding.isInitialized) {
-            dismissErrorSnackbar(binding.root)
-        }
+        dismissErrorSnackbar()
     }
 
     override fun setMenu(@MenuRes menuId: Int, onMenuItemClickListener: (MenuItem) -> Boolean) {
