@@ -57,4 +57,5 @@
     <string name="parcelable">Parcelable</string>
     <string name="action">action</string>
     <string name="no_data_exists">No data exists</string>
+    <string name="db">DB</string>
 </resources>

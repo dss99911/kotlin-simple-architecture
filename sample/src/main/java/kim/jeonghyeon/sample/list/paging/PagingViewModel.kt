@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.list.paging
 
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
-import kim.jeonghyeon.androidlibrary.architecture.livedata.plusAssign
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.androidlibrary.architecture.paging.Listing
 import kim.jeonghyeon.androidlibrary.extension.toast
@@ -19,10 +18,8 @@ class PagingViewModel(val api: GithubService) : BaseViewModel() {
         }
 
         listing.value = RepoDataSourceFactory(keyword.value!!, api).asListing.also {
-            state += it.loadState
-            //TODO HYUN [multi-platform2] : remove the code above and use the below after library update
-//            initState.replaceSource(it.initState)
-//            state.replaceSource(it.afterState)
+            initState.replaceSource(it.initState)
+            state.replaceSource(it.afterState)
         }
 
     }

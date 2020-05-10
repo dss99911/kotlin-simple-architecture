@@ -17,6 +17,11 @@ enableFeaturePreview("GRADLE_METADATA")
 
 include("common")
 include("kotlinlibrary")
+include("plugin-gradle")
+include("plugin-api")
+include("kotlin-simple-architecture-gradle-plugin-api-shared")
+include("kotlin-simple-architecture-gradle-plugin-api-native")
+include("sample-plugin")
 
 if (includeBackend) {
     include("backend")
@@ -24,7 +29,8 @@ if (includeBackend) {
 
 
 if (includeAndroid) {
-    include("library")//TODO HYUN [master] : separate to base and library. and library with repository.
-    include("androidtesting", "testing") //TODO HYUN [master] : make repo
+    include("library")
+    include("androidtesting", "testing")
     include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
 }
+

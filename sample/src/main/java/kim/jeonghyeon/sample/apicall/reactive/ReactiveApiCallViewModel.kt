@@ -19,6 +19,7 @@ class ReactiveApiCallViewModel(val api: ReactiveApi) : BaseViewModel() {
     }
 
     fun postItem(item: Item) {
+
         api.getToken()
             .flatMap { api.submitPost(PostRequestBody(it, item)) }
             .subscribeResource(result)

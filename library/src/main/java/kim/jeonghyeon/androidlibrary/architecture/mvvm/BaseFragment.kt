@@ -96,6 +96,7 @@ abstract class BaseFragment : Fragment(),
     override lateinit var binding: ViewDataBinding
     override val viewModels = mutableListOf<Pair<Int, Lazy<BaseViewModel>>>()
     override val viewContext: Context? get() = context
+
     @MenuRes
     private var menuId: Int = 0
     private lateinit var onMenuItemClickListener: (MenuItem) -> Boolean
@@ -148,7 +149,7 @@ abstract class BaseFragment : Fragment(),
         viewModels.forEach { (variableId, viewModel) ->
             binding.setVariable(variableId, viewModel.value)
         }
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
 
         return binding.root
     }

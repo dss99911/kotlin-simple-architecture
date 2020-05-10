@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_mainFragment_to_nav_graph_ui"
             app:destination="@id/nav_graph_ui"/>
+        <action
+            android:id="@+id/action_mainFragment_to_nav_graph_db"
+            app:destination="@id/nav_graph_db" />
 
         <!-- argument example
         <argument
@@ -69,6 +72,7 @@
             android:name="kim.jeonghyeon.sample.MainFragment" />
     <include app:graph="@navigation/nav_graph_api_call" />
     <include app:graph="@navigation/nav_graph_ui"/>
+    <include app:graph="@navigation/nav_graph_db" />
 
     <!-- use argument for attribute value
     <fragment

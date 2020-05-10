@@ -7,8 +7,8 @@ plugins {
     id("kotlinx-serialization")
     kotlin("kapt")
     id("androidx.navigation.safeargs")
+//    id("com.squareup.sqldelight")
 }
-
 
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
@@ -16,6 +16,13 @@ val androidStoreFile: String by project
 val androidStorePassword: String by project
 
 val appId = "kim.jeonghyeon.sample"
+
+//sqldelight {
+//
+//    database("HockeyDb2") {
+//        packageName = "com.balancehero.example1"
+//    }
+//}
 
 android {
 
@@ -46,19 +53,19 @@ android {
 
     productFlavors {
         val free by creating {
-            setDimension("mode")
+            dimension = "mode"
             applicationId = appId
             buildConfigField("boolean", "isFree", "true")
         }
 
         val pro by creating {
-            setDimension("mode")
+            dimension = "mode"
             applicationId = appId + ".pro"
             buildConfigField("boolean", "isPro", "true")
         }
 
         val dev by creating {
-            setDimension("stage")
+            dimension = "stage"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
 
@@ -69,12 +76,12 @@ android {
         }
 
         val prod by creating {
-            setDimension("stage")
+            dimension = "stage"
             buildConfigField("boolean", "isProd", "true")
         }
 
         create(FLAVOR_NAME_MOCK) {
-            setDimension("stage")
+            dimension = "stage"
 
             applicationIdSuffix = ".mock"
             versionNameSuffix = "-mock"
@@ -193,15 +200,12 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxjava:2.2.19")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.2.0")//todo Rxjava3 released, but adapter seems not exsits yet.
-    //todo library, androidtesting, base.gradle can be split in dependency except for this kapt. we have to consider. whether split them or make one package
-    //todo check if add("kapt","") is working or not.
-    add("kapt", "androidx.room:room-compiler:${versions.android.room}")
 
     if (config.useLeakCanary) {
         debugImplementation("com.squareup.leakcanary:leakcanary-android:2.0")
     }
-    debugImplementation("com.facebook.stetho:stetho:1.5.1")
-
+//    debugImplementation("com.facebook.stetho:stetho:1.5.1")
+    implementation("com.squareup.sqldelight:android-driver:1.3.0")
     //todo after upgrade kotlin from 1.3.61 to 1.3.71. there were the build error below
     //it's strange. let's try after moving to multimplatform module
     /** https://github.com/google/dagger/issues/95

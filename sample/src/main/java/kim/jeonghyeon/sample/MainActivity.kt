@@ -7,11 +7,9 @@ import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.view.MenuItemCompat
-import androidx.databinding.BindingAdapter
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.appbar.AppBarLayout
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseActivity
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.bindingViewModel
 import kim.jeonghyeon.androidlibrary.extension.toast
@@ -113,37 +111,4 @@ class MainActivity : BaseActivity() {
         bottom_nav_view?.setupWithNavController(navController)
         nav_view?.setupWithNavController(navController)
     }
-}
-
-//TODO HYUN [multi-platform2] : remove after update library
-@BindingAdapter("onCollapsingStatusChanged")
-fun AppBarLayout.onCollapsingStatusChanged(listener: CollapsingStatusChangeListener) {
-    addOnOffsetChangedListener(object :
-        AppBarLayout.OnOffsetChangedListener {
-        var status = CollapsingStatus.EXPANDED
-        override fun onOffsetChanged(appbar: AppBarLayout, verticalOffset: Int) {
-            val previousStatus = status
-            status = when {
-                Math.abs(verticalOffset) == appbar.totalScrollRange -> CollapsingStatus.COLLAPSED
-                verticalOffset == 0 -> CollapsingStatus.EXPANDED
-                else -> CollapsingStatus.MOVING
-            }
-
-            if (previousStatus == status) {
-                return
-            }
-            listener.onCollapsingStatusChanged(status)
-        }
-    })
-}
-
-interface CollapsingStatusChangeListener {
-    fun onCollapsingStatusChanged(status: CollapsingStatus)
-}
-
-
-enum class CollapsingStatus {
-    COLLAPSED,
-    EXPANDED,
-    MOVING
 }

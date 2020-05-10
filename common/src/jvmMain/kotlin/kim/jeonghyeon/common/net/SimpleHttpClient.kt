@@ -1,6 +1,5 @@
 package kim.jeonghyeon.common.net
 
-import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.features.json.GsonSerializer
@@ -16,7 +15,7 @@ import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.common.net.error.ApiErrorCode
 import kim.jeonghyeon.common.net.error.isApiError
 import kim.jeonghyeon.common.reflect.suspendProxy
-import java.lang.reflect.Type
+import kim.jeonghyeon.kotlinlibrary.extension.toJsonObject
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.reflect.jvm.javaType
@@ -84,7 +83,3 @@ suspend fun validateResponse(response: HttpResponse) {
 
     throw ApiError(ApiErrorBody(ApiErrorCode.UNKNOWN, "unknown error occurred"))
 }
-
-//TODO HYUN [multi-platform2] : remove and update library
-fun <T> String.toJsonObject(type: Type): T = Gson().fromJson(this, type)
-inline fun <reified T> String.toJsonObject(): T = Gson().fromJson(this, T::class.java)

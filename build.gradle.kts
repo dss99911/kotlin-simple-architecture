@@ -9,6 +9,7 @@ plugins {
 
 buildscript {
     repositories {
+        mavenLocal()
         maven("https://kotlin.bintray.com/kotlinx")
         maven("https://dl.bintray.com/jetbrains/kotlin-native-dependencies")
         maven("https://dl.bintray.com/kotlin/kotlin-dev")
@@ -20,8 +21,12 @@ buildscript {
     //this is old way. https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application
     dependencies {
         classpath(deps.android.buildToolGradle)
+        classpath(deps.kotlin.gradle)
         classpath(deps.android.navigationGradle)
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
+        classpath(deps.shadowGradle)
+        classpath(deps.bintrary.gradle)
+        classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.2")
+//        classpath("com.squareup.sqldelight:gradle-plugin:1.3.0")
     }
 }
 
@@ -42,3 +47,10 @@ allprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.buildDir)
 }
+
+//configurations.all {
+//    resolutionStrategy {
+//        force("org.antlr:antlr4-runtime:4.5.3")
+//        force("org.antlr:antlr4-tool:4.5.3")
+//    }
+//}

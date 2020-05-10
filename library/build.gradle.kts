@@ -52,7 +52,7 @@ dependencies {
 
     apis(deps.android.lifecycle)
     apis(deps.android.navigation)
-    apis(deps.android.room)
+//    apis(deps.android.room)
     apis(deps.android.coin)
 
     /*[START] Retrofit */
