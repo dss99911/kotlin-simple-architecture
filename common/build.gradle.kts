@@ -4,11 +4,23 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 //todo what is this?
 val ideaActive = System.getProperty("idea.active") == "true"
 
+
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("kotlinx-serialization")
+//    id("com.squareup.sqldelight")
 }
+
+//sqldelight {
+//
+//    database("HockeyDb") {
+////        sourceSet = files("src/commonMain/sqldelight")
+//        packageName = "com.balancehero.example1"
+//    }
+//}
+
+apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
 android {
     compileSdkVersion(28)
@@ -130,3 +142,4 @@ kotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
 }
+

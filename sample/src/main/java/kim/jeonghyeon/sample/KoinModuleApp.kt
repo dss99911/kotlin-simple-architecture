@@ -20,6 +20,7 @@ import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
 import kim.jeonghyeon.sample.apicall.simple.SimpleApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
+import kim.jeonghyeon.sample.db.simple.SimpleDbViewModel
 import kim.jeonghyeon.sample.list.ListViewModel
 import kim.jeonghyeon.sample.list.paging.PagingViewModel
 import kim.jeonghyeon.sample.list.paging.api.GithubService
@@ -105,4 +106,6 @@ val appModule = module {
     //change to your server address.
     factory { kim.jeonghyeon.common.net.api<SimpleApi>("http://192.168.1.26:8080") }
 
+    //db
+    viewModel { SimpleDbViewModel() }
 }

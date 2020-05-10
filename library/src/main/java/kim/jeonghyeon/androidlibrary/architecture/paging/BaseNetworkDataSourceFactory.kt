@@ -134,7 +134,7 @@ private abstract class BaseNetworkDataSource<ITEM, RDATA : Any>(val pageSize: In
                             it,
                             requestPage,
                             params.requestedLoadSize
-                        ).toString()
+                        )?.toString()
                     )
                 }
                 it

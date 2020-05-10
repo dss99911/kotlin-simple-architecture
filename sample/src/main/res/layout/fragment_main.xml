@@ -44,5 +44,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/api_call" />
+
+        <Button
+            onClickNavigate="@{@id/action_mainFragment_to_nav_graph_db}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/db" />
     </LinearLayout>
 </layout>

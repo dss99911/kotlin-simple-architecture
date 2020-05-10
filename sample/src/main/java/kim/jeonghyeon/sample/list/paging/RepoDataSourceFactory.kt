@@ -21,7 +21,10 @@ class RepoDataSourceFactory(val keyword: String, val api: GithubService) :
         currentRequestedPageSize: Int
     ): Int? = if (data.incompleteResults) currentRequestedPageSize / SIZE + currentPage else null
 
-    override fun getListFromResponseData(data: RepoSearchResponse/* todo hyun , requestPage: Int*/): List<RepoItemViewModel> =
+    override fun getListFromResponseData(
+        data: RepoSearchResponse,
+        requestPage: Int
+    ): List<RepoItemViewModel> =
         data.items.map {
             RepoItemViewModel(it)
         }

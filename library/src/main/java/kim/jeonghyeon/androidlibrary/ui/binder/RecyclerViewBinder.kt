@@ -1,11 +1,14 @@
 package kim.jeonghyeon.androidlibrary.ui.binder
 
+import android.graphics.drawable.Drawable
 import androidx.databinding.BindingAdapter
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kim.jeonghyeon.androidlibrary.extension.bindData
 import kim.jeonghyeon.androidlibrary.extension.bindDiffComparable
 import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DiffComparable
+import kim.jeonghyeon.androidlibrary.ui.binder.recyclerview.DividerItemDecoration
 
 /**
  * set list of item viewModel and item layout, then no need to implement RecyclerViewAdapter.
@@ -61,3 +64,14 @@ fun <VM : DiffComparable<VM>> RecyclerView.bindDiffComparable(
     bindDiffComparable(itemList, layoutId, null)
 }
 
+@BindingAdapter("itemDividerDrawable")
+fun RecyclerView.setItemDevider(drawable: Drawable) {
+    val layoutManager = layoutManager
+    if (layoutManager !is LinearLayoutManager) {
+        error("doesn't support $layoutManager")
+    }
+
+    DividerItemDecoration(context, layoutManager.orientation, false).apply {
+        setDrawable(drawable)
+    }.let { addItemDecoration(it) }
+}

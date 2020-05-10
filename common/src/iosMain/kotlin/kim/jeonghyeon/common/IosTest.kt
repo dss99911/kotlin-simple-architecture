@@ -1,5 +1,9 @@
 package kim.jeonghyeon.common
 
 class IosTest {
-    fun getName() = "aaa"
+    fun getName() = "aaaa"
+}
+
+fun main() {
+
 }

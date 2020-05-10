@@ -1,6 +1,5 @@
 package kim.jeonghyeon.sample.view
 
-import androidx.navigation.NavDirections
 import kim.jeonghyeon.androidlibrary.architecture.mvvm.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kim.jeonghyeon.sample.view.parcelable.ParcelableData
@@ -15,11 +14,6 @@ class ViewViewModel : BaseViewModel() {
         )
 
         ViewFragmentDirections.actionViewFragmentToParcelableFragment(data).navigate()
-    }
-
-    //TODO HYUN [multi-platform2] : remove after library update
-    private fun NavDirections.navigate() {
-        navigateDirection(this)
     }
 }
 

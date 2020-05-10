@@ -16,8 +16,8 @@
 
 package kim.jeonghyeon.androidlibrary.sample
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+//import androidx.room.Entity
+//import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -26,14 +26,14 @@ import com.google.gson.annotations.SerializedName
  * with the serialized name.
  * This class also defines the Room repos table, where the repo [id] is the primary key.
  */
-@Entity(tableName = "repos")
+//@Entity(tableName = "repos")
 data class Repo(
-    @PrimaryKey @field:SerializedName("id") val id: Long,
-    @field:SerializedName("name") val name: String,
-    @field:SerializedName("full_name") val fullName: String,
-    @field:SerializedName("description") val description: String?,
-    @field:SerializedName("html_url") val url: String,
-    @field:SerializedName("stargazers_count") val stars: Int,
-    @field:SerializedName("forks_count") val forks: Int,
-    @field:SerializedName("language") val language: String?
+    /*@PrimaryKey */@field:SerializedName("id") val id: Long,
+                    @field:SerializedName("name") val name: String,
+                    @field:SerializedName("full_name") val fullName: String,
+                    @field:SerializedName("description") val description: String?,
+                    @field:SerializedName("html_url") val url: String,
+                    @field:SerializedName("stargazers_count") val stars: Int,
+                    @field:SerializedName("forks_count") val forks: Int,
+                    @field:SerializedName("language") val language: String?
 )

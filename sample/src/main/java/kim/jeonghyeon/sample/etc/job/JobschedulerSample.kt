@@ -4,6 +4,8 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.JobIntentService
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.jobScheduler
@@ -16,6 +18,7 @@ class JobschedulerSample {
         val INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(10)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun schedulePeriodic(): Boolean {
         //if already exists, ignore it.
         if (jobScheduler.getPendingJob(JOB_ID_SAMPLE) != null) {
@@ -23,12 +26,12 @@ class JobschedulerSample {
         }
 
         return ComponentName(ctx, SampleJobService::class.java)
-                .let { JobInfo.Builder(JOB_ID_SAMPLE, it) }
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true)//service will be registered on boot
-                .setPeriodic(INTERVAL_MILLIS)
-                .build()
-                .let { jobScheduler.schedule(it) } == JobScheduler.RESULT_SUCCESS
+            .let { JobInfo.Builder(JOB_ID_SAMPLE, it) }
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setPersisted(true)//service will be registered on boot
+            .setPeriodic(INTERVAL_MILLIS)
+            .build()
+            .let { jobScheduler.schedule(it) } == JobScheduler.RESULT_SUCCESS
     }
 
     fun enqueWork() {
