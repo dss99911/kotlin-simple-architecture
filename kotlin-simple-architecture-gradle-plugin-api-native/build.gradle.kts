@@ -27,8 +27,6 @@ dependencies {
     //todo currently, have to build shared module first, then, able to build this module. is there way to do at once.
 //    implementation("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin-api-shared:1.0.2")
     implementation(project(":kotlin-simple-architecture-gradle-plugin-api-shared"))
-    implementation(deps.kotlin.stdlib)
-    implementation(deps.plugin.mpapt)
     compileOnly(deps.plugin.compiler)//for native
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)

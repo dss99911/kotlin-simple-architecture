@@ -1,12 +1,14 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
-import org.gradle.internal.impldep.com.google.gson.Gson
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import java.util.*
 
 @AutoService(CommandLineProcessor::class) // don't forget!
 class ApiCommandLineProcessor : CommandLineProcessor {
@@ -26,8 +28,7 @@ class ApiCommandLineProcessor : CommandLineProcessor {
         ),
         CliOption(
             optionName = "sourceSets", valueDescription = "SourceSetOption",
-            description = "source sets",
-            required = true, allowMultipleOccurrences = true
+            description = "source sets"
         )
     )
 
@@ -37,9 +38,12 @@ class ApiCommandLineProcessor : CommandLineProcessor {
         configuration: CompilerConfiguration
     ) = when (option.optionName) {
         "buildPath" -> configuration.put(KEY_BUILD_PATH, value)
-        "sourceSets" -> configuration.appendList(
+        "sourceSets" -> configuration.put(
             KEY_SOURCE_SET,
-            Gson().fromJson(value, SourceSetOption::class.java)
+            Gson().fromJson(
+                String(Base64.getDecoder().decode(value)),
+                object : TypeToken<ArrayList<SourceSetOption>>() {}.type
+            )
         )
         else -> error("Unexpected config option ${option.optionName}")
     }

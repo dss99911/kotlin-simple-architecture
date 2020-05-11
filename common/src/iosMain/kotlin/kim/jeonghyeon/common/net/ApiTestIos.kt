@@ -4,5 +4,5 @@ import kim.jeonghyeon.simplearchitecture.plugin.Api
 
 @Api
 interface ApiTestIos {
-    fun aa()
+    suspend fun aa()
 }

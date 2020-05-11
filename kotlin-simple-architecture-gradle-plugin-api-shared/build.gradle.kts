@@ -27,10 +27,9 @@ tasks.install {
 }
 
 dependencies {
-    implementation(deps.kotlin.stdlibJdk8)
-    implementation(deps.plugin.mpapt)
+    api(deps.kotlin.stdlibJdk8)
+    api(deps.gson)
     implementation(deps.plugin.poet)
-    implementation(deps.gson)
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -43,5 +42,4 @@ kapt {
 
 tasks.build {
     finalizedBy(tasks.install)
-//    dependsOn(tasks.install)
 }
