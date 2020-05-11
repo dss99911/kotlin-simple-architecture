@@ -21,10 +21,7 @@ tasks.install {
 }
 
 dependencies {
-//    implementation("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin-api-shared:1.0.2")
     implementation(project(":kotlin-simple-architecture-gradle-plugin-api-shared"))
-    implementation(deps.kotlin.stdlibJdk8)
-    implementation(deps.plugin.mpapt)
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -34,8 +31,8 @@ dependencies {
 kapt {
     includeCompileClasspath = true
 }
+
 tasks.build {
     dependsOn(":kotlin-simple-architecture-gradle-plugin-api-shared:build")
     finalizedBy(tasks.install)
-//    dependsOn(tasks.install)
 }

@@ -1,8 +1,10 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-open class MainGradlePlugin : org.gradle.api.Plugin<Project> {
+open class MainGradlePlugin : Plugin<Project> {
+    //this is called 1 time
     override fun apply(project: Project) {
         System.setProperty(
             "kotlin.compiler.execution.strategy",
@@ -15,9 +17,19 @@ open class MainGradlePlugin : org.gradle.api.Plugin<Project> {
         // project.convention.plugins : {base, java}
 
         project.afterEvaluate {//to perform after source set is initialized.
-            (getSourceSetOptions() + getNativeSourceSetOptions()).forEach {
+            getSourceSetOptions().also { println("added source : " + it.joinToString { it.name }) }
+                .forEach {
                 it.addGeneratedSourceDirectory(project)
             }
         }
+//        val kotlinPluginHandler = { _: Plugin<*> ->
+//
+//        }
+//        project.plugins.withId("org.jetbrains.kotlin.multiplatform", kotlinPluginHandler)
+//        project.plugins.withId("org.jetbrains.kotlin.android", kotlinPluginHandler)
+//        project.plugins.withId("org.jetbrains.kotlin.jvm", kotlinPluginHandler)
+//        project.plugins.withId("kotlin2js", kotlinPluginHandler)
+
+
     }
 }
