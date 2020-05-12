@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.lazy.descriptors.LazyClassDescriptor
 
 data class ClassElement(
-    val simpleName: String = "",//simpleName : class's name. ex)ApiTest3
-    val path: String = "",//absolute path of class's file. ex) ~/User.kt
+    val simpleName: String,//simpleName : class's name. ex)ApiTest3
+    val path: String,//absolute path of class's file. ex) ~/User.kt
     val packageName: String,//package full name. ex)kim.jeonghyeon.common.net
     val classDescriptor: ClassDescriptor
 ) {
@@ -29,4 +29,8 @@ data class ClassElement(
             .filter { it.kind == kind }
             .filterIsInstance<SimpleFunctionDescriptor>()
     }
+}
+
+interface ClassElementFindListener {
+    fun onClassElementFound(element: ClassElement)
 }

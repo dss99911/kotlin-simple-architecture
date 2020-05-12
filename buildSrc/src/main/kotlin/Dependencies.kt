@@ -104,6 +104,13 @@ object deps {
         val androidTest = depSimpleArchitecture("android-test", PublishConfig.versionTest)
         val androidAndroidTest =
             depSimpleArchitecture("android-androidtest", PublishConfig.versionTest)
+
+        val pluginShared =
+            depSimpleArchitecture("gradle-plugin-api-shared", PublishConfig.versionPlugin)
+        val pluginApi = depSimpleArchitecture("gradle-plugin-api", PublishConfig.versionPlugin)
+        val pluginApiNative =
+            depSimpleArchitecture("gradle-plugin-api-native", PublishConfig.versionPlugin)
+        val pluginGradle = depSimpleArchitecture("gradle-plugin", PublishConfig.versionPlugin)
     }
 
 
@@ -117,7 +124,6 @@ object deps {
         val compiler = depKotlin("compiler", versions.kotlin.version)
         const val poet = "com.squareup:kotlinpoet:1.3.0"
         const val auto = "com.google.auto.service:auto-service:1.0-rc6"
-        const val mpapt = "de.jensklingenberg:mpapt-runtime:0.8.4"
     }
 
     const val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"
@@ -136,3 +142,7 @@ private fun depKotlinx(module: String, version: String? = null): String =
 
 private fun depSimpleArchitecture(module: String, version: String? = null): String =
     "kim.jeonghyeon:kotlin-simple-architecture-$module${version?.let { ":$version" } ?: ""}"
+
+fun String.getGroupId(): String = split(':')[0]
+fun String.getArtifactId(): String = split(':')[1]
+fun String.getVersion(): String = split(':')[2]

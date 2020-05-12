@@ -7,9 +7,9 @@ plugins {
     maven
 }
 
-group = "kim.jeonghyeon"
-val archivesBaseName = "kotlin-simple-architecture-gradle-plugin"
-version = "1.0.2"
+group = deps.simpleArch.pluginGradle.getGroupId()
+val archivesBaseName = deps.simpleArch.pluginGradle.getArtifactId()
+version = deps.simpleArch.pluginGradle.getVersion()
 
 //TODO HYUN [multi-platform2] : change to remote class path
 tasks.install {
@@ -22,12 +22,6 @@ tasks.install {
     }
 }
 
-//publishing {
-//    repositories {
-//        mavenLocal()
-//    }
-//}
-
 gradlePlugin {
     plugins {
         register("gradlePlugin") {
@@ -38,17 +32,9 @@ gradlePlugin {
         }
     }
 }
-//gradlePlugin {
-//    plugins {
-//        create("simplePlugin") {
-//            id = archivesBaseName// users will do `apply plugin: "kotlin-simple-architecture-gradle-plugin"`
-//            implementationClass = "kim.jeonghyeon.simplearchitecture.plugin.MainGradlePlugin" // entry-point class
-//        }
-//    }
-//}
 
 dependencies {
-    implementation(deps.kotlin.stdlibJdk8)
+    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
     implementation(deps.plugin.gradleApi)
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
@@ -59,9 +45,8 @@ dependencies {
 }
 
 tasks.build {
-//    dependsOn(":kotlin-simple-architecture-gradle-plugin-api-shared:build")
-    dependsOn(":plugin-api:build")
-    dependsOn(":kotlin-simple-architecture-gradle-plugin-api-native:build")
+    dependsOn(":${deps.simpleArch.pluginApi.getArtifactId()}:build")
+    dependsOn(":${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
 
     finalizedBy(tasks.install)
 }

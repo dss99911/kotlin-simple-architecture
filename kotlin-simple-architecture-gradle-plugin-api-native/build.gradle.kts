@@ -7,26 +7,14 @@ plugins {
     maven
 }
 
-group = "kim.jeonghyeon"
-val archivesBaseName = "kotlin-simple-architecture-gradle-plugin-api-native"
-val ver = "1.0.2"
-version = ver
-
-//tasks.install {
-//    repositories.withGroovyBuilder {
-//        "mavenInstaller" {
-//            "pom" {
-//                setProperty("artifactId", archivesBaseName)
-//            }
-//        }
-//    }
-//}
-
+group = deps.simpleArch.pluginApiNative.getGroupId()
+val archivesBaseName = deps.simpleArch.pluginApiNative.getArtifactId()
+val ver = deps.simpleArch.pluginApiNative.getVersion().also {
+    version = it
+}
 
 dependencies {
-    //todo currently, have to build shared module first, then, able to build this module. is there way to do at once.
-//    implementation("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin-api-shared:1.0.2")
-    implementation(project(":kotlin-simple-architecture-gradle-plugin-api-shared"))
+    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
     compileOnly(deps.plugin.compiler)//for native
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -97,7 +85,7 @@ tasks.install {
 }
 
 tasks.build {
-    dependsOn(":kotlin-simple-architecture-gradle-plugin-api-shared:build")
+    dependsOn(":${deps.simpleArch.pluginShared.getArtifactId()}:build")
     dependsOn(tasks.shadowJar)
     finalizedBy(tasks.publishToMavenLocal)
 }
