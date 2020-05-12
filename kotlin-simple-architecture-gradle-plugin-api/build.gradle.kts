@@ -6,9 +6,9 @@ plugins {
     maven
 }
 
-group = "kim.jeonghyeon"
-val archivesBaseName = "kotlin-simple-architecture-gradle-plugin-api"
-version = "1.0.2"
+group = deps.simpleArch.pluginApi.getGroupId()
+val archivesBaseName = deps.simpleArch.pluginApi.getArtifactId()
+version = deps.simpleArch.pluginApi.getVersion()
 
 tasks.install {
     repositories.withGroovyBuilder {
@@ -21,7 +21,7 @@ tasks.install {
 }
 
 dependencies {
-    implementation(project(":kotlin-simple-architecture-gradle-plugin-api-shared"))
+    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -33,6 +33,6 @@ kapt {
 }
 
 tasks.build {
-    dependsOn(":kotlin-simple-architecture-gradle-plugin-api-shared:build")
+    dependsOn(":${deps.simpleArch.pluginShared.getArtifactId()}:build")
     finalizedBy(tasks.install)
 }

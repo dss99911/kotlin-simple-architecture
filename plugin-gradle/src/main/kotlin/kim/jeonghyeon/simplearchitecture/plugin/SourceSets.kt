@@ -11,10 +11,11 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
+
 fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
-    //TODO HYUN [multi-platform2] : test on multiplatform, android, kotlin project
 
     // Multiplatform project.
     project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
@@ -46,9 +47,22 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
     return listOf(SourceDirectorySetAndName("main", sourceSets.getByName("main").kotlin!!))
 }
 
+/**
+ * 1. for native, [ApiGradleSubplugin.apply] is called before 'ios', 'mobile' sourceSet is created.
+ * 2. so, It's difficult to figure out which sourceSet a class belongs to on native
+ */
+fun Project.getNativeSourceSetOptions(): List<SourceDirectorySetAndName> {
+    return extensions.findByType(KotlinMultiplatformExtension::class.java)?.let { ext ->
+        ext.targets
+            .filter { it.platformType == KotlinPlatformType.native }
+            .flatMap { it.compilations }
+            .map { SourceDirectorySetAndName(NATIVE_TARGET_NAME, it.defaultSourceSet.kotlin) }
+    } ?: emptyList()
+}
+
 
 fun SourceDirectorySetAndName.addGeneratedSourceDirectory(project: Project) {
-    sourceDirectorySet.srcDir("${project.buildDir}/generated/source/simpleapi/$name")
+    sourceDirectorySet.srcDir(generatedFilePath(project.buildDir.toString(), name))
 }
 
 internal val AndroidSourceSet.kotlin: SourceDirectorySet?
@@ -69,8 +83,6 @@ private fun Any.getKotlinSourceSet(name: String): KotlinSourceSet? =
     (this as HasConvention).convention.plugins[name] as? KotlinSourceSet?
 
 
-//todo use one code. instead of duplication
-open class SourceSetOption(val name: String, val sourcePathSet: Set<String>)
 data class SourceDirectorySetAndName(val name: String, val sourceDirectorySet: SourceDirectorySet)
 
 fun SourceDirectorySetAndName.toOption(): SourceSetOption =

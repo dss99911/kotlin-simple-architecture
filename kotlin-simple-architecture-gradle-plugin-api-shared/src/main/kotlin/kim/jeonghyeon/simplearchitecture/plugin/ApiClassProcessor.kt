@@ -1,6 +1,5 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
-import com.google.gson.Gson
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jetbrains.kotlin.backend.common.descriptors.isSuspend
@@ -12,28 +11,27 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isNullable
 import java.io.File
 
-class ApiClassProcessor(val buildPath: String, val sourceSets: List<SourceSetOption>) :
+class ApiClassProcessor(
+    val buildPath: String,
+    val sourceSets: List<SourceSetOption>,
+    val isNative: Boolean
+) :
     ClassElementFindListener {
 
     val apiAnnotationName = Api::class.java.name
 
-    //todo delete previous generated classes.
-
     override fun onClassElementFound(element: ClassElement) {
-        //todo check if already called class is call again
-
-        //todo this is called several times. maybe because ApiComponentRegistrar calls several times. is it really required?
-        //todo check if native class is also recognized
-
+        //already processed classes come out several times
+        // - different target, different build variant(debug, release)
+        // - all the classes which can be referred by several target will be handled several times.
         if (element.isValid()) {
             element.createClassFile()
         }
     }
 
     private fun ClassElement.isValid(): Boolean = hasAnnotation(apiAnnotationName)
-            && classDescriptor.modality == Modality.ABSTRACT
+            && classDescriptor.modality == Modality.ABSTRACT//Todo limitation : can't detect if it's abstract class or interface
                 && isTopLevelClass
-    //todo check if the class is interface or abstract class.
 
     private fun ClassElement.createClassFile() {
         FileSpec.builder(packageName, simpleName + "Impl")
@@ -41,34 +39,21 @@ class ApiClassProcessor(val buildPath: String, val sourceSets: List<SourceSetOpt
             .addType(asClassSpec())
             .build()
             .writeTo(File(getGeneratedClassPath()))
-        //todo how to set generated file's folder as source path.
     }
 
     fun ClassElement.getGeneratedClassPath(): String {
-        //todo LIMITATION : it won't work properly on the below cases. need to find the way how to figure out build path.
-        // class is only on some build type or flavor
-        //Remove <> from module name, and remove '_release', '_debug' in case it exists.
-
-        //todo how to detect target and compilation name?
-        // on Native, it's not possible to get path.
+        //todo native source set can't be separated for generated class
+        // source set is not detected when subplugin's option is applied.
 
         //find target by matching source folder
-        val sourceFolderName = sourceSets.firstOrNull {
+        val sourceSetName = if (isNative) NATIVE_TARGET_NAME else sourceSets.first {
             it.sourcePathSet.any {
                 path.startsWith(it)
             }
-        }?.name
+        }.name
 
-        if (sourceFolderName == null) {
-            log("path", path, sourceSets.flatMap { it.sourcePathSet })
-        }
-
-        return "$buildPath/generated/source/simpleapi/$sourceFolderName"
+        return generatedFilePath(buildPath, sourceSetName)
     }
-
-    //todo if class is inside other class? then containingDeclaration seems other class. if it's inner class. ignore it.
-    //todo check findPackage()
-
 
     fun ClassElement.asClassSpec(): TypeSpec {
         //classDescriptor member information
@@ -116,10 +101,7 @@ private fun ValueParameterDescriptor.asParameterSpec(): ParameterSpec =
     ParameterSpec.builder(name.asString(), type.asTypeName()).build()
 
 fun KotlinType.asTypeName(): TypeName {
-    val className: ClassName = ClassName(
-        packageName,
-        name
-    ).let {
+    val className: ClassName = createClassName().let {
         if (isNullable()) it.copy(true) else it
     }
 
@@ -131,10 +113,20 @@ fun KotlinType.asTypeName(): TypeName {
     return className
 }
 
+fun KotlinType.createClassName(): ClassName {
+    //on Jvm, packageName is java.util, instead of kotlin, even if source set is common
+    //todo currently only HashMap is checked.
+    // need to check other standard classes
+    if (packageName == "java.util") {
+        if (name == "HashMap") {
+            return ClassName("kotlin.collections", name)
+        }
+    }
+
+    return ClassName(
+        packageName, name
+    )
+}
+
 val KotlinType.packageName: String get() = getJetTypeFqName(false).substringBeforeLast(".")
 val KotlinType.name: String get() = getJetTypeFqName(false).substringAfterLast(".")
-
-
-fun log(vararg text: Any?) {
-    println("TestHyun : ${Gson().toJson(text)}")
-}

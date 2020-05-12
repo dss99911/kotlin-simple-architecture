@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.util.*
 
-@AutoService(CommandLineProcessor::class) // don't forget!
+@AutoService(CommandLineProcessor::class)
 class ApiCommandLineProcessor : CommandLineProcessor {
     /**
      * Just needs to be consistent with the key for GradleSubplugin#getCompilerPluginId
@@ -23,11 +23,11 @@ class ApiCommandLineProcessor : CommandLineProcessor {
      */
     override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(
-            optionName = "buildPath", valueDescription = "String",
+            optionName = OPTION_BUILD_PATH, valueDescription = "String",
             description = "build path"
         ),
         CliOption(
-            optionName = "sourceSets", valueDescription = "SourceSetOption",
+            optionName = OPTION_SOURCE_SETS, valueDescription = "SourceSetOption",
             description = "source sets"
         )
     )
@@ -37,8 +37,8 @@ class ApiCommandLineProcessor : CommandLineProcessor {
         value: String,
         configuration: CompilerConfiguration
     ) = when (option.optionName) {
-        "buildPath" -> configuration.put(KEY_BUILD_PATH, value)
-        "sourceSets" -> configuration.put(
+        OPTION_BUILD_PATH -> configuration.put(KEY_BUILD_PATH, value)
+        OPTION_SOURCE_SETS -> configuration.put(
             KEY_SOURCE_SET,
             Gson().fromJson(
                 String(Base64.getDecoder().decode(value)),
@@ -49,5 +49,7 @@ class ApiCommandLineProcessor : CommandLineProcessor {
     }
 }
 
-val KEY_BUILD_PATH = CompilerConfigurationKey<String>("build path")
-val KEY_SOURCE_SET = CompilerConfigurationKey<List<SourceSetOption>>("source set")
+const val OPTION_BUILD_PATH = "buildPath"
+const val OPTION_SOURCE_SETS = "sourceSets"
+val KEY_BUILD_PATH = CompilerConfigurationKey<String>(OPTION_BUILD_PATH)
+val KEY_SOURCE_SET = CompilerConfigurationKey<List<SourceSetOption>>(OPTION_SOURCE_SETS)

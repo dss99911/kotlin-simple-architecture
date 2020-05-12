@@ -17,17 +17,17 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 @AutoService(ComponentRegistrar::class)
 class NativeApiComponentRegistrar : ComponentRegistrar {
 
-    //this function is called 2times. I don't know why
+    //this instance is created and called several times.
     override fun registerProjectComponents(
         project: com.intellij.mock.MockProject,
         configuration: CompilerConfiguration
     ) {
 
-        println("native : " + configuration[KEY_SOURCE_SET]!!.joinToString { it.name })
-        val processor =
-            ApiClassProcessor(configuration[KEY_BUILD_PATH]!!, configuration[KEY_SOURCE_SET]!!)
-        //it doesn't change compiled class. but just create kt file.
-        //todo is it available to use embedible library?
+        val processor = ApiClassProcessor(
+            configuration[KEY_BUILD_PATH]!!,
+            configuration[KEY_SOURCE_SET]!!,
+            true
+        )
         StorageComponentContainerContributor.registerExtension(
             project,
             ClassElementFinder(processor)
@@ -35,7 +35,9 @@ class NativeApiComponentRegistrar : ComponentRegistrar {
     }
 }
 
-class ClassElementFinder(val listener: ClassElementFindListener) :
+class ClassElementFinder(
+    val listener: ClassElementFindListener
+) :
     StorageComponentContainerContributor {
     override fun registerModuleComponents(
         container: StorageComponentContainer,
@@ -61,5 +63,21 @@ class ClassElementFinder(val listener: ClassElementFindListener) :
                 )
             }
         })
+    }
+}
+
+/**
+ * In the Kotlin Native Compiler the configuration map has an entry with the name "target we compile for"
+ * the value is one of [de.jensklingenberg.mpapt.utils.KonanTargetValues]. I don't know how to get the value
+ * out of the configuration map other than parse the "toString()". This function will return an empty value
+ * when it's used on Kotlin JVM/JS Compiler because the CompilerConfiguration doesn't have that value.
+ */
+fun CompilerConfiguration.nativeTargetPlatformName(): String {
+    val targetKeyword = "target we compile for="
+    val mapString = this.toString()
+    return if (!mapString.contains(targetKeyword)) {
+        ""
+    } else {
+        this.toString().substringAfter(targetKeyword).substringBefore(",")
     }
 }

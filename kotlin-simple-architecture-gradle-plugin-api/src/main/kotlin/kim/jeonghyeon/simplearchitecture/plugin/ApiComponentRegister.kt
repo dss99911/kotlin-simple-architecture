@@ -17,17 +17,17 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 
 @AutoService(ComponentRegistrar::class)
 class ApiComponentRegistrar : ComponentRegistrar {
-
-    //this function is called 2times. I don't know why
+    //this instance is created and called several times.
     override fun registerProjectComponents(
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        println("jvm : " + configuration[KEY_SOURCE_SET]!!.joinToString { it.name })
-        val processor =
-            ApiClassProcessor(configuration[KEY_BUILD_PATH]!!, configuration[KEY_SOURCE_SET]!!)
-        //it doesn't change compiled class. but just create kt file.
-        //todo is it available to use embedible library?
+        val processor = ApiClassProcessor(
+            configuration[KEY_BUILD_PATH]!!,
+            configuration[KEY_SOURCE_SET]!!,
+            false
+        )
+
         StorageComponentContainerContributor.registerExtension(
             project,
             ClassElementFinder(processor)

@@ -28,6 +28,8 @@ object PublishConfig {
 
     const val versionTest = "0.7"
     const val versionTestForPublish = "0.7"
+
+    const val versionPlugin = "1.0.2"
 }
 
 fun Project.publish(isTest: Boolean, isAndroid: Boolean, artifactId: String, artifactName: String) {
