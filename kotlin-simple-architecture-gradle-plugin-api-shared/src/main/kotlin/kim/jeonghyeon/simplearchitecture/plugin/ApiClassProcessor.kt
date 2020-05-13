@@ -13,8 +13,8 @@ import java.io.File
 
 class ApiClassProcessor(
     val buildPath: String,
-    val sourceSets: List<SourceSetOption>,
-    val isNative: Boolean
+    val projectPath: String,
+    val sourceSets: List<SourceSetOption>
 ) :
     ClassElementFindListener {
 
@@ -31,7 +31,7 @@ class ApiClassProcessor(
 
     private fun ClassElement.isValid(): Boolean = hasAnnotation(apiAnnotationName)
             && classDescriptor.modality == Modality.ABSTRACT//Todo limitation : can't detect if it's abstract class or interface
-                && isTopLevelClass
+            && isTopLevelClass
 
     private fun ClassElement.createClassFile() {
         FileSpec.builder(packageName, simpleName + "Impl")
@@ -42,17 +42,33 @@ class ApiClassProcessor(
     }
 
     fun ClassElement.getGeneratedClassPath(): String {
-        //todo native source set can't be separated for generated class
-        // source set is not detected when subplugin's option is applied.
-
         //find target by matching source folder
-        val sourceSetName = if (isNative) NATIVE_TARGET_NAME else sourceSets.first {
+        val sourceSetName = sourceSets.firstOrNull {
             it.sourcePathSet.any {
                 path.startsWith(it)
             }
-        }.name
+        }?.name ?: guessSourceSetName(path)
 
         return generatedFilePath(buildPath, sourceSetName)
+    }
+
+    /**
+     * !! LIMITATION !!
+     * 1. for native, [ApiGradleSubplugin.apply] is called before 'ios', 'mobile' sourceSet is created.
+     * 2. so, It's difficult to figure out which sourceSet a class belongs to on native
+     * 3. in this case, we guess sourceSetName by path
+     */
+    private fun guessSourceSetName(path: String): String {
+        val srcPath = "$projectPath/src/"
+        if (!path.startsWith(srcPath)) {
+            error("sourceSet is not recognized and also failed to guess : $path")
+        }
+
+        return path.replaceFirst(srcPath, "")
+            .replaceAfter("/", "")
+            .also {
+                println("guessed : $it")
+            }
     }
 
     fun ClassElement.asClassSpec(): TypeSpec {

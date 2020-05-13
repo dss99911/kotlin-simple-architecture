@@ -11,7 +11,6 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 
@@ -46,20 +45,6 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
 
     return listOf(SourceDirectorySetAndName("main", sourceSets.getByName("main").kotlin!!))
 }
-
-/**
- * 1. for native, [ApiGradleSubplugin.apply] is called before 'ios', 'mobile' sourceSet is created.
- * 2. so, It's difficult to figure out which sourceSet a class belongs to on native
- */
-fun Project.getNativeSourceSetOptions(): List<SourceDirectorySetAndName> {
-    return extensions.findByType(KotlinMultiplatformExtension::class.java)?.let { ext ->
-        ext.targets
-            .filter { it.platformType == KotlinPlatformType.native }
-            .flatMap { it.compilations }
-            .map { SourceDirectorySetAndName(NATIVE_TARGET_NAME, it.defaultSourceSet.kotlin) }
-    } ?: emptyList()
-}
-
 
 fun SourceDirectorySetAndName.addGeneratedSourceDirectory(project: Project) {
     sourceDirectorySet.srcDir(generatedFilePath(project.buildDir.toString(), name))

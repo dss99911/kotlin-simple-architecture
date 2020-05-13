@@ -42,6 +42,7 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
+
         val options = project.getSourceSetOptions().map { it.toOption() }
 
         //it doesn't allow some special character. so, used Base64
@@ -50,7 +51,8 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
 
         return listOf(
             SubpluginOption(OPTION_SOURCE_SETS, sourceSetsString),
-            SubpluginOption(OPTION_BUILD_PATH, project.buildDir.toString())
+            SubpluginOption(OPTION_BUILD_PATH, project.buildDir.toString()),
+            SubpluginOption(OPTION_PROJECT_PATH, project.projectDir.toString())
         )
     }
 

@@ -27,6 +27,10 @@ class ApiCommandLineProcessor : CommandLineProcessor {
             description = "build path"
         ),
         CliOption(
+            optionName = OPTION_PROJECT_PATH, valueDescription = "String",
+            description = "project path"
+        ),
+        CliOption(
             optionName = OPTION_SOURCE_SETS, valueDescription = "SourceSetOption",
             description = "source sets"
         )
@@ -38,6 +42,7 @@ class ApiCommandLineProcessor : CommandLineProcessor {
         configuration: CompilerConfiguration
     ) = when (option.optionName) {
         OPTION_BUILD_PATH -> configuration.put(KEY_BUILD_PATH, value)
+        OPTION_PROJECT_PATH -> configuration.put(KEY_PROJECT_PATH, value)
         OPTION_SOURCE_SETS -> configuration.put(
             KEY_SOURCE_SET,
             Gson().fromJson(
@@ -50,6 +55,8 @@ class ApiCommandLineProcessor : CommandLineProcessor {
 }
 
 const val OPTION_BUILD_PATH = "buildPath"
+const val OPTION_PROJECT_PATH = "projectPath"
 const val OPTION_SOURCE_SETS = "sourceSets"
 val KEY_BUILD_PATH = CompilerConfigurationKey<String>(OPTION_BUILD_PATH)
+val KEY_PROJECT_PATH = CompilerConfigurationKey<String>(OPTION_PROJECT_PATH)
 val KEY_SOURCE_SET = CompilerConfigurationKey<List<SourceSetOption>>(OPTION_SOURCE_SETS)

@@ -24,8 +24,8 @@ class ApiComponentRegistrar : ComponentRegistrar {
     ) {
         val processor = ApiClassProcessor(
             configuration[KEY_BUILD_PATH]!!,
-            configuration[KEY_SOURCE_SET]!!,
-            false
+            configuration[KEY_PROJECT_PATH]!!,
+            configuration[KEY_SOURCE_SET]!!
         )
 
         StorageComponentContainerContributor.registerExtension(
