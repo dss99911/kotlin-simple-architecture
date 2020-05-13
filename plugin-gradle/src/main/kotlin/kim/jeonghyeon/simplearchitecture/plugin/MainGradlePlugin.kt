@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 open class MainGradlePlugin : Plugin<Project> {
-    //this is called 1 time
+    //this is called 1 time on configuration step.
     override fun apply(project: Project) {
         System.setProperty(
             "kotlin.compiler.execution.strategy",
@@ -15,6 +15,9 @@ open class MainGradlePlugin : Plugin<Project> {
             getSourceSetOptions().forEach {
                 it.addGeneratedSourceDirectory(project)
             }
+            applyGeneratedCodeDeleteTask()
         }
+
+
     }
 }
