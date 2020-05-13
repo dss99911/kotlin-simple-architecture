@@ -6,18 +6,50 @@ import com.android.build.gradle.api.AndroidSourceSet
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.HasConvention
+import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import java.io.File
 
+
+fun Project.applyGeneratedCodeDeleteTask() {
+    tasks.create("cleanSimpleApiGeneratedDir", Delete::class.java) {
+        delete(File("${project.buildDir.absolutePath}/generated/source/simpleapi"))
+    }
+
+    // Multiplatform project.
+    extensions.findByType(KotlinMultiplatformExtension::class.java)?.let { ext ->
+        ext.targets.forEach { target ->
+            //KotlinCompilation
+            // compilationName : debug
+            // compileKotlinTaskName : compileDebugKotlinAndroid
+            // defaultSourceSetName : androidDebug
+            // kotlinSourceSets : [source set androidDebug, source set commonMain]
+            // platformType : andridJvm
+            // moduleName : common_debug
+            // name : debug
+
+            target.compilations.forEach {
+                it.compileKotlinTask.dependsOn("cleanSimpleApiGeneratedDir")
+            }
+        }
+        return
+    }
+
+    error("not yet implemented. need to delete generated files")
+    //TODO HYUN [multi-platform-progressing] : Android project.
+    //TODO HYUN [multi-platform-progressing] : Kotlin project.
+
+}
 
 fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
 
     // Multiplatform project.
-    project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
+    extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
         return it.sourceSets
             .filter {
                 !it.name.contains(
@@ -29,7 +61,7 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
     }
 
     // Android project.
-    project.extensions.findByType(BaseExtension::class.java)?.let {
+    extensions.findByType(BaseExtension::class.java)?.let {
         return it.sourceSets
             .filter {
                 !it.name.contains(
@@ -41,7 +73,7 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
     }
 
     // Kotlin project.
-    val sourceSets = project.property("sourceSets") as SourceSetContainer
+    val sourceSets = property("sourceSets") as SourceSetContainer
 
     return listOf(SourceDirectorySetAndName("main", sourceSets.getByName("main").kotlin!!))
 }
