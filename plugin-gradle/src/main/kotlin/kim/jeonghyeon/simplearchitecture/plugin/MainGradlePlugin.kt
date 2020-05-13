@@ -12,7 +12,7 @@ open class MainGradlePlugin : Plugin<Project> {
         ) // Enabling kotlin compiler plugin
 
         project.afterEvaluate {//to perform after source set is initialized.
-            (getSourceSetOptions() + getNativeSourceSetOptions()).forEach {
+            getSourceSetOptions().forEach {
                 it.addGeneratedSourceDirectory(project)
             }
         }
