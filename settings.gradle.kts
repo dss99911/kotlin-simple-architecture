@@ -15,13 +15,12 @@ pluginManagement {
 
 enableFeaturePreview("GRADLE_METADATA")
 
-include("common")
+include("kotlin-simple-architecture")
 include("kotlinlibrary")
 include("plugin-gradle")
 include("kotlin-simple-architecture-gradle-plugin-api")
 include("kotlin-simple-architecture-gradle-plugin-api-shared")
 include("kotlin-simple-architecture-gradle-plugin-api-native")
-include("sample-plugin")
 
 if (includeBackend) {
     include("backend")
@@ -31,6 +30,9 @@ if (includeBackend) {
 if (includeAndroid) {
     include("library")
     include("androidtesting", "testing")
-    include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
+//    include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
+    include("sample-android")
+    include("sample-backend")
+    include("sample")
 }
 
