@@ -32,6 +32,7 @@ object deps {
         const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
         const val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
         const val clientLoggingJvm = "io.ktor:ktor-client-logging-jvm:${versions.kotlin.ktor}"
+        const val clientLoggingNative = "io.ktor:ktor-client-logging-native:${versions.kotlin.ktor}"
         const val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
         const val clientSerializationJvm =
             "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"

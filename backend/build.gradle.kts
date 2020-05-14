@@ -22,7 +22,7 @@ kotlin {
             }
 
             dependencies {
-                implementation(project(":common"))
+                implementation(project(":kotlin-simple-architecture"))
 
 
                 implementation(deps.ktor.gson)
@@ -52,7 +52,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 task<JavaExec>("run") {
     main = "io.ktor.server.netty.EngineMain"
-    val jvm by kotlin.targets.getting
+    val jvm by kotlin.targets.getting {}
     val main: KotlinCompilation<KotlinCommonOptions> by jvm.compilations
 
     val runtimeDependencies =
