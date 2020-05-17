@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.architecture.net.adapter
+package kim.jeonghyeon.sample.apicall.threading
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException

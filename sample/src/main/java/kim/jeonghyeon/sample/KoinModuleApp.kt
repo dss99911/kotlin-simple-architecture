@@ -1,8 +1,8 @@
 package kim.jeonghyeon.sample
 
-import kim.jeonghyeon.androidlibrary.architecture.net.adapter.ThreadingCallAdapterFactory
 import kim.jeonghyeon.androidlibrary.architecture.net.api
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
+import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
 import kim.jeonghyeon.sample.apicall.chaining.ChainingApi
@@ -16,10 +16,10 @@ import kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApi
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApiCallViewModel
 import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
-import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.simple.SimpleApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
+import kim.jeonghyeon.sample.apicall.threading.ThreadingCallAdapterFactory
 import kim.jeonghyeon.sample.db.simple.SimpleDbViewModel
 import kim.jeonghyeon.sample.list.ListViewModel
 import kim.jeonghyeon.sample.list.paging.PagingViewModel

@@ -18,7 +18,11 @@ data class ParcelableData<O : ParcelableOption>(
     }
 
     companion object {
-        fun <O : ParcelableOption> create(int: Int, action: () -> Unit, option: O): ParcelableData<O> =
+        fun <O : ParcelableOption> create(
+            int: Int,
+            action: () -> Unit,
+            option: O
+        ): ParcelableData<O> =
             ParcelableData(int, action as Serializable, option, option)
     }
 }

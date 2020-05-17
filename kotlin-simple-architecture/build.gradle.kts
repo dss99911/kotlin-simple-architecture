@@ -166,13 +166,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-
-    //todo is it fine?
-    // "More than one file was found with OS independent path 'META-INF/ktor-client-serialization.kotlin_module"
-    packagingOptions {
-        exclude("META-INF/*.kotlin_module")
-    }
-
 }
 
 tasks.withType<KotlinCompile> {

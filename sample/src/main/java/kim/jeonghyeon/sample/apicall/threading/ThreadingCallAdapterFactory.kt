@@ -1,4 +1,4 @@
-package kim.jeonghyeon.androidlibrary.architecture.net.adapter
+package kim.jeonghyeon.sample.apicall.threading
 
 import retrofit2.Call
 import retrofit2.CallAdapter
