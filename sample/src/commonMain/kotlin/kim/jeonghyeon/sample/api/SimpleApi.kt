@@ -1,4 +1,4 @@
-package kim.jeonghyeon.sample.apicall.simple
+package kim.jeonghyeon.sample.api
 
 interface SimpleApi {
     suspend fun getToken(
@@ -6,7 +6,10 @@ interface SimpleApi {
         float: Float = 1f,
         double: Double = 1.0,
         string: String = "dd",
-        item: Item = Item(1, "d"),
+        item: Item = Item(
+            1,
+            "d"
+        ),
         nullable: String? = null
     ): Item
     suspend fun submitPost(token: String, item: Item)

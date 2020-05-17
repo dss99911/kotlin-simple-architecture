@@ -1,6 +1,5 @@
 //on gradle-6.3-all, can not use extra properties
-val includeBackend = true
-val includeAndroid = true
+val includeSample = true
 
 pluginManagement {
     resolutionStrategy {
@@ -16,20 +15,15 @@ pluginManagement {
 enableFeaturePreview("GRADLE_METADATA")
 
 include("kotlin-simple-architecture")
-include("plugin-gradle")
+include("kotlin-simple-architecture-gradle-plugin")
 include("kotlin-simple-architecture-gradle-plugin-api")
 include("kotlin-simple-architecture-gradle-plugin-api-shared")
 include("kotlin-simple-architecture-gradle-plugin-api-native")
 
-if (includeBackend) {
-    include("backend")
-}
 
-
-if (includeAndroid) {
+if (includeSample) {
 //    include("androidtesting", "testing")
 //    include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
-    include("sample-backend")
     include("sample")
 }
 
