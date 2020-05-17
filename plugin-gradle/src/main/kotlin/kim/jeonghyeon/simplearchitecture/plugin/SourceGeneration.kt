@@ -15,6 +15,8 @@ import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.io.File
 
+const val TASK_CLEAN = "cleanSimpleApiGeneratedDir"
+
 fun Project.applySourceGeneration() {
     afterEvaluate {//to perform after source set is initialized.
         getSourceSetOptions().forEach {
@@ -26,12 +28,13 @@ fun Project.applySourceGeneration() {
 
 
 fun Project.applyGeneratedCodeDeleteTask() {
-    tasks.create("cleanSimpleApiGeneratedDir", Delete::class.java) {
-        delete(File("${project.buildDir.absolutePath}/generated/source/simpleapi"))
+
+    tasks.create(TASK_CLEAN, Delete::class.java) {
+        delete(File(generatedFilePath(project.buildDir.absolutePath, "")))
     }
 
     // Multiplatform project.
-    extensions.findByType(KotlinMultiplatformExtension::class.java)?.let { ext ->
+    multiplatformExtension?.let { ext ->
         ext.targets.forEach { target ->
             //KotlinCompilation
             // compilationName : debug
@@ -43,7 +46,7 @@ fun Project.applyGeneratedCodeDeleteTask() {
             // name : debug
 
             target.compilations.forEach {
-                it.compileKotlinTask.dependsOn("cleanSimpleApiGeneratedDir")
+                it.compileKotlinTask.dependsOn(TASK_CLEAN)
             }
         }
         return
@@ -58,7 +61,7 @@ fun Project.applyGeneratedCodeDeleteTask() {
 fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
 
     // Multiplatform project.
-    extensions.findByType(KotlinMultiplatformExtension::class.java)?.let {
+    multiplatformExtension?.let {
         return it.sourceSets
             .filter {
                 !it.name.contains(
@@ -70,7 +73,8 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
     }
 
     // Android project.
-    extensions.findByType(BaseExtension::class.java)?.let {
+
+    androidExtension?.let {
         return it.sourceSets
             .filter {
                 !it.name.contains(

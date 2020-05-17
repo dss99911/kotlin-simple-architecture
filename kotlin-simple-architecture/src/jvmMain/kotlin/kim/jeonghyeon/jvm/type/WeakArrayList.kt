@@ -1,4 +1,4 @@
-package kim.jeonghyeon.kotlinlibrary.type
+package kim.jeonghyeon.jvm.type
 
 import java.lang.ref.WeakReference
 import java.util.*

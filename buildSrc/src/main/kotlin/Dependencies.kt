@@ -100,18 +100,20 @@ object deps {
     }
 
     object simpleArch {
+        val common = depSimpleArchitecture(version = PublishConfig.versionLibrary)
         val jvm = depSimpleArchitecture("jvm", PublishConfig.versionLibrary)
         val android = depSimpleArchitecture("android", PublishConfig.versionLibrary)
+
         val androidTest = depSimpleArchitecture("android-test", PublishConfig.versionTest)
         val androidAndroidTest =
             depSimpleArchitecture("android-androidtest", PublishConfig.versionTest)
 
         val pluginShared =
-            depSimpleArchitecture("gradle-plugin-api-shared", PublishConfig.versionPlugin)
-        val pluginApi = depSimpleArchitecture("gradle-plugin-api", PublishConfig.versionPlugin)
+            depSimpleArchitecture("gradle-plugin-api-shared", PublishConfig.versionLibrary)
+        val pluginApi = depSimpleArchitecture("gradle-plugin-api", PublishConfig.versionLibrary)
         val pluginApiNative =
-            depSimpleArchitecture("gradle-plugin-api-native", PublishConfig.versionPlugin)
-        val pluginGradle = depSimpleArchitecture("gradle-plugin", PublishConfig.versionPlugin)
+            depSimpleArchitecture("gradle-plugin-api-native", PublishConfig.versionLibrary)
+        val pluginGradle = depSimpleArchitecture("gradle-plugin", PublishConfig.versionLibrary)
     }
 
 
@@ -141,8 +143,8 @@ private fun depKotlin(module: String, version: String? = null): String =
 private fun depKotlinx(module: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$module${version?.let { ":$version" } ?: ""}"
 
-private fun depSimpleArchitecture(module: String, version: String? = null): String =
-    "kim.jeonghyeon:kotlin-simple-architecture-$module${version?.let { ":$version" } ?: ""}"
+private fun depSimpleArchitecture(module: String? = null, version: String? = null): String =
+    "kim.jeonghyeon:kotlin-simple-architecture${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
 
 fun String.getGroupId(): String = split(':')[0]
 fun String.getArtifactId(): String = split(':')[1]

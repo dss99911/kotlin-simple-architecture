@@ -14,8 +14,8 @@ import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.common.net.error.ApiErrorCode
 import kim.jeonghyeon.common.net.error.isApiError
+import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.reflect.suspendProxy
-import kim.jeonghyeon.kotlinlibrary.extension.toJsonObject
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.reflect.jvm.javaType

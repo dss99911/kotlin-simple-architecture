@@ -18,9 +18,9 @@ fun Project.applyAndroid() {
 }
 
 fun BaseExtension.initDefault() {
+
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -41,19 +41,13 @@ fun BaseExtension.initDefault() {
     }
 
     sourceSets {
-        val sharedTestDir = "src/androidSharedTest/kotlin"
+        val sharedTestDir = "src/sharedTest/java"
 
         getByName("test") {
             java.srcDir(sharedTestDir)
         }
         getByName("androidTest") {
             java.srcDir(sharedTestDir)
-        }
-
-        getByName("main") {
-            manifest.srcFile("src/androidMain/AndroidManifest.xml")
-            java.srcDirs("src/androidMain/java", "src/androidMain/kotlin")
-            res.srcDirs("src/androidMain/res")
         }
     }
 }

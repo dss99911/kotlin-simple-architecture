@@ -50,3 +50,30 @@ tasks.build {
 
     finalizedBy(tasks.install)
 }
+
+val GENERATED_SOURCE_PATH = "build/generated/source/simpleArch"
+
+sourceSets {
+    getByName("main").java.srcDir(GENERATED_SOURCE_PATH)
+}
+
+tasks.create("pluginConfig") {
+
+    val outputDir = file(GENERATED_SOURCE_PATH)
+    outputs.dir(outputDir)
+
+    doLast {
+        val configFile = file("$outputDir/kim/jeonghyeon/simplearchitecture/plugin/PluginConfig.kt")
+        configFile.parentFile.mkdirs()
+        configFile.writeText("""
+            package kim.jeonghyeon.simplearchitecture.plugin
+            
+            val DEPENDENCY_SIMPLE_ARCHITECTURE = "${deps.simpleArch.common}"
+            val DEPENDENCY_SIMPLE_ARCHITECTURE_JVM = "${deps.simpleArch.jvm}"
+            val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API = "${deps.simpleArch.pluginApi}"
+            val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API_NATIVE = "${deps.simpleArch.pluginApiNative}"
+        """.trimIndent())
+    }
+}
+
+tasks.getByName("compileKotlin").dependsOn("pluginConfig")

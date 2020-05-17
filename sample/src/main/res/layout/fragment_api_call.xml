@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/threading" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/callback" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/chaining" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reactive" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/coroutine" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/simple" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/multiple_parallel_call" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/polling" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/debounce" />
+
+        <Button
+            bind:onClickNavigate="@{1}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/retry" />
+
+
+    </LinearLayout>
+</layout>

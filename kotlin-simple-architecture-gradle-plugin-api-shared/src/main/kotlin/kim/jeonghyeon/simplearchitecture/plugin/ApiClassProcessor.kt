@@ -17,7 +17,13 @@ class ApiClassProcessor(
     val sourceSets: List<SourceSetOption>
 ) : ClassElementFindListener {
 
-    val apiAnnotationName = Api::class.java.name
+    //todo this Api class is used by both gradle plugin and source.
+    // so, I tried to make different gradle module with multiplatform
+    // but same error occurs with the below. I followed the suggestion there.
+    // but It was not working. so, I just hardcoded the Api class name
+    // https://youtrack.jetbrains.com/issue/KT-31641
+    // the reason seems that kapt can't figure out proper dependency between common and jvm
+    val apiAnnotationName = "kim.jeonghyeon.annotation.Api"
 
     override fun onClassElementFound(element: ClassElement) {
         //already processed classes come out several times

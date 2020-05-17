@@ -22,17 +22,23 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
      */
     override fun getCompilerPluginId(): String = "SimpleApiPlugin"
 
-    override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-        groupId = "kim.jeonghyeon",
-        artifactId = "kotlin-simple-architecture-gradle-plugin-api",
-        version = "1.0.2"
-    )
+    override fun getPluginArtifact(): SubpluginArtifact =
+        DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API.split(":").let {
+            SubpluginArtifact(
+                groupId = it[0],
+                artifactId = it[1],
+                version = it[2]
+            )
+        }
 
-    override fun getNativeCompilerPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-        groupId = "kim.jeonghyeon",
-        artifactId = "kotlin-simple-architecture-gradle-plugin-api-native",
-        version = "1.0.2"
-    )
+    override fun getNativeCompilerPluginArtifact(): SubpluginArtifact =
+        DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API_NATIVE.split(":").let {
+            SubpluginArtifact(
+                groupId = it[0],
+                artifactId = it[1],
+                version = it[2]
+            )
+        }
 
     override fun apply(
         project: Project,
@@ -55,5 +61,4 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             SubpluginOption(OPTION_PROJECT_PATH, project.projectDir.toString())
         )
     }
-
 }
