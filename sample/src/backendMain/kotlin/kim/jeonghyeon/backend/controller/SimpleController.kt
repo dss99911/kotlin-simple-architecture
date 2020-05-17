@@ -1,8 +1,8 @@
 package kim.jeonghyeon.backend.controller
 
 import kim.jeonghyeon.backend.log
-import kim.jeonghyeon.common.net.api.Item
-import kim.jeonghyeon.common.net.api.SimpleApi
+import kim.jeonghyeon.sample.api.Item
+import kim.jeonghyeon.sample.api.SimpleApi
 
 class SimpleController : SimpleApi {
     override suspend fun getToken(

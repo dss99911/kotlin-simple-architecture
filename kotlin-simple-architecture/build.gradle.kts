@@ -19,6 +19,7 @@ version = deps.simpleArch.common.getVersion()
 
 kotlin {
     jvm()
+
     android {
         publishLibraryVariants("release", "debug")
     }
