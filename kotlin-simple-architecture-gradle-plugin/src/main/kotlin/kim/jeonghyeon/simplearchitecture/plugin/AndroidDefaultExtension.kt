@@ -10,7 +10,7 @@ fun Project.applyAndroid() {
 
     //todo check if this is working
     apply(plugin = "kotlinx-serialization")
-    apply(plugin = "kotlin-android-extensions")
+    apply(plugin = "kotlin-android-extensions")//@Parcelize
     apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "androidx.navigation.safeargs")
 

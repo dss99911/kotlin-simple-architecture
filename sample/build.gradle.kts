@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilationToRunnableFiles
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 //todo what is this?
 val ideaActive = System.getProperty("idea.active") == "true"
@@ -45,11 +44,7 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":kotlin-simple-architecture"))
-            }
-        }
+        val commonMain by getting {}
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
         val mobileMain by creating {
             dependsOn(commonMain)
@@ -60,7 +55,6 @@ kotlin {
 
         val backendMain by getting {
             dependsOn(jvmMain)
-            resources.srcDir("src/backendMain/res")
 
             dependencies {
                 implementation(deps.ktor.gson)
