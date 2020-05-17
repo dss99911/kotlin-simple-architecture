@@ -23,6 +23,7 @@ class ApiClassProcessor(
     // but It was not working. so, I just hardcoded the Api class name
     // https://youtrack.jetbrains.com/issue/KT-31641
     // the reason seems that kapt can't figure out proper dependency between common and jvm
+    // How about adding this as well? `attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)`
     val apiAnnotationName = "kim.jeonghyeon.annotation.Api"
 
     override fun onClassElementFound(element: ClassElement) {

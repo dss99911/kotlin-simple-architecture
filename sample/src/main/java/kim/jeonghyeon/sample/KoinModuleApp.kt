@@ -16,7 +16,7 @@ import kim.jeonghyeon.sample.apicall.polling.PollingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApi
 import kim.jeonghyeon.sample.apicall.reactive.ReactiveApiCallViewModel
 import kim.jeonghyeon.sample.apicall.retry.RetryApiCallViewModel
-import kim.jeonghyeon.sample.apicall.simple.SimpleApi
+import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.simple.SimpleApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel

@@ -1,3 +1,7 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilationToRunnableFiles
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -12,6 +16,9 @@ plugins {
     //android
     id("com.android.application")
 //    id("com.squareup.sqldelight")
+
+    //backend
+    id("com.github.johnrengelman.shadow")
 }
 
 apply(plugin = "kotlin-simple-architecture-gradle-plugin")
@@ -26,6 +33,7 @@ apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
 kotlin {
     jvm()
+    jvm("backend")
     android()
 
     val iosArm32 = iosArm32("iosArm32")
@@ -48,10 +56,23 @@ kotlin {
         }
 
         val jvmMain by getting {}
+
+
+        val backendMain by getting {
+            dependsOn(jvmMain)
+            resources.srcDir("src/backendMain/res")
+
+            dependencies {
+                implementation(deps.ktor.gson)
+                implementation(deps.ktor.serverNetty)
+                implementation(deps.ktor.serialization)
+                implementation(deps.logback)
+            }
+        }
+
         val androidMain by getting {
             dependsOn(mobileMain)
             dependsOn(jvmMain)
-
             dependencies {
                 implementation("com.android.support:customtabs:23.3.0")
                 implementation("io.reactivex.rxjava2:rxjava:2.2.19")
@@ -243,4 +264,27 @@ android {
 //            }
 //        }
     }
+}
+
+task<JavaExec>("run") {
+    main = "io.ktor.server.netty.EngineMain"
+    val backend by kotlin.targets.getting {}
+    val main: KotlinCompilation<KotlinCommonOptions> by backend.compilations
+
+    val runtimeDependencies =
+        (main as KotlinCompilationToRunnableFiles<KotlinCommonOptions>).runtimeDependencyFiles
+    classpath = files(main.output.allOutputs, runtimeDependencies)
+}
+
+tasks.withType<ShadowJar> {
+    val backendJar: Jar by tasks
+    val backendRuntimeClasspath by project.configurations
+
+    configurations = listOf(backendRuntimeClasspath)
+
+    from(backendJar.archiveFile)
+
+    archiveBaseName.value("backend")
+    classifier = null
+    version = null
 }
