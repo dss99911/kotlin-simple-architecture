@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.kotlinlibrary.extension
+package kim.jeonghyeon.jvm.extension
 
 import java.math.RoundingMode
 import java.text.DecimalFormat

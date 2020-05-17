@@ -1,4 +1,4 @@
-package kim.jeonghyeon.kotlinlibrary.type
+package kim.jeonghyeon.jvm.type
 
 class RecentList<E>(private val limit: Int) {
     val list = ArrayList<E>()

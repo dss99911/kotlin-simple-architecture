@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.kotlinlibrary.extension
+package kim.jeonghyeon.jvm.extension
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -19,11 +19,3 @@ fun String.toDate(formatText: String): Date? {
     val format = SimpleDateFormat(formatText, Locale.getDefault())
     return format.parse(this)
 }
-
-fun String?.toDouble(defValue: Double): Double = try {
-    this?.toDouble() ?: 0.0
-} catch (e: NumberFormatException) {
-    defValue
-}
-
-inline fun CharSequence?.isNotNullNotEmpty(): Boolean = this != null && length > 0

@@ -31,8 +31,6 @@ dependencies {
     api(deps.kotlin.stdlibJdk8)
     api(deps.gson)
 
-    //todo this is not working.
-//    implementation("kim.jeonghyeon:kotlin-simple-architecture:0.0.1")
     implementation(deps.plugin.poet)
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)

@@ -16,7 +16,6 @@ pluginManagement {
 enableFeaturePreview("GRADLE_METADATA")
 
 include("kotlin-simple-architecture")
-include("kotlinlibrary")
 include("plugin-gradle")
 include("kotlin-simple-architecture-gradle-plugin-api")
 include("kotlin-simple-architecture-gradle-plugin-api-shared")
@@ -28,10 +27,8 @@ if (includeBackend) {
 
 
 if (includeAndroid) {
-    include("library")
-    include("androidtesting", "testing")
+//    include("androidtesting", "testing")
 //    include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
-    include("sample-android")
     include("sample-backend")
     include("sample")
 }

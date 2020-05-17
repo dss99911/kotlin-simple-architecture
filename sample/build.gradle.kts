@@ -4,21 +4,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 //todo what is this?
 val ideaActive = System.getProperty("idea.active") == "true"
 
-//configurations {
-//
-//    compileClasspath
-//}
 
 plugins {
     //common
     kotlin("multiplatform")
-//    id("kotlinx-serialization")
 
     //android
     id("com.android.application")
-//    id("kotlin-android-extensions")
-//    kotlin("kapt")
-//    id("androidx.navigation.safeargs")
 //    id("com.squareup.sqldelight")
 }
 
@@ -30,6 +22,107 @@ apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 //        packageName = "com.balancehero.example1"
 //    }
 //}
+
+
+kotlin {
+    jvm()
+    android()
+
+    val iosArm32 = iosArm32("iosArm32")
+    val iosArm64 = iosArm64("iosArm64")
+    val iosX64 = iosX64("iosX64")
+
+    if (ideaActive) {
+        iosX64("ios")
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project(":kotlin-simple-architecture"))
+            }
+        }
+        //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
+        val mobileMain by creating {
+            dependsOn(commonMain)
+        }
+
+        val jvmMain by getting {}
+        val androidMain by getting {
+            dependsOn(mobileMain)
+            dependsOn(jvmMain)
+
+            dependencies {
+                implementation("com.android.support:customtabs:23.3.0")
+                implementation("io.reactivex.rxjava2:rxjava:2.2.19")
+                implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+                implementation("com.squareup.retrofit2:adapter-rxjava2:2.2.0")//todo Rxjava3 released, but adapter seems not exsits yet.
+
+            }
+        }
+
+        val androidDebug by getting {
+            dependencies {
+                if (config.useLeakCanary) {
+                    implementation("com.squareup.leakcanary:leakcanary-android:2.0")
+                }
+                //    implementation("com.facebook.stetho:stetho:1.5.1")
+            }
+        }
+
+        val iosMain = if (ideaActive) {
+            getByName("iosMain")
+        } else {
+            create("iosMain")
+        }
+
+        iosMain.apply {
+            dependsOn(mobileMain)
+        }
+
+        val iosArm32Main by getting {}
+        val iosArm64Main by getting {}
+        val iosX64Main by getting {}
+
+        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
+            dependsOn(iosMain)
+        }
+    }
+
+    val frameworkName = "KotlinApi"
+
+    configure(listOf(iosArm32, iosArm64, iosX64)) {
+        compilations {
+            val main by getting {
+                //for supporting kotlin generic in swift. there were discussion that it'll be applied on kotlin 1.3.40. let's see if this script is required or not.
+//                extraOpts("-Xobjc-generics")
+            }
+        }
+
+        binaries.framework {
+            export(deps.kotlin.coroutineCoreCommon)
+            //native will use this name to refer the multiplatform library
+            baseName = frameworkName
+        }
+    }
+
+    tasks.register<FatFrameworkTask>("debugFatFramework") {
+        baseName = frameworkName
+        group = "Universal framework"
+        description = "Builds a universal (fat) debug framework"
+
+        from(iosX64.binaries.getFramework("DEBUG"))
+    }
+
+    tasks.register<FatFrameworkTask>("releaseFatFramework") {
+        baseName = frameworkName
+        group = "Universal framework"
+        description = "Builds a universal (release) debug framework"
+
+        from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
+    }
+}
+
 
 android {
     //todo move configuration on plugin
@@ -103,10 +196,10 @@ android {
         }
     }
 
-    val SIGNING_CONFIG_NAME = "release"
+    val SIGNING_CONFIG_NAME_RELEASE = "release"
 
     signingConfigs {
-        create(SIGNING_CONFIG_NAME) {
+        create(SIGNING_CONFIG_NAME_RELEASE) {
             keyAlias = androidKeyAlias
             keyPassword = androidKeyPassword
             storeFile = file(androidStoreFile)
@@ -127,7 +220,7 @@ android {
             isShrinkResources = true
             isZipAlignEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME)
+            signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME_RELEASE)
         }
     }
 
@@ -150,105 +243,4 @@ android {
 //            }
 //        }
     }
-
 }
-
-kotlin {
-    jvm()
-    android()
-
-    val iosArm32 = iosArm32("iosArm32")
-    val iosArm64 = iosArm64("iosArm64")
-    val iosX64 = iosX64("iosX64")
-
-    if (ideaActive) {
-        iosX64("ios")
-    }
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":kotlin-simple-architecture"))
-            }
-        }
-        //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
-        val mobileMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val jvmMain by getting {}
-
-        val androidMain by getting {
-            dependsOn(mobileMain)
-            dependsOn(jvmMain)
-
-            dependencies {
-                //todo after upgrade kotlin from 1.3.61 to 1.3.71. there were the build error below
-                //it's strange. let's try after moving to multimplatform module
-                /** https://github.com/google/dagger/issues/95
-                 * /Users/hyun.kim/AndroidstudioProjects/my/androidLibrary/sample/build/generated/source/kapt/freeDevDebug/androidx/databinding/library/baseAdapters/BR.java:5: error: cannot find symbol
-                @Generated("Android Data Binding")
-                ^
-                symbol: class Generated
-                 */
-                implementation("org.glassfish:javax.annotation:10.0-b28")
-            }
-        }
-
-        val iosMain = if (ideaActive) {
-            getByName("iosMain")
-        } else {
-            create("iosMain")
-        }
-
-        iosMain.apply {
-            dependsOn(mobileMain)
-        }
-
-        val iosArm32Main by getting {}
-        val iosArm64Main by getting {}
-        val iosX64Main by getting {}
-
-        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
-            dependsOn(iosMain)
-        }
-    }
-
-    val frameworkName = "KotlinApi"
-
-    configure(listOf(iosArm32, iosArm64, iosX64)) {
-        compilations {
-            val main by getting {
-                //for supporting kotlin generic in swift. there were discussion that it'll be applied on kotlin 1.3.40. let's see if this script is required or not.
-//                extraOpts("-Xobjc-generics")
-            }
-        }
-
-        binaries.framework {
-            export(deps.kotlin.coroutineCoreCommon)
-            //native will use this name to refer the multiplatform library
-            baseName = frameworkName
-        }
-    }
-
-    tasks.register<FatFrameworkTask>("debugFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (fat) debug framework"
-
-        from(iosX64.binaries.getFramework("DEBUG"))
-    }
-
-    tasks.register<FatFrameworkTask>("releaseFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (release) debug framework"
-
-        from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
-
