@@ -20,6 +20,7 @@ buildscript {
 
     //this is old way. https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application
     dependencies {
+        //todo is it possible to omit these?
         classpath(deps.android.buildToolGradle)
         classpath(deps.kotlin.gradle)
         classpath(deps.android.navigationGradle)

@@ -5,7 +5,6 @@ import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import kim.jeonghyeon.androidlibrary.extension.app
 import kim.jeonghyeon.jvm.net.create
-import kim.jeonghyeon.jvm.net.httpClientDefault
 
 
 inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)

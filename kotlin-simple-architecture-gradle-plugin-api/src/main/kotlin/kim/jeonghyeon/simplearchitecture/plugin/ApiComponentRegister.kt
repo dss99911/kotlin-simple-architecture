@@ -17,7 +17,10 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 
 @AutoService(ComponentRegistrar::class)
 class ApiComponentRegistrar : ComponentRegistrar {
-    //this instance is created and called several times.
+    //this is called by compile task
+    //when build, this is called several times.
+    //target + variants(flavors, build type)
+
     override fun registerProjectComponents(
         project: MockProject,
         configuration: CompilerConfiguration

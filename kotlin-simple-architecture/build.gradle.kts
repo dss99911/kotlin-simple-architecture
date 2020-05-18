@@ -24,6 +24,8 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
+    js()
+
     val iosArm32 = iosArm32("iosArm32")
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
@@ -50,17 +52,31 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                //todo hyun : remove this after jvm library update
-                api(deps.ktor.clientSerializationJvm)
-                api(deps.ktor.clientLoggingJvm)
-
+                //kotlin
                 api(deps.kotlin.stdlibJdk8)
-                api(deps.ktor.clientGson)
                 api(deps.kotlin.serializationRuntime)
                 api(deps.kotlin.coroutineCore)
                 api(deps.kotlin.reflect)
+
+                //ktor client
                 api(deps.ktor.clientCoreJvm)
+                api(deps.ktor.clientSerializationJvm)
+                api(deps.ktor.clientLoggingJvm)
+
                 api(deps.gson)
+            }
+        }
+
+        //todo add frontend js and backend Js
+        val jsMain by getting {
+            dependencies {
+                api(deps.kotlin.stdlibJs)
+                api(deps.kotlin.serializationRuntimeJs)
+                api(deps.kotlin.coroutineCoreJs)
+
+                api(deps.ktor.clientJs)
+                api(deps.ktor.clientSerializationJs)
+                api(deps.ktor.clientLoggingJs)
             }
         }
 

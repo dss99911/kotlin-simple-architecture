@@ -1,5 +1,9 @@
 package kim.jeonghyeon.sample.api
 
+import kim.jeonghyeon.annotation.Api
+import kotlinx.serialization.Serializable
+
+@Api
 interface SimpleApi {
     suspend fun getToken(
         int: Int = 1,
@@ -12,7 +16,9 @@ interface SimpleApi {
         ),
         nullable: String? = null
     ): Item
+
     suspend fun submitPost(token: String, item: Item)
 }
 
+@Serializable
 data class Item(val id: Int, val name: String)

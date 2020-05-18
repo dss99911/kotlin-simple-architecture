@@ -1,6 +1,13 @@
 //on gradle-6.3-all, can not use extra properties
 val includeSample = true
 
+//todo : is there way to remove pluginManagement below?
+// this is the replace of
+// `classpath(kotlin("serialization", version = kotlinVersion))`
+// Try to change to the way below
+// plugins {
+//    kotlin("plugin.serialization") version "1.3.70"
+// }
 pluginManagement {
     resolutionStrategy {
         eachPlugin {

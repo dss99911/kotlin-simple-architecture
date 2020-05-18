@@ -7,7 +7,6 @@ import org.gradle.kotlin.dsl.apply
 
 fun Project.applyAndroid() {
     if (!hasAndroid) return
-
     //todo check if this is working
     apply(plugin = "kotlinx-serialization")
     apply(plugin = "kotlin-android-extensions")//@Parcelize
