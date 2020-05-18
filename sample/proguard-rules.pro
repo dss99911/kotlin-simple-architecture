@@ -24,3 +24,15 @@
     public ** component1();
     <fields>;
 }
+
+# START : Kotlin Serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class *$$serializer { *; } # <-- change package name to your app's
+-keepclassmembers class * { # <-- change package name to your app's
+    *** Companion;
+}
+-keepclasseswithmembers class * { # <-- change package name to your app's
+    kotlinx.serialization.KSerializer serializer(...);
+}
+# END : Kotlin Serialization

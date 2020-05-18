@@ -2,7 +2,35 @@
 
 this library is focusing on how to develop simple.
 
-this library achieves the belows.
+# Usage
+
+Todo : apply plugin, add classpath of othe plugins
+
+todo : is there way to remove pluginManagement below?
+settings.gradle.kts
+```
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            val plugin = requested.id.id
+            when (plugin) {
+                "kotlinx-serialization" -> useModule("org.jetbrains.kotlin:kotlin-serialization:${requested.version}")
+            }
+        }
+    }
+}
+
+enableFeaturePreview("GRADLE_METADATA")
+```
+
+# Goals
+1. Simplest
+2. Intuitive & Least learning curve
+3. No extra knowledge required
+4. Support all platform
+5. Just add your business logic without technical code
+
+# Merits by the Goals
 1. Simple to read : even non-developer can understand
 2. Simple to write : no boilerplate code, 1 line of code means 1 business logic. able to focus on business logic only
 3. Simple learning curve : easy to remember usage. even it's easy, if you forget?, you can find where to see. and also it provides the sample as well.
@@ -10,18 +38,25 @@ this library achieves the belows.
 5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
 
 # Prerequisite
+Todo : add prerequisite for ios, js, backend
+## Client
 - MVVM
 - Kotlin, Coroutine
+
+### Android
 - Koin
 - Jetpack : Navigation, Data Binding, LiveData, Paging, Room, ViewModel
-- Retrofit
 - [Resource](https://developer.android.com/jetpack/docs/guide#addendum)
 - AndroidX testing
 
 # Articles
+
+Todo : Multiplatform architecture for android, ios, frontend, backend
+
+## Android Articles
 - [Remove boilerplate code of RecyclerView][recyclerview]
-- [LiveData and event][livedata]
 - [Coroutine Api call and error handling in Retrofit2][coroutine]
+- [LiveData and event][livedata]
 - [MVVM concept and reduce boilerplate code on Activity/Fragment/ViewModel][mvvm]
 - [Testing efficiently with Android X][testing]
 - [Refactoring to new architecture][refactoring]

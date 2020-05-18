@@ -26,18 +26,46 @@ class ApiClassProcessor(
     // How about adding this as well? `attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)`
     val apiAnnotationName = "kim.jeonghyeon.annotation.Api"
 
+    val generatedSourceSetPaths: MutableSet<String> = mutableSetOf()
+
     override fun onClassElementFound(element: ClassElement) {
-        //already processed classes come out several times
-        // - different target, different build variant(debug, release)
-        // - all the classes which can be referred by several target will be handled several times.
         if (element.isValid()) {
+            element.deletePathBeforeGenerating()
             element.createClassFile()
         }
+    }
+
+    /**
+     * need to delete previous generated source.
+     *
+     * when you see databinding library.
+     * it adds source to each variants
+     *
+     * but this is multiplatform.
+     * if we create source depending on variants
+     * the generated code can be referred by only on the variant.
+     * it means that. if compile android Debug, common source set can not refer android's generated source code.
+     *
+     * so, generated source is based on source set.
+     * but we are not sure when generated code should be deleted before compile
+     * because same source set's source is called several times as each compile use multiple source set.
+     *
+     * so, I decided to delete the source before creating new source.
+     */
+    private fun ClassElement.deletePathBeforeGenerating() {
+        val path = getGeneratedSourceSetPath()
+        if (generatedSourceSetPaths.contains(path)) {
+            return
+        }
+
+        generatedSourceSetPaths.add(path)
+        File(path).deleteRecursively()
     }
 
     private fun ClassElement.isValid(): Boolean = hasAnnotation(apiAnnotationName)
             && classDescriptor.modality == Modality.ABSTRACT//Todo limitation : can't detect if it's abstract class or interface
             && isTopLevelClass
+            && !path.startsWith(generatedPath(buildPath))
 
     private fun ClassElement.createClassFile() {
 
@@ -47,10 +75,10 @@ class ApiClassProcessor(
             .addType(asClassSpec())
             .addFunction(getApiConstructorFunction(packageName, simpleName))
             .build()
-            .writeTo(File(getGeneratedClassPath()))
+            .writeTo(File(getGeneratedSourceSetPath()))
     }
 
-    fun ClassElement.getGeneratedClassPath(): String {
+    fun ClassElement.getGeneratedSourceSetPath(): String {
         //find target by matching source folder
         val sourceSetName = sourceSets.firstOrNull {
             it.sourcePathSet.any {
@@ -58,7 +86,7 @@ class ApiClassProcessor(
             }
         }?.name ?: guessSourceSetName(path)
 
-        return generatedFilePath(buildPath, sourceSetName)
+        return generatedSourceSetPath(buildPath, sourceSetName)
     }
 
     fun getApiImplementationName(interfaceName: String) = interfaceName + "Impl"
@@ -129,16 +157,16 @@ class ApiClassProcessor(
                 FunSpec.constructorBuilder()
                     .addApiConstructorParameter()
                     .build()
-            )
+            ).addApiConstructorProperty()
             .addFunctions(functions()
                 .filter { it.isValidFunction() }
-                .map { it.asFunctionSpec(simpleName) }
+                .map { it.asFunctionSpec(packageName, simpleName) }
             ).build()
     }
 
     fun CallableMemberDescriptor.isValidFunction(): Boolean = modality == Modality.ABSTRACT
 
-    fun CallableMemberDescriptor.asFunctionSpec(className: String): FunSpec {
+    fun CallableMemberDescriptor.asFunctionSpec(packageName: String, className: String): FunSpec {
         //name : function's name
         //origin.name : same with `name`
         //source.containingFile.name : file name including '.kt'
@@ -151,11 +179,73 @@ class ApiClassProcessor(
             .addModifiers(KModifier.SUSPEND)
             .addModifiers(KModifier.OVERRIDE)
             .addParameters(valueParameters.map { it.asParameterSpec() })
+            .addApiStatements(this, packageName, className)
         returnType?.asTypeName()?.let {
             builder.returns(it)
         }
 
         return builder.build()
+    }
+
+    fun FunSpec.Builder.addApiStatements(
+        funDescriptor: CallableMemberDescriptor,
+        packageName: String,
+        className: String
+    ) = apply {
+        val parametersJsonString = funDescriptor.valueParameters.joinToString("\n") {
+            """"${it.name.asString()}" to ${it.name.asString()} """
+        }
+
+        val returnClassName = funDescriptor.returnType
+            ?.takeIf { it.packageName != "kotlin" || it.name != "Unit" }
+            ?.let { ClassName(it.packageName, it.name) }
+
+        val post = MemberName("io.ktor.client.request", "post")
+        val contentType = MemberName("io.ktor.http", "contentType")
+        val ContentType = ClassName("io.ktor.http", "ContentType")
+        val json = MemberName("kotlinx.serialization.json", "json")
+        val throwException = MemberName("kim.jeonghyeon.common.net", "throwException")
+        val validateResponse = MemberName("kim.jeonghyeon.common.net", "validateResponse")
+        val Json = ClassName("kotlinx.serialization.json", "Json")
+        val JsonConfiguration = ClassName("kotlinx.serialization.json", "JsonConfiguration")
+        val HttpResponse = ClassName("io.ktor.client.statement", "HttpResponse")
+        val readText = MemberName("io.ktor.client.statement", "readText")
+
+
+
+        addStatement("val mainPath = \"${packageName.replace(".", "_")}/${className}\"")
+        addStatement("val subPath = \"${funDescriptor.name}\"")
+        addStatement("val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl")
+        addStatement(
+            """val response = try {
+            client.%M<%T>(baseUrlWithoutSlash + "/" + mainPath + "/" + subPath) {
+                %M(%T.Application.Json)
+
+                body = %M {
+                    $parametersJsonString                                    
+                }
+            }
+        } catch (e: Exception) {
+            client.%M(e)
+        }
+        """.trimIndent(), post, HttpResponse, contentType, ContentType, json, throwException
+        )
+
+        addStatement(
+            """
+            client.%M(response)
+            val json = %T(%T.Stable)
+            """.trimIndent(), validateResponse, Json, JsonConfiguration
+        )
+
+        if (returnClassName != null) {
+            addStatement(
+                "return json.parse(%T.serializer(), response.%M())",
+                returnClassName,
+                readText
+            )
+        }
+
     }
 }
 

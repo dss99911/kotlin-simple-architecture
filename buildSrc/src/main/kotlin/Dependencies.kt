@@ -5,17 +5,21 @@ object deps {
         val stdlib = depKotlin("stdlib")
         val stdlibWithVersion = depKotlin("stdlib", versions.kotlin.version)
         val stdlibJdk8 = depKotlin("stdlib-jdk8", versions.kotlin.version)
+        val stdlibJs = depKotlin("stdlib-js", versions.kotlin.version)
         val coroutineCoreCommon = depKotlinx("coroutines-core-common", versions.kotlin.coroutine)
         val coroutineCore = depKotlinx("coroutines-core", versions.kotlin.coroutine)
         val coroutineAndroid = depKotlinx("coroutines-android", versions.kotlin.coroutine)
         val coroutineCoreNative = depKotlinx("coroutines-core-native", versions.kotlin.coroutine)
+        val coroutineCoreJs = depKotlinx("coroutines-core-js", versions.kotlin.coroutine)
         val coroutineTest = depKotlinx("coroutines-test", versions.kotlin.coroutine)
         val serializationRuntimeCommon =
             depKotlinx("serialization-runtime-common", versions.kotlin.serialization)
         val serializationRuntime =
             depKotlinx("serialization-runtime", versions.kotlin.serialization)
         val serializationRuntimeNative =
-            depKotlinx("serialization-runtime", versions.kotlin.serialization)
+            depKotlinx("serialization-runtime-native", versions.kotlin.serialization)
+        val serializationRuntimeJs =
+            depKotlinx("serialization-runtime-js", versions.kotlin.serialization)
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)
@@ -28,16 +32,20 @@ object deps {
         const val clientCore = "io.ktor:ktor-client-core:${versions.kotlin.ktor}"
         const val clientCoreJvm = "io.ktor:ktor-client-core-jvm:${versions.kotlin.ktor}"
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
+        const val clientJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
         const val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
         const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
         const val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
         const val clientLoggingJvm = "io.ktor:ktor-client-logging-jvm:${versions.kotlin.ktor}"
         const val clientLoggingNative = "io.ktor:ktor-client-logging-native:${versions.kotlin.ktor}"
+        const val clientLoggingJs = "io.ktor:ktor-client-logging-js:${versions.kotlin.ktor}"
         const val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
         const val clientSerializationJvm =
             "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
         const val clientSerializationNative =
             "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
+        const val clientSerializationJs =
+            "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
     }
 
     object android {
