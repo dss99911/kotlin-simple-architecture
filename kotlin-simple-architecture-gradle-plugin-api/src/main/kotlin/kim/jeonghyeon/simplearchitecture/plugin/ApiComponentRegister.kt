@@ -1,6 +1,7 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
+import org.jetbrains.kotlin.codegen.extensions.ClassBuilderInterceptorExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -9,6 +10,7 @@ import org.jetbrains.kotlin.container.useInstance
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.extensions.StorageComponentContainerContributor
+import org.jetbrains.kotlin.js.translate.extensions.JsSyntheticTranslateExtension
 import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
@@ -25,20 +27,24 @@ class ApiComponentRegistrar : ComponentRegistrar {
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        val processor = ApiClassProcessor(
-            configuration[KEY_BUILD_PATH]!!,
-            configuration[KEY_PROJECT_PATH]!!,
-            configuration[KEY_SOURCE_SET]!!
-        )
+        val processor = ApiClassProcessor(configuration[KEY_PLUGIN_OPTIONS]!!)
 
         StorageComponentContainerContributor.registerExtension(
             project,
             ClassElementFinder(processor)
         )
+        ClassBuilderInterceptorExtension.registerExtension(
+            project,
+            ClassElementRetrievalFinishDetector(processor)
+        )
+        JsSyntheticTranslateExtension.registerExtension(
+            project,
+            ClassElementRetrievalFinishDetector(processor)
+        )
     }
 }
 
-class ClassElementFinder(val listener: ClassElementFindListener) :
+class ClassElementFinder(val listener: ClassElementRetrievalListener) :
     StorageComponentContainerContributor {
     override fun registerModuleComponents(
         container: StorageComponentContainer,
