@@ -1,6 +1,7 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.container.StorageComponentContainer
@@ -22,21 +23,21 @@ class NativeApiComponentRegistrar : ComponentRegistrar {
         project: com.intellij.mock.MockProject,
         configuration: CompilerConfiguration
     ) {
-
-        val processor = ApiClassProcessor(
-            configuration[KEY_BUILD_PATH]!!,
-            configuration[KEY_PROJECT_PATH]!!,
-            configuration[KEY_SOURCE_SET]!!
-        )
+        val processor = ApiClassProcessor(configuration[KEY_PLUGIN_OPTIONS]!!)
         StorageComponentContainerContributor.registerExtension(
             project,
             ClassElementFinder(processor)
+        )
+
+        IrGenerationExtension.registerExtension(
+            project,
+            ClassElementRetrievalFinishDetector(processor)
         )
     }
 }
 
 class ClassElementFinder(
-    val listener: ClassElementFindListener
+    val listener: ClassElementRetrievalListener
 ) :
     StorageComponentContainerContributor {
     override fun registerModuleComponents(
@@ -63,21 +64,5 @@ class ClassElementFinder(
                 )
             }
         })
-    }
-}
-
-/**
- * In the Kotlin Native Compiler the configuration map has an entry with the name "target we compile for"
- * the value is one of [de.jensklingenberg.mpapt.utils.KonanTargetValues]. I don't know how to get the value
- * out of the configuration map other than parse the "toString()". This function will return an empty value
- * when it's used on Kotlin JVM/JS Compiler because the CompilerConfiguration doesn't have that value.
- */
-fun CompilerConfiguration.nativeTargetPlatformName(): String {
-    val targetKeyword = "target we compile for="
-    val mapString = this.toString()
-    return if (!mapString.contains(targetKeyword)) {
-        ""
-    } else {
-        this.toString().substringAfter(targetKeyword).substringBefore(",")
     }
 }

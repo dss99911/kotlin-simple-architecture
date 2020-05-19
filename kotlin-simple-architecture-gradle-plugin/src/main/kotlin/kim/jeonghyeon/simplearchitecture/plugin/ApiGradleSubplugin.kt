@@ -49,16 +49,22 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
 
-        val options = project.getSourceSetOptions().map { it.toOption() }
-
-        //it doesn't allow some special character. so, used Base64
-        val sourceSetsString =
-            Base64.getEncoder().encodeToString(Gson().toJson(options).toByteArray())
-
-        return listOf(
-            SubpluginOption(OPTION_SOURCE_SETS, sourceSetsString),
-            SubpluginOption(OPTION_BUILD_PATH, project.buildDir.toString()),
-            SubpluginOption(OPTION_PROJECT_PATH, project.projectDir.toString())
+        return PluginOptions(
+            project.getSourceSetOptions().map { it.toOption() },
+            project.buildDir.toString(),
+            project.projectDir.toString(),
+            kotlinCompile.targetVariantsName
         )
+            //it doesn't allow some special character. so, used Base64
+            .let { Base64.getEncoder().encodeToString(Gson().toJson(it).toByteArray()) }
+            .let { listOf(SubpluginOption(OPTION_PLUGIN_OPTIONS, it)) }
+    }
+
+    private val AbstractCompile.targetVariantsName
+        get(): String {
+            val variants = toString().substringAfter(":compile").substringBefore("Kotlin")
+                .let { if (it.isEmpty()) "Main" else it }
+            val target = toString().substringAfterLast("Kotlin").substringBefore("'")
+            return target.decapitalize() + variants
     }
 }
