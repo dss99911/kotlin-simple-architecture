@@ -2,7 +2,6 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -23,16 +22,8 @@ class ApiCommandLineProcessor : CommandLineProcessor {
      */
     override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(
-            optionName = OPTION_BUILD_PATH, valueDescription = "String",
-            description = "build path"
-        ),
-        CliOption(
-            optionName = OPTION_PROJECT_PATH, valueDescription = "String",
-            description = "project path"
-        ),
-        CliOption(
-            optionName = OPTION_SOURCE_SETS, valueDescription = "SourceSetOption",
-            description = "source sets"
+            optionName = OPTION_PLUGIN_OPTIONS, valueDescription = "PluginOptions",
+            description = "Plugin Options"
         )
     )
 
@@ -41,22 +32,13 @@ class ApiCommandLineProcessor : CommandLineProcessor {
         value: String,
         configuration: CompilerConfiguration
     ) = when (option.optionName) {
-        OPTION_BUILD_PATH -> configuration.put(KEY_BUILD_PATH, value)
-        OPTION_PROJECT_PATH -> configuration.put(KEY_PROJECT_PATH, value)
-        OPTION_SOURCE_SETS -> configuration.put(
-            KEY_SOURCE_SET,
-            Gson().fromJson(
-                String(Base64.getDecoder().decode(value)),
-                object : TypeToken<ArrayList<SourceSetOption>>() {}.type
-            )
+        OPTION_PLUGIN_OPTIONS -> configuration.put(
+            KEY_PLUGIN_OPTIONS,
+            Gson().fromJson(String(Base64.getDecoder().decode(value)), PluginOptions::class.java)
         )
         else -> error("Unexpected config option ${option.optionName}")
     }
 }
 
-const val OPTION_BUILD_PATH = "buildPath"
-const val OPTION_PROJECT_PATH = "projectPath"
-const val OPTION_SOURCE_SETS = "sourceSets"
-val KEY_BUILD_PATH = CompilerConfigurationKey<String>(OPTION_BUILD_PATH)
-val KEY_PROJECT_PATH = CompilerConfigurationKey<String>(OPTION_PROJECT_PATH)
-val KEY_SOURCE_SET = CompilerConfigurationKey<List<SourceSetOption>>(OPTION_SOURCE_SETS)
+const val OPTION_PLUGIN_OPTIONS = "pluginsOptions"
+val KEY_PLUGIN_OPTIONS = CompilerConfigurationKey<PluginOptions>(OPTION_PLUGIN_OPTIONS)
