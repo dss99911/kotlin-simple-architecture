@@ -7,4 +7,7 @@ data class PluginOptions(
     val compileTargetVariantsName: String
 ) {
     fun hasCommon() = sourceSets.any { it.isCommon() }
+
+    fun getGeneratedTargetVariantsPath(): String =
+        generatedSourceSetPath(buildPath, compileTargetVariantsName)
 }

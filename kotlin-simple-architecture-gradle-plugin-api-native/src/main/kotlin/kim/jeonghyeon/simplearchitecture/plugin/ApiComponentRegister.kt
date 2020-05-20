@@ -2,9 +2,8 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElement
-import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElementRetrievalListener
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElementFindListener
 import kim.jeonghyeon.simplearchitecture.plugin.processor.ApiClassProcessor
-import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.container.StorageComponentContainer
@@ -21,7 +20,6 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 @AutoService(ComponentRegistrar::class)
 class NativeApiComponentRegistrar : ComponentRegistrar {
 
-    //this instance is created and called several times.
     override fun registerProjectComponents(
         project: com.intellij.mock.MockProject,
         configuration: CompilerConfiguration
@@ -31,16 +29,11 @@ class NativeApiComponentRegistrar : ComponentRegistrar {
             project,
             ClassElementFinder(processor)
         )
-
-        IrGenerationExtension.registerExtension(
-            project,
-            ClassElementRetrievalFinishDetector(processor)
-        )
     }
 }
 
 class ClassElementFinder(
-    val listener: ClassElementRetrievalListener
+    val listener: ClassElementFindListener
 ) :
     StorageComponentContainerContributor {
     override fun registerModuleComponents(
@@ -54,7 +47,7 @@ class ClassElementFinder(
                 descriptor: DeclarationDescriptor,
                 context: DeclarationCheckerContext
             ) {
-                //this is invoked by each declaration(class, property, enum, enum entry, constructor, value parameter etc..
+                //this function is invoked by each declaration(class, property, enum, enum entry, constructor, value parameter etc..
                 if (descriptor !is ClassDescriptor) return
 
                 listener.onClassElementFound(

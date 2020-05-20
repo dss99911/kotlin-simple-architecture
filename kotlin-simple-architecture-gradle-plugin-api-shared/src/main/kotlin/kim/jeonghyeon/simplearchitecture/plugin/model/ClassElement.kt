@@ -31,7 +31,6 @@ data class ClassElement(
     }
 }
 
-interface ClassElementRetrievalListener {
+interface ClassElementFindListener {
     fun onClassElementFound(element: ClassElement)
-    fun onRetrievalFinished()
 }
