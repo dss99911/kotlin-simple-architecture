@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.model
 
 data class PluginOptions(
     val sourceSets: List<SourceSetOption>,
