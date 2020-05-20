@@ -18,8 +18,10 @@ abstract class BaseAccessibilityService : AccessibilityService() {
          * if other accessibility service is turned on or accessibility service's process is different.
          * android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener listener is not invoked properly
          */
-        const val ACTION_SERVICE_CONNECTED = "kim.jeonghyeon.androidlibrary.service.BaseAccessibilityService.ACTION_SERVICE_CONNECTED"
-        const val ACTION_SERVICE_DISCONNECTED = "kim.jeonghyeon.androidlibrary.service.BaseAccessibilityService.ACTION_SERVICE_DISCONNECTED"
+        const val ACTION_SERVICE_CONNECTED =
+            "kim.jeonghyeon.androidlibrary.BaseAccessibilityService.ACTION_SERVICE_CONNECTED"
+        const val ACTION_SERVICE_DISCONNECTED =
+            "kim.jeonghyeon.androidlibrary.BaseAccessibilityService.ACTION_SERVICE_DISCONNECTED"
     }
 
     val eventLiveData = MutableLiveData<AccessibilityEvent>()

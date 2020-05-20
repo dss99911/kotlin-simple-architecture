@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_no_activity">no activity</string>
+    <string name="error_occurred">error occurred</string>
+    <string name="retry">retry</string>
+</resources>
