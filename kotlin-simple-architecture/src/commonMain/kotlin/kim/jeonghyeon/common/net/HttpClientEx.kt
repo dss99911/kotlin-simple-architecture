@@ -17,8 +17,6 @@ import kotlinx.serialization.json.JsonConfiguration
 
 fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient = HttpClient {
     install(JsonFeature) {
-        //can't use kotlin serialization with `request { body = arguments }`
-        //but gson can't be used on other platform except for jvm.
         serializer = KotlinxSerializer()
     }
 

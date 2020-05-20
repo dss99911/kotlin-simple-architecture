@@ -2,6 +2,11 @@
 
 package kim.jeonghyeon.common.extension
 
+/**
+ * [1,2,3,4,5]
+ * split(2)
+ * [[1,2],[3,4],[5]]
+ */
 fun <T> List<T>.split(size: Int): List<List<T>> {
     var curIndex = 0
     val list = mutableListOf<List<T>>()
@@ -18,18 +23,14 @@ fun <T> List<T>.split(size: Int): List<List<T>> {
     return list
 }
 
-inline fun <T> List<T>?.onEmpty(newList: () -> List<T>) =
-    if (this === null || this.isEmpty()) newList() else this
-
-inline fun <T> List<T>?.onNotEmpty(action: (List<T>?) -> List<T>?) =
-    if (this === null || this.isEmpty()) this else action(this)
-
-fun <I, T : MutableCollection<I>> T.addAllIf(
-    list: Collection<I>,
-    filter: (item: I, list: T) -> Boolean
-): T {
-    addAll(list.filter { filter(it, this) })
-    return this
-}
+/**
+ * [newList] should not be empty
+ */
+inline fun <T> List<T>?.notEmpty(newList: () -> List<T>) =
+    if (this === null || this.isEmpty()) {
+        newList().also {
+            check(it.isNotEmpty()) { "list is empty" }
+        }
+    } else this
 
 fun <E> MutableList<E>.removeLast(): E? = if (size == 0) null else removeAt(size - 1)
