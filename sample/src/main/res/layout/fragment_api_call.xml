@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -8,61 +7,61 @@
         android:orientation="vertical">
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_threadingApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/threading" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_callbackApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/callback" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_chainingApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/chaining" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_reactiveApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/reactive" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_coroutineApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/coroutine" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_simpleApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/simple" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_parallelApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/multiple_parallel_call" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_pollingApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/polling" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_debounceApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/debounce" />
 
         <Button
-            bind:onClickNavigate="@{1}"
+            onClickNavigate="@{@id/action_apiCallFragment_to_retryApiCallFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/retry" />

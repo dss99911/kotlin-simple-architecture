@@ -1,7 +1,8 @@
 package kim.jeonghyeon.sample
 
-import kim.jeonghyeon.androidlibrary.architecture.net.api
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
+import kim.jeonghyeon.common.net.clientAndroid
+import kim.jeonghyeon.generated.net.create
 import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
@@ -88,7 +89,7 @@ val appModule = module {
             .build()
             .create(ThreadingApi::class.java)
     }
-    factory { api<CallbackApi>("http://demo7661478.mockable.io/") }
+    factory { kim.jeonghyeon.androidlibrary.architecture.net.api<CallbackApi>("http://demo7661478.mockable.io/") }
     factory {
         apiBuilder("http://demo7661478.mockable.io/")
             .addCallAdapterFactory(LiveDataCallAdapterFactory())
@@ -101,11 +102,13 @@ val appModule = module {
             .build()
             .create(ReactiveApi::class.java)
     }
-    factory { api<CoroutineApi>("http://demo7661478.mockable.io/") }
+    factory { kim.jeonghyeon.androidlibrary.architecture.net.api<CoroutineApi>("http://demo7661478.mockable.io/") }
 
     //change to your server address.
-    factory { kim.jeonghyeon.common.net.api<SimpleApi>("http://192.168.1.26:8080") }
+    factory { api<SimpleApi>("http://192.168.1.26:8080") }
 
     //db
     viewModel { SimpleDbViewModel() }
 }
+
+inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)

@@ -4,22 +4,27 @@ import com.squareup.kotlinpoet.*
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import kim.jeonghyeon.simplearchitecture.plugin.model.SOURCE_SET_NAME_COMMON
 import kim.jeonghyeon.simplearchitecture.plugin.model.generatedSourceSetPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.API_CREATION_FUNCTION_FILE_NAME
+import kim.jeonghyeon.simplearchitecture.plugin.util.API_CREATION_FUNCTION_PACKAGE_NAME
+import kim.jeonghyeon.simplearchitecture.plugin.util.GENERATED_FILE_COMMENT
+import kim.jeonghyeon.simplearchitecture.plugin.util.getApiImplementationName
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ApiCreatingFunctionGenerator(
-    val options: PluginOptions,
-    val apiInterfacesName: Set<ClassName>
+    private val options: PluginOptions,
+    private val apiInterfacesName: Set<ClassName>
 ) {
+
+    var isExpectFunctionCreated = AtomicBoolean(false)
     fun generateApiCreatingFunction() {
-        if (options.hasCommon()) {
+        if (options.hasCommon() && !isExpectFunctionCreated.getAndSet(true)) {
             createApiCreatingExpectFunctionFile()
         }
 
         createApiCreatingActualFunction()
     }
 
-    //todo separate file for api creation function.
-    // consider others as well. if it's able to separate
     private fun createApiCreatingExpectFunctionFile() {
         //get common path on generated path
         val commonPath = generatedSourceSetPath(options.buildPath, SOURCE_SET_NAME_COMMON)
@@ -34,15 +39,13 @@ class ApiCreatingFunctionGenerator(
 
     private fun createApiCreatingActualFunction() {
         //get generated path on each variants
-        val targetVariantsNamed =
-            generatedSourceSetPath(options.buildPath, options.compileTargetVariantsName)
 
         //create file
         FileSpec.builder(API_CREATION_FUNCTION_PACKAGE_NAME, API_CREATION_FUNCTION_FILE_NAME)
             .addComment(GENERATED_FILE_COMMENT)
             .addFunction(getApiCreatingActualFunction())
             .build()
-            .writeTo(File(targetVariantsNamed))
+            .writeTo(File(options.getGeneratedTargetVariantsPath()))
     }
 
     private fun getApiCreatingExpectFunction() =

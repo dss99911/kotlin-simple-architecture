@@ -1,19 +1,19 @@
 package kim.jeonghyeon.simplearchitecture.plugin.processor
 
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import kim.jeonghyeon.simplearchitecture.plugin.model.*
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElement
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElementFindListener
+import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
+import kim.jeonghyeon.simplearchitecture.plugin.model.generatedPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.*
 import org.jetbrains.kotlin.backend.common.descriptors.isSuspend
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
-import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
-import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.isNullable
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ApiClassProcessor(val options: PluginOptions) :
-    ClassElementRetrievalListener {
+    ClassElementFindListener {
 
     //todo this Api class is used by both gradle plugin and source.
     // so, I tried to make different gradle module with multiplatform
@@ -22,48 +22,62 @@ class ApiClassProcessor(val options: PluginOptions) :
     // https://youtrack.jetbrains.com/issue/KT-31641
     // the reason seems that kapt can't figure out proper dependency between common and jvm
     // How about adding this as well? `attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)`
-    val apiAnnotationName = "kim.jeonghyeon.annotation.Api"
+    private val apiAnnotationName = "kim.jeonghyeon.annotation.Api"
 
-    val generatedSourceSetPaths: MutableSet<String> = mutableSetOf()
-
-    val apiInterfacesName: MutableSet<ClassName> = mutableSetOf()
-
-    override fun onClassElementFound(element: ClassElement) {
-        if (element.isValid()) {
-            element.deletePathBeforeGenerating()
-            element.createClassFile()
-        }
-    }
-
-    override fun onRetrievalFinished() {
-        ApiCreatingFunctionGenerator(options, apiInterfacesName).generateApiCreatingFunction()
-    }
+    private var isStarted = AtomicBoolean(false)
 
     /**
-     * need to delete previous generated source.
-     *
-     * when you see databinding library.
-     * it adds source to each variants
-     *
-     * but this is multiplatform.
-     * if we create source depending on variants
-     * the generated code can be referred by only on the variant.
-     * it means that. if compile android Debug, common source set can not refer android's generated source code.
-     *
-     * so, generated source is based on source set.
-     * but we are not sure when generated code should be deleted before compile
-     * because same source set's source is called several times as each compile use multiple source set.
-     *
-     * so, I decided to delete the source before creating new source.
+     * this is for creating HttpClient.create<T>() function
      */
-    private fun ClassElement.deletePathBeforeGenerating() {
-        val path = getGeneratedSourceSetPath()
-        if (generatedSourceSetPaths.contains(path)) {
-            return
+    private val apiInterfacesName: MutableSet<ClassName> = mutableSetOf()
+
+    private val apiCreatingFunctionGenerator =
+        ApiCreatingFunctionGenerator(options, apiInterfacesName)
+
+    override fun onClassElementFound(element: ClassElement) {
+        deleteGeneratedPathBeforeStart()
+
+        if (element.isValid()) {
+            element.createClassFile()
+
+            apiCreatingFunctionGenerator.generateApiCreatingFunction()
         }
 
-        generatedSourceSetPaths.add(path)
-        File(path).deleteRecursively()
+        //todo It was difficult to find when retrieving is finished.
+        // so, create file whenever interface implementation file is created.
+        // I tested [ClassBuilderInterceptorExtension]. but it's called sometimes after retrieving, somtimes before retrieving. somtimes both.
+        // as it's not stable, I didn't use it
+    }
+
+    private fun deleteGeneratedPathBeforeStart() {
+        //todo consider to add delete task and let it depends on compile task
+        // 1. how to find android platform compilations
+        // 2. how to find kotlin platform compilations
+        // 3. if this is working, [ClassElement.path] is not required. so, [ClassElementFinder] can be moved to shared module and merge with [ClassElementRetrievalFinishDetector]
+        // the below is how to apply delete task on multiplatform. looks more complicated than current way
+        // tasks.create(TASK_CLEAN, Delete::class.java) {
+        //        delete(File(generatedPath))
+        //    }
+        // // Multiplatform project.
+        //    multiplatformExtension?.let { ext ->
+        //        ext.targets.forEach { target ->
+        //            //KotlinCompilation
+        //            // compilationName : debug
+        //            // compileKotlinTaskName : compileDebugKotlinAndroid
+        //            // defaultSourceSetName : androidDebug
+        //            // kotlinSourceSets : [source set androidDebug, source set commonMain]
+        //            // platformType : andridJvm
+        //            // moduleName : common_debug
+        //            // name : debug
+        //            target.compilations.forEach {
+        //                it.compileKotlinTask.dependsOn(TASK_CLEAN)
+        //            }
+        //        }
+        //        return
+        //    }
+        if (isStarted.getAndSet(true)) return
+
+        File(options.getGeneratedTargetVariantsPath()).deleteRecursively()
     }
 
     private fun ClassElement.isValid(): Boolean = hasAnnotation(apiAnnotationName)
@@ -78,18 +92,7 @@ class ApiClassProcessor(val options: PluginOptions) :
             .addComment(GENERATED_FILE_COMMENT)
             .addType(asClassSpec())
             .build()
-            .writeTo(File(getGeneratedSourceSetPath()))
-    }
-
-    fun ClassElement.getGeneratedSourceSetPath(): String {
-        //find target by matching source folder
-        val sourceSetName = options.sourceSets.firstOrNull {
-            it.sourcePathSet.any {
-                path.startsWith(it)
-            }
-        }?.name ?: guessSourceSetName(path)
-
-        return generatedSourceSetPath(options.buildPath, sourceSetName)
+            .writeTo(File(options.getGeneratedTargetVariantsPath()))
     }
 
     private fun FunSpec.Builder.addApiConstructorParameter(): FunSpec.Builder =
@@ -110,33 +113,14 @@ class ApiClassProcessor(val options: PluginOptions) :
                     .build()
             )
 
-    /**
-     * !! LIMITATION !!
-     * 1. for native, [ApiGradleSubplugin.apply] is called before 'ios', 'mobile' sourceSet is created.
-     * 2. so, It's difficult to figure out which sourceSet a class belongs to on native
-     * 3. in this case, we guess sourceSetName by path
-     */
-    private fun guessSourceSetName(path: String): String {
-        val srcPath = "${options.projectPath}/src/"
-        if (!path.startsWith(srcPath)) {
-            error("sourceSet is not recognized and also failed to guess : $path")
-        }
-
-        return path.replaceFirst(srcPath, "")
-            .replaceAfter("/", "")
-            .also {
-                println("guessed : $it")
-            }
-    }
-
-    fun ClassElement.asClassSpec(): TypeSpec {
+    private fun ClassElement.asClassSpec(): TypeSpec {
         //classDescriptor member information
         // name : class's name
         // modality : ABSTRACT for interface and abstract class
         // module.simpleName() : "$module_$build_type" ex)common_release
         // containingDeclaration.name : package's last folder's name
         // containingDeclaration.fqNameSafe.asString() : package full name. ex) kim.jeonghyeon.simplearchitecture.plugin
-        // containingDeclaration.platform : [{"targetVersion":"JVM_1_8","targetPlatformVersion":{},"platformName":"JVM"}] todo check if other platform?
+        // containingDeclaration.platform : [{"targetVersion":"JVM_1_8","targetPlatformVersion":{},"platformName":"JVM"}]
         // containingDeclaration.parents.joinToString(","){it.name.asString() : "\u003ccommon_release\u003e". able to check it's build type debug or release
         // source.containingFile.name : file name including '.kt'
 
@@ -157,9 +141,12 @@ class ApiClassProcessor(val options: PluginOptions) :
             ).build()
     }
 
-    fun CallableMemberDescriptor.isValidFunction(): Boolean = modality == Modality.ABSTRACT
+    private fun CallableMemberDescriptor.isValidFunction(): Boolean = modality == Modality.ABSTRACT
 
-    fun CallableMemberDescriptor.asFunctionSpec(packageName: String, className: String): FunSpec {
+    private fun CallableMemberDescriptor.asFunctionSpec(
+        packageName: String,
+        className: String
+    ): FunSpec {
         //name : function's name
         //origin.name : same with `name`
         //source.containingFile.name : file name including '.kt'
@@ -171,7 +158,12 @@ class ApiClassProcessor(val options: PluginOptions) :
         val builder = FunSpec.builder(name.toString())
             .addModifiers(KModifier.SUSPEND)
             .addModifiers(KModifier.OVERRIDE)
-            .addParameters(valueParameters.map { it.asParameterSpec() })
+            .addParameters(valueParameters.map {
+                ParameterSpec.builder(
+                    it.name.asString(),
+                    it.type.asTypeName()
+                ).build()
+            })
             .addApiStatements(this, packageName, className)
         returnType?.asTypeName()?.let {
             builder.returns(it)
@@ -180,7 +172,7 @@ class ApiClassProcessor(val options: PluginOptions) :
         return builder.build()
     }
 
-    fun FunSpec.Builder.addApiStatements(
+    private fun FunSpec.Builder.addApiStatements(
         funDescriptor: CallableMemberDescriptor,
         packageName: String,
         className: String
@@ -206,7 +198,7 @@ class ApiClassProcessor(val options: PluginOptions) :
 
 
 
-        addStatement("val mainPath = \"${packageName.replace(".", "_")}/${className}\"")
+        addStatement("val mainPath = \"${packageName.replace(".", "-")}/${className}\"")
         addStatement("val subPath = \"${funDescriptor.name}\"")
         addStatement("val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl")
         addStatement(
@@ -242,43 +234,3 @@ class ApiClassProcessor(val options: PluginOptions) :
 
     }
 }
-
-private fun ValueParameterDescriptor.asParameterSpec(): ParameterSpec =
-    ParameterSpec.builder(name.asString(), type.asTypeName()).build()
-
-fun KotlinType.asTypeName(): TypeName {
-    val className: ClassName = createClassName().let {
-        if (isNullable()) it.copy(true) else it
-    }
-
-    if (arguments.isNotEmpty()) {
-        return arguments
-            .map { it.type.asTypeName() }
-            .let { className.parameterizedBy(*it.toTypedArray()) }
-    }
-    return className
-}
-
-fun KotlinType.createClassName(): ClassName {
-    //on Jvm, packageName is java.util, instead of kotlin, even if source set is common
-    //todo currently only HashMap is checked.
-    // need to check other standard classes
-    if (packageName == "java.util") {
-        if (name == "HashMap") {
-            return ClassName("kotlin.collections", name)
-        }
-    }
-
-    return ClassName(
-        packageName, name
-    )
-}
-
-val KotlinType.packageName: String get() = getJetTypeFqName(false).substringBeforeLast(".")
-val KotlinType.name: String get() = getJetTypeFqName(false).substringAfterLast(".")
-
-fun getApiImplementationName(interfaceName: String) = interfaceName + "Impl"
-
-const val GENERATED_FILE_COMMENT = "GENERATED by Simple Api Plugin"
-const val API_CREATION_FUNCTION_PACKAGE_NAME = "kim.jeonghyeon.generated.net"
-const val API_CREATION_FUNCTION_FILE_NAME = "HttpClientEx"
