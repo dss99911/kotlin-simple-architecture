@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.model
 
 import org.jetbrains.kotlin.backend.common.serialization.findPackage
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor

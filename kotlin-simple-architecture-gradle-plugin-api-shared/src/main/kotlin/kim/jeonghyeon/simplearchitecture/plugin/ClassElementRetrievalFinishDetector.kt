@@ -1,5 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElementRetrievalListener
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.codegen.ClassBuilder
