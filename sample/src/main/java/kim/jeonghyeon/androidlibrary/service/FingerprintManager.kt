@@ -3,9 +3,9 @@ package kim.jeonghyeon.androidlibrary.service
 import android.annotation.SuppressLint
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.core.os.CancellationSignal
-import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.toast
+import kim.jeonghyeon.sample.R
 
 object FingerprintManager {
     private var cancellationSignal: CancellationSignal? = null

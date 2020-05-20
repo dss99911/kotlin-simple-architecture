@@ -9,13 +9,14 @@ import android.os.Build
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.annotation.RequiresApi
-import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.extension.*
 import kim.jeonghyeon.common.extension.ignoreException
 import kim.jeonghyeon.jvm.type.WeakList
+import kim.jeonghyeon.sample.R
 import org.jetbrains.anko.accessibilityManager
 
 object BaseAccessibilityManager : BroadcastReceiver() {
+
     private val listeners = WeakList<AccessibilityManager.AccessibilityStateChangeListener>()
 
     init {
