@@ -3,57 +3,28 @@
 package kim.jeonghyeon.common.extension
 
 
-fun <T> T.println(): T {
-    println(this)
-    return this
-}
+fun <T> T.println(): T = also { println(it) }
 
-inline fun <T> T?.ifNull(action: (T?) -> T): T {
+inline fun <T> T?.notNull(action: () -> T): T {
     if (this !== null) {
         return this
     }
 
-    return action(this)
+    return action()
 }
 
-inline fun <T : CharSequence> T?.ifNullOrEmpty(action: (T?) -> T?): T? =
-    if (this.isNullOrEmpty()) {
-        action(this)
-    } else this
+inline fun <T> T.alsoIf(predicate: Boolean, action: (T) -> Unit): T =
+    also { if (predicate) action(this) }
 
-inline fun <T> T?.onNull(action: (T?) -> Unit): T? {
-    if (this === null) {
-        action(this)
-    }
-    return this
-}
+inline fun <T> T.alsoIf(predicate: (T) -> Boolean, action: (T) -> Unit): T =
+    alsoIf(predicate(this), action)
 
-inline fun <T> T.alsoIf(predicate: (T) -> Boolean, action: (T) -> Unit): T {
-    if (predicate(this)) action(this)
+inline fun <T> T?.alsoIfNull(action: () -> Unit): T? = also { if (this == null) action() }
 
-    return this
-}
+inline fun <C> C.letIf(predicate: Boolean, action: (C) -> C): C =
+    if (predicate) let(action) else this
 
-inline fun <T> T.alsoIf(predicate: Boolean, action: (T) -> Unit): T {
-    if (predicate) also(action)
+inline fun <C> C.letIf(predicate: (C) -> Boolean, action: (C) -> C): C =
+    letIf(predicate(this), action)
 
-    return this
-}
-
-inline fun <C> C.letIf(predicate: Boolean, action: (C) -> C): C {
-    if (predicate) let(action)
-
-    return this
-}
-
-inline fun <C> C.letIf(predicate: (C) -> Boolean, action: (C) -> C): C {
-    if (predicate(this)) let(action)
-
-    return this
-}
-
-inline fun <C> C.letIf(predicate: (C) -> Boolean, data: C): C {
-    if (predicate(this)) data
-
-    return this
-}
+inline fun <C> C.letIf(predicate: (C) -> Boolean, data: C): C = letIf(predicate(this)) { data }

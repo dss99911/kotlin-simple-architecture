@@ -5,7 +5,7 @@ package kim.jeonghyeon.jvm.extension
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
-fun Any?.printAsJson() {
+fun Any?.printJson() {
     println(
         GsonBuilder()
             .setPrettyPrinting()

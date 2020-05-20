@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import kim.jeonghyeon.androidlibrary.extension.getString
 import kim.jeonghyeon.androidlibrary.extension.pref
 import kim.jeonghyeon.androidlibrary.extension.setString
-import kim.jeonghyeon.jvm.type.WeakArrayList
+import kim.jeonghyeon.jvm.type.WeakList
 
 /**
  * currently, no consideration of recycle, because, not much data is used.
@@ -16,7 +16,7 @@ object PreferenceCache {
     }
 
     private val cacheMap = HashMap<String, Any?>()
-    private val listeners = WeakArrayList<OnSharedPreferenceChangeListener>()
+    private val listeners = WeakList<OnSharedPreferenceChangeListener>()
 
     fun getString(key: String): String? = when {
         cacheMap[key] == nullValue -> null

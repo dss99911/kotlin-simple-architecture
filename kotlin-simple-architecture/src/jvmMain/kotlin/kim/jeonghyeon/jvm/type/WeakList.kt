@@ -3,7 +3,7 @@ package kim.jeonghyeon.jvm.type
 import java.lang.ref.WeakReference
 import java.util.*
 
-class WeakArrayList<E> {
+class WeakList<E> {
     val list = ArrayList<WeakReference<E>>()
 
     fun addWeakReference(item: E) {

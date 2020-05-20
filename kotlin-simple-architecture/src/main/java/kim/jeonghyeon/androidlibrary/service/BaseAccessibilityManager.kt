@@ -12,11 +12,11 @@ import androidx.annotation.RequiresApi
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.extension.*
 import kim.jeonghyeon.common.extension.ignoreException
-import kim.jeonghyeon.jvm.type.WeakArrayList
+import kim.jeonghyeon.jvm.type.WeakList
 import org.jetbrains.anko.accessibilityManager
 
 object BaseAccessibilityManager : BroadcastReceiver() {
-    private val listeners = WeakArrayList<AccessibilityManager.AccessibilityStateChangeListener>()
+    private val listeners = WeakList<AccessibilityManager.AccessibilityStateChangeListener>()
 
     init {
         ctx.registerReceiver(this, intentFilter(BaseAccessibilityService.ACTION_SERVICE_CONNECTED, BaseAccessibilityService.ACTION_SERVICE_DISCONNECTED))
