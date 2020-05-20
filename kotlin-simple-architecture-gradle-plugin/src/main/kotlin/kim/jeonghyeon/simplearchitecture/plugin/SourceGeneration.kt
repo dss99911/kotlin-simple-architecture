@@ -37,7 +37,6 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
     }
 
     // Android project.
-
     androidExtension?.let {
         return it.sourceSets
             .filter {

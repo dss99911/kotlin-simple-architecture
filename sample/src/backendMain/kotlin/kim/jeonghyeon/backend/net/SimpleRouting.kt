@@ -1,6 +1,5 @@
 package kim.jeonghyeon.backend.net
 
-import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
@@ -15,10 +14,12 @@ import io.ktor.routing.route
 import io.ktor.util.AttributeKey
 import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
+import kim.jeonghyeon.common.extension.replaceLast
 import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.common.net.error.ApiErrorCode
-import java.lang.reflect.Type
+import kim.jeonghyeon.jvm.extension.toJsonObject
+import kim.jeonghyeon.jvm.extension.toJsonString
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspend
@@ -26,6 +27,7 @@ import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.javaType
 
+//todo this should be in library. but it's not jvm. but backendJvm target.
 class SimpleRouting(val config: Configuration) {
     class Configuration {
         val list = mutableListOf<Any>()
@@ -86,7 +88,10 @@ class SimpleRouting(val config: Configuration) {
         }
 
         superclasses.forEach { kclass ->
-            val mainPath = kclass.java.name.replace(".", "-")
+            val mainPath = kclass.java.name
+                .replace(".", "-")
+                .replaceLast("-", "/")
+
             route(mainPath) {
                 this.attachSubPaths(api, kclass)
             }
@@ -96,7 +101,7 @@ class SimpleRouting(val config: Configuration) {
     private fun Route.attachSubPaths(api: Any, kclass: KClass<*>) {
         kclass.declaredFunctions.forEach { kfunction ->
             val subPath = kfunction.name
-            post<List<Any?>>(subPath) { arguments ->
+            post<Map<String, Any?>>(subPath) { arguments ->
                 handleRequest(api, kfunction, arguments)
             }
         }
@@ -105,10 +110,17 @@ class SimpleRouting(val config: Configuration) {
     private suspend fun PipelineContext<Unit, ApplicationCall>.handleRequest(
         api: Any,
         kfunction: KFunction<*>,
-        arguments: List<Any?>
+        arguments: Map<String, Any?>
     ) {
-        val convertedArgs = arguments.convertType(kfunction).toTypedArray()
-        val response = api.findFunction(kfunction).callSuspend(api, *convertedArgs)
+        val function = api.findFunction(kfunction)
+
+        val convertedArgs = function.parameters
+            .subList(1, function.parameters.size)//first parameter is for suspend function
+            .map { param ->
+                arguments[param.name].toJsonString()?.toJsonObject<Any>(param.type.javaType)
+            }.toTypedArray()
+
+        val response = function.callSuspend(api, *convertedArgs)
         call.respond(response ?: "null")
     }
 
@@ -117,12 +129,4 @@ class SimpleRouting(val config: Configuration) {
             func.name == it.name
         }
 
-    private fun List<Any?>.convertType(kfunction: KFunction<*>): List<Any?> =
-        mapIndexed { index, obj ->
-            obj?.toJsonString()?.toJsonObject<Any>(kfunction.parameters[index + 1].type.javaType)
-        }
-
-    //TODO HYUN [multi-platform2] : add to kotlin library
-    fun <T> String.toJsonObject(type: Type): T = Gson().fromJson(this, type)
-    fun Any.toJsonString(): String = Gson().toJson(this)
 }
