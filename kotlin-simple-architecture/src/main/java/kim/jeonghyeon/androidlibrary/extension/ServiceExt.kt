@@ -10,10 +10,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
-import android.text.TextUtils
 import android.view.accessibility.AccessibilityManager
 import androidx.annotation.RequiresApi
-import org.jetbrains.anko.accessibilityManager
 
 
 @Suppress("DEPRECATION")

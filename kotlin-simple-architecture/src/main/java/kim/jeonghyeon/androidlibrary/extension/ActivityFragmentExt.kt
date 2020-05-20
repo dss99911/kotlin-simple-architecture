@@ -23,8 +23,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavArgs
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navArgs
-import kim.jeonghyeon.common.extension.onFalse
-import kim.jeonghyeon.common.extension.onTrue
+import kim.jeonghyeon.common.extension.alsoIfFalse
+import kim.jeonghyeon.common.extension.alsoIfTrue
 
 
 @SuppressLint("ObsoleteSdkInt")
@@ -64,7 +64,7 @@ fun Context.checkAndStartActivity(intent: Intent): Boolean {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
-    return hasActivity(intent).onTrue { startActivity(intent) }
+    return hasActivity(intent).alsoIfTrue { startActivity(intent) }
 }
 
 fun Context.startActivity(action: String): Boolean {
@@ -100,7 +100,14 @@ fun startActivitySendText(text: String): Boolean {
 
 fun startActivityMarket(packageName: String): Boolean {
     return startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
-            .onFalse { return startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName"))) }
+        .alsoIfFalse {
+            return startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                )
+            )
+        }
 }
 
 fun startAppDetailSetting(packageName: String) =
