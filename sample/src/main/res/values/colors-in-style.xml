@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="bk_primary" tools:keep="@color/bk_primary">@color/bk_900</color>
+    <color name="bk_secondary" tools:keep="@color/bk_secondary">@color/bk_900_a65</color>
+    <color name="bk_disable" tools:keep="@color/bk_disable">@color/bk_900_a40</color>
+
+    <color name="w_primary" tools:keep="@color/w_primary">@color/w</color>
+    <color name="w_secondary" tools:keep="@color/w_secondary">@color/w_80</color>
+    <color name="w_disable" tools:keep="@color/w_disable">@color/w_45</color>
+
+
+    <!-- background colors -->
+    <color name="bg" tools:keep="@color/bg">@color/g_100</color>
+    <color name="disable_bg" tools:keep="@color/disable_bg">@color/g_300</color>
+
+    <!-- state colors -->
+    <color name="positive" tools:keep="@color/positive">@color/t_600</color>
+    <color name="negative" tools:keep="@color/negative">#D50001</color>
+    <color name="divider" tools:keep="@color/divider">@color/g_900_a15</color>
+    <color name="skeleton" tools:keep="@color/skeleton">@color/g_900_a8</color>
+
+
+    <color name="button_pressed_orange" tools:keep="@color/button_pressed_orange">@color/o_600
+    </color>
+    <color name="button_pressed_white" tools:keep="@color/button_pressed_white">@color/g_200</color>
+    <color name="button_pressed_inactive" tools:keep="@color/button_pressed_inactive">@color/g_400
+    </color>
+</resources>
