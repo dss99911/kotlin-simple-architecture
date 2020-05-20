@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.model
 
 /**
  * todo is there secure way for this?

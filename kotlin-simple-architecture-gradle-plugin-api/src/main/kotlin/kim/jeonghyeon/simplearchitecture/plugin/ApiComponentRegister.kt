@@ -1,6 +1,9 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElement
+import kim.jeonghyeon.simplearchitecture.plugin.model.ClassElementRetrievalListener
+import kim.jeonghyeon.simplearchitecture.plugin.processor.ApiClassProcessor
 import org.jetbrains.kotlin.codegen.extensions.ClassBuilderInterceptorExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
