@@ -5,6 +5,7 @@ package kim.jeonghyeon.jvm.extension
 import kim.jeonghyeon.common.extension.letIfNotEmpty
 import java.io.File
 
+@Deprecated("old code")
 class SystemCommandExecutor(
     private val logOnError: Boolean = false,
     private val logCommand: Boolean = false

@@ -4,10 +4,6 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import kim.jeonghyeon.androidlibrary.extension.app
-import kim.jeonghyeon.jvm.net.create
-
-
-inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)
 
 val clientAndroid = httpClientDefault {
     if (!app.isProd || app.isDebug) {

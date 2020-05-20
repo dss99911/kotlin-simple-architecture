@@ -8,7 +8,7 @@ fun String?.toDouble(defValue: Double): Double = try {
     defValue
 }
 
-inline fun CharSequence?.isNotNullNotEmpty(): Boolean = this != null && length > 0
+inline fun CharSequence?.isNotEmpty(): Boolean = this != null && !isEmpty()
 
 fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean = false): String {
     val index = lastIndexOf(oldValue, ignoreCase = ignoreCase)

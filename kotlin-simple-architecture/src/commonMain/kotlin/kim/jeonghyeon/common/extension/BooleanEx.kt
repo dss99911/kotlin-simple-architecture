@@ -2,26 +2,9 @@
 
 package kim.jeonghyeon.common.extension
 
-inline fun <T : Boolean?> T.onTrue(action: () -> Unit): T {
-    if (this == true) {
-        action()
-    }
+inline fun <T : Boolean?> T.alsoIfTrue(action: () -> Unit): T = alsoIf(this == true) { action() }
 
-    return this
-}
+inline fun <T : Boolean?> T.alsoIfFalse(action: () -> Unit): T = alsoIf(this == false) { action() }
 
-inline fun <T : Boolean?> T.onFalse(action: () -> Unit): T {
-    if (this == false) {
-        action()
-    }
-
-    return this
-}
-
-inline fun <T : Boolean?> T.onNullOrFalse(action: () -> Unit): T {
-    if (this === null || !this) {
-        action()
-    }
-
-    return this
-}
+inline fun <T : Boolean?> T.alsoIfNullOrFalse(action: () -> Unit): T =
+    alsoIf(this == null || !this) { action() }
