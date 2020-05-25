@@ -19,7 +19,7 @@ open class MainGradlePlugin : Plugin<Project> {
 
         with(project) {
             applyAndroid()
-            applySourceGeneration()
+            addGeneratedSourceDirectories()
             addSimpleArchitectureDependency()
         }
     }

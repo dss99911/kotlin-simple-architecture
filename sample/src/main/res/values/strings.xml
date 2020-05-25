@@ -67,4 +67,5 @@
     <string name="title_accessibility_guide">Other Accessibility is turned on</string>
     <string name="message_accessibility_guide">"'%s' accessibility service is turned on. it may affect on my service.\n\nif it is not working properly, please turn off other accessibility service, then try again"</string>
     <string name="toast_fingerprint_wrong">Too many attempt with wrong fingerprint.\nPlease try later</string>
+    <string name="fragment">fragment</string>
 </resources>
