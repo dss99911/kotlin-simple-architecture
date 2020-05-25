@@ -5,6 +5,7 @@ plugins {
     `java-gradle-plugin`
     id("kotlin-kapt")
     maven
+    id("org.jetbrains.intellij") version "0.4.21"
 }
 
 group = deps.simpleArch.pluginGradle.getGroupId()

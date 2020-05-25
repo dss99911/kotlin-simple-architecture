@@ -105,7 +105,9 @@ val appModule = module {
     factory { kim.jeonghyeon.androidlibrary.architecture.net.api<CoroutineApi>("http://demo7661478.mockable.io/") }
 
     //change to your server address.
-    factory { api<SimpleApi>("http://192.168.1.26:8080") }
+    factory {
+        api<SimpleApi>("http://192.168.1.26:8080")
+    }
 
     //db
     viewModel { SimpleDbViewModel() }
