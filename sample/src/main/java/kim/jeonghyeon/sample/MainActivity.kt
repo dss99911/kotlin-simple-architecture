@@ -28,8 +28,8 @@ class MainActivity : BaseActivity() {
         setMenu(R.menu.sample_menu) {
 
             when (it.itemId) {
-                R.id.create_new -> {
-                    toast("new")
+                R.id.menu_save -> {
+                    toast("nothing to save")
                     true
                 }
                 else -> false

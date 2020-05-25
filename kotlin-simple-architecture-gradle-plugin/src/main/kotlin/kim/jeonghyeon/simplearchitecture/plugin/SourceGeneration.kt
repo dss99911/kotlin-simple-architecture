@@ -13,7 +13,11 @@ import org.jetbrains.kotlin.gradle.plugin.KOTLIN_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KOTLIN_JS_DSL_NAME
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-fun Project.applySourceGeneration() {
+
+data class SourceDirectorySetAndName(val name: String, val sourceDirectorySet: SourceDirectorySet)
+
+
+fun Project.addGeneratedSourceDirectories() {
     afterEvaluate {//to perform after source set is initialized.
         getSourceSetOptions().forEach {
             it.addGeneratedSourceDirectory(project)
@@ -75,8 +79,6 @@ private val Any.kotlinSourceSet: SourceDirectorySet?
 private fun Any.getKotlinSourceSet(name: String): KotlinSourceSet? =
     (this as HasConvention).convention.plugins[name] as? KotlinSourceSet?
 
-
-data class SourceDirectorySetAndName(val name: String, val sourceDirectorySet: SourceDirectorySet)
 
 fun SourceDirectorySetAndName.toOption(): SourceSetOption =
     SourceSetOption(name, sourceDirectorySet.sourceDirectories.map { it.absolutePath }.toSet())

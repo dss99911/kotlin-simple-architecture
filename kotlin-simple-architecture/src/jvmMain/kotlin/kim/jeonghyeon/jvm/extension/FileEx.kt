@@ -18,6 +18,11 @@ fun File.readLines(action: (String) -> Unit) {
 }
 
 fun File.write(append: Boolean = false, action: FileWriter.() -> Unit) {
+    if (!exists()) {
+        parentFile.mkdirs()
+        createNewFile()
+    }
+
     val fileWriter = FileWriter(this)
     action(fileWriter)
 

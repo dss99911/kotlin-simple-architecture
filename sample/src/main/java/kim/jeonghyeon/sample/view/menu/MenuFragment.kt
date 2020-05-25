@@ -16,7 +16,7 @@ class MenuFragment : BaseFragment() {
     val viewModel: MenuViewModel by bindingViewModel()
 
     init {
-        setMenu(R.menu.sample_menu) {
+        setMenu(R.menu.fragment_menu) {
             viewModel.onMenuClick(it)
         }
     }
