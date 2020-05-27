@@ -1,9 +1,11 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.generate
 
 
 import com.android.build.gradle.api.AndroidSourceSet
 import kim.jeonghyeon.simplearchitecture.plugin.model.SourceSetOption
 import kim.jeonghyeon.simplearchitecture.plugin.model.generatedSourceSetPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
+import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.HasConvention
@@ -16,16 +18,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 data class SourceDirectorySetAndName(val name: String, val sourceDirectorySet: SourceDirectorySet)
 
-
-fun Project.addGeneratedSourceDirectories() {
-    afterEvaluate {//to perform after source set is initialized.
-        getSourceSetOptions().forEach {
-            it.addGeneratedSourceDirectory(project)
-        }
-    }
-}
-
-
 fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
 
     // Multiplatform project.
@@ -37,7 +29,12 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
                     true
                 )
             }//ex) androidTest, androidTestDebug. androidTestRelease
-            .map { SourceDirectorySetAndName(it.name, it.kotlin) }
+            .map {
+                SourceDirectorySetAndName(
+                    it.name,
+                    it.kotlin
+                )
+            }
     }
 
     // Android project.
@@ -49,13 +46,23 @@ fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
                     true
                 )
             }//ex) androidTest, androidTestDebug. androidTestRelease
-            .map { SourceDirectorySetAndName(it.name, it.kotlin!!) }
+            .map {
+                SourceDirectorySetAndName(
+                    it.name,
+                    it.kotlin!!
+                )
+            }
     }
 
     // Kotlin project.
     val sourceSets = property("sourceSets") as SourceSetContainer
 
-    return listOf(SourceDirectorySetAndName("main", sourceSets.getByName("main").kotlin!!))
+    return listOf(
+        SourceDirectorySetAndName(
+            "main",
+            sourceSets.getByName("main").kotlin!!
+        )
+    )
 }
 
 fun SourceDirectorySetAndName.addGeneratedSourceDirectory(project: Project) {

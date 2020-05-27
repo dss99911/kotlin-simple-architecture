@@ -2,6 +2,7 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import kim.jeonghyeon.simplearchitecture.plugin.processor.ApiImplementationGenerator
+import kim.jeonghyeon.simplearchitecture.plugin.util.toKtFile
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -42,10 +43,8 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     project: Project
                 ): Collection<KtFile> = ApiImplementationGenerator(
                     configuration[KEY_PLUGIN_OPTIONS]!!,
-                    knownSources,
-                    project
-                )
-                    .generateImplementation()
+                    knownSources
+                ).generateImplementation().map { it.toKtFile(project) }
             })
     }
 }
