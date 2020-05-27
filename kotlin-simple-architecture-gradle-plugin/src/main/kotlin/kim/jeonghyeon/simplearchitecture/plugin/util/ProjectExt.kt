@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.util
 
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project

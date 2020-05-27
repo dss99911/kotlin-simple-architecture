@@ -5,7 +5,6 @@ import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import kim.jeonghyeon.simplearchitecture.plugin.model.SOURCE_SET_NAME_COMMON
 import kim.jeonghyeon.simplearchitecture.plugin.model.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.*
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -14,10 +13,25 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import java.io.File
 
+/**
+ * compiler-embeddable and compiler kotlin library use different Psi related classes.
+ * so, it's difficult to use common class for Jvm, Native as this class depends on the Psi related classes a lot.
+ * It's required to update this class when Jvm's same class is changed.
+ * TODO To make one class.
+ *  There is solution by Intellij Platform SDK
+ *  But, in order to make PsiFile, need to configure mock project(kotlin compilation, source path setting etc..) of the SDK is required.
+ *  I couldn't find the sample to make the mock with Kotlin language.
+ *  SqlDelight project use mock. but it's for sql language. and I don't know how to configure for Kotlin
+ *  Let's try this later
+ *  - Merits by this approach
+ *      1. one plugin module is enough. current there are 3 modules for just a simple plugin
+ *      2. remove duplication of ApiImplementationGenerator
+ *      3. this generating file task should processed before compile task. but in current approach, the task is processed inside of compile task. it's not good structure.
+ *      4. if using kapt, this is called two times, able to prevent duplicated process.
+ */
 class ApiImplementationGenerator(
     private val pluginOptions: PluginOptions,
-    private val origin: Collection<KtFile>,
-    val project: Project
+    private val origin: Collection<KtFile>
 ) {
 
     private val existingFilePackages = origin
@@ -26,48 +40,17 @@ class ApiImplementationGenerator(
 
     /**
      * this is called two times. so, 2nd time's [origin] contains generated file as well.
-     * we should ignore if generated file already exists.
-     * this is not good approach.
-     * when we have to delete files before rebuild,
-     * if we delete files in this function, KtFile is already created from file. but actual file is deleted.
-     * so, file and ktfile is not synced. can cause issues.
-     * todo
-     *  1. add delete task on compile task
-     *  2. move this as well to main gradle module with mock project
-     *  the below is how to apply delete task on multiplatform. looks more complicated than current way
-     *  tasks.create(TASK_CLEAN, Delete::class.java) {
-     *        delete(File(generatedPath))
-     *    }
-     *   Multiplatform project.
-     *    multiplatformExtension?.let { ext ->
-     *        ext.targets.forEach { target ->
-     *            //KotlinCompilation
-     *            // compilationName : debug
-     *            // compileKotlinTaskName : compileDebugKotlinAndroid
-     *            // defaultSourceSetName : androidDebug
-     *            // kotlinSourceSets : [source set androidDebug, source set commonMain]
-     *            // platformType : andridJvm
-     *            // moduleName : common_debug
-     *            // name : debug
-     *            target.compilations.forEach {
-     *                it.compileKotlinTask.dependsOn(TASK_CLEAN)
-     *            }
-     *        }
-     *        return
-     *    }
+     * we ignore if generated file already exists.
      */
-    fun generateImplementation(): Collection<KtFile> {
+    fun generateImplementation(): Collection<File> {
         val apiSources = origin
             .flatMap { it.generatedApiSources }
-            .filter { !existingFilePackages.contains(it.packageName + "." + it.implFileName) }
 
         val apiFiles = apiSources
-            .map { it.generateApiClassFile() }
-            .map { it.toKtFile(project) }
+            .mapNotNull { it.generateApiClassFile() }
 
         val apiFunctionFiles = apiSources
             .generateApiFunctionFile()
-            .map { it.toKtFile(project) }
 
         return apiFiles + apiFunctionFiles
     }
@@ -93,9 +76,6 @@ class ApiImplementationGenerator(
         if (!hasAnnotation<Api>()) {
             return null
         }
-
-        println("functions :${makeFunctions()} ${functions.size}, ${functions.map { it.hasBody() }
-            .joinToString { it.toString() }}")
 
         return """
         |// $GENERATED_FILE_COMMENT
@@ -177,36 +157,35 @@ class ApiImplementationGenerator(
         """.trimMargin()
     }
 
-    private fun GeneratedApiSource.generateApiClassFile(): File =
+    private fun GeneratedApiSource.generateApiClassFile(): File? =
         File("$sourceSetPath/${packageName.replace(".", "/")}/${implFileName}")
-            .write { append(source) }
+            .takeIf { !it.exists() }
+            ?.write { append(source) }
 
     private fun List<GeneratedApiSource>.generateApiFunctionFile(): List<File> {
-        if (isEmpty()) {
-            return emptyList()
-        }
-
         var expectFile: File? = null
         val filePath = "kim/jeonghyeon/generated/net/HttpClientEx.kt"
         if (pluginOptions.hasCommon()) {
             val expectPath = generatedSourceSetPath(pluginOptions.buildPath, SOURCE_SET_NAME_COMMON)
-            expectFile = File("$expectPath/$filePath").write {
-                append(
-                    """
-                // $GENERATED_FILE_COMMENT
-                package kim.jeonghyeon.generated.net
+            expectFile = File("$expectPath/$filePath")
+                .takeIf { !it.exists() }
+                ?.write {
+                    append(
+                        """
+                        // $GENERATED_FILE_COMMENT
+                        package kim.jeonghyeon.generated.net
 
-                import io.ktor.client.HttpClient
+                        import io.ktor.client.HttpClient
 
-                expect inline fun <reified T> HttpClient.create(baseUrl: String): T
+                        expect inline fun <reified T> HttpClient.create(baseUrl: String): T
 
-                """.trimIndent()
-                )
-            }
+                        """.trimIndent()
+                    )
+                }
         }
 
         val actualPath = pluginOptions.getGeneratedTargetVariantsPath().let {
-            File("$it/$filePath").write {
+            File("$it/$filePath").takeIf { !it.exists() }?.write {
                 append(
                     """
                 |// $GENERATED_FILE_COMMENT

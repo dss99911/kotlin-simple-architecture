@@ -1,5 +1,10 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
+import kim.jeonghyeon.simplearchitecture.plugin.config.applyAndroid
+import kim.jeonghyeon.simplearchitecture.plugin.generate.addGeneratedSourceDirectory
+import kim.jeonghyeon.simplearchitecture.plugin.generate.getSourceSetOptions
+import kim.jeonghyeon.simplearchitecture.plugin.generate.registerDeleteTasks
+import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -19,8 +24,14 @@ open class MainGradlePlugin : Plugin<Project> {
 
         with(project) {
             applyAndroid()
-            addGeneratedSourceDirectories()
             addSimpleArchitectureDependency()
+
+            afterEvaluate {//to perform after source set is initialized.
+                getSourceSetOptions().forEach {
+                    it.addGeneratedSourceDirectory(project)
+                }
+                registerDeleteTasks()
+            }
         }
     }
 }
