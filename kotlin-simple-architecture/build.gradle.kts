@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-//todo what is this?
-val ideaActive = System.getProperty("idea.active") == "true"
-
 
 plugins {
     `maven-publish`
@@ -29,10 +26,6 @@ kotlin {
     val iosArm32 = iosArm32("iosArm32")
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
-
-    if (ideaActive) {
-        iosX64("ios")
-    }
 
     sourceSets {
         val commonMain by getting {
@@ -133,11 +126,7 @@ kotlin {
             }
         }
 
-        val iosMain = if (ideaActive) {
-            getByName("iosMain")
-        } else {
-            create("iosMain")
-        }
+        val iosMain = create("iosMain")
 
         iosMain.apply {
             dependsOn(mobileMain)
@@ -182,6 +171,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    val BUILD_TYPE_NAME_DEBUG = "debug"
+    val BUILD_TYPE_NAME_RELEASE = "release"
 }
 
 tasks.withType<KotlinCompile> {

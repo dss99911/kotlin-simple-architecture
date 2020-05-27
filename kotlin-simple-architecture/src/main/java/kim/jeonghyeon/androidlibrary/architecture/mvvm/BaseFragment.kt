@@ -30,7 +30,7 @@ import kim.jeonghyeon.androidlibrary.architecture.livedata.observeEvent
 import kim.jeonghyeon.androidlibrary.extension.createProgressDialog
 import kim.jeonghyeon.androidlibrary.extension.dismissWithoutException
 import kim.jeonghyeon.androidlibrary.extension.showWithoutException
-import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.androidlibrary.util.log
 import kim.jeonghyeon.common.extension.letIf
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -135,7 +135,7 @@ abstract class BaseFragment : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Logger.log()
+        log()
     }
 
     final override fun onCreateView(
@@ -188,7 +188,7 @@ abstract class BaseFragment : Fragment(),
 
     override fun onDestroy() {
         super.onDestroy()
-        Logger.log()
+        log()
 
         if (progressDialogLazy.isInitialized()) {
             progressDialog.dismissWithoutException()

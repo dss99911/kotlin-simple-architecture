@@ -14,7 +14,6 @@ import io.ktor.routing.route
 import io.ktor.util.AttributeKey
 import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
-import kim.jeonghyeon.common.extension.replaceLast
 import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.common.net.error.ApiErrorCode
@@ -89,8 +88,7 @@ class SimpleRouting(val config: Configuration) {
 
         superclasses.forEach { kclass ->
             val mainPath = kclass.java.name
-                .replace(".", "-")
-                .replaceLast("-", "/")
+                .replace(".", "/")
 
             route(mainPath) {
                 this.attachSubPaths(api, kclass)

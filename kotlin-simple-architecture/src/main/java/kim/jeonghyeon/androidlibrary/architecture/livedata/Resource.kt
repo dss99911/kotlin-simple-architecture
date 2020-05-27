@@ -1,7 +1,7 @@
 package kim.jeonghyeon.androidlibrary.architecture.livedata
 
 import kim.jeonghyeon.androidlibrary.architecture.net.error.ResourceError
-import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.androidlibrary.util.log
 import kotlinx.coroutines.Job
 
 sealed class Resource<out T> {
@@ -9,7 +9,7 @@ sealed class Resource<out T> {
     data class Success<T>(val data: T) : Resource<T>()
     data class Error(val error: ResourceError, val retry: () -> Unit = {}) : Resource<Nothing>() {
         init {
-            Logger.log(error)
+            log(error)
         }
     }
 
