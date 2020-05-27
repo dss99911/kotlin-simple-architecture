@@ -51,5 +51,11 @@ suspend fun HttpClient.validateResponse(response: HttpResponse) {
         throw ApiError(json.parse(ApiErrorBody.serializer(), response.readText()))
     }
 
-    throw ApiError(ApiErrorBody(ApiErrorCode.UNKNOWN, "unknown error occurred"))
+
+    throw ApiError(
+        ApiErrorBody(
+            ApiErrorCode.UNKNOWN,
+            "unknown error occurred : ${response.status}, Text : ${response.readText()}"
+        )
+    )
 }
