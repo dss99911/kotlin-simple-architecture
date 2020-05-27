@@ -1,9 +1,7 @@
-package kim.jeonghyeon.simplearchitecture.plugin.generate
+package kim.jeonghyeon.simplearchitecture.plugin.model
 
 
 import com.android.build.gradle.api.AndroidSourceSet
-import kim.jeonghyeon.simplearchitecture.plugin.model.SourceSetOption
-import kim.jeonghyeon.simplearchitecture.plugin.model.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension
 import org.gradle.api.Project
@@ -18,7 +16,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 data class SourceDirectorySetAndName(val name: String, val sourceDirectorySet: SourceDirectorySet)
 
-fun Project.getSourceSetOptions(): List<SourceDirectorySetAndName> {
+fun Project.getSourceDirectorySetAndNames(): List<SourceDirectorySetAndName> {
 
     // Multiplatform project.
     multiplatformExtension?.let {
@@ -69,10 +67,10 @@ fun SourceDirectorySetAndName.addGeneratedSourceDirectory(project: Project) {
     sourceDirectorySet.srcDir(generatedSourceSetPath(project.buildDir.toString(), name))
 }
 
-internal val AndroidSourceSet.kotlin: SourceDirectorySet?
+private val AndroidSourceSet.kotlin: SourceDirectorySet?
     get() = kotlinSourceSet
 
-internal val SourceSet.kotlin: SourceDirectorySet?
+private val SourceSet.kotlin: SourceDirectorySet?
     get() = kotlinSourceSet
 
 private val Any.kotlinSourceSet: SourceDirectorySet?

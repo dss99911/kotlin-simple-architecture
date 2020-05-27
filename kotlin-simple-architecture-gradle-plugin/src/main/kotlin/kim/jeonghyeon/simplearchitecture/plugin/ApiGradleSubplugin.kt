@@ -2,9 +2,9 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
-import kim.jeonghyeon.simplearchitecture.plugin.generate.getSourceSetOptions
-import kim.jeonghyeon.simplearchitecture.plugin.generate.toOption
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
+import kim.jeonghyeon.simplearchitecture.plugin.model.getSourceDirectorySetAndNames
+import kim.jeonghyeon.simplearchitecture.plugin.model.toOption
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
@@ -53,7 +53,7 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
     ): List<SubpluginOption> {
 
         return PluginOptions(
-            project.getSourceSetOptions().map { it.toOption() },
+            project.getSourceDirectorySetAndNames().map { it.toOption() },
             project.buildDir.toString(),
             kotlinCompile.targetVariantsName
         )

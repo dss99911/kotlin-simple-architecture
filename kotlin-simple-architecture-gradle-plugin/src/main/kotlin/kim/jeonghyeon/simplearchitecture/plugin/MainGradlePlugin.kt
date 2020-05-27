@@ -1,10 +1,12 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import kim.jeonghyeon.simplearchitecture.plugin.config.applyAndroid
-import kim.jeonghyeon.simplearchitecture.plugin.generate.addGeneratedSourceDirectory
-import kim.jeonghyeon.simplearchitecture.plugin.generate.getSourceSetOptions
-import kim.jeonghyeon.simplearchitecture.plugin.generate.registerDeleteTasks
+import kim.jeonghyeon.simplearchitecture.plugin.model.addGeneratedSourceDirectory
+import kim.jeonghyeon.simplearchitecture.plugin.model.getSourceDirectorySetAndNames
+import kim.jeonghyeon.simplearchitecture.plugin.task.getDeleteGeneratedSourceTask
+import kim.jeonghyeon.simplearchitecture.plugin.task.getGenerateLocalAddressTask
 import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
+import kim.jeonghyeon.simplearchitecture.plugin.util.dependsOnCompileTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -27,10 +29,12 @@ open class MainGradlePlugin : Plugin<Project> {
             addSimpleArchitectureDependency()
 
             afterEvaluate {//to perform after source set is initialized.
-                getSourceSetOptions().forEach {
+                getSourceDirectorySetAndNames().forEach {
                     it.addGeneratedSourceDirectory(project)
                 }
-                registerDeleteTasks()
+                dependsOnCompileTask { getDeleteGeneratedSourceTask(it) }
+                dependsOnCompileTask { getGenerateLocalAddressTask(it) }
+
             }
         }
     }

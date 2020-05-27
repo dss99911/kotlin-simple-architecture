@@ -34,10 +34,6 @@ class ApiImplementationGenerator(
     private val origin: Collection<KtFile>
 ) {
 
-    private val existingFilePackages = origin
-        .map { it.packageFqName.asString() + "." + it.name }
-        .toSet()
-
     /**
      * this is called two times. so, 2nd time's [origin] contains generated file as well.
      * we ignore if generated file already exists.
@@ -209,7 +205,7 @@ class ApiImplementationGenerator(
                 )
             }
         }
-        return listOf(actualPath, expectFile).filterNotNull()
+        return listOfNotNull(actualPath, expectFile)
     }
 }
 

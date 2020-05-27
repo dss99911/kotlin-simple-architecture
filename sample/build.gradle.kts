@@ -4,7 +4,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilationToRunnableFiles
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 
-//todo what is this?
+// if configuration is done by intellij, this is true. if configuration is done by other like shell. it is false
+// todo what is the purpose of this?
 val ideaActive = System.getProperty("idea.active") == "true"
 
 

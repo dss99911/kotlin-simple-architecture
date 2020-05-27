@@ -6,7 +6,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
-import kim.jeonghyeon.androidlibrary.util.Logger
+import kim.jeonghyeon.androidlibrary.extension.isDebug
+import kim.jeonghyeon.androidlibrary.util.log
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,10 +29,6 @@ abstract class BaseApplication : Application(), LifecycleObserver {
             private set
     }
 
-    abstract val isProd: Boolean
-    abstract val isMock: Boolean
-    abstract val isDebug: Boolean
-
     val name: String by lazy {
         packageManager.getApplicationLabel(applicationInfo).toString()
     }
@@ -49,7 +46,7 @@ abstract class BaseApplication : Application(), LifecycleObserver {
         super.onCreate()
         instance = this
 
-        if (!isProd || isDebug) {
+        if (isDebug) {
             initTimber()
         }
         initExceptionHandler()
@@ -68,7 +65,7 @@ abstract class BaseApplication : Application(), LifecycleObserver {
 
     private fun initExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            Logger.log(e)
+            log(e)
             defaultUncaughtExceptionHandler.uncaughtException(t, e)
         }
     }

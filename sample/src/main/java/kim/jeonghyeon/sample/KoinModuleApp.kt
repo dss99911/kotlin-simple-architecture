@@ -3,6 +3,7 @@ package kim.jeonghyeon.sample
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
 import kim.jeonghyeon.common.net.clientAndroid
 import kim.jeonghyeon.generated.net.create
+import kim.jeonghyeon.plugin.SimpleConfig
 import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
@@ -106,7 +107,7 @@ val appModule = module {
 
     //change to your server address.
     factory {
-        api<SimpleApi>("http://192.168.1.26:8080")
+        api<SimpleApi>("http://${SimpleConfig.BUILD_TIME_LOCAL_IP_ADDRESS}:8080")
     }
 
     //db
