@@ -31,7 +31,6 @@ dependencies {
     api(deps.kotlin.stdlibJdk8)
     api(deps.gson)
 
-    implementation(deps.plugin.poet)
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)

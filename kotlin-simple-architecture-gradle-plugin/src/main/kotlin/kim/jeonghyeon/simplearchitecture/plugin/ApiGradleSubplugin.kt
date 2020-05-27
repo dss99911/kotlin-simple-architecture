@@ -2,6 +2,8 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
+import kim.jeonghyeon.simplearchitecture.plugin.generate.getSourceSetOptions
+import kim.jeonghyeon.simplearchitecture.plugin.generate.toOption
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
@@ -53,7 +55,6 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         return PluginOptions(
             project.getSourceSetOptions().map { it.toOption() },
             project.buildDir.toString(),
-            project.projectDir.toString(),
             kotlinCompile.targetVariantsName
         )
             //it doesn't allow some special character. so, used Base64

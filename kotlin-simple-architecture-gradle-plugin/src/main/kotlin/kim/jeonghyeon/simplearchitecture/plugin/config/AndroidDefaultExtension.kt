@@ -1,6 +1,8 @@
-package kim.jeonghyeon.simplearchitecture.plugin
+package kim.jeonghyeon.simplearchitecture.plugin.config
 
 import com.android.build.gradle.BaseExtension
+import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
+import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
