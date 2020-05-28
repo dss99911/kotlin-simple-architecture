@@ -4,17 +4,33 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 
-//todo if same package with [Api] then api impl is not created
+/**
+ * several cases for reference
+ * com.package.ClassName
+ * import com.package.ClassName -> ClassName
+ * import com.package.ClassName -> com.package.ClassName
+ *
+ * !!LIMITATION!! we ignore the case below, as we don't know the package.
+ * ClassName (if ClassName class is in root package)
+ * ClassName (if ClassName class is in same package)
+ */
 inline fun <reified T> KtClass.hasAnnotation(): Boolean {
-    val hasApiImport = importList.imports.any {
-        it.importPath?.pathStr == T::class.qualifiedName
-    }
+    val hasApiImport = containingKtFile.hasImport<T>()
 
     return annotationEntryList.any {
         (it.text == "@${T::class.simpleName}" && hasApiImport)
                 || it.text == "@${T::class.qualifiedName}"
     }
 }
+
+inline fun <reified T> KtFile.hasImport() = importList?.imports?.any {
+    it.importPath?.pathStr == T::class.qualifiedName
+} ?: false
+
+fun KtFile.getPathStringOf(type: String) =
+    importList?.imports
+        ?.firstOrNull { it.importPath?.importedName?.asString() == type }
+        ?.importPath?.pathStr
 
 fun KtNamedFunction.isSuspend() = text.substringBefore("(").contains("suspend")
 

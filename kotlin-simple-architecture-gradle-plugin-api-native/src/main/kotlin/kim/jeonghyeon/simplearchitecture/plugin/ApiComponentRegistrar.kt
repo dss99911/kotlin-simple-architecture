@@ -3,7 +3,8 @@ package kim.jeonghyeon.simplearchitecture.plugin
 import com.google.auto.service.AutoService
 import com.intellij.mock.MockProject
 import com.intellij.openapi.project.Project
-import kim.jeonghyeon.simplearchitecture.plugin.processor.ApiImplementationGenerator
+import kim.jeonghyeon.simplearchitecture.plugin.generator.ApiGenerator
+import kim.jeonghyeon.simplearchitecture.plugin.generator.DbGenerator
 import kim.jeonghyeon.simplearchitecture.plugin.util.toKtFile
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -40,10 +41,13 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     knownSources: Collection<KtFile>,
                     configuration: CompilerConfiguration,
                     project: Project
-                ): Collection<KtFile> = ApiImplementationGenerator(
-                    configuration[KEY_PLUGIN_OPTIONS]!!,
-                    knownSources
-                ).generateImplementation().map { it.toKtFile(project) }
+                ): Collection<KtFile> {
+                    val pluginOptions = configuration[KEY_PLUGIN_OPTIONS]!!
+                    val apiFiles = ApiGenerator(pluginOptions, knownSources).generate()
+                    val dbFiles = DbGenerator(pluginOptions, knownSources).generate()
+
+                    return (apiFiles + dbFiles).map { it.toKtFile(project) }
+                }
             })
     }
 }
