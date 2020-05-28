@@ -102,10 +102,10 @@ class DbGenerator(
                 |
                 |${makeImport()}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(baseUrl: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(name: String): T {
                 |
                 |${INDENT}return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()})" }.prependIndent(indent(2))}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()}) as T" }.prependIndent(indent(2))}
                 |
                 |$INDENT${INDENT}else -> error("can not create database name " + T::class.qualifiedName)
                 |$INDENT}
@@ -129,9 +129,10 @@ class DbGenerator(
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }
         } + """
-            import com.squareup.sqldelight.Transacter
-            ${joinToString("\n") { "import " + it.packageName + "." + it.name }}
-        """.trimIndent()
+            |
+            |import com.squareup.sqldelight.Transacter
+            |${joinToString("\n|") { "import " + it.packageName + "." + it.name }}
+        """.trimMargin()
 
     }
 

@@ -37,7 +37,8 @@ fun Project.dependsOnCompileTask(task: (defaultSourceSetName: String) -> TaskPro
     }
 }
 
-fun Project.getCompileInfos() = multiplatformExtension?.dependsOnCompileTask()
+fun Project.getCompileInfos() =
+    multiplatformExtension?.dependsOnCompileTask()
     ?: androidExtension?.dependsOnCompileTask(this)
     ?: dependsOnCompileTaskOfJvm()
 

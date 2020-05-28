@@ -5,13 +5,11 @@ import com.google.gson.Gson
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import kim.jeonghyeon.simplearchitecture.plugin.util.getCompileInfos
 import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
+import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin
-import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
-import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+import org.jetbrains.kotlin.gradle.plugin.*
 import java.util.*
 
 @AutoService(KotlinGradleSubplugin::class)
@@ -43,6 +41,9 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             )
         }
 
+    /**
+     * this is called before all the source set is configured.
+     */
     override fun apply(
         project: Project,
         kotlinCompile: AbstractCompile,
@@ -51,15 +52,17 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
-        val platformType = project.getCompileInfos().first {
-            it.targetVariantsName == kotlinCompile.targetVariantsName
-        }.platformType
+
+        val targetVariantsName = kotlinCompile.targetVariantsName
+        val platformType =
+            if (androidProjectHandler != null) KotlinPlatformType.androidJvm
+            else kotlinCompilation?.platformType ?: KotlinPlatformType.native
 
         return PluginOptions(
             platformType,
             project.isMultiplatform,
             project.buildDir.toString(),
-            kotlinCompile.targetVariantsName
+            targetVariantsName
         )
             //it doesn't allow some special character. so, used Base64
             .let { Base64.getEncoder().encodeToString(Gson().toJson(it).toByteArray()) }
