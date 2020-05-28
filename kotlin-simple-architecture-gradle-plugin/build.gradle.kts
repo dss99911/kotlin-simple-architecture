@@ -35,7 +35,6 @@ gradlePlugin {
 
 dependencies {
     implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
-    implementation(deps.plugin.gradleApi)
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
 

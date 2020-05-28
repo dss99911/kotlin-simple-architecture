@@ -3,6 +3,7 @@ package kim.jeonghyeon.simplearchitecture.plugin.model
 
 import com.android.build.gradle.api.AndroidSourceSet
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
+import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
@@ -83,8 +84,4 @@ private val Any.kotlinSourceSet: SourceDirectorySet?
  */
 private fun Any.getKotlinSourceSet(name: String): KotlinSourceSet? =
     (this as HasConvention).convention.plugins[name] as? KotlinSourceSet?
-
-
-fun SourceDirectorySetAndName.toOption(): SourceSetOption =
-    SourceSetOption(name, sourceDirectorySet.sourceDirectories.map { it.absolutePath }.toSet())
 

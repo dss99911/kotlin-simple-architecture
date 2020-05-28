@@ -1,6 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin.task
 
-import kim.jeonghyeon.simplearchitecture.plugin.model.generatedSourceSetPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -10,7 +10,7 @@ import java.net.InetAddress
 
 fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvider<Task> =
     tasks.register("generateLocalAddressOn${compileSourceSetName.capitalize()}") {
-
+        description = "generate LocalAddress of build environment"
         val outputDir = project.file(
             generatedSourceSetPath(
                 project.buildDir.absolutePath,

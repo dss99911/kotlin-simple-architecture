@@ -30,6 +30,7 @@ tasks.install {
 dependencies {
     api(deps.kotlin.stdlibJdk8)
     api(deps.gson)
+    api(deps.plugin.gradleApi)
 
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)

@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin.processor
+package kim.jeonghyeon.simplearchitecture.plugin.model
 
 data class GeneratedApiSource(
     val fileName: String,//SampleApi.kt

@@ -4,12 +4,12 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 
 val Project.androidExtension get() = project.extensions.findByType(BaseExtension::class.java)
@@ -32,38 +32,43 @@ fun Project.addDependency(multiplatformDependency: String, jvmDependency: String
 }
 
 fun Project.dependsOnCompileTask(task: (defaultSourceSetName: String) -> TaskProvider<out Task>) {
-    multiplatformExtension?.dependsOnCompileTask(task)
-        ?: androidExtension?.dependsOnCompileTask(this, task)
-        ?: dependsOnCompileTaskOfJvm(task)
+    getCompileInfos().forEach {
+        it.task.dependsOn(task(it.targetVariantsName))
+    }
 }
 
-private fun KotlinMultiplatformExtension.dependsOnCompileTask(
-    task: (defaultSourceSetName: String) -> TaskProvider<out Task>
-) {
-    targets
-        .flatMap { it.compilations }
-        .filter { !it.name.endsWith(suffix = "Test", ignoreCase = true) }
-        .forEach {
-            it.compileKotlinTask.dependsOn(task("${it.target.name}${it.name.capitalize()}"))
+fun Project.getCompileInfos() = multiplatformExtension?.dependsOnCompileTask()
+    ?: androidExtension?.dependsOnCompileTask(this)
+    ?: dependsOnCompileTaskOfJvm()
+
+private fun KotlinMultiplatformExtension.dependsOnCompileTask() = targets.flatMap { target ->
+    target.compilations
+        .filter { !target.name.endsWith(suffix = "Test", ignoreCase = true) }
+        .map {
+            CompileInfo(it.compileKotlinTask, "${it.target.name}${it.name.capitalize()}", target.platformType)
         }
 }
 
 private fun BaseExtension.dependsOnCompileTask(
-    project: Project,
-    task: (defaultSourceSetName: String) -> TaskProvider<out Task>
-) {
+    project: Project
+): List<CompileInfo> {
     val variants: DomainObjectSet<out BaseVariant> = when (this) {
         is AppExtension -> applicationVariants
         is LibraryExtension -> libraryVariants
         else -> throw IllegalStateException("Unknown Android plugin $this")
     }
 
-    variants.forEach { variant ->
-        project.tasks.named("compile${variant.name.capitalize()}Kotlin")
-            .dependsOn(task(variant.name))
+    return variants.map { variant ->
+        CompileInfo(
+            project.tasks.named("compile${variant.name.capitalize()}Kotlin").get(),
+            variant.name,
+            KotlinPlatformType.androidJvm
+        )
     }
 }
 
-private fun Project.dependsOnCompileTaskOfJvm(task: (defaultSourceSetName: String) -> TaskProvider<out Task>) {
-    tasks.named("compileKotlin").dependsOn(task("main"))
-}
+private fun Project.dependsOnCompileTaskOfJvm() =
+    listOf(CompileInfo(tasks.named("compileKotlin").get(), "main", KotlinPlatformType.jvm))
+
+
+data class CompileInfo(val task: Task, val targetVariantsName: String, val platformType: KotlinPlatformType)

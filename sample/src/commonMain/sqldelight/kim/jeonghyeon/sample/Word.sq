@@ -1,0 +1,9 @@
+CREATE TABLE word (
+  id INTEGER NOT NULL,
+  word TEXT NOT NULL
+);
+
+CREATE INDEX index_word ON word(word);
+
+INSERT INTO word (id, word)
+VALUES (15, 'Ryan Getzlaf');

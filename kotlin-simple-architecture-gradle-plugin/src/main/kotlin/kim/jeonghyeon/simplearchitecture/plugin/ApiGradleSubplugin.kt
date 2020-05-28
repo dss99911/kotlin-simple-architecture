@@ -3,8 +3,8 @@ package kim.jeonghyeon.simplearchitecture.plugin
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
-import kim.jeonghyeon.simplearchitecture.plugin.model.getSourceDirectorySetAndNames
-import kim.jeonghyeon.simplearchitecture.plugin.model.toOption
+import kim.jeonghyeon.simplearchitecture.plugin.util.getCompileInfos
+import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
@@ -51,9 +51,13 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
+        val platformType = project.getCompileInfos().first {
+            it.targetVariantsName == kotlinCompile.targetVariantsName
+        }.platformType
 
         return PluginOptions(
-            project.getSourceDirectorySetAndNames().map { it.toOption() },
+            platformType,
+            project.isMultiplatform,
             project.buildDir.toString(),
             kotlinCompile.targetVariantsName
         )

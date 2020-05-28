@@ -27,7 +27,7 @@ buildscript {
         classpath(deps.shadowGradle)
         classpath(deps.bintrary.gradle)
         classpath(deps.simpleArch.pluginGradle)
-//        classpath("com.squareup.sqldelight:gradle-plugin:1.3.0")
+        classpath("com.squareup.sqldelight:gradle-plugin:1.3.0")
     }
 }
 

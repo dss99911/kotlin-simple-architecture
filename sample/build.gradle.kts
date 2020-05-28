@@ -15,7 +15,7 @@ plugins {
 
     //android
     id("com.android.application")
-//    id("com.squareup.sqldelight")
+    id("com.squareup.sqldelight")
 
     //backend
     id("com.github.johnrengelman.shadow")
@@ -23,12 +23,12 @@ plugins {
 
 apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
-//sqldelight {
-//
-//    database("HockeyDb2") {
-//        packageName = "com.balancehero.example1"
-//    }
-//}
+sqldelight {
+
+    database("SampleDb") {
+        packageName = "kim.jeonghyeon.sample"
+    }
+}
 
 
 kotlin {
@@ -73,6 +73,7 @@ kotlin {
                 implementation("io.reactivex.rxjava2:rxjava:2.2.19")
                 implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
                 implementation("com.squareup.retrofit2:adapter-rxjava2:2.2.0")//todo Rxjava3 released, but adapter seems not exsits yet.
+                implementation("com.squareup.sqldelight:android-driver:1.3.0")
 
             }
         }
