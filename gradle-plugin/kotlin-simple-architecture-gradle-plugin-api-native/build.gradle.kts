@@ -14,7 +14,7 @@ val ver = deps.simpleArch.pluginApiNative.getVersion().also {
 }
 
 dependencies {
-    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
     compileOnly(deps.plugin.compiler)//for native
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -85,7 +85,7 @@ tasks.install {
 }
 
 tasks.build {
-    dependsOn(":${deps.simpleArch.pluginShared.getArtifactId()}:build")
+    dependsOn(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}:build")
     dependsOn(tasks.shadowJar)
     finalizedBy(tasks.publishToMavenLocal)
 }

@@ -9,7 +9,7 @@ import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
 import kim.jeonghyeon.simplearchitecture.plugin.util.dependsOnCompileTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class MainGradlePlugin : Plugin<Project> {

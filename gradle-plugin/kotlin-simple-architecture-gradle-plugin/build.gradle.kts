@@ -34,7 +34,7 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
 
@@ -44,8 +44,8 @@ dependencies {
 }
 
 tasks.build {
-    dependsOn(":${deps.simpleArch.pluginApi.getArtifactId()}:build")
-    dependsOn(":${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
+    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApi.getArtifactId()}:build")
+    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
 
     finalizedBy(tasks.install)
 }

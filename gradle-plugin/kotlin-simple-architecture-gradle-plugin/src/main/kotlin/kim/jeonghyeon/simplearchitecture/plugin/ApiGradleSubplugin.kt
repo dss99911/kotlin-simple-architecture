@@ -3,9 +3,7 @@ package kim.jeonghyeon.simplearchitecture.plugin
 import com.google.auto.service.AutoService
 import com.google.gson.Gson
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
-import kim.jeonghyeon.simplearchitecture.plugin.util.getCompileInfos
 import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
-import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions

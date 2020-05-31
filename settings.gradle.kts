@@ -22,10 +22,10 @@ pluginManagement {
 enableFeaturePreview("GRADLE_METADATA")
 
 include("kotlin-simple-architecture")
-include("kotlin-simple-architecture-gradle-plugin")
-include("kotlin-simple-architecture-gradle-plugin-api")
-include("kotlin-simple-architecture-gradle-plugin-api-shared")
-include("kotlin-simple-architecture-gradle-plugin-api-native")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-shared")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native")
 
 
 if (includeSample) {

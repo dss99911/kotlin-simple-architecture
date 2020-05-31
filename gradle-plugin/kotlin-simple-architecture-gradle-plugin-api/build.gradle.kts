@@ -21,7 +21,7 @@ tasks.install {
 }
 
 dependencies {
-    implementation(project(":${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
@@ -33,6 +33,6 @@ kapt {
 }
 
 tasks.build {
-    dependsOn(":${deps.simpleArch.pluginShared.getArtifactId()}:build")
+    dependsOn(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}:build")
     finalizedBy(tasks.install)
 }
