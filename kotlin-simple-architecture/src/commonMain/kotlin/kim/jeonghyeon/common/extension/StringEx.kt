@@ -8,6 +8,10 @@ fun String?.toDouble(defValue: Double): Double = try {
     defValue
 }
 
+fun String.equalsAny(vararg string: String): Boolean = string.any { it == this@equalsAny }
+
+fun String.equalsAll(vararg string: String): Boolean = string.all { it == this@equalsAll }
+
 inline fun CharSequence?.isNotEmpty(): Boolean = this != null && !isEmpty()
 
 fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean = false): String {

@@ -15,7 +15,7 @@ plugins {
 
     //android
     id("com.android.application")
-//    id("com.squareup.sqldelight")
+    id("com.squareup.sqldelight")
 
     //backend
     id("com.github.johnrengelman.shadow")
@@ -23,12 +23,12 @@ plugins {
 
 apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
-//sqldelight {
-//
-//    database("HockeyDb2") {
-//        packageName = "com.balancehero.example1"
-//    }
-//}
+sqldelight {
+
+    database("SampleDb") {
+        packageName = "kim.jeonghyeon.sample"
+    }
+}
 
 
 kotlin {
