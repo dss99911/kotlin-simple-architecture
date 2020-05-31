@@ -8,6 +8,7 @@ import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
 
-interface IBaseUi : SavedStateRegistryOwner {
+interface IBaseUi : SavedStateRegistryOwner, ViewModelStoreOwner {
     /**
      * viewModel name should be "model" for auto binding
      * if you'd like to change it, override setVariable

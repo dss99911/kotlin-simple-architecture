@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat
 import kim.jeonghyeon.androidlibrary.BaseApplication
 import kim.jeonghyeon.androidlibrary.BuildConfig
 import org.jetbrains.anko.telephonyManager
-import org.koin.core.context.GlobalContext
+import org.koin.core.context.KoinContextHandler
 
 
 val isTesting = noThrow { Class.forName("androidx.test.espresso.Espresso") } != null
@@ -93,4 +93,4 @@ annotation class VersionParam
 
 inline fun isFromVersion(@VersionParam version: Int): Boolean = Build.VERSION.SDK_INT >= version
 
-val koin get() = GlobalContext.get().koin
+val koin get() = KoinContextHandler.get()

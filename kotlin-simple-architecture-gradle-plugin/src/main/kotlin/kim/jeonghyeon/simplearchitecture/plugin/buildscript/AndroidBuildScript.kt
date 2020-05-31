@@ -1,4 +1,4 @@
-package kim.jeonghyeon.simplearchitecture.plugin.config
+package kim.jeonghyeon.simplearchitecture.plugin.buildscript
 
 import com.android.build.gradle.BaseExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.apply
 fun Project.applyAndroid() {
     if (!hasAndroid) return
 
+    //todo how to set version?
     apply(plugin = "kotlinx-serialization")
     apply(plugin = "kotlin-android-extensions")//for @Parcelize
     apply(plugin = "org.jetbrains.kotlin.kapt")

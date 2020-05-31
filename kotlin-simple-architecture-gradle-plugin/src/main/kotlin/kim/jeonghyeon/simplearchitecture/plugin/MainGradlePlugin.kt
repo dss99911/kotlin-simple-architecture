@@ -1,6 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
-import kim.jeonghyeon.simplearchitecture.plugin.config.applyAndroid
+import kim.jeonghyeon.simplearchitecture.plugin.buildscript.applyAndroid
 import kim.jeonghyeon.simplearchitecture.plugin.model.addGeneratedSourceDirectory
 import kim.jeonghyeon.simplearchitecture.plugin.model.getSourceDirectorySetAndNames
 import kim.jeonghyeon.simplearchitecture.plugin.task.getDeleteGeneratedSourceTask
@@ -9,7 +9,7 @@ import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
 import kim.jeonghyeon.simplearchitecture.plugin.util.dependsOnCompileTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class MainGradlePlugin : Plugin<Project> {

@@ -1,9 +1,17 @@
 CREATE TABLE word (
-  id INTEGER NOT NULL,
-  word TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  text TEXT NOT NULL
 );
 
-CREATE INDEX index_word ON word(word);
+CREATE INDEX index_word ON word(text);
 
-INSERT INTO word (id, word)
-VALUES (15, 'Ryan Getzlaf');
+INSERT INTO word (text)
+VALUES ('Ryan Getzlaf');
+
+selectAll:
+SELECT *
+FROM word;
+
+insert:
+INSERT INTO word(text)
+VALUES (?);

@@ -14,7 +14,7 @@ class SimpleApiCallViewModel(val api: SimpleApi) : BaseViewModel() {
     }
 
     fun postItem(item: Item) {
-        result(initState) {
+        result.load(initState) {
             api.submitPost(api.getToken().name, item)
         }
     }

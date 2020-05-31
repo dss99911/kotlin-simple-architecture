@@ -13,7 +13,7 @@ class CoroutineApiCallViewModel(val api: CoroutineApi) : BaseViewModel() {
     }
 
     fun postItem(item: Item) {
-        result {
+        result.load {
             api.submitPost(PostRequestBody(api.getToken(), item))
         }
     }

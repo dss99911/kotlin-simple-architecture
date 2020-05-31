@@ -15,6 +15,7 @@
         android:layout_height="match_parent"
         android:clipChildren="false"
         android:clipToPadding="false"
+
         android:padding="10dp">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -46,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:scaleType="fitXY"
-                    android:src="@mipmap/ic_launcher"
+                    android:src="@drawable/ic_android"
                     app:layout_collapseMode="parallax"/>
 
                 <androidx.appcompat.widget.Toolbar
@@ -64,6 +65,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
             android:padding="10dp"
+            android:layout_marginBottom="56dp"
+            android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <!--
@@ -79,11 +82,17 @@
                 android:id="@+id/my_nav_host_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph_main"/>
+                app:navGraph="@navigation/nav_graph_main" />
         </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:menu="@menu/bottom_nav_menu" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -91,12 +100,6 @@
             android:layout_margin="5dp"
             android:src="@drawable/ic_android"
             app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="bottom|end"/>
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:menu="@menu/bottom_nav_menu"/>
+            app:layout_anchorGravity="bottom|end" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
