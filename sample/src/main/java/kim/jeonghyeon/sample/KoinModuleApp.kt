@@ -2,7 +2,9 @@ package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
 import kim.jeonghyeon.common.net.clientAndroid
+import kim.jeonghyeon.generated.db.db
 import kim.jeonghyeon.generated.net.create
+import kim.jeonghyeon.koin.weak
 import kim.jeonghyeon.plugin.SimpleConfig
 import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
@@ -111,7 +113,8 @@ val appModule = module {
     }
 
     //db
-    viewModel { SimpleDbViewModel() }
+    viewModel { SimpleDbViewModel(get()) }
+    weak { db<SampleDb>().wordQueries }
 }
 
 inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)

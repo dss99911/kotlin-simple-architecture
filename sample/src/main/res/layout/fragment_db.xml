@@ -10,6 +10,6 @@
             onClickNavigate="@{@id/action_dbFragment_to_simpleDbFragment}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_model_related" />
+            android:text="@string/simple" />
     </LinearLayout>
 </layout>

@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
     `maven-publish`
@@ -26,6 +27,10 @@ kotlin {
     val iosArm32 = iosArm32("iosArm32")
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
+
+    if (ideaActive) {
+        iosX64("ios")
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -99,7 +104,12 @@ kotlin {
 
                 deps.android.lifecycle.forEach { api(it) }
                 deps.android.navigation.forEach { api(it) }
-                deps.android.coin.forEach { api(it) }
+
+                //todo how to use koin on native? common can't use koin library. consider ktor use koin as well
+                api(deps.koin.core)
+                api(deps.koin.android)
+                api(deps.koin.androidXScope)
+                api(deps.koin.androidXViewModel)
 
                 /*[START] Retrofit */
                 //TODO HYUN [multi-platform2] : convert to ktor client
@@ -123,10 +133,18 @@ kotlin {
                 symbol: class Generated
                  */
                 api("org.glassfish:javax.annotation:10.0-b28")
+                api(deps.sqldelight.android)
             }
         }
 
-        val iosMain = create("iosMain")
+        //when build ios specific target, it knows that this source set targets the target.
+        //but, intellij doesn't know that iosMain source set targets ios or not.
+        //so, when configuration is for intellij. we have to specify the target for iosMain.
+        val iosMain = if (ideaActive) {
+            getByName("iosMain")
+        } else {
+            create("iosMain")
+        }
 
         iosMain.apply {
             dependsOn(mobileMain)
@@ -171,9 +189,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-
-    val BUILD_TYPE_NAME_DEBUG = "debug"
-    val BUILD_TYPE_NAME_RELEASE = "release"
 }
 
 tasks.withType<KotlinCompile> {

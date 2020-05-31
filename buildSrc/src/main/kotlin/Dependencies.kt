@@ -3,6 +3,7 @@ object deps {
         val gradle = depKotlin("gradle-plugin", versions.kotlin.version)
         val serializationGradle = depKotlin("serialization", versions.kotlin.version)
         val stdlib = depKotlin("stdlib")
+        val stdlibCommon = depKotlin("stdlib-common")
         val stdlibWithVersion = depKotlin("stdlib", versions.kotlin.version)
         val stdlibJdk8 = depKotlin("stdlib-jdk8", versions.kotlin.version)
         val stdlibJs = depKotlin("stdlib-js", versions.kotlin.version)
@@ -83,12 +84,7 @@ object deps {
             "androidx.room:room-runtime:${versions.android.room}",
             "androidx.room:room-ktx:${versions.android.room}"
         )
-        val coin = listOf(
-            "org.koin:koin-core:${versions.koin}",
-            "org.koin:koin-android:${versions.koin}",
-            "org.koin:koin-androidx-scope:${versions.koin}",
-            "org.koin:koin-androidx-viewmodel:${versions.koin}"
-        )
+
         const val picasso = "com.squareup.picasso:picasso:2.71828"
         const val anko = "org.jetbrains.anko:anko:0.10.8"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
@@ -106,6 +102,16 @@ object deps {
             "com.google.truth:truth:1.0.1"
         )
     }
+
+    object koin {
+        const val core = "org.koin:koin-core:${versions.koin}"
+        const val android = "org.koin:koin-android:${versions.koin}"
+        const val androidXScope = "org.koin:koin-androidx-scope:${versions.koin}"
+        const val androidXViewModel = "org.koin:koin-androidx-viewmodel:${versions.koin}"
+        const val ktor = "org.koin:koin-ktor:${versions.koin}"
+        const val gradle = "org.koin:koin-gradle-plugin:${versions.koin}"
+    }
+
 
     object simpleArch {
         val common = depSimpleArchitecture(version = PublishConfig.versionLibrary)
@@ -135,6 +141,11 @@ object deps {
         val compiler = depKotlin("compiler", versions.kotlin.version)
         const val poet = "com.squareup:kotlinpoet:1.3.0"
         const val auto = "com.google.auto.service:auto-service:1.0-rc6"
+    }
+
+    object sqldelight {
+        const val gradle = "com.squareup.sqldelight:gradle-plugin:${versions.sqldelight}"
+        const val android = "com.squareup.sqldelight:android-driver:${versions.sqldelight}"
     }
 
     const val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"

@@ -18,6 +18,7 @@ object versions {
         const val constraintLayout = "1.1.3"
     }
 
-    const val koin = "2.0.1"
+    const val koin = "2.1.5"
     const val shadow = "5.0.0"
+    const val sqldelight = "1.3.0"
 }

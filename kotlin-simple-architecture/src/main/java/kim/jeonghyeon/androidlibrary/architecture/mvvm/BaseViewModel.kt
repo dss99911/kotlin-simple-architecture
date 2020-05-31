@@ -54,10 +54,6 @@ interface IBaseViewModel {
     @MainThread
     fun <T> LiveResource<T>.load(work: suspend CoroutineScope.() -> T)
 
-    operator fun <T> LiveResource<T>.invoke(work: suspend CoroutineScope.() -> T) {
-        load(work)
-    }
-
     @MainThread
     fun <T> LiveResource<T>.load(
         work: suspend CoroutineScope.() -> T,
@@ -66,13 +62,6 @@ interface IBaseViewModel {
 
     @MainThread
     fun <T> LiveResource<T>.load(state: LiveState, work: suspend CoroutineScope.() -> T)
-
-    operator fun <T> LiveResource<T>.invoke(
-        state: LiveState,
-        work: suspend CoroutineScope.() -> T
-    ) {
-        load(state, work)
-    }
 
     /**
      * if call several times, and after success, if error occurs, data is not changed even if it's error.
@@ -92,9 +81,6 @@ interface IBaseViewModel {
     fun <T> loadInIdle(work: suspend CoroutineScope.() -> T)
 
     fun <T> LiveResource<T>.loadDebounce(timeInMillis: Long, work: suspend CoroutineScope.() -> T)
-
-    fun <T> LiveResource(work: suspend CoroutineScope.() -> T): LiveResource<T>
-    fun <T> LiveObject(state2: LiveState?, work: suspend CoroutineScope.() -> T): LiveObject<T>
 
     //TODO HYUN : this has learning curve which is not straight-forward to understand. consider to delete
     fun <T, U> LiveResource<U>.loadRetriable(
@@ -263,14 +249,6 @@ open class BaseViewModel(val savedStateHandle: SavedStateHandle? = null) : ViewM
             work()
         }
     }
-
-    override fun <T> LiveResource(work: suspend CoroutineScope.() -> T): LiveResource<T> =
-        LiveResource<T>().apply { this(work) }
-
-    override fun <T> LiveObject(
-        state2: LiveState?,
-        work: suspend CoroutineScope.() -> T
-    ): LiveObject<T> = LiveObject(state2, work)
 
     override fun <T, U> LiveResource<U>.loadRetriable(
         part1: suspend CoroutineScope.() -> T,
