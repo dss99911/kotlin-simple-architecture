@@ -67,8 +67,7 @@ object deps {
         const val viewPager = "androidx.viewpager2:viewpager2:1.0.0"
         const val work = "androidx.work:work-runtime-ktx:2.3.1"
         const val paging = "androidx.paging:paging-runtime-ktx:2.1.1"
-        const val constraintlayout =
-            "androidx.constraintlayout:constraintlayout:${versions.android.constraintLayout}"
+        const val constraintlayout = "androidx.constraintlayout:constraintlayout:${versions.android.constraintLayout}"
         val lifecycle = listOf(
             "androidx.lifecycle:lifecycle-extensions:${versions.android.xUi}",
             "androidx.lifecycle:lifecycle-livedata-ktx:${versions.android.xUi}",
@@ -144,8 +143,11 @@ object deps {
     }
 
     object sqldelight {
+        const val runtime = "com.squareup.sqldelight:runtime:${versions.sqldelight}"
+        const val coroutine = "com.squareup.sqldelight:coroutines-extensions:${versions.sqldelight}"
         const val gradle = "com.squareup.sqldelight:gradle-plugin:${versions.sqldelight}"
         const val android = "com.squareup.sqldelight:android-driver:${versions.sqldelight}"
+        const val native = "com.squareup.sqldelight:native-driver:${versions.sqldelight}"
     }
 
     const val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"

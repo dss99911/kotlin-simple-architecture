@@ -102,13 +102,13 @@ class DbGenerator(
                 |
                 |${makeImport()}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(baseUrl: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(name: String): T {
                 |
                 |${INDENT}return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()})" }.prependIndent(indent(2))}
                 |
                 |$INDENT${INDENT}else -> error("can not create database name " + T::class.qualifiedName)
-                |$INDENT}
+                |$INDENT} as T
                 |}
                 """.trimMargin()
                 )
@@ -125,6 +125,11 @@ class DbGenerator(
                 import kim.jeonghyeon.androidlibrary.extension.ctx
             """.trimIndent()
 
+            KotlinPlatformType.native -> """
+                import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
+                
+            """.trimIndent()
+
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }
@@ -139,6 +144,9 @@ class DbGenerator(
         return when (pluginOptions.platformType) {
             KotlinPlatformType.androidJvm -> {
                 "AndroidSqliteDriver(${name}.Schema, ctx, name)"
+            }
+            KotlinPlatformType.native -> {
+                "NativeSqliteDriver(${name}.Schema, name)"
             }
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
