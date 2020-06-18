@@ -12,7 +12,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import kim.jeonghyeon.androidlibrary.BuildConfig
+import kim.jeonghyeon.sample.BuildConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
 
