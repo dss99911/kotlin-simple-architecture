@@ -1,9 +1,9 @@
 package kim.jeonghyeon.simplearchitecture.plugin.buildscript
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
@@ -19,21 +19,25 @@ fun Project.applyAndroid() {
     androidExtension!!.initDefault()
 }
 
-fun BaseExtension.initDefault() {
+fun BaseAppModuleExtension.initDefault() {
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
-    dataBinding {
-        isEnabled = true
-        isEnabledForTests = true
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
+        kotlinCompilerExtensionVersion = VERSION_COMPOSE
     }
 
     //todo is it fine?

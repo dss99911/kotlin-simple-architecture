@@ -7,7 +7,7 @@ object versions {
     }
 
     object android {
-        const val buildTool = "4.0.0"
+        const val buildTool = "4.2.0-alpha01"
         const val xBase = "1.1.0"
         const val xUi = "2.2.0"
         const val xTest = "1.2.0"
@@ -16,9 +16,10 @@ object versions {
         const val room = "2.2.3"
         const val material = "1.1.0"
         const val constraintLayout = "2.0.0-beta3"
+        const val compose = "0.1.0-dev13"
     }
 
-    const val koin = "2.1.5"
+    const val koin = "3.0.0-alpha-2"
     const val shadow = "5.0.0"
     const val sqldelight = "1.3.0"
 }

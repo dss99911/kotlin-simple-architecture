@@ -71,6 +71,7 @@ tasks.create("pluginConfig") {
             val DEPENDENCY_SIMPLE_ARCHITECTURE_JVM = "${deps.simpleArch.jvm}"
             val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API = "${deps.simpleArch.pluginApi}"
             val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API_NATIVE = "${deps.simpleArch.pluginApiNative}"
+            val VERSION_COMPOSE = "${versions.android.compose}"
         """.trimIndent())
     }
 }

@@ -41,6 +41,8 @@ kotlin {
                 api(deps.ktor.clientCore)
                 api(deps.ktor.clientSerialization)
                 api(deps.ktor.clientLogging)
+                api(deps.sqldelight.runtime)
+                api(deps.sqldelight.coroutine)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -83,6 +85,11 @@ kotlin {
             dependsOn(jvmMain)
 
             dependencies {
+                //todo move to library
+                api("androidx.ui:ui-layout:${versions.android.compose}")
+                api("androidx.ui:ui-material:${versions.android.compose}")
+                api("androidx.ui:ui-tooling:${versions.android.compose}")
+
                 api(deps.kotlin.coroutineAndroid)
                 api(deps.ktor.clientAndroid)
 
@@ -156,6 +163,7 @@ kotlin {
                 api(deps.ktor.clientIos)
                 api(deps.ktor.clientSerializationNative)
                 api(deps.ktor.clientLoggingNative)
+                api(deps.sqldelight.native)
             }
         }
 
@@ -180,14 +188,19 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
-    dataBinding {
-        isEnabled = true
-        isEnabledForTests = true
+    buildFeatures {
+        compose = true
+        //todo remove
+        dataBinding = true
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    composeOptions {
+        kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
+        kotlinCompilerExtensionVersion = versions.android.compose
     }
 }
 

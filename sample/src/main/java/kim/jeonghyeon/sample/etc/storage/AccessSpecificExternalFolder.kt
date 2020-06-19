@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun accessExternalPicturesDirectory() {
         val intent: Intent = (getSystemService(Context.STORAGE_SERVICE) as StorageManager)
-            .primaryStorageVolume.createAccessIntent(Environment.DIRECTORY_PICTURES)
+            .primaryStorageVolume.createAccessIntent(Environment.DIRECTORY_PICTURES) ?: return
         startActivityForResult(intent, PICTURES_DIR_ACCESS_REQUEST_CODE)
     }
 
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
             // User approved access to scoped directory.
             if (resultData != null) {
-                val picturesDirUri: Uri = resultData.data
+                val picturesDirUri: Uri = resultData.data ?: return
 
                 // Save user's approval for accessing this directory
                 // in your app.

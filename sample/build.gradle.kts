@@ -111,7 +111,7 @@ kotlin {
         compilations {
             val main by getting {
                 //for supporting kotlin generic in swift. there were discussion that it'll be applied on kotlin 1.3.40. let's see if this script is required or not.
-//                extraOpts("-Xobjc-generics")
+                kotlinOptions.freeCompilerArgs += "-Xobjc-generics"
             }
         }
 
@@ -251,13 +251,12 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
+    }
 
-//        todo how to set testLogging?
-//        all {
-//            testLogging {
-//                events("passed", "skipped", "failed", "standardOut", "standardError")
-//            }
-//        }
+    //todo convert to compose
+    buildFeatures {
+        dataBinding = true
+        viewBinding = true
     }
 }
 
@@ -282,4 +281,12 @@ tasks.withType<ShadowJar> {
     archiveBaseName.value("backend")
     classifier = null
     version = null
+}
+
+tasks.register<Exec>("showKeyDetail") {
+    commandLine(
+        "sh",
+        "-c",
+        "keytool -list -v -keystore $androidStoreFile -alias $androidKeyAlias -storepass $androidStorePassword -keypass $androidKeyPassword"
+    )
 }
