@@ -1,12 +1,9 @@
 package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
-import kim.jeonghyeon.common.net.clientAndroid
+import kim.jeonghyeon.di.serviceLocator
 import kim.jeonghyeon.generated.db.db
-import kim.jeonghyeon.generated.net.create
 import kim.jeonghyeon.koin.weak
-import kim.jeonghyeon.plugin.SimpleConfig
-import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
 import kim.jeonghyeon.sample.apicall.chaining.ChainingApi
@@ -108,13 +105,9 @@ val appModule = module {
     factory { kim.jeonghyeon.androidlibrary.architecture.net.api<CoroutineApi>("http://demo7661478.mockable.io/") }
 
     //change to your server address.
-    factory {
-        api<SimpleApi>("http://${SimpleConfig.BUILD_TIME_LOCAL_IP_ADDRESS}:8080")
-    }
+    factory { serviceLocator.simpleApi }
 
     //db
     viewModel { SimpleDbViewModel(get()) }
     weak { db<SampleDb>().wordQueries }
 }
-
-inline fun <reified API> api(baseUrl: String): API = clientAndroid.create(baseUrl)

@@ -41,29 +41,23 @@ object deps {
         const val clientLoggingNative = "io.ktor:ktor-client-logging-native:${versions.kotlin.ktor}"
         const val clientLoggingJs = "io.ktor:ktor-client-logging-js:${versions.kotlin.ktor}"
         const val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
-        const val clientSerializationJvm =
-            "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
-        const val clientSerializationNative =
-            "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
-        const val clientSerializationJs =
-            "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
+        const val clientSerializationJvm = "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
+        const val clientSerializationNative = "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
+        const val clientSerializationJs = "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
     }
 
     object android {
         const val buildToolGradle = "com.android.tools.build:gradle:${versions.android.buildTool}"
-        const val navigationGradle =
-            "androidx.navigation:navigation-safe-args-gradle-plugin:${versions.android.xUi}"
+        const val navigationGradle = "androidx.navigation:navigation-safe-args-gradle-plugin:${versions.android.xUi}"
         const val supportCompat = "com.android.support:support-compat:28.0.0"
         const val appCompat = "androidx.appcompat:appcompat:${versions.android.xBase}"
-        const val core = "androidx.core:core-ktx:${versions.android.xBase}"
-        const val vectordrawable =
-            "androidx.vectordrawable:vectordrawable:${versions.android.xBase}"
+        const val core = "androidx.core:core-ktx:1.3.0"
+        const val vectordrawable = "androidx.vectordrawable:vectordrawable:${versions.android.xBase}"
         const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
         const val material = "com.google.android.material:material:${versions.android.material}"
         const val preference = "androidx.preference:preference:1.1.0"
         const val fragment = "androidx.fragment:fragment-ktx:${versions.android.fragment}"
-        const val fragmentTesting =
-            "androidx.fragment:fragment-testing:${versions.android.fragment}"
+        const val fragmentTesting = "androidx.fragment:fragment-testing:${versions.android.fragment}"
         const val viewPager = "androidx.viewpager2:viewpager2:1.0.0"
         const val work = "androidx.work:work-runtime-ktx:2.3.1"
         const val paging = "androidx.paging:paging-runtime-ktx:2.1.1"

@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -12,7 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 
-val Project.androidExtension get() = project.extensions.findByType(BaseExtension::class.java)
+val Project.androidExtension get() = project.extensions.findByType(BaseAppModuleExtension::class.java)
 val Project.hasAndroid get() = androidExtension != null
 val Project.isMultiplatform get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
 val Project.multiplatformExtension get() = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
