@@ -94,6 +94,13 @@ object deps {
             "androidx.room:room-testing:${versions.android.room}",
             "com.google.truth:truth:1.0.1"
         )
+
+        val compose = listOf(
+            "androidx.ui:ui-layout:${versions.android.compose}",
+            "androidx.ui:ui-tooling:${versions.android.compose}",
+            "androidx.ui:ui-material:${versions.android.compose}",
+            "androidx.ui:ui-material-icons-extended:${versions.android.compose}"
+        )
     }
 
     object koin {

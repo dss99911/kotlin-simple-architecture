@@ -1,9 +1,11 @@
 package kim.jeonghyeon.simplearchitecture.plugin.buildscript
 
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.BaseExtension
 import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
@@ -19,7 +21,7 @@ fun Project.applyAndroid() {
     androidExtension!!.initDefault()
 }
 
-fun BaseAppModuleExtension.initDefault() {
+fun BaseExtension.initDefault() {
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -31,14 +33,17 @@ fun BaseAppModuleExtension.initDefault() {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    buildFeatures {
-        compose = true
+    if (this is CommonExtension<*, *, *, *, *, *, *, *>) {
+        buildFeatures {
+            compose = true
+        }
+
+        composeOptions {
+            kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
+            kotlinCompilerExtensionVersion = VERSION_COMPOSE
+        }
     }
 
-    composeOptions {
-        kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
-        kotlinCompilerExtensionVersion = VERSION_COMPOSE
-    }
 
     //todo is it fine?
     // "More than one file was found with OS independent path 'META-INF/ktor-client-serialization.kotlin_module"

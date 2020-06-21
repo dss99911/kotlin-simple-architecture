@@ -34,3 +34,5 @@ if (includeSample) {
     include("sample")
 }
 
+//todo remove after bug fixed
+include(":sampleandroid")

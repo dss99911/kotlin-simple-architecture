@@ -86,9 +86,6 @@ kotlin {
 
             dependencies {
                 //todo move to library
-                api("androidx.ui:ui-layout:${versions.android.compose}")
-                api("androidx.ui:ui-material:${versions.android.compose}")
-                api("androidx.ui:ui-tooling:${versions.android.compose}")
 
                 api(deps.kotlin.coroutineAndroid)
                 api(deps.ktor.clientAndroid)
@@ -111,8 +108,9 @@ kotlin {
 
                 deps.android.lifecycle.forEach { api(it) }
                 deps.android.navigation.forEach { api(it) }
+                deps.android.compose.forEach { api(it) }
 
-                //todo how to use koin on native? common can't use koin library. consider ktor use koin as well
+                //todo decide remove or use on MP
                 api(deps.koin.core)
                 api(deps.koin.android)
                 api(deps.koin.androidXScope)
@@ -192,6 +190,7 @@ android {
         compose = true
         //todo remove
         dataBinding = true
+        viewBinding = true
     }
 
     compileOptions {

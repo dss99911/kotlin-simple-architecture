@@ -19,7 +19,7 @@ object versions {
         const val compose = "0.1.0-dev13"
     }
 
-    const val koin = "3.0.0-alpha-2"
+    const val koin = "2.1.6"
     const val shadow = "5.0.0"
     const val sqldelight = "1.3.0"
 }

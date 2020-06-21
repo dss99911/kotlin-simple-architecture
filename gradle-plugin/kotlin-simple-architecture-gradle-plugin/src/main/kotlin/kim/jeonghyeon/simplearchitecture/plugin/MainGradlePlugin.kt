@@ -26,7 +26,9 @@ open class MainGradlePlugin : Plugin<Project> {
 
         with(project) {
             applyAndroid()
-            addSimpleArchitectureDependency()
+
+            //todo this is not working properly if there is library module. and application module. and both add same dependency
+//            addSimpleArchitectureDependency()
 
             afterEvaluate {//to perform after source set is initialized.
                 getSourceDirectorySetAndNames().forEach {

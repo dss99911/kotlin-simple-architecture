@@ -8,13 +8,13 @@ import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 // todo what is the purpose of this?
 val ideaActive = System.getProperty("idea.active") == "true"
 
-
 plugins {
     //common
     kotlin("multiplatform")
 
     //android
-    id("com.android.application")
+    //todo when removing sampleandroid. change to com.android.application
+    id("com.android.library")
     id("com.squareup.sqldelight")
 
     //backend
@@ -45,7 +45,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {}
+        val commonMain by getting {
+            dependencies {
+                api(deps.simpleArch.common)
+            }
+        }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
         val mobileMain by creating {
             dependsOn(commonMain)
@@ -73,7 +77,6 @@ kotlin {
                 implementation("io.reactivex.rxjava2:rxjava:2.2.19")
                 implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
                 implementation("com.squareup.retrofit2:adapter-rxjava2:2.2.0")//todo Rxjava3 released, but adapter seems not exsits yet.
-
             }
         }
 
@@ -173,19 +176,22 @@ android {
     productFlavors {
         val free by creating {
             dimension = "mode"
-            applicationId = appId
+            //todo when removing sampleandroid. uncomment this
+            //applicationId = appId
             buildConfigField("boolean", "isFree", "true")
         }
 
         val pro by creating {
             dimension = "mode"
-            applicationId = appId + ".pro"
+            //todo when removing sampleandroid. uncomment this
+            //applicationId = appId + ".pro"
             buildConfigField("boolean", "isPro", "true")
         }
 
         val dev by creating {
             dimension = "stage"
-            applicationIdSuffix = ".dev"
+            //todo when removing sampleandroid. uncomment this
+//            applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
 
             buildConfigField("boolean", "isDev", "true")
@@ -202,7 +208,8 @@ android {
         create(FLAVOR_NAME_MOCK) {
             dimension = "stage"
 
-            applicationIdSuffix = ".mock"
+            //todo when removing sampleandroid. uncomment this
+//            applicationIdSuffix = ".mock"
             versionNameSuffix = "-mock"
 
             buildConfigField("boolean", "isMock", "true")
@@ -233,17 +240,11 @@ android {
 
         getByName(BUILD_TYPE_NAME_RELEASE) {
             isMinifyEnabled = true
-            isShrinkResources = true
+            //todo when removing sampleandroid. uncomment this
+//            isShrinkResources = true
             isZipAlignEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME_RELEASE)
-        }
-    }
-
-    // Remove mockRelease as it's not needed.
-    android.variantFilter {
-        if (buildType.name == BUILD_TYPE_NAME_RELEASE && flavors[0].name == FLAVOR_NAME_MOCK) {
-            setIgnore(true)
         }
     }
 
