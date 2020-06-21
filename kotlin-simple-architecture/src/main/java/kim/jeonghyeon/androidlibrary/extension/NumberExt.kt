@@ -2,7 +2,7 @@
 
 package kim.jeonghyeon.androidlibrary.extension
 
-import kim.jeonghyeon.androidlibrary.BaseApplication
 
-
-fun Int.getString(): String = BaseApplication.instance.getString(this)
+@Deprecated("this is ambiguous for normal Int", ReplaceWith("Int.resourceToString()"))
+fun Int.getString(): String = ctx.getString(this)
+fun Int.resourceToString(): String = ctx.getString(this)

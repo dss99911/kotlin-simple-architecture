@@ -3,7 +3,6 @@ package kim.jeonghyeon.simplearchitecture.plugin
 import com.google.auto.service.AutoService
 import kim.jeonghyeon.simplearchitecture.plugin.generator.ApiGenerator
 import kim.jeonghyeon.simplearchitecture.plugin.generator.DbGenerator
-import kim.jeonghyeon.simplearchitecture.plugin.util.KtFileAnalyzer
 import kim.jeonghyeon.simplearchitecture.plugin.util.toKtFile
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -44,7 +43,8 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     configuration: CompilerConfiguration,
                     project: Project
                 ): Collection<KtFile> {
-                    KtFileAnalyzer(knownSources).analyze("SampleDb.kt")
+                    //this is used for analyze kt file
+                    //KtFileAnalyzer(knownSources).analyze("SampleDb.kt")
 
                     val pluginOptions = configuration[KEY_PLUGIN_OPTIONS]!!
                     val apiFiles = ApiGenerator(pluginOptions, knownSources).generate()

@@ -2,7 +2,6 @@ package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
 import kim.jeonghyeon.di.serviceLocator
-import kim.jeonghyeon.generated.db.db
 import kim.jeonghyeon.koin.weak
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
@@ -109,5 +108,5 @@ val appModule = module {
 
     //db
     viewModel { SimpleDbViewModel(get()) }
-    weak { db<SampleDb>().wordQueries }
+    weak { serviceLocator.wordQueries }
 }

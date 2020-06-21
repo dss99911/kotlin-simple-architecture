@@ -22,11 +22,12 @@
 
 
         <activity android:name="kim.jeonghyeon.sample.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!-- TODO HYUN [KSA-5] : uncomment after remove sampleandroid -->
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
         </activity>
         <activity android:name=".viewmodel.startactivity.StartActivityActivity" />
         <activity android:name=".view.emptylayout.EmptyLayoutActivity" />
