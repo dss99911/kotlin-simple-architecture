@@ -64,6 +64,7 @@ kotlin {
                 api(deps.ktor.clientLoggingJvm)
 
                 api(deps.gson)
+                api(deps.sqldelight.jvm)
             }
         }
 

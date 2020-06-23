@@ -4,8 +4,12 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilationToRunnableFiles
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 
-// if configuration is done by intellij, this is true. if configuration is done by other like shell. it is false
-// todo what is the purpose of this?
+val androidKeyAlias: String by project
+val androidKeyPassword: String by project
+val androidStoreFile: String by project
+val androidStorePassword: String by project
+
+//todo 1.4 remove
 val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
@@ -19,6 +23,7 @@ plugins {
 
     //backend
     id("com.github.johnrengelman.shadow")
+
 }
 
 apply(plugin = "kotlin-simple-architecture-gradle-plugin")
@@ -34,8 +39,10 @@ sqldelight {
 kotlin {
     jvm()
     jvm("backend")
+
     android()
 
+    //todo 1.4 remove
     val iosArm32 = iosArm32("iosArm32")
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
@@ -43,6 +50,15 @@ kotlin {
     if (ideaActive) {
         iosX64("ios")
     }
+    //todo 1.4 remove
+
+    /* todo 1.4
+    ios()
+    val iosArm32 = iosArm32()
+    val iosArm64 = iosArm64()
+    val iosX64 = iosX64()
+
+     */
 
     sourceSets {
         val commonMain by getting {
@@ -89,6 +105,7 @@ kotlin {
             }
         }
 
+        //todo 1.4 remove
         val iosMain = if (ideaActive) {
             getByName("iosMain")
         } else {
@@ -106,6 +123,13 @@ kotlin {
         configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
             dependsOn(iosMain)
         }
+        //todo 1.4 remove
+        /* todo 1.4
+        val iosMain by getting {
+            dependsOn(mobileMain)
+        }
+
+         */
     }
 
     val frameworkName = "KotlinApi"
@@ -144,11 +168,6 @@ kotlin {
 
 
 android {
-    //todo move configuration on plugin
-    val androidKeyAlias: String by project
-    val androidKeyPassword: String by project
-    val androidStoreFile: String by project
-    val androidStorePassword: String by project
 
     val appId = "kim.jeonghyeon.sample"
 

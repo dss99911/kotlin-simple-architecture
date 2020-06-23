@@ -4,5 +4,6 @@ import androidx.compose.Composable
 
 @Composable
 fun ViewScreen() {
+    //deliver data to other screen
 
 }

@@ -1,4 +1,4 @@
-package com.example.sampleandroid
+package com.example.sampleandroid.drawer
 
 import androidx.compose.Composable
 import androidx.ui.core.Alignment
@@ -14,24 +14,20 @@ import androidx.ui.material.TextButton
 import androidx.ui.res.vectorResource
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
-import com.example.sampleandroid.common.ScreenStack
-import com.example.sampleandroid.common.Tab
-import com.example.sampleandroid.common.popUpTo
-import com.example.sampleandroid.common.push
+import com.example.sampleandroid.CommonState
+import com.example.sampleandroid.R
 import com.example.sampleandroid.home.HomeScreen
+import com.example.sampleandroid.library.*
 import com.example.sampleandroid.util.colors
 import com.example.sampleandroid.util.shapes
 import com.example.sampleandroid.util.typography
 
-
 @Composable
-fun MainDrawer(closeDrawer: () -> Unit) {
-
+fun HomeDrawer() {
     val homeScreen = ScreenStack.find() ?: HomeScreen()
 
-    val closeAndNavigateTo: (tab: Tab) -> Unit = { tab ->
-        closeDrawer()
-
+    val closeAndNavigateTo: (tab: TabView) -> Unit = { tab ->
+        CommonState.closeDrawer()
 
         if (!homeScreen.popUpTo(false)) {
             homeScreen.push()
@@ -40,8 +36,8 @@ fun MainDrawer(closeDrawer: () -> Unit) {
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(Modifier.preferredHeight(24.dp))
-        Logo(Modifier.padding(16.dp))
+        SpacerH(24.dp)
+        Logo(homeScreen.title, Modifier.padding(16.dp))
         Divider(color = colors.onSurface.copy(alpha = .2f))
 
         homeScreen.tabs.forEach { tab ->
@@ -56,12 +52,17 @@ fun MainDrawer(closeDrawer: () -> Unit) {
 }
 
 @Composable
-private fun Logo(modifier: Modifier = Modifier) {
-    Image(
-        asset = vectorResource(R.drawable.ic_android),
-        colorFilter = ColorFilter.tint(colors.primary),
-        modifier = modifier
-    )
+private fun Logo(title: String, modifier: Modifier = Modifier) {
+    Row(modifier) {
+        Image(
+            asset = vectorResource(R.drawable.ic_android),
+            colorFilter = ColorFilter.tint(colors.primary)
+        )
+        SpacerW(16.dp)
+        Text(title)
+
+    }
+
 }
 
 @Composable
@@ -98,7 +99,7 @@ private fun DrawerButton(
                         colorFilter = ColorFilter.tint(textIconColor),
                         alpha = imageAlpha
                     )
-                    Spacer(Modifier.preferredWidth(16.dp))
+                    SpacerW(16.dp)
                 }
 
                 Text(
@@ -116,7 +117,5 @@ private fun DrawerButton(
 @Preview
 @Composable
 fun PreviewMainDrawer() {
-    MainDrawer {
-
-    }
+    HomeDrawer()
 }
