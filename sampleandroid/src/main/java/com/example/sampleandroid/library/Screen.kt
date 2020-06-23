@@ -93,7 +93,14 @@ abstract class Screen : Composing {
     }
 }
 
+/**
+ * !!LIMITATION!!
+ * 1. this only support single stack.
+ * 2. also, doesn't support multiple activity(how to figure out which activity called a composable function
+ * todo let's find the way to solve the issue.
+ */
 object ScreenStack {
+
     val instance = ModelList<Screen>()
 
     inline fun <reified T : Screen> find(): T? = instance.findLast { it is T } as T?
