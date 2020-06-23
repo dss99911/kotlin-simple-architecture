@@ -9,10 +9,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
     abstract val content: @Composable() () -> Unit
 
+    abstract val rootScreen: Screen
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            rootScreen.push()
             content()
         }
     }
