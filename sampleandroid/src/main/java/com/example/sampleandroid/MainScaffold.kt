@@ -1,29 +1,37 @@
 package com.example.sampleandroid
 
 import androidx.compose.Composable
-import androidx.compose.remember
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Icon
 import androidx.ui.foundation.Text
-import androidx.ui.material.*
-import androidx.ui.res.vectorResource
-import kim.jeonghyeon.androidlibrary.extension.getString
+import androidx.ui.material.IconButton
+import androidx.ui.material.Scaffold
+import androidx.ui.material.TopAppBar
+import androidx.ui.material.icons.Icons
+import androidx.ui.material.icons.filled.Menu
+import com.example.sampleandroid.drawer.HomeDrawer
+import com.example.sampleandroid.drawer.ModelDrawer
+import com.example.sampleandroid.home.HomeScreen
+import com.example.sampleandroid.library.ScreenStack
 
 @Composable
 fun MainScaffold(content: @Composable() (Modifier) -> Unit) {
-    val scaffoldState = remember { ScaffoldState() }
-
     Scaffold(
-        scaffoldState = scaffoldState,
+        scaffoldState = CommonState.scaffoldState,
         drawerContent = {
-            MainDrawer(closeDrawer = { scaffoldState.drawerState = DrawerState.Closed })
+            when (ScreenStack.last()) {
+                is HomeScreen -> HomeDrawer()
+                else -> ModelDrawer()
+            }
         },
         topAppBar = {
             TopAppBar(
-                title = { Text(text = R.string.sample.getString()) },
+                title = { Text(text = ScreenStack.last().title) },
                 navigationIcon = {
-                    IconButton(onClick = { scaffoldState.drawerState = DrawerState.Opened }) {
-                        Icon(vectorResource(R.drawable.ic_android))
+                    IconButton(onClick = {
+                        CommonState.openDrawer()
+                    }) {
+                        Icon(Icons.Filled.Menu)
                     }
                 }
             )
@@ -33,3 +41,4 @@ fun MainScaffold(content: @Composable() (Modifier) -> Unit) {
         }
     )
 }
+

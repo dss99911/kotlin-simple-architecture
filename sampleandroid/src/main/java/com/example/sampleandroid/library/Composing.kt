@@ -1,9 +1,9 @@
-package com.example.sampleandroid.common
+package com.example.sampleandroid.library
 
 import androidx.compose.Composable
 
 
 interface Composing {
     //function is notworking. so, used property
-    val compose: @Composable() () -> Unit
+    val view: @Composable() () -> Unit
 }

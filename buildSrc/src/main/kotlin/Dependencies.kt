@@ -149,6 +149,7 @@ object deps {
         const val gradle = "com.squareup.sqldelight:gradle-plugin:${versions.sqldelight}"
         const val android = "com.squareup.sqldelight:android-driver:${versions.sqldelight}"
         const val native = "com.squareup.sqldelight:native-driver:${versions.sqldelight}"
+        const val jvm = "com.squareup.sqldelight:sqlite-driver:${versions.sqldelight}"
     }
 
     const val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"

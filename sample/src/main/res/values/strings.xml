@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY appname "Android Sample">]>
 <resources>
     <string name="app_name">&appname;</string>
-    <string name="app_name2">&appname;2</string>
     <string name="mvvm">MVVM</string>
     <string name="chrome_custom_tab">Chrome Custom Tab</string>
     <string name="api_call">Api call</string>
@@ -36,9 +35,10 @@
     <string name="keyword">keyword</string>
     <string name="search">Search</string>
     <string name="comparable_list">comparable list</string>
-    <string name="multiple_sequential_call">multiple sequential call</string>
+    <string name="multiple_sequential_call">Api call sequentially </string>
     <string name="polling">polling</string>
-    <string name="multiple_parallel_call">multiple parallel call</string>
+    <string name="multiple_parallel_call">Api call in parallel</string>
+    <string name="single_call">Single Api call</string>
     <string name="call_in_idle">call in idle</string>
     <string name="threading">Threading</string>
     <string name="callback">Callback</string>
@@ -60,6 +60,10 @@
     <string name="action">action</string>
     <string name="no_data_exists">No data exists</string>
     <string name="db">DB</string>
+    <string name="db_simple">Simple DB call</string>
+    <string name="db_observe">DB Observe</string>
+    <string name="db_api">DB Api together</string>
+    <string name="preference">Preference</string>
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
