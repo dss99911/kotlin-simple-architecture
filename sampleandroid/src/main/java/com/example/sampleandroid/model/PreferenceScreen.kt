@@ -8,8 +8,8 @@ import kim.jeonghyeon.androidlibrary.extension.getString
 class PreferenceScreen : ModelScreen() {
     override val title: String = R.string.preference.getString()
 
-    override val view: @Composable() () -> Unit
-        get() = {
-            Text(title)
-        }
+    @Composable
+    override fun view() {
+        Text(title)
+    }
 }

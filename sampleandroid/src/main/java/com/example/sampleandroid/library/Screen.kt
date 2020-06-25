@@ -2,17 +2,14 @@ package com.example.sampleandroid.library
 
 import androidx.compose.Composable
 import androidx.compose.frames.ModelList
-import androidx.compose.onDispose
 import androidx.compose.remember
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Stack
 import androidx.ui.material.TextButton
 import kim.jeonghyeon.androidlibrary.architecture.livedata.Resource
+import kim.jeonghyeon.androidlibrary.util.log
 import kim.jeonghyeon.common.extension.removeLast
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 
 abstract class Screen : Composing {
     open val title: String = ""
@@ -27,34 +24,46 @@ abstract class Screen : Composing {
      */
     val status = statusStateOf()
 
-
     private lateinit var scope: CoroutineScope
 
     @Composable
-    fun compose() {
-        scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate) }
+    protected open fun view() {
 
-        onDispose { scope.cancel() }
+    }
+
+    protected open fun initialize() {
+
+    }
+
+    @Composable
+    fun compose() {
+        scope = composableCoroutineScope()
+
+        remember {
+            initialize()
+        }
 
         Stack {
-            when (initStatus.value) {
-                is Resource.Loading -> {
-                    composeFullLoading()
-                    return@Stack
-                }
-                is Resource.Error -> {
-                    composeFullError()
-                    return@Stack
-                }
-            }
-//
             view()
-//
-//            when (status.value) {
-//                is Resource.Loading -> composeLoading()
-//                is Resource.Error -> composeError()
-//                else -> {}
-//            }
+
+            Stack {
+                statusHandle()
+            }
+        }
+    }
+
+    @Composable
+    fun statusHandle() {
+        when (status.value) {
+            is Resource.Loading -> composeLoading()
+            is Resource.Error -> composeError()
+            else -> {
+            }
+        }
+
+        when (initStatus.value) {
+            is Resource.Loading -> composeFullLoading()
+            is Resource.Error -> composeFullError()
         }
     }
 
@@ -63,10 +72,30 @@ abstract class Screen : Composing {
         return this
     }
 
+    @Composable
+    fun <T> ResourceState<T>.loadInComposition(work: suspend CoroutineScope.() -> T): ResourceState<T> {
+        remember {
+            scope.loadResource(this, work)
+        }
+
+        return this
+    }
+
     fun <T> ResourceState<T>.load(status: StatusState, work: suspend CoroutineScope.() -> T): ResourceState<T> {
         scope.loadResource(this, status, work)
         return this
     }
+
+    @Composable
+    fun <T> ResourceState<T>.loadInComposition(status: StatusState, work: suspend CoroutineScope.() -> T): ResourceState<T> {
+        remember {
+            log("load in composition " + this@Screen::class.java.name)
+            scope.loadResource(this, status, work)
+
+        }
+        return this
+    }
+
 
     @Composable
     protected fun composeLoading() {
@@ -97,7 +126,10 @@ abstract class Screen : Composing {
  * !!LIMITATION!!
  * 1. this only support single stack.
  * 2. also, doesn't support multiple activity(how to figure out which activity called a composable function
+ * 3. is it possible tree structure? previously, activity contains fragments. so, fragment is changed several times but. after all the process is finished. we can finish activity. simply.
  * todo let's find the way to solve the issue.
+ *  search that how to manage view history.
+ *  is ambient related to this?
  */
 object ScreenStack {
 

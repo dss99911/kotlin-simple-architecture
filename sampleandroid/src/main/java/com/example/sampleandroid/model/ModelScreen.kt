@@ -16,7 +16,8 @@ abstract class ModelScreen : Screen() {
             DbSimpleScreen(),
             DbObserveScreen(),
             ApiDbScreen(),
-            PreferenceScreen()
+            PreferenceScreen(),
+            SwitchMapScreen()
         )
     }
 }

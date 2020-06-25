@@ -5,8 +5,8 @@ import androidx.ui.foundation.Text
 import com.example.sampleandroid.R
 import kim.jeonghyeon.androidlibrary.extension.getString
 
-class ApiParallelScreen : ModelScreen() {
-    override val title: String = R.string.multiple_parallel_call.getString()
+class SwitchMapScreen : ModelScreen() {
+    override val title: String = R.string.switch_map_call.getString()
 
     @Composable
     override fun view() {

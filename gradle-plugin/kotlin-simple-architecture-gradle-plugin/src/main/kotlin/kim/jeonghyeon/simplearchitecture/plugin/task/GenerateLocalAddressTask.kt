@@ -5,7 +5,8 @@ import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
-import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Socket
 
 
 fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvider<Task> =
@@ -22,7 +23,10 @@ fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvi
         doLast {
             val configFile = project.file("$outputDir/kim/jeonghyeon/plugin/SimpleConfig.kt")
             configFile.parentFile.mkdirs()
-            val inetAddress: InetAddress = InetAddress.getLocalHost()
+
+            val socket = Socket()
+            socket.connect(InetSocketAddress("google.com", 80))
+
             configFile.writeText(
                 """
                     |package kim.jeonghyeon.plugin
@@ -34,7 +38,7 @@ fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvi
                     | *  3. run server in local
                     | */
                     |object SimpleConfig {
-                    |    val BUILD_TIME_LOCAL_IP_ADDRESS = "${inetAddress.hostAddress}"
+                    |    val BUILD_TIME_LOCAL_IP_ADDRESS = "${socket.localAddress}"
                     |}
                     """.trimMargin()
             )

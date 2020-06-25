@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample
 
 import kim.jeonghyeon.androidlibrary.architecture.net.apiBuilder
-import kim.jeonghyeon.di.serviceLocator
 import kim.jeonghyeon.koin.weak
 import kim.jeonghyeon.sample.apicall.callback.CallbackApi
 import kim.jeonghyeon.sample.apicall.callback.CallbackApiCallViewModel
@@ -21,6 +20,7 @@ import kim.jeonghyeon.sample.apicall.threading.ThreadingApi
 import kim.jeonghyeon.sample.apicall.threading.ThreadingApiCallViewModel
 import kim.jeonghyeon.sample.apicall.threading.ThreadingCallAdapterFactory
 import kim.jeonghyeon.sample.db.simple.SimpleDbViewModel
+import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.list.ListViewModel
 import kim.jeonghyeon.sample.list.paging.PagingViewModel
 import kim.jeonghyeon.sample.list.paging.api.GithubService

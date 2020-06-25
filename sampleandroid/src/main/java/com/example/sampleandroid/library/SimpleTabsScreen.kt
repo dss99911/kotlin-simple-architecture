@@ -1,7 +1,6 @@
 package com.example.sampleandroid.library
 
 import androidx.compose.Composable
-import androidx.ui.core.Modifier
 import androidx.ui.foundation.Icon
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
@@ -11,11 +10,12 @@ import androidx.ui.material.TabRow
 
 abstract class SimpleTabsScreen : TabsScreen() {
 
-    override val view: @Composable() () -> Unit = {
+    @Composable
+    override fun view() {
         Column {
             TabRow(
                 items = tabs.map { it.title }, selectedIndex = tabIndex
-            ) { index, title ->
+            ) { index, title -> //-756387548, 32
                 Tab(
                     icon = { tabs[index].icon?.let { Icon(it) } },
                     text = { Text(title) },
@@ -24,9 +24,11 @@ abstract class SimpleTabsScreen : TabsScreen() {
                         tabIndex = (index)
                     })
             }
-            Surface(modifier = Modifier.weight(1f)) {
+
+            Surface {
                 tabs[tabIndex].view()
             }
         }
     }
+
 }

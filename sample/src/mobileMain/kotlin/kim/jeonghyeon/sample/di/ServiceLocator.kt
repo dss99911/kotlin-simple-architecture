@@ -1,4 +1,4 @@
-package kim.jeonghyeon.di
+package kim.jeonghyeon.sample.di
 
 import kim.jeonghyeon.delegate.weak
 import kim.jeonghyeon.generated.db.db

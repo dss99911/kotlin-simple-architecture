@@ -1,7 +1,6 @@
 package com.example.sampleandroid
 
 import androidx.compose.Composable
-import androidx.ui.animation.Crossfade
 import androidx.ui.material.Surface
 import androidx.ui.tooling.preview.Preview
 import com.example.sampleandroid.home.HomeScreen
@@ -29,11 +28,11 @@ class MainActivity : BaseActivity() {
 fun MainContent() {
     MainScaffold {
         val currentScreen = ScreenStack.last()
-        Crossfade(currentScreen) {
-            Surface(color = colors.background) {
-                currentScreen.compose()
-            }
+        Surface(color = colors.background) {
+            currentScreen.compose()
         }
+        //todo is CrossFade make sub composable to compose several times?
+
     }
 }
 

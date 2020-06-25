@@ -1,4 +1,4 @@
-package com.example.sampleandroid.view
+package com.example.sampleandroid.home
 
 import androidx.compose.Composable
 import androidx.ui.foundation.Text
@@ -13,7 +13,9 @@ class ViewTabView : TabView() {
     override val icon: VectorAsset? = Icons.Filled.ViewModule
     override val title: String = R.string.view.getString()
 
-    override val view: @Composable() () -> Unit = {
-        Text("View")
+    @Composable
+    override fun view() {
+        Text(title)
     }
 }
+
