@@ -16,12 +16,22 @@ typealias StatusState = MutableState<Resource<Any?>>
 
 fun <T> resourceStateOf(): ResourceState<T> = mutableStateOf(null)
 
-fun <T> ResourceState<T>.composeSuccess(block: @Composable() (T) -> Unit): ResourceState<T> {
+val <T> ResourceState<T>.successValue: T get() = value!!.get()!!
+
+@Composable
+fun <T> ResourceState<T>.success(block: @Composable() (T) -> Unit): ResourceState<T> {
     (value as? Resource.Success<T>?)?.let {
         block(it.data)
     }
     return this
 }
+
+val <T> ResourceState<T>.isSuccess: Boolean get() = value.isSuccessState()
+
+@Suppress("UNCHECKED_CAST")
+val <T> ResourceState<T>.successData: T
+    get() = value!!.get() as T
+
 
 /**
  * null -> invisible of success view

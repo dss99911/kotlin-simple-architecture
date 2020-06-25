@@ -86,7 +86,12 @@ class DbGenerator(
 
                         import com.squareup.sqldelight.Transacter
                         
-                        expect inline fun <reified T : Transacter> db(name: String = T::class.simpleName + ".db"): T
+                        /**
+                         * This is Sqlite DB
+                         * @param path if it's JVM, it's url of sql driver. jdbc:sqlite:
+                         * @param properties this is used for JVM only.
+                         */
+                        expect inline fun <reified T : Transacter> db(path: String = T::class.simpleName + ".db", properties: Map<String?, String?> = emptyMap()): T
 
                         """.trimIndent()
                     )
@@ -102,10 +107,14 @@ class DbGenerator(
                 |
                 |${makeImport()}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(name: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(path: String, properties: Map<String?, String?>): T {
                 |
                 |${INDENT}return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()}) as T" }.prependIndent(indent(2))}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()}) as T" }.prependIndent(
+                        indent(
+                            2
+                        )
+                    )}
                 |
                 |$INDENT${INDENT}else -> error("can not create database name " + T::class.qualifiedName)
                 |$INDENT}
@@ -124,7 +133,14 @@ class DbGenerator(
                 import com.squareup.sqldelight.android.AndroidSqliteDriver
                 import kim.jeonghyeon.androidlibrary.extension.ctx
             """.trimIndent()
-
+            KotlinPlatformType.native -> """
+                import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
+                
+            """.trimIndent()
+            KotlinPlatformType.jvm -> """
+                import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+                import java.util.*
+            """.trimIndent()
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }
@@ -139,7 +155,13 @@ class DbGenerator(
     fun GeneratedDbSource.makeDriverInstance(): String {
         return when (pluginOptions.platformType) {
             KotlinPlatformType.androidJvm -> {
-                "AndroidSqliteDriver(${name}.Schema, ctx, name)"
+                "AndroidSqliteDriver(${name}.Schema, ctx, path)"
+            }
+            KotlinPlatformType.native -> {
+                "NativeSqliteDriver(${name}.Schema, path)"
+            }
+            KotlinPlatformType.jvm -> {
+                "JdbcSqliteDriver(path, Properties().apply { properties.forEach { this.setProperty(it.key, it.value) } })"
             }
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")

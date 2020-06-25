@@ -64,6 +64,7 @@
     <string name="db_observe">DB Observe</string>
     <string name="db_api">DB Api together</string>
     <string name="preference">Preference</string>
+    <string name="switch_map_call">SwitchMap Call</string>
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>

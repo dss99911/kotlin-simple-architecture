@@ -21,8 +21,11 @@ class ModelTabView : TabView() {
     override val icon: VectorAsset? = Icons.Filled.Description
     override val title: String = R.string.model.getString()
 
-    override val view: @Composable() () -> Unit = {
+    @Composable
+    override fun view() {
         Column {
+            //todo why is this required for update tab?
+            Text(title)
             ModelScreen.screens.forEach {
                 Button(
                     onClick = { it.push() },
@@ -35,3 +38,4 @@ class ModelTabView : TabView() {
         }
     }
 }
+

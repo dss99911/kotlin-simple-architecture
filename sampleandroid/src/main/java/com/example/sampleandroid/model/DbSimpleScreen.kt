@@ -8,8 +8,8 @@ import kim.jeonghyeon.androidlibrary.extension.getString
 class DbSimpleScreen : ModelScreen() {
     override val title: String = R.string.db_simple.getString()
 
-    override val view: @Composable() () -> Unit
-        get() = {
-            Text(title)
-        }
+    @Composable
+    override fun view() {
+        Text(title)
+    }
 }

@@ -3,13 +3,17 @@ package com.example.sampleandroid.model
 import androidx.compose.Composable
 import androidx.ui.foundation.Text
 import com.example.sampleandroid.R
-import kim.jeonghyeon.androidlibrary.extension.getString
+import com.example.sampleandroid.library.resourceStateOf
+import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
 class ApiSequentialScreen : ModelScreen() {
-    override val title: String
-        get() = R.string.multiple_sequential_call.getString()
-    override val view: @Composable() () -> Unit
-        get() = {
-            Text(title)
-        }
+    override val title: String = R.string.multiple_sequential_call.resourceToString()
+
+    private val submitResult = resourceStateOf<String>()
+
+    @Composable
+    override fun view() {
+//        submitResult.loadInComposition(work = )
+        Text(title)
+    }
 }

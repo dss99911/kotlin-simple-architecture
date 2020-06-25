@@ -8,8 +8,8 @@ import kim.jeonghyeon.androidlibrary.extension.getString
 class DbObserveScreen : ModelScreen() {
     override val title: String = R.string.multiple_parallel_call.getString()
 
-    override val view: @Composable() () -> Unit
-        get() = {
-            Text(title)
-        }
+    @Composable
+    override fun view() {
+        Text(title)
+    }
 }

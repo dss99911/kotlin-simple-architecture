@@ -8,8 +8,8 @@ import kim.jeonghyeon.androidlibrary.extension.getString
 class ApiPollingScreen : ModelScreen() {
     override val title: String = R.string.polling.getString()
 
-    override val view: @Composable() () -> Unit
-        get() = {
-            Text(title)
-        }
+    @Composable
+    override fun view() {
+        Text(title)
+    }
 }
