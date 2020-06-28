@@ -1,11 +1,17 @@
 package com.example.sampleandroid.home
 
+import androidx.compose.Composable
 import com.example.sampleandroid.R
-import com.example.sampleandroid.library.SimpleTabsScreen
-import kim.jeonghyeon.androidlibrary.extension.getString
+import kim.jeonghyeon.androidlibrary.compose.screen.SimpleTabsScreen
+import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
 class HomeScreen : SimpleTabsScreen() {
-    override val title: String = R.string.home.getString()
+    override val title: String = R.string.home.resourceToString()
     override val tabs = listOf(ModelTabView(), ViewTabView())
     override val initialIndex: Int = 0
+
+    @Composable
+    override fun compose() {
+        super.compose()
+    }
 }

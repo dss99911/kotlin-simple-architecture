@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-
+//todo move to Preference implementation
 fun SharedPreferences.getBoolean(@StringRes resId: Int, defValue: Boolean): Boolean =
         getBoolean(ctx.getString(resId), defValue)
 

@@ -1,23 +1,22 @@
 package com.example.sampleandroid.model
 
 import com.example.sampleandroid.R
-import com.example.sampleandroid.library.Screen
-import kim.jeonghyeon.androidlibrary.extension.getString
+import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
 abstract class ModelScreen : Screen() {
-    val parentTitle: String = R.string.model.getString()
+    val parentTitle: String = R.string.model.resourceToString()
 
     companion object {
         val screens = listOf(
-            ApiSingleScreen(),
-            ApiSequentialScreen(),
-            ApiParallelScreen(),
-            ApiPollingScreen(),
-            DbSimpleScreen(),
-            DbObserveScreen(),
-            ApiDbScreen(),
-            PreferenceScreen(),
-            SwitchMapScreen()
+            ApiSingleScreen().title to { ApiSingleScreen() },
+            ApiSequentialScreen().title to { ApiSequentialScreen() },
+            ApiParallelScreen().title to { ApiParallelScreen() },
+            ApiPollingScreen().title to { ApiPollingScreen()},
+            DbSimpleScreen().title to { DbSimpleScreen() },
+            ApiDbScreen().title to { ApiDbScreen() },
+            PreferenceScreen().title to { PreferenceScreen() },
+            SwitchMapScreen().title to { SwitchMapScreen() }
         )
     }
 }

@@ -12,27 +12,34 @@ import androidx.ui.material.icons.Icons
 import androidx.ui.material.icons.filled.Description
 import androidx.ui.unit.dp
 import com.example.sampleandroid.R
-import com.example.sampleandroid.library.TabView
-import com.example.sampleandroid.library.push
 import com.example.sampleandroid.model.ModelScreen
-import kim.jeonghyeon.androidlibrary.extension.getString
+import kim.jeonghyeon.androidlibrary.compose.push
+import kim.jeonghyeon.androidlibrary.compose.screen.TabView
+import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
 class ModelTabView : TabView() {
     override val icon: VectorAsset? = Icons.Filled.Description
-    override val title: String = R.string.model.getString()
+    override val title: String = R.string.model.resourceToString()
+
+    //todo loadInIdle
+    // loadDebounce
+    // paging
+    // api cache in memory or pergist
+    @Composable
+    override fun compose() {
+        super.compose()
+    }
 
     @Composable
     override fun view() {
         Column {
-            //todo why is this required for update tab?
-            Text(title)
             ModelScreen.screens.forEach {
                 Button(
-                    onClick = { it.push() },
+                    onClick = { it.second().push() },
                     modifier = Modifier.fillMaxWidth()
                         .padding(10.dp)
                 ) {
-                    Text(it.title)
+                    Text(it.first)
                 }
             }
         }

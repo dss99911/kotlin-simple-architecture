@@ -29,14 +29,15 @@ fun AndroidLibraryTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
 private val darkColorPalette = darkColorPalette(
     primary = purple200,
     primaryVariant = purple700,
-    secondary = teal200
+    secondary = teal200,
+    error = Red700
 )
 
 private val lightColorPalette = lightColorPalette(
     primary = purple500,
     primaryVariant = purple700,
-    secondary = teal200
-
+    secondary = teal200,
+    error = Red300
     /* Other default colors to override
     background = Color.White,
     surface = Color.White,
@@ -74,6 +75,7 @@ private val typography = Typography(
     )
     */
 )
+
 
 @Composable
 internal fun ThemedPreview(

@@ -272,12 +272,6 @@ android {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
     }
-
-    //todo convert to compose
-    buildFeatures {
-        dataBinding = true
-        viewBinding = true
-    }
 }
 
 task<JavaExec>("run") {

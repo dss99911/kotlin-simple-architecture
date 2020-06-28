@@ -1,43 +1,19 @@
 package kim.jeonghyeon.androidlibrary
 
 import android.app.Application
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
-import kim.jeonghyeon.androidlibrary.architecture.livedata.LiveObject
 import kim.jeonghyeon.androidlibrary.extension.isDebug
-import kim.jeonghyeon.androidlibrary.util.log
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.core.module.Module
+import kim.jeonghyeon.util.log
 import timber.log.Timber
 
 /**
  * [onCreated] : use this, intead of [onCreate]
- * [name] : application name
- * [installTime] : application install time
- * [processLifecycle] : if application is foreground or not.
- * [isForeground] : if application is foreground or not.
  */
-abstract class BaseApplication : Application(), LifecycleObserver {
+abstract class BaseApplication : Application() {
     companion object {
         @JvmStatic
         lateinit var instance: BaseApplication
             private set
     }
-
-    val name: String by lazy {
-        packageManager.getApplicationLabel(applicationInfo).toString()
-    }
-
-    val installTime: Long by lazy {
-        packageManager.getPackageInfo(packageName, 0).firstInstallTime
-    }
-
-    val processLifecycle = LiveObject<Lifecycle.Event>()
 
     val defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
@@ -51,16 +27,12 @@ abstract class BaseApplication : Application(), LifecycleObserver {
         }
         initExceptionHandler()
 
-        initKoin(getKoinModules())
-        initLifecycle()
-
         onCreated()
-        // Normal app init code...
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
     open fun onCreated() {
-
+        // Normal app init code...
     }
 
     private fun initExceptionHandler() {
@@ -81,53 +53,5 @@ abstract class BaseApplication : Application(), LifecycleObserver {
                 )
             }
         })
-    }
-
-    private fun initLifecycle() {
-        //you can use Application.ActivityLifecycleCallbacks if handling different way by activities
-        ProcessLifecycleOwner
-            .get()
-            .lifecycle
-            .addObserver(this)
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-
-        terminateKoin()
-    }
-
-    open fun getKoinModules(): List<Module> = emptyList()
-
-    fun initKoin(koinModules: List<Module>) {
-        if (koinModules.isEmpty()) return
-
-        startKoin {
-            // use Koin logger
-            androidLogger()
-            androidContext(instance)
-            // declare used modules
-            modules(koinModules)
-        }
-    }
-
-    fun terminateKoin() {
-        if (getKoinModules().isEmpty()) return
-
-        stopKoin()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onForeground() {
-        processLifecycle.value = Lifecycle.Event.ON_START
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onBackground() {
-        processLifecycle.value = Lifecycle.Event.ON_STOP
-    }
-
-    fun isForeground(): Boolean {
-        return processLifecycle.value == Lifecycle.Event.ON_START
     }
 }
