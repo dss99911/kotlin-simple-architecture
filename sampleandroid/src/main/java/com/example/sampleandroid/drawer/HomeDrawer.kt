@@ -9,6 +9,7 @@ import androidx.ui.graphics.ColorFilter
 import androidx.ui.graphics.vector.VectorAsset
 import androidx.ui.layout.*
 import androidx.ui.material.Divider
+import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.material.TextButton
 import androidx.ui.res.vectorResource
@@ -17,10 +18,12 @@ import androidx.ui.unit.dp
 import com.example.sampleandroid.CommonState
 import com.example.sampleandroid.R
 import com.example.sampleandroid.home.HomeScreen
-import com.example.sampleandroid.library.*
-import com.example.sampleandroid.util.colors
-import com.example.sampleandroid.util.shapes
-import com.example.sampleandroid.util.typography
+import kim.jeonghyeon.androidlibrary.compose.ScreenStack
+import kim.jeonghyeon.androidlibrary.compose.popUpTo
+import kim.jeonghyeon.androidlibrary.compose.push
+import kim.jeonghyeon.androidlibrary.compose.screen.TabView
+import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
+import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 
 @Composable
 fun HomeDrawer() {
@@ -38,7 +41,7 @@ fun HomeDrawer() {
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
         Logo(homeScreen.title, Modifier.padding(16.dp))
-        Divider(color = colors.onSurface.copy(alpha = .2f))
+        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = .2f))
 
         homeScreen.tabs.forEach { tab ->
             DrawerButton(
@@ -56,7 +59,7 @@ private fun Logo(title: String, modifier: Modifier = Modifier) {
     Row(modifier) {
         Image(
             asset = vectorResource(R.drawable.ic_android),
-            colorFilter = ColorFilter.tint(colors.primary)
+            colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
         )
         SpacerW(16.dp)
         Text(title)
@@ -74,15 +77,15 @@ private fun DrawerButton(
     modifier: Modifier = Modifier
 ) {
     val imageAlpha = if (isSelected) 1f else 0.6f
-    val textIconColor = if (isSelected) colors.primary else colors.onSurface.copy(alpha = 0.6f)
-    val backgroundColor = if (isSelected) colors.primary.copy(alpha = 0.12f) else colors.surface
+    val textIconColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+    val backgroundColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
 
     Surface(
         modifier = modifier
             .padding(start = 8.dp, top = 8.dp, end = 8.dp)
             .fillMaxWidth(),
         color = backgroundColor,
-        shape = shapes.small
+        shape = MaterialTheme.shapes.small
     ) {
         TextButton(
             onClick = action,
@@ -104,7 +107,7 @@ private fun DrawerButton(
 
                 Text(
                     text = label,
-                    style = typography.body2,
+                    style = MaterialTheme.typography.body2,
                     color = textIconColor,
                     modifier = Modifier.fillMaxWidth()
                 )

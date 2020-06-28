@@ -1,9 +1,9 @@
 package com.example.sampleandroid
 
 import androidx.compose.Composable
-import androidx.ui.core.Modifier
 import androidx.ui.foundation.Icon
 import androidx.ui.foundation.Text
+import androidx.ui.layout.InnerPadding
 import androidx.ui.material.IconButton
 import androidx.ui.material.Scaffold
 import androidx.ui.material.TopAppBar
@@ -12,10 +12,10 @@ import androidx.ui.material.icons.filled.Menu
 import com.example.sampleandroid.drawer.HomeDrawer
 import com.example.sampleandroid.drawer.ModelDrawer
 import com.example.sampleandroid.home.HomeScreen
-import com.example.sampleandroid.library.ScreenStack
+import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 
 @Composable
-fun MainScaffold(content: @Composable() (Modifier) -> Unit) {
+fun MainScaffold(content: @Composable() (InnerPadding) -> Unit) {
     Scaffold(
         scaffoldState = CommonState.scaffoldState,
         drawerContent = {
@@ -24,7 +24,7 @@ fun MainScaffold(content: @Composable() (Modifier) -> Unit) {
                 else -> ModelDrawer()
             }
         },
-        topAppBar = {
+        topBar = {
             TopAppBar(
                 title = { Text(text = ScreenStack.last().title) },
                 navigationIcon = {
@@ -36,8 +36,8 @@ fun MainScaffold(content: @Composable() (Modifier) -> Unit) {
                 }
             )
         },
-        bodyContent = { modifier ->
-            content(modifier)
+        bodyContent = {
+            content(it)
         }
     )
 }

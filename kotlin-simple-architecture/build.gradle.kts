@@ -16,6 +16,8 @@ group = deps.simpleArch.common.getGroupId()
 version = deps.simpleArch.common.getVersion()
 
 kotlin {
+
+    //this is used for server backend.
     jvm()
 
     android {
@@ -50,7 +52,7 @@ kotlin {
             dependsOn(commonMain)
         }
 
-        val jvmMain by getting {
+        val jvmShareMain by creating {
             dependencies {
                 //kotlin
                 api(deps.kotlin.stdlibJdk8)
@@ -64,6 +66,12 @@ kotlin {
                 api(deps.ktor.clientLoggingJvm)
 
                 api(deps.gson)
+            }
+        }
+
+        val jvmMain by getting {
+            dependsOn(jvmShareMain)
+            dependencies {
                 api(deps.sqldelight.jvm)
             }
         }
@@ -83,7 +91,7 @@ kotlin {
 
         val androidMain by getting {
             dependsOn(mobileMain)
-            dependsOn(jvmMain)
+            dependsOn(jvmShareMain)
 
             dependencies {
                 //todo move to library
@@ -96,49 +104,13 @@ kotlin {
                 api(deps.android.core)
                 api(deps.android.vectordrawable)
 
-                api(deps.android.recyclerView)
                 api(deps.android.material)
-                api(deps.android.preference)
-                api(deps.android.fragment)
-                // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
-                api(deps.android.fragmentTesting)
-                api(deps.android.viewPager)
                 api(deps.android.work)
-                api(deps.android.paging)
-                api(deps.android.constraintlayout)
-
-                deps.android.lifecycle.forEach { api(it) }
-                deps.android.navigation.forEach { api(it) }
                 deps.android.compose.forEach { api(it) }
 
-                //todo decide remove or use on MP
-                api(deps.koin.core)
-                api(deps.koin.android)
-                api(deps.koin.androidXScope)
-                api(deps.koin.androidXViewModel)
-
-                /*[START] Retrofit */
-                //TODO HYUN [multi-platform2] : convert to ktor client
-                api("com.squareup.retrofit2:retrofit:2.6.2")
-                api("com.squareup.retrofit2:converter-gson:2.6.2")
-                api("com.squareup.okhttp3:okhttp:4.3.0")
-                api("com.squareup.okhttp3:logging-interceptor:4.3.0")
-                /*[END] Retrofit */
-
-                api(deps.android.picasso)
                 api(deps.android.anko)
 
                 api(deps.android.timber)
-
-                //todo after upgrade kotlin from 1.3.61 to 1.3.71. there were the build error below
-                //it's strange. let's try after moving to multimplatform module
-                /** https://github.com/google/dagger/issues/95
-                 * /Users/hyun.kim/AndroidstudioProjects/my/androidLibrary/sample/build/generated/source/kapt/freeDevDebug/androidx/databinding/library/baseAdapters/BR.java:5: error: cannot find symbol
-                @Generated("Android Data Binding")
-                ^
-                symbol: class Generated
-                 */
-                api("org.glassfish:javax.annotation:10.0-b28")
                 api(deps.sqldelight.android)
             }
         }
@@ -189,9 +161,6 @@ android {
 
     buildFeatures {
         compose = true
-        //todo remove
-        dataBinding = true
-        viewBinding = true
     }
 
     compileOptions {

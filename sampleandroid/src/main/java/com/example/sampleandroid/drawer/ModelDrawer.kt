@@ -7,6 +7,7 @@ import androidx.ui.foundation.Text
 import androidx.ui.graphics.ColorFilter
 import androidx.ui.layout.*
 import androidx.ui.material.Divider
+import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.material.TextButton
 import androidx.ui.material.icons.Icons
@@ -14,30 +15,27 @@ import androidx.ui.material.icons.filled.ArrowBack
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import com.example.sampleandroid.CommonState
-import com.example.sampleandroid.library.ScreenStack
-import com.example.sampleandroid.library.SpacerH
-import com.example.sampleandroid.library.SpacerW
-import com.example.sampleandroid.library.replace
 import com.example.sampleandroid.model.ModelScreen
-import com.example.sampleandroid.util.colors
-import com.example.sampleandroid.util.shapes
-import com.example.sampleandroid.util.typography
+import kim.jeonghyeon.androidlibrary.compose.ScreenStack
+import kim.jeonghyeon.androidlibrary.compose.replace
+import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
+import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 
 @Composable
 fun ModelDrawer() {
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
         Logo()
-        Divider(color = colors.onSurface.copy(alpha = .2f))
+        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = .2f))
 
 
-        ModelScreen.screens.forEach { screen ->
+        ModelScreen.screens.forEach {
             DrawerButton(
-                label = screen.title,
-                isSelected = ScreenStack.last() === screen,
+                label = it.first,
+                isSelected = ScreenStack.last().title == it.first,
                 action = {
                     CommonState.closeDrawer()
-                    screen.replace()
+                    it.second().replace()
                 }
             )
         }
@@ -56,7 +54,7 @@ private fun Logo() {
         Row(Modifier.fillMaxWidth().padding(16.dp)) {
             Image(
                 asset = Icons.Filled.ArrowBack,
-                colorFilter = ColorFilter.tint(colors.primary)
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
             )
             SpacerW(24.dp)
             Text((ScreenStack.last() as ModelScreen).parentTitle)
@@ -73,15 +71,15 @@ private fun DrawerButton(
     action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val textIconColor = if (isSelected) colors.primary else colors.onSurface.copy(alpha = 0.6f)
-    val backgroundColor = if (isSelected) colors.primary.copy(alpha = 0.12f) else colors.surface
+    val textIconColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+    val backgroundColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
 
     Surface(
         modifier = modifier
             .padding(start = 8.dp, top = 8.dp, end = 8.dp)
             .fillMaxWidth(),
         color = backgroundColor,
-        shape = shapes.small
+        shape = MaterialTheme.shapes.small
     ) {
         TextButton(
             onClick = action,
@@ -89,7 +87,7 @@ private fun DrawerButton(
         ) {
             Text(
                 text = label,
-                style = typography.body2,
+                style = MaterialTheme.typography.body2,
                 color = textIconColor,
                 modifier = Modifier.fillMaxWidth()
             )

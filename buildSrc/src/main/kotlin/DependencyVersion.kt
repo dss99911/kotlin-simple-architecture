@@ -16,7 +16,7 @@ object versions {
         const val room = "2.2.3"
         const val material = "1.1.0"
         const val constraintLayout = "2.0.0-beta3"
-        const val compose = "0.1.0-dev13"
+        const val compose = "0.1.0-dev14"
     }
 
     const val koin = "2.1.6"

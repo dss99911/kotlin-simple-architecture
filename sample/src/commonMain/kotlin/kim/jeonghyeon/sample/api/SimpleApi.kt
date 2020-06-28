@@ -15,9 +15,15 @@ interface SimpleApi {
             "d"
         ),
         nullable: String? = null
-    ): Item
+    ): String
 
     suspend fun submitPost(token: String, item: Item)
+
+    // TODO: 29/06/20 if sqldelight model is used. serializable is not supported
+    //  List also not supported.
+    suspend fun getWords(): String
+
+    suspend fun addWord(word: String)
 }
 
 @Serializable

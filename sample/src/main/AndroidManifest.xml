@@ -21,17 +21,14 @@
         <!--android:label="${app_name}"-->
 
 
-        <activity android:name="kim.jeonghyeon.sample.MainActivity">
-            <!-- TODO HYUN [KSA-5] : uncomment after remove sampleandroid -->
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
+<!--        <activity android:name="kim.jeonghyeon.sample.MainActivity">-->
+<!--            &lt;!&ndash; TODO HYUN [KSA-5] : uncomment after remove sampleandroid &ndash;&gt;-->
+<!--            &lt;!&ndash;            <intent-filter>&ndash;&gt;-->
+<!--            &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
 
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
-        </activity>
-        <activity android:name=".viewmodel.startactivity.StartActivityActivity" />
-        <activity android:name=".view.emptylayout.EmptyLayoutActivity" />
-        <activity android:name=".view.nonavigation.NoNavigationActivity" />
+<!--            &lt;!&ndash;                <category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
+<!--            &lt;!&ndash;            </intent-filter>&ndash;&gt;-->
+<!--        </activity>-->
 
         <service
             android:name="kim.jeonghyeon.sample.etc.job.SampleJobIntentService"
