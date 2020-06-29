@@ -24,6 +24,7 @@ fun <T> resourceStateOf(): ResourceState<T> = mutableStateOf(Resource.Start)
 val <T> ResourceState<T>.isSuccess: Boolean get() = value.isSuccess()
 
 fun <T> ResourceState<T>.data(): T = value.data()
+fun <T> ResourceState<T>.dataOrNull(): T? = value.dataOrNull()
 
 fun statusStateOf(): StatusState = mutableStateOf(Resource.Start)
 
@@ -65,8 +66,8 @@ fun <T> CoroutineScope.loadResource(
 fun <T> CoroutineScope.loadFlow(
     resourceState: ResourceState<T>? = null,
     statusState: StatusState? = null,
-    flow: Flow<Resource<T>>)
-{
+    flow: Flow<Resource<T>>
+) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         flow.collect {

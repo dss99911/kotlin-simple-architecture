@@ -14,10 +14,10 @@ abstract class SimpleTabsScreen : TabsScreen() {
     override fun view() {
         Column {
             TabRow(
-                items = tabs.map { it.title }, selectedIndex = tabIndex
+                items = tabs.map { it.second.title }, selectedIndex = tabIndex
             ) { index, title -> //-756387548, 32
                 Tab(
-                    icon = { tabs[index].icon?.let { Icon(it) } },
+                    icon = { tabs[index].first?.let { Icon(it) } },
                     text = { Text(title) },
                     selected = tabIndex == index,
                     onSelected = {
@@ -26,7 +26,7 @@ abstract class SimpleTabsScreen : TabsScreen() {
             }
 
             Surface {
-                tabs[tabIndex].compose()
+                tabs[tabIndex].second.compose()
             }
         }
     }

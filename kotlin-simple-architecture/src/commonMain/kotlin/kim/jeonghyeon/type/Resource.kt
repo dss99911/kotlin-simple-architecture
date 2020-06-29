@@ -3,6 +3,7 @@ package kim.jeonghyeon.type
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Resource = data + status
@@ -63,3 +64,11 @@ sealed class Resource<out T> {
 typealias Status = Resource<Any?>
 
 typealias ResourceFlow<T> = Flow<Resource<T>>
+
+fun <T, U> ResourceFlow<T>.successMap(map: (T) -> U): ResourceFlow<U> = map {
+    if (it.isSuccess()) {
+        Resource.Success(map(it.data()))
+    } else {
+        it as Resource<Nothing>
+    }
+}

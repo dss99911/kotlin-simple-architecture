@@ -12,12 +12,20 @@ class SimpleController : SimpleApi {
         string: String,
         item: Item,
         nullable: String?
-    ): Item {
+    ): String {
         log.info("")
-        return Item(10, "test")
+        return "test"
     }
 
     override suspend fun submitPost(token: String, item: Item) {
         log.info("")
+    }
+
+    override suspend fun getWords(): String {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addWord(word: String) {
+        TODO("Not yet implemented")
     }
 }

@@ -18,10 +18,10 @@ import androidx.ui.unit.dp
 import com.example.sampleandroid.CommonState
 import com.example.sampleandroid.R
 import com.example.sampleandroid.home.HomeScreen
+import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 import kim.jeonghyeon.androidlibrary.compose.popUpTo
 import kim.jeonghyeon.androidlibrary.compose.push
-import kim.jeonghyeon.androidlibrary.compose.screen.TabView
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 
@@ -29,7 +29,7 @@ import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 fun HomeDrawer() {
     val homeScreen = ScreenStack.find() ?: HomeScreen()
 
-    val closeAndNavigateTo: (tab: TabView) -> Unit = { tab ->
+    val closeAndNavigateTo: (tab: Screen) -> Unit = { tab ->
         CommonState.closeDrawer()
 
         if (!homeScreen.popUpTo(false)) {
@@ -45,10 +45,10 @@ fun HomeDrawer() {
 
         homeScreen.tabs.forEach { tab ->
             DrawerButton(
-                icon = tab.icon,
-                label = tab.title,
+                icon = tab.first,
+                label = tab.second.title,
                 isSelected = homeScreen.currentTab === tab,
-                action = { closeAndNavigateTo(tab) }
+                action = { closeAndNavigateTo(tab.second) }
             )
         }
     }
