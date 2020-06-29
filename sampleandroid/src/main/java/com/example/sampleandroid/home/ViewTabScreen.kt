@@ -2,15 +2,11 @@ package com.example.sampleandroid.home
 
 import androidx.compose.Composable
 import androidx.ui.foundation.Text
-import androidx.ui.graphics.vector.VectorAsset
-import androidx.ui.material.icons.Icons
-import androidx.ui.material.icons.filled.ViewModule
 import com.example.sampleandroid.R
-import kim.jeonghyeon.androidlibrary.compose.screen.TabView
+import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
-class ViewTabView : TabView() {
-    override val icon: VectorAsset? = Icons.Filled.ViewModule
+class ViewTabScreen : Screen() {
     override val title: String = R.string.view.resourceToString()
 
     //todo snack bar, progress bar, edit text, FAB
@@ -20,7 +16,10 @@ class ViewTabView : TabView() {
     // dialog
     // cacheable image url fetching library like picasso
     // list view. item selection, single selection, multiple selection. click, paging
-
+    // text some part contains link and other text style.
+    // somehow supporting navigation. there should be some way to see Screen flow easily.
+    // splash page(add logic and branch different screen)
+    // mediator screen which contains history stack(like relationship with activity and fragment)
     @Composable
     override fun compose() {
         super.compose()

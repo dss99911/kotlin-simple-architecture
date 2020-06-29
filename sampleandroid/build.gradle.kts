@@ -116,11 +116,6 @@ android {
         animationsDisabled = true
     }
 
-    //todo convert to compose
-    buildFeatures {
-        dataBinding = true
-        viewBinding = true
-    }
 }
 
 dependencies {

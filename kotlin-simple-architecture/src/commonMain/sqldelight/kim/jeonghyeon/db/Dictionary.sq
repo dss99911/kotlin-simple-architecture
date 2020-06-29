@@ -1,0 +1,14 @@
+CREATE TABLE dictionary (
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
+
+
+get:
+SELECT *
+FROM dictionary
+WHERE key = ?;
+
+set:
+REPLACE INTO dictionary(key, value)
+VALUES (?, ?);

@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+//todo 1.4 remove
 val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
@@ -10,10 +11,17 @@ plugins {
     id("kotlin-android-extensions")
     id("org.jetbrains.kotlin.kapt")
     id("androidx.navigation.safeargs")
+    id("com.squareup.sqldelight")
 }
 
 group = deps.simpleArch.common.getGroupId()
 version = deps.simpleArch.common.getVersion()
+
+sqldelight {
+    database("SimpleDB") {
+        packageName = "kim.jeonghyeon.db"
+    }
+}
 
 kotlin {
 
@@ -26,6 +34,14 @@ kotlin {
 
     js()
 
+
+    //todo 1.4
+    //ios()
+    //iosArm32()
+    //iosArm64()
+    //iosX64()
+
+    //todo 1.4 remove
     val iosArm32 = iosArm32("iosArm32")
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
@@ -33,6 +49,8 @@ kotlin {
     if (ideaActive) {
         iosX64("ios")
     }
+    //todo 1.4 remove
+
 
     sourceSets {
         val commonMain by getting {
@@ -118,6 +136,11 @@ kotlin {
         //when build ios specific target, it knows that this source set targets the target.
         //but, intellij doesn't know that iosMain source set targets ios or not.
         //so, when configuration is for intellij. we have to specify the target for iosMain.
+
+        //todo 1.4
+        //val iosMain by getting {
+
+        //todo 1.4 remove
         val iosMain = if (ideaActive) {
             getByName("iosMain")
         } else {
@@ -125,6 +148,7 @@ kotlin {
         }
 
         iosMain.apply {
+            //todo 1.4 remove
             dependsOn(mobileMain)
 
             dependencies {
@@ -137,7 +161,7 @@ kotlin {
                 api(deps.sqldelight.native)
             }
         }
-
+        //todo 1.4 remove
         val iosArm32Main by getting {}
         val iosArm64Main by getting {}
         val iosX64Main by getting {}
@@ -145,6 +169,7 @@ kotlin {
         configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
             dependsOn(iosMain)
         }
+        //todo 1.4 remove
     }
 }
 

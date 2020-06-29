@@ -12,7 +12,10 @@ import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import java.io.File
-
+// TODO: 29/06/20 if sqldelight model is used. serializable is not supported
+//  List, nullable, set also not supported. String.serializer().list/nullable/set
+//  if add comment above function. it misdetect suspend not exists.
+//  if import list contains the imports which is added here. then duplication error occurs
 class ApiGenerator(
     private val pluginOptions: PluginOptions,
     private val origin: Collection<KtFile>

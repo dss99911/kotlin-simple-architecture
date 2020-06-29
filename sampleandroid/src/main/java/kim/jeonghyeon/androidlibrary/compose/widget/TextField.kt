@@ -29,5 +29,19 @@ fun TextField(
     onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
     cursorColor: Color = contentColor()
 ) {
-    androidx.ui.foundation.TextField(TextFieldValue(text.value), { text.value = it.text }, modifier, textColor, textStyle, keyboardType, imeAction, onFocusChange, onImeActionPerformed, visualTransformation, onTextLayout, onTextInputStarted, cursorColor)
+    androidx.ui.foundation.TextField(
+        TextFieldValue(text.value),
+        { text.value = it.text },
+        modifier,
+        textColor,
+        textStyle,
+        keyboardType,
+        imeAction,
+        onFocusChange,
+        onImeActionPerformed,
+        visualTransformation,
+        onTextLayout,
+        onTextInputStarted,
+        cursorColor
+    )
 }

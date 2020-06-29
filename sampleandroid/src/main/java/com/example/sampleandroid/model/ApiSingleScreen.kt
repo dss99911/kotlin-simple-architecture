@@ -1,27 +1,34 @@
 package com.example.sampleandroid.model
 
 import androidx.compose.Composable
+import androidx.compose.mutableStateOf
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
 import com.example.sampleandroid.R
 import kim.jeonghyeon.androidlibrary.compose.data
-import kim.jeonghyeon.androidlibrary.compose.isSuccess
 import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
+import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
-import kim.jeonghyeon.sample.api.Item
-import kim.jeonghyeon.sample.api.SimpleApi
+import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiSingleScreen(private val api: SimpleApi = serviceLocator.simpleApi) : ModelScreen() {
+class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
     override val title: String = R.string.single_call.resourceToString()
 
-    private val token by lazy { resourceStateOf<String>() }
-    private val result by lazy { resourceStateOf<String>() }
+    private val value by lazy { resourceStateOf<String?>() }
+    private val input by lazy { mutableStateOf("") }
 
     override fun initialize() {
-        token.load(initStatus) {
-            api.getToken()
+        value.load(initStatus) {
+            api.getString(title).also {
+                //todo this should be processed same way with switchMap.
+                // stateFor can not be used for this case.
+                // am I sure that this architecture is proper for compose?
+                // my architecture is just same way different one is writing ui in kotlin.
+                // what is the benefit to use compose?
+                input.value = it ?: ""
+            }
         }
     }
 
@@ -31,21 +38,19 @@ class ApiSingleScreen(private val api: SimpleApi = serviceLocator.simpleApi) : M
     }
 
     private fun onClick() {
-        result.load(status) {
-            api.submitPost(token.data(), Item(1, "name"))
-            "success"
+        value.load(status) {
+            api.setString(title, input.value)
+            input.value
         }
     }
 
     @Composable
     override fun view() {
         Column {
+            Text("key : $title\nvalue : ${value.data()}")
+            TextField(input)
             Button(::onClick) {
-                Text(token.data())
-            }
-
-            if (result.isSuccess) {
-                Text(result.data())
+                Text("update")
             }
         }
     }

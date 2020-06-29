@@ -4,6 +4,7 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.util.KtorExperimentalAPI
+import kim.jeonghyeon.api.PreferenceController
 import kim.jeonghyeon.backend.controller.SimpleController
 import kim.jeonghyeon.backend.net.SimpleRouting
 
@@ -21,8 +22,9 @@ fun Application.module(testing: Boolean = false) {
     val production = mode == "production"
 
     install(SimpleRouting) {
-        +SimpleController()
 
+        +SimpleController()
+        +PreferenceController()//todo move to library.
         logging = !production
     }
 }

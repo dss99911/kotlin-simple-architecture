@@ -4,11 +4,12 @@ import com.squareup.sqldelight.Query
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceFlow
 import kim.jeonghyeon.type.UnknownResourceError
+import kim.jeonghyeon.type.successMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.flow
 
-fun <T : Any> Query<T>.asListFlow(): ResourceFlow<List<T>> = flow {
+fun <T : Any> Query<T>.asResourceFlow(): ResourceFlow<Query<T>> = flow {
     val channel = Channel<Unit>(Channel.CONFLATED).apply { offer(Unit) }
 
     val listener = object : Query.Listener {
@@ -19,7 +20,7 @@ fun <T : Any> Query<T>.asListFlow(): ResourceFlow<List<T>> = flow {
     addListener(listener)
     try {
         for (item in channel) {
-            val resource = getResource(this@asListFlow) { channel.offer(Unit) }
+            val resource = getResource(this@asResourceFlow) { channel.offer(Unit) }
             resource?.let { emit(it) }
         }
     } finally {
@@ -33,8 +34,13 @@ fun <T : Any> Query<T>.asListFlow(): ResourceFlow<List<T>> = flow {
     }
 }
 
-internal fun <T : Any> getResource(query: Query<T>, retry: () -> Unit): Resource<List<T>>? = try {
-    Resource.Success(query.executeAsList())
+fun <T : Any> Query<T>.asListFlow(): ResourceFlow<List<T>> = asResourceFlow().successMap { it.executeAsList() }
+fun <T : Any> Query<T>.asOneFlow(): ResourceFlow<T> = asResourceFlow().successMap { it.executeAsOne() }
+fun <T : Any> Query<T>.asOneOrNullFlow(): ResourceFlow<T?> = asResourceFlow().successMap { it.executeAsOneOrNull() }
+
+
+internal fun <T : Any> getResource(query: Query<T>, retry: () -> Unit): Resource<Query<T>>? = try {
+    Resource.Success(query)
 } catch (e: CancellationException) {
     //if cancel. then ignore it
     //todo check if cancel is working

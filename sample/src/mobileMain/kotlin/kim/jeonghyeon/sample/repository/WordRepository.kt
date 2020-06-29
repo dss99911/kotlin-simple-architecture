@@ -5,7 +5,6 @@ import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.api.SimpleApi
-import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.ResourceFlow
 
 //todo move to sample module
@@ -14,7 +13,7 @@ interface WordRepository {
     suspend fun insertWord(word: String)
 }
 
-class WordRepositoryImpl(val api: SimpleApi = serviceLocator.simpleApi, val query: WordQueries = serviceLocator.wordQueries) : WordRepository {
+class WordRepositoryImpl(val api: SimpleApi, val query: WordQueries) : WordRepository {
     override fun getWord(): ResourceFlow<List<Word>> = networkDbFlow(
         loadFromDb = { query.selectAll().asListFlow() },
         shouldFetch = { _, isInitialized -> !isInitialized },

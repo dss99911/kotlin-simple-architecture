@@ -124,21 +124,21 @@ abstract class Screen {
 
     @Composable
     protected open fun composeError() {
-        status.value.onError {
-            ErrorSnackbar(text = it.error.message?: defaultErrorMessage) {
-                it.retry()
+        if (status.value.isError()) {
+            val error = status.value as Resource.Error
+            ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+                error.retry()
             }
-
         }
     }
 
     @Composable
     protected open fun composeFullError() {
-        initStatus.value.onError {
-            ErrorSnackbar(text = it.error.message?: defaultErrorMessage) {
-                it.retry()
+        if (initStatus.value.isError()) {
+            val error = status.value as Resource.Error
+            ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+                error.retry()
             }
-
         }
     }
 
