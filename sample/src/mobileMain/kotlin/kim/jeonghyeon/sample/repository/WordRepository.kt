@@ -13,11 +13,13 @@ interface WordRepository {
     suspend fun insertWord(word: String)
 }
 
+var fetchWordApi = true
+
 class WordRepositoryImpl(val api: SimpleApi, val query: WordQueries) : WordRepository {
     override fun getWord(): ResourceFlow<List<Word>> = networkDbFlow(
         loadFromDb = { query.selectAll().asListFlow() },
-        shouldFetch = { _, isInitialized -> !isInitialized },
-        callApi = { api.getWords().split(",") },
+        shouldFetch = { _, isInitialized -> fetchWordApi.also { fetchWordApi = false } },//call first time after app started
+        callApi = { api.getWords() },
         saveResponse = {
             //todo check if insert one by one make flow receive each flow. or just last one.
 

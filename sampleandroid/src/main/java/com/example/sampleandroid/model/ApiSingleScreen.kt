@@ -8,11 +8,11 @@ import androidx.ui.material.Button
 import com.example.sampleandroid.R
 import kim.jeonghyeon.androidlibrary.compose.data
 import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
+import kim.jeonghyeon.androidlibrary.compose.setSuccess
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.sample.di.serviceLocator
-import kim.jeonghyeon.type.Resource
 
 class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
     override val title: String = R.string.single_call.resourceToString()
@@ -39,11 +39,9 @@ class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preference
     }
 
     private fun onClick() {
-
-        //todo this is not clean
         status.load {
             api.setString(title, input.value)
-            value.apply { value = Resource.Success(input.value) }
+            value.setSuccess(input.value)
         }
     }
 

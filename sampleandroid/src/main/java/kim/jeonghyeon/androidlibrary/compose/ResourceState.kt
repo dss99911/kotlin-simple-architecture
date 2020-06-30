@@ -25,6 +25,10 @@ val <T> ResourceState<T>.isSuccess: Boolean get() = value.isSuccess()
 
 fun <T> ResourceState<T>.data(): T = value.data()
 fun <T> ResourceState<T>.dataOrNull(): T? = value.dataOrNull()
+fun <T> ResourceState<T>.setSuccess(data: T) {
+    value = Resource.Success(data)
+}
+
 
 fun statusStateOf(): StatusState = mutableStateOf(Resource.Start)
 
