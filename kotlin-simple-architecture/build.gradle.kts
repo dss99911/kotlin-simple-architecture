@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
 
 //todo 1.4 remove
 val ideaActive = System.getProperty("idea.active") == "true"
@@ -7,12 +7,10 @@ plugins {
     `maven-publish`
     id("com.android.library")
     kotlin("multiplatform")
-    id("kotlinx-serialization")
-    id("kotlin-android-extensions")
-    id("org.jetbrains.kotlin.kapt")
-    id("androidx.navigation.safeargs")
     id("com.squareup.sqldelight")
 }
+
+apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
 group = deps.simpleArch.common.getGroupId()
 version = deps.simpleArch.common.getVersion()
@@ -22,6 +20,9 @@ sqldelight {
         packageName = "kim.jeonghyeon.db"
     }
 }
+
+//todo why I can't make simpleArch { postfix = "simple"}???
+simpleArchExtension?.postfix = "simple"
 
 kotlin {
 
@@ -180,27 +181,9 @@ android {
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    composeOptions {
-        kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
-        kotlinCompilerExtensionVersion = versions.android.compose
     }
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
 tasks.build {
     finalizedBy(tasks.publishToMavenLocal)
 }

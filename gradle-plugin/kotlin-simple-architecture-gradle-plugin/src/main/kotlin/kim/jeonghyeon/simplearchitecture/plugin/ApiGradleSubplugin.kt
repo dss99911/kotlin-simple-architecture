@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import com.google.gson.Gson
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
+import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
 import org.gradle.api.Project
 import org.gradle.api.tasks.compile.AbstractCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
@@ -60,7 +61,8 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             platformType,
             project.isMultiplatform,
             project.buildDir.toString(),
-            targetVariantsName
+            targetVariantsName,
+            project.simpleArchExtension!!.postfix
         )
             //it doesn't allow some special character. so, used Base64
             .let { Base64.getEncoder().encodeToString(Gson().toJson(it).toByteArray()) }

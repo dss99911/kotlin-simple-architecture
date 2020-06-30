@@ -26,7 +26,8 @@ import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.javaType
 
-//todo this should be in library. but it's not jvm. but backendJvm target.
+//todo move this to jvm library
+//todo support other platfrom by @Api annotation.
 class SimpleRouting(val config: Configuration) {
     class Configuration {
         val list = mutableListOf<Any>()
@@ -118,7 +119,14 @@ class SimpleRouting(val config: Configuration) {
                 arguments[param.name].toJsonString()?.toJsonObject<Any>(param.type.javaType)
             }.toTypedArray()
 
-        val response = function.callSuspend(api, *convertedArgs)
+        var response = function.callSuspend(api, *convertedArgs)
+        if (response is String) {
+            //todo is this proper process? how to make json writer to set quotes?
+            // if response type is String, then client error with the log below
+            // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
+            response = "\"$response\""
+        }
+        //todo does json writer not know null to null text??
         call.respond(response ?: "null")
     }
 

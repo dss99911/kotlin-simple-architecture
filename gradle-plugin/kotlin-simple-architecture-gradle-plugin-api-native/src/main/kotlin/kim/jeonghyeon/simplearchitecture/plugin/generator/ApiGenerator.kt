@@ -100,6 +100,9 @@ class ApiGenerator(
         |import kotlinx.serialization.json.JsonConfiguration
         |import kotlinx.serialization.json.json
         |import kotlinx.serialization.builtins.serializer
+        |import kotlinx.serialization.builtins.list
+        |import kotlinx.serialization.builtins.nullable
+        |import kotlinx.serialization.builtins.set
         """.trimMargin()
 
     private fun KtClass.makeClassDefinition() =
@@ -142,7 +145,7 @@ class ApiGenerator(
         |${returnTypeString?.let {
             """
             |val json = Json(JsonConfiguration.Stable)
-            |return json.parse($it.serializer(), response.readText())
+            |return json.parse(${makeSerializer(it)}, response.readText())
             """.trimMargin()
         } ?: ""}
         """.trimMargin()
@@ -168,7 +171,7 @@ class ApiGenerator(
 
                         import io.ktor.client.HttpClient
 
-                        expect inline fun <reified T> HttpClient.create(baseUrl: String): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T
 
                         """.trimIndent()
                     )
@@ -186,14 +189,14 @@ class ApiGenerator(
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create(baseUrl: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T {
                 |
                 |${INDENT}return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl) as T" }.prependIndent(
                         indent(2)
                     )}
                 |
-                |$INDENT${INDENT}else -> error("can not create " + T::class.qualifiedName)
+                |$INDENT${INDENT}else -> error("can not create " + T::class.simpleName)
                 |$INDENT}
                 |}
                 """.trimMargin()
@@ -201,6 +204,30 @@ class ApiGenerator(
             }
         }
         return listOfNotNull(actualPath, expectFile)
+    }
+
+    private fun makeSerializer(typeString: String): String {
+        return when {
+            typeString.endsWith("?") -> {
+                makeSerializer(typeString.substring(0, typeString.length - 1)) + ".nullable"
+            }
+            typeString.endsWith(">") -> {
+                val firstType = typeString.substringBefore("<")
+                val innerType = typeString.substring(typeString.indexOf("<") + 1, typeString.lastIndexOf(">"))
+                makeSerializer(innerType) + when (firstType) {
+                    "List" -> {
+                        ".list"
+                    }
+                    "Set" -> {
+                        ".set"
+                    }
+                    else -> error("Serializing $firstType is not supported by api generator")
+                }
+            }
+            else -> {
+                "$typeString.serializer()"
+            }
+        }
     }
 }
 

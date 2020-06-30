@@ -2,6 +2,7 @@ package kim.jeonghyeon.simplearchitecture.plugin.buildscript
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
@@ -16,7 +17,6 @@ fun Project.applyAndroid() {
     apply(plugin = "kotlinx-serialization")
     apply(plugin = "kotlin-android-extensions")//for @Parcelize
     apply(plugin = "org.jetbrains.kotlin.kapt")
-    apply(plugin = "androidx.navigation.safeargs")
 
     androidExtension!!.initDefault()
 }
@@ -47,9 +47,14 @@ fun BaseExtension.initDefault() {
 
     //todo is it fine?
     // "More than one file was found with OS independent path 'META-INF/ktor-client-serialization.kotlin_module"
-    packagingOptions {
-        exclude("META-INF/*.kotlin_module")
+    if (this is BaseAppModuleExtension) {
+        //this removes files which related kotlin feature like global property, extension functions on library build.
+        //so, not remove on library
+        packagingOptions {
+            exclude("META-INF/*.kotlin_module")
+        }
     }
+
 
     sourceSets {
         val sharedTestDir = "src/sharedTest/java"

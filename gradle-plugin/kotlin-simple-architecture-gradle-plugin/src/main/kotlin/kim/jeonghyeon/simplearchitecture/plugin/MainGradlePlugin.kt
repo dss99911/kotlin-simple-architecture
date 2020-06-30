@@ -24,6 +24,11 @@ open class MainGradlePlugin : Plugin<Project> {
             kotlinOptions.jvmTarget = "1.8"
         }
 
+        project.extensions.create(
+            "simpleArch",
+            SimpleArchExtension::class.java
+        )
+
         with(project) {
             applyAndroid()
 

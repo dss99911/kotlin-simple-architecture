@@ -1,6 +1,9 @@
 package kim.jeonghyeon.androidlibrary.compose
 
 import androidx.compose.Composable
+import androidx.ui.core.Alignment
+import androidx.ui.core.Modifier
+import androidx.ui.layout.RowScope.gravity
 import androidx.ui.layout.Stack
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
@@ -135,7 +138,7 @@ abstract class Screen {
     @Composable
     protected open fun composeFullError() {
         if (initStatus.value.isError()) {
-            val error = status.value as Resource.Error
+            val error = initStatus.value as Resource.Error
             ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
                 error.retry()
             }
@@ -143,7 +146,11 @@ abstract class Screen {
     }
 
     open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
+
+    protected companion object {
+        fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)
+
+        val Bottom = Alignment.Bottom
+        val Top = Alignment.Top
+    }
 }
-
-
-
