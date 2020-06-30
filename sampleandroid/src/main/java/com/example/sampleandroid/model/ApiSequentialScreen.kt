@@ -10,6 +10,7 @@ import androidx.ui.material.Button
 import com.example.sampleandroid.R
 import kim.jeonghyeon.androidlibrary.compose.data
 import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
+import kim.jeonghyeon.androidlibrary.compose.setSuccess
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.compose.widget.VerticalListView
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
@@ -45,14 +46,16 @@ class ApiSequentialScreen(private val api: PreferenceApi = serviceLocator.prefer
     }
 
     private fun onClick() {
-        list.load(status) {
+        status.load {
             api.setString(KEY1, input1.value)
             api.setString(KEY2, input2.value)
             api.setString(KEY3, input3.value)
-            listOf(
-                Pair(KEY1, input1.value),
-                Pair(KEY2, input2.value),
-                Pair(KEY3, input3.value)
+            list.setSuccess(
+                listOf(
+                    Pair(KEY1, input1.value),
+                    Pair(KEY2, input2.value),
+                    Pair(KEY3, input3.value)
+                )
             )
         }
     }
