@@ -20,6 +20,7 @@ class ViewTabScreen : Screen() {
     // somehow supporting navigation. there should be some way to see Screen flow easily.
     // splash page(add logic and branch different screen)
     // mediator screen which contains history stack(like relationship with activity and fragment)
+    // Screen extends frequently used functions or modifier or theme. so that easily use. it takes time to import functions or properties.
     @Composable
     override fun compose() {
         super.compose()

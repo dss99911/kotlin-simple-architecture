@@ -1,9 +1,11 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
 import androidx.compose.Composable
+import androidx.ui.core.Alignment.Companion.Bottom
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
 import androidx.ui.foundation.contentColor
+import androidx.ui.layout.RowScope.gravity
 import androidx.ui.layout.padding
 import androidx.ui.material.Button
 import androidx.ui.material.MaterialTheme
@@ -21,7 +23,7 @@ fun ErrorSnackbar(
     onActionClick: () -> Unit = { }
 ) {
     Snackbar(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(16.dp).gravity(Bottom),
         text = { Text(text) },
         action = {
             Button(

@@ -39,6 +39,10 @@ class DbGenerator(
      * generate actual file on compile source set
      */
     fun generate(): Collection<File> {
+        if (pluginOptions.platformType == KotlinPlatformType.js) {
+            //todo sqldelight not yet support js
+            return emptyList<GeneratedDbSource>().generateDbFunctionFile()
+        }
 
         return origin
             .flatMap { it.generatedDbSources }
@@ -91,11 +95,15 @@ class DbGenerator(
                          * @param path if it's JVM, it's url of sql driver. jdbc:sqlite:
                          * @param properties this is used for JVM only.
                          */
-                        expect inline fun <reified T : Transacter> db(path: String = T::class.simpleName + ".db", properties: Map<String?, String?> = emptyMap()): T
+                        expect inline fun <reified T : Transacter> db${pluginOptions.postFix.capitalize()}(path: String = T::class.simpleName + ".db", properties: Map<String?, String?> = emptyMap()): T
 
                         """.trimIndent()
                     )
                 }
+        }
+
+        if (pluginOptions.platformType == KotlinPlatformType.common) {
+            return listOfNotNull(expectFile)
         }
 
         val actualPath = pluginOptions.getGeneratedTargetVariantsPath().let {
@@ -107,17 +115,13 @@ class DbGenerator(
                 |
                 |${makeImport()}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db(path: String, properties: Map<String?, String?>): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db${pluginOptions.postFix.capitalize()}(path: String, properties: Map<String?, String?>): T {
                 |
                 |${INDENT}return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()}) as T" }.prependIndent(
-                        indent(
-                            2
-                        )
-                    )}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()})" }.prependIndent(indent(2))}
                 |
-                |$INDENT${INDENT}else -> error("can not create database name " + T::class.qualifiedName)
-                |$INDENT}
+                |$INDENT${INDENT}else -> error("can not create database name " + T::class.simpleName)
+                |$INDENT} as T
                 |}
                 """.trimMargin()
                 )
@@ -133,6 +137,7 @@ class DbGenerator(
                 import com.squareup.sqldelight.android.AndroidSqliteDriver
                 import kim.jeonghyeon.androidlibrary.extension.ctx
             """.trimIndent()
+
             KotlinPlatformType.native -> """
                 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
                 
@@ -141,6 +146,7 @@ class DbGenerator(
                 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
                 import java.util.*
             """.trimIndent()
+            KotlinPlatformType.js -> ""//todo js is not yet supported
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }

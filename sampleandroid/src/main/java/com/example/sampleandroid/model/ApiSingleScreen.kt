@@ -12,6 +12,7 @@ import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.sample.di.serviceLocator
+import kim.jeonghyeon.type.Resource
 
 class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
     override val title: String = R.string.single_call.resourceToString()
@@ -38,14 +39,17 @@ class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preference
     }
 
     private fun onClick() {
-        value.load(status) {
+
+        //todo this is not clean
+        status.load {
             api.setString(title, input.value)
-            input.value
+            value.apply { value = Resource.Success(input.value) }
         }
     }
 
     @Composable
     override fun view() {
+
         Column {
             Text("key : $title\nvalue : ${value.data()}")
             TextField(input)
