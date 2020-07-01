@@ -16,7 +16,6 @@ import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
 import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
-import kim.jeonghyeon.common.net.error.ApiErrorCode
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kotlin.reflect.KClass
@@ -59,7 +58,7 @@ class SimpleRouting(val config: Configuration) {
                 pipeline.environment.log.error(cause)
                 call.respond(
                     HttpStatusCode.ApiError,
-                    ApiErrorBody(ApiErrorCode.UNKNOWN, cause.message)
+                    ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, cause.message)
                 )
             }
         }

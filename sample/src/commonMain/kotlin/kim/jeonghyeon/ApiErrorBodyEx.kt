@@ -1,5 +1,5 @@
 package kim.jeonghyeon
 
-import kim.jeonghyeon.common.net.error.ApiErrorCode
+import kim.jeonghyeon.common.net.error.ApiErrorBody
 
-val ApiErrorCode.POST_ERROR get() = 10
+val ApiErrorBody.Companion.CODE_POST_ERROR get() = 10

@@ -13,9 +13,14 @@ private const val HTTP_STATUS_CODE_API_ERROR = 600
 
 @Serializable
 data class ApiErrorBody(
-    val code: Int = ApiErrorCode.UNKNOWN,
+    val code: Int = CODE_UNKNOWN,
     val message: String?
-)
+) {
+    companion object {
+        const val CODE_UNKNOWN = 9999
+        const val CODE_NO_NETWORK = 1000
+    }
+}
 
 fun HttpStatusCode.isApiError(): Boolean = value == HTTP_STATUS_CODE_API_ERROR
 
@@ -24,8 +29,3 @@ val HttpStatusCode.Companion.ApiError: HttpStatusCode
         HTTP_STATUS_CODE_API_ERROR,
         "Api Error"
     )
-
-object ApiErrorCode {
-    const val UNKNOWN = 9999
-    const val NO_NETWORK = 1000
-}
