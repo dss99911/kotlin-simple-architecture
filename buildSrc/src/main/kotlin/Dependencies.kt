@@ -24,6 +24,8 @@ object deps {
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)
+        val atomicfuGradle = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:${versions.kotlin.atomicfu}"
+        val atomicfuCommon = "org.jetbrains.kotlinx:atomicfu-common:${versions.kotlin.atomicfu}"
     }
 
     object ktor {

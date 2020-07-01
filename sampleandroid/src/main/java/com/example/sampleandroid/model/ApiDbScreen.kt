@@ -21,8 +21,8 @@ import kim.jeonghyeon.sample.repository.WordRepository
 class ApiDbScreen(val repository: WordRepository = serviceLocator.wordRepository) : ModelScreen() {
 
     override val title: String = R.string.db_api.resourceToString()
-    val wordList by lazy { resourceStateOf<List<Word>>()}
-    private val newWord by lazy { mutableStateOf("") }
+    val wordList = resourceStateOf<List<Word>>()
+    private val newWord = mutableStateOf("")
 
     override fun initialize() {
         wordList.load(initStatus, repository.getWord())

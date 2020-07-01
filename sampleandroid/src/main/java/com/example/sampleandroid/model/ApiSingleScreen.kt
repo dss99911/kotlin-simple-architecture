@@ -17,8 +17,8 @@ import kim.jeonghyeon.sample.di.serviceLocator
 class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
     override val title: String = R.string.single_call.resourceToString()
 
-    private val value by lazy { resourceStateOf<String?>() }
-    private val input by lazy { mutableStateOf("") }
+    private val value = resourceStateOf<String?>()
+    private val input = mutableStateOf("")
 
     override fun initialize() {
         value.load(initStatus) {

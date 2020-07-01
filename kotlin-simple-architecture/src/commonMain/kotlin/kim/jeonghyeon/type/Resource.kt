@@ -54,6 +54,7 @@ sealed class Resource<out T> {
         return this
     }
 
+    fun isStart() = this is Start
     fun isSuccess() = this is Success
     fun isLoading() = this is Loading
     fun isError() = this is Error

@@ -21,6 +21,7 @@ class ViewTabScreen : Screen() {
     // splash page(add logic and branch different screen)
     // mediator screen which contains history stack(like relationship with activity and fragment)
     // Screen extends frequently used functions or modifier or theme. so that easily use. it takes time to import functions or properties.
+    // block back button when modal dialog or progress bar is shown.
     @Composable
     override fun compose() {
         super.compose()

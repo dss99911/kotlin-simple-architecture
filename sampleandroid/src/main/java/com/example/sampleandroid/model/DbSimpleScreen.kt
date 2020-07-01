@@ -21,8 +21,8 @@ import kim.jeonghyeon.sample.di.serviceLocator
 class DbSimpleScreen(private val wordQueries: WordQueries = serviceLocator.wordQueries) : ModelScreen() {
     override val title: String = R.string.db_simple.resourceToString()
 
-    private val wordList by lazy { resourceStateOf<List<Word>>() }
-    private val newWord by lazy { mutableStateOf("") }
+    private val wordList = resourceStateOf<List<Word>>()
+    private val newWord = mutableStateOf("")
 
     override fun initialize() {
         wordList.load(initStatus, wordQueries.selectAll().asListFlow())
@@ -34,7 +34,6 @@ class DbSimpleScreen(private val wordQueries: WordQueries = serviceLocator.wordQ
 
     @Composable
     override fun view() {
-
         //todo check if job is cancelled if composable leave
         Column {
             VerticalListView(wordList.data(), Modifier.weight(1f)) {
@@ -47,8 +46,6 @@ class DbSimpleScreen(private val wordQueries: WordQueries = serviceLocator.wordQ
                 }
             }
         }
-
-
     }
 
     @Composable

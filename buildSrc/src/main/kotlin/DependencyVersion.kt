@@ -4,6 +4,10 @@ object versions {
         const val coroutine = "1.3.5"
         const val ktor = "1.3.2"
         const val serialization = "0.12.0"
+
+        //todo this can't be used. after the issue below is fixed. it can be used
+        // https://github.com/Kotlin/kotlinx.atomicfu/issues/90
+        const val atomicfu = "0.14.3"
     }
 
     object android {

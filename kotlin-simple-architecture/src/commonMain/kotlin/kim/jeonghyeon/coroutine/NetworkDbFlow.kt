@@ -4,63 +4,62 @@ import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceFlow
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
-//todo this is not yet tested
+/**
+ *
+ * call db at first time
+ * if should fetch api, cancel db flow. and call api. then re collect db flow
+ * if no need to fetch api, keep collect db flow.
+ * if db error, keep collect db flow to receive signal
+ *
+ * @param loadFromDb : flow should emit success or error only
+ * @param shouldFetch : this is called just one time at first
+ * @param callApi : call api
+ * @param saveResponse : save from response, after save, load db again and emit result
+ */
 fun <RESULT, RESPONSE> networkDbFlow(
     loadFromDb: () -> ResourceFlow<RESULT>,
-    shouldFetch: (dbResult: RESULT, isInitialized: Boolean) -> Boolean,
+    shouldFetch: (dbResult: RESULT) -> Boolean,
     callApi: suspend () -> RESPONSE,
     saveResponse: suspend (RESPONSE) -> Unit
 ): ResourceFlow<RESULT> = flow {
     var isInitialized = false
-    val dbFlow = loadFromDb()
+    emit(Resource.Loading())
+    //todo currently this is invoked on Main dispatcher, consider how to to on IO dispatcher on multimplatform.
 
-    dbFlow.filter {
-        if (it.isSuccess()) {
-            //todo change to successData
-            val needFetch = shouldFetch(it.data(), isInitialized)
-            if (needFetch) {
-                isInitialized = true
-                val error = checkError { saveResponse(callApi()) }
-                //if it's success. db observer will load data again. and flow will collect it.
-                if (error?.isError() == true) {
-                    emit(error!!)
+    loadFromDb().collectAndCancel(condition = {
+        if (it.isError()) {
+            emit(it)
+            return@collectAndCancel false
+        }
+
+        if (isInitialized || !shouldFetch(it.data())) {
+            isInitialized = true
+            emit(it)
+            return@collectAndCancel false
+        }
+
+        return@collectAndCancel true
+    }) {
+
+        listenChannel { channel ->
+            try {
+                val response = callApi()
+                saveResponse(response)
+                loadFromDb().collect {
+                    emit(it)
                 }
+            } catch (e: CancellationException) {
+            } catch (e: Exception) {
+                Resource.Error(UnknownResourceError(e)) {
+                    channel.offer(Unit)
+                }.let { emit(it) }
             }
-            !needFetch//if need fetch, doesn't show db data. and call api.
-
-            //todo test if error occurs. when retry it is working or not.
-        } else true //if error, let user to retry. loadFromDb will be called again.
-
-    }.collect {
-        emit(it)
-    }
-}
-
-/**
- * if success. data will be saved and flow will be updated by db changes observer
- * if cancel, just ignore.
- * if error. let user to see error and retry.
- */
-private suspend fun checkError(callAndSave: suspend () -> Unit): Resource<Nothing>? = try {
-    callAndSave()
-    null
-} catch (e: CancellationException) {
-    //if cancel. then ignore it
-    //todo check if cancel is working
-    null
-} catch (e: Exception) {
-    //todo check if this is working
-    val context = coroutineContext
-    Resource.Error(UnknownResourceError(e)) {
-        CoroutineScope(context).launch {
-            callAndSave()
         }
     }
 }
+
+
+

@@ -15,3 +15,10 @@ FROM word;
 insert:
 INSERT INTO word(text)
 VALUES (?);
+
+delete:
+DELETE FROM word
+WHERE id = ?;
+
+deleteAll:
+DELETE FROM word;
