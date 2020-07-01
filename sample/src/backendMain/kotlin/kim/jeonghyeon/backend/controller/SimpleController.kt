@@ -33,4 +33,5 @@ class SimpleController : SimpleApi {
     }
 }
 
+@Suppress("unused")
 val Preference.WORDS get() = "KEY_WORDS"

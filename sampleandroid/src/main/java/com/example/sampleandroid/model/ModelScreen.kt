@@ -14,9 +14,7 @@ abstract class ModelScreen : Screen() {
             ApiParallelScreen().title to { ApiParallelScreen() },
             ApiPollingScreen().title to { ApiPollingScreen()},
             DbSimpleScreen().title to { DbSimpleScreen() },
-            ApiDbScreen().title to { ApiDbScreen() },
-            PreferenceScreen().title to { PreferenceScreen() },
-            SwitchMapScreen().title to { SwitchMapScreen() }
+            ApiDbScreen().title to { ApiDbScreen() }
         )
     }
 }

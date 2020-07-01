@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
+ * statusStateOf() shouldn't be lazy. if lazy, it's not working while setValue()
+ * WRONG : val a by lazy { stateOf() }
+ * CORRECT : val a = stateOf()
  * Todo check if GC is working fine.
  * Todo how to get saved state and viewModel?
  * Todo when screen is changed. even if screen exists on history stack. all coroutine scope job cancelled. it seems not proper.
@@ -34,12 +37,12 @@ abstract class Screen {
     /**
      * similar with [status] but full page error is shown.
      */
-    val initStatus by lazy { statusStateOf() }
+    val initStatus = statusStateOf()
 
     /**
      * screen status of error or loading for event like click
      */
-    val status by lazy { statusStateOf() }
+    val status = statusStateOf()
 
     val scope: ScreenScope by lazy { ScreenScope() }
 

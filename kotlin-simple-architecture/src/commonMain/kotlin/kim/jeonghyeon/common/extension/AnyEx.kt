@@ -16,6 +16,9 @@ inline fun <T> T?.notNull(action: () -> T): T {
 inline fun <T> T.alsoIf(predicate: Boolean, action: (T) -> Unit): T =
     also { if (predicate) action(this) }
 
+inline fun <T> T.applyIf(predicate: Boolean, action: T.() -> Unit): T =
+    apply { if (predicate) action(this) }
+
 inline fun <T> T.alsoIf(predicate: (T) -> Boolean, action: (T) -> Unit): T =
     alsoIf(predicate(this), action)
 

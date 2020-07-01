@@ -7,22 +7,20 @@ import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.type.ResourceFlow
 
-//todo move to sample module
 interface WordRepository {
     fun getWord(): ResourceFlow<List<Word>>
     suspend fun insertWord(word: String)
 }
 
-var fetchWordApi = true
+var fetchedWordApi = false
 
 class WordRepositoryImpl(val api: SimpleApi, val query: WordQueries) : WordRepository {
     override fun getWord(): ResourceFlow<List<Word>> = networkDbFlow(
         loadFromDb = { query.selectAll().asListFlow() },
-        shouldFetch = { _, isInitialized -> fetchWordApi.also { fetchWordApi = false } },//call first time after app started
-        callApi = { api.getWords() },
+        shouldFetch = { !fetchedWordApi },//call first time after app started
+        callApi = { api.getWords().also { fetchedWordApi = true } },
         saveResponse = {
-            //todo check if insert one by one make flow receive each flow. or just last one.
-
+            query.deleteAll()
             it.forEach { query.insert(it) }
         }
     )

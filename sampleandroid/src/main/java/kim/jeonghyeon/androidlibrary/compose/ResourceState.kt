@@ -73,7 +73,7 @@ fun <T> CoroutineScope.loadFlow(
     flow: Flow<Resource<T>>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         flow.collect {
             FrameManager.framed {
                 resourceState?.value = it
