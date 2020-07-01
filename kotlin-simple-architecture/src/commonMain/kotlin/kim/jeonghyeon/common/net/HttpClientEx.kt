@@ -10,7 +10,6 @@ import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
 import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
-import kim.jeonghyeon.common.net.error.ApiErrorCode
 import kim.jeonghyeon.common.net.error.isApiError
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -27,10 +26,10 @@ fun HttpClient.throwException(e: Exception): Nothing {
     throw when (e) {
         //todo check what kind of network exception exists
         is SocketTimeoutException -> {
-            ApiError(ApiErrorBody(ApiErrorCode.NO_NETWORK, "no network"), e)
+            ApiError(ApiErrorBody(ApiErrorBody.CODE_NO_NETWORK, "no network"), e)
         }
         else -> {
-            ApiError(ApiErrorBody(ApiErrorCode.UNKNOWN, "unknown error"), e)
+            ApiError(ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, "unknown error"), e)
         }
     }
 }
@@ -54,7 +53,7 @@ suspend fun HttpClient.validateResponse(response: HttpResponse) {
 
     throw ApiError(
         ApiErrorBody(
-            ApiErrorCode.UNKNOWN,
+            ApiErrorBody.CODE_UNKNOWN,
             "unknown error occurred : ${response.status}, Text : ${response.readText()}"
         )
     )
