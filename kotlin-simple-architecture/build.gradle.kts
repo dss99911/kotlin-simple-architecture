@@ -23,6 +23,7 @@ sqldelight {
 
 //todo why I can't make simpleArch { postfix = "simple"}???
 simpleArchExtension?.postfix = "simple"
+simpleArchExtension?.simpleConfig = false
 
 kotlin {
 

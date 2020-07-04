@@ -2,11 +2,13 @@ package com.example.sampleandroid.model
 
 import androidx.compose.Composable
 import androidx.compose.mutableStateOf
+import androidx.compose.stateFor
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
 import com.example.sampleandroid.R
 import kim.jeonghyeon.androidlibrary.compose.data
+import kim.jeonghyeon.androidlibrary.compose.isSuccess
 import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
 import kim.jeonghyeon.androidlibrary.compose.setSuccess
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
@@ -14,7 +16,7 @@ import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
+class SwitchMapScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
     override val title: String = R.string.single_call.resourceToString()
 
     private val value = resourceStateOf<String?>()
@@ -22,14 +24,7 @@ class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preference
 
     override fun initialize() {
         value.load(initStatus) {
-            api.getString(title).also {
-                //todo this should be processed same way with switchMap.
-                // stateFor can not be used for this case.
-                // am I sure that this architecture is proper for compose?
-                // my architecture is just same way different one is writing ui in kotlin.
-                // what is the benefit to use compose?
-                input.value = it ?: ""
-            }
+            api.getString(title)
         }
     }
 
@@ -39,15 +34,31 @@ class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preference
     }
 
     private fun onClick() {
-        val text = input.value
         status.load {
+            val text = input.value
             api.setString(title, text)
             value.setSuccess(text)
         }
     }
 
+    /**
+     * this connect each state. like switchMap, map, MediatorLiveData
+     * but be careful that. if this screen is not shown. and show again. this will be invoked again.
+     * so, use this only for setting ui data. don't call api
+     */
+    @Composable
+    fun initState() {
+        stateFor(v1 = value) {
+            if (value.isSuccess) {
+                input.value = value.data() ?: ""
+            }
+
+        }
+    }
+
     @Composable
     override fun view() {
+        initState()
 
         Column {
             Text("key : $title\nvalue : ${value.data()}")
