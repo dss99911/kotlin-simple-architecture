@@ -12,9 +12,10 @@ abstract class ModelScreen : Screen() {
             ApiSingleScreen().title to { ApiSingleScreen() },
             ApiSequentialScreen().title to { ApiSequentialScreen() },
             ApiParallelScreen().title to { ApiParallelScreen() },
-            ApiPollingScreen().title to { ApiPollingScreen()},
+            ApiPollingScreen().title to { ApiPollingScreen() },
             DbSimpleScreen().title to { DbSimpleScreen() },
-            ApiDbScreen().title to { ApiDbScreen() }
+            ApiDbScreen().title to { ApiDbScreen() },
+            SwitchMapScreen().title to { SwitchMapScreen() }
         )
     }
 }

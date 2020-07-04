@@ -11,7 +11,8 @@ class ViewTabScreen : Screen() {
 
     //todo snack bar, progress bar, edit text, FAB
     // request permission
-    // menu
+    // menu on navigation
+    // change navigation title
     // start activity, receive result.
     // dialog
     // cacheable image url fetching library like picasso
@@ -22,6 +23,7 @@ class ViewTabScreen : Screen() {
     // mediator screen which contains history stack(like relationship with activity and fragment)
     // Screen extends frequently used functions or modifier or theme. so that easily use. it takes time to import functions or properties.
     // block back button when modal dialog or progress bar is shown.
+    // routing function on Screen. so, provide history sub stack for each screen. if screen is not shown then state will be cleared. so. need to keep on Screen.
     @Composable
     override fun compose() {
         super.compose()

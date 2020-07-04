@@ -1,7 +1,7 @@
 object versions {
     object kotlin {
         const val version = "1.3.72"
-        const val coroutine = "1.3.5"
+        const val coroutine = "1.3.7"
         const val ktor = "1.3.2"
         const val serialization = "0.12.0"
 
