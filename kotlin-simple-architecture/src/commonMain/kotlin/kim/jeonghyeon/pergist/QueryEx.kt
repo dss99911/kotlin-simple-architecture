@@ -52,15 +52,3 @@ internal fun <T : Any> getResource(query: Query<T>, retry: () -> Unit): Resource
         retry()
     }
 }
-/*
-
-fun Query<*>.addWeakListener(listener: () -> Unit) {
-    addListener(WeakListener(listener))
-}
-
-class WeakListener(listener: () -> Unit) : Query.Listener {
-    val weakReference = WeakReference(listener)
-    override fun queryResultsChanged() {
-        weakReference.get()?.invoke()
-    }
-}*/

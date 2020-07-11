@@ -4,8 +4,10 @@ import androidx.compose.Composable
 import androidx.ui.material.MaterialTheme
 import androidx.ui.material.Surface
 import androidx.ui.tooling.preview.Preview
-import com.example.sampleandroid.home.HomeScreen
 import com.example.sampleandroid.ui.AndroidLibraryTheme
+import com.example.sampleandroid.view.MainScaffold
+import com.example.sampleandroid.view.home.HomeScreen
+import kim.jeonghyeon.androidlibrary.compose.BaseActivity
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 

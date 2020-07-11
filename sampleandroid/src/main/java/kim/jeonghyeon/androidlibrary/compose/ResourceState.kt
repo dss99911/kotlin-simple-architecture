@@ -11,11 +11,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
-/**
- * if value is null. doesn't show
- */
-
-//todo change to Resource<T> not null type
 typealias ResourceState<T> = MutableState<Resource<T>>
 typealias StatusState = MutableState<Status>
 
@@ -42,7 +37,7 @@ fun <T> CoroutineScope.loadResource(
             this@loadResource.loadResource(state, work)
         }?.also { state?.value = it }
     }.also {
-        state?.value = Resource.Loading(it)
+        state?.value = Resource.Loading { it.cancel() }
         it.start()
     }
 }
@@ -61,8 +56,8 @@ fun <T> CoroutineScope.loadResource(
             statusState?.value = it
         }
     }.also {
-        resourceState?.value = Resource.Loading(it)
-        statusState?.value = Resource.Loading(it)
+        resourceState?.value = Resource.Loading { it.cancel() }
+        statusState?.value = Resource.Loading { it.cancel() }
         it.start()
     }
 }
@@ -81,8 +76,8 @@ fun <T> CoroutineScope.loadFlow(
             }
         }
     }.also {
-        resourceState?.value = Resource.Loading(it)
-        statusState?.value = Resource.Loading(it)
+        resourceState?.value = Resource.Loading { it.cancel() }
+        statusState?.value = Resource.Loading { it.cancel() }
         it.start()
     }
 }
@@ -96,7 +91,7 @@ private suspend fun <T> CoroutineScope.getResource(
     //if cancel. then ignore it
     null
 } catch (e: ResourceError) {
-    Resource.Error(e, retry)
+    Resource.Error(e, retry = retry)
 } catch (e: Exception) {
-    Resource.Error(UnknownResourceError(e), retry)
+    Resource.Error(UnknownResourceError(e), retry = retry)
 }
