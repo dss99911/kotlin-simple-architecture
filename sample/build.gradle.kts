@@ -144,6 +144,7 @@ kotlin {
 
         binaries.framework {
             export(deps.kotlin.coroutineCoreCommon)
+            export(deps.simpleArch.common)
             //native will use this name to refer the multiplatform library
             baseName = frameworkName
         }

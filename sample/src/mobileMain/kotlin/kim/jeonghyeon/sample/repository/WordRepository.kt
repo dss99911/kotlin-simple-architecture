@@ -1,6 +1,6 @@
 package kim.jeonghyeon.sample.repository
 
-import kim.jeonghyeon.coroutine.networkDbFlow
+import kim.jeonghyeon.coroutine.repositoryFlow
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
@@ -15,7 +15,7 @@ interface WordRepository {
 var fetchedWordApi = false
 
 class WordRepositoryImpl(val api: SimpleApi, val query: WordQueries) : WordRepository {
-    override fun getWord(): ResourceFlow<List<Word>> = networkDbFlow(
+    override fun getWord(): ResourceFlow<List<Word>> = repositoryFlow(
         loadFromDb = { query.selectAll().asListFlow() },
         shouldFetch = { !fetchedWordApi },//call first time after app started
         callApi = { api.getWords().also { fetchedWordApi = true } },
