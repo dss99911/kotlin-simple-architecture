@@ -1,9 +1,7 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
 import androidx.compose.Composable
-import androidx.compose.MutableState
 import androidx.ui.core.Modifier
-import androidx.ui.foundation.TextFieldValue
 import androidx.ui.foundation.contentColor
 import androidx.ui.foundation.currentTextStyle
 import androidx.ui.graphics.Color
@@ -13,10 +11,12 @@ import androidx.ui.input.VisualTransformation
 import androidx.ui.text.SoftwareKeyboardController
 import androidx.ui.text.TextLayoutResult
 import androidx.ui.text.TextStyle
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun TextField(
-    text: MutableState<String>,
+    text: MutableStateFlow<String>,
     modifier: Modifier = Modifier,
     textColor: Color = Color.Unset,
     textStyle: TextStyle = currentTextStyle(),
@@ -30,7 +30,7 @@ fun TextField(
     cursorColor: Color = contentColor()
 ) {
     androidx.ui.foundation.TextField(
-        TextFieldValue(text.value),
+        androidx.ui.input.TextFieldValue(+text),
         { text.value = it.text },
         modifier,
         textColor,

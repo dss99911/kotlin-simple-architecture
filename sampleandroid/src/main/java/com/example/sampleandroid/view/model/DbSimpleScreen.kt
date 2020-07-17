@@ -1,47 +1,35 @@
 package com.example.sampleandroid.view.model
 
 import androidx.compose.Composable
-import androidx.compose.mutableStateOf
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
 import androidx.ui.material.Button
-import com.example.sampleandroid.R
-import kim.jeonghyeon.androidlibrary.compose.data
-import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
+import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.compose.widget.VerticalListView
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
+import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.di.serviceLocator
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class DbSimpleScreen(private val wordQueries: WordQueries = serviceLocator.wordQueries) : ModelScreen() {
+class DbSimpleScreen(private val viewModel: DbSimpleViewModel = DbSimpleViewModel()) : ModelScreen(viewModel) {
     override val title: String = R.string.db_simple.resourceToString()
-
-    private val wordList = resourceStateOf<List<Word>>()
-    private val newWord = mutableStateOf("")
-
-    override fun initialize() {
-        wordList.load(initStatus, wordQueries.selectAll().asListFlow())
-    }
-
-    private fun onClickAdd() {
-        wordQueries.insert(newWord.value)
-    }
 
     @Composable
     override fun view() {
         //todo check if job is cancelled if composable leave
         Column {
-            VerticalListView(wordList.data(), Modifier.weight(1f)) {
+            VerticalListView(+viewModel.wordList, Modifier.weight(1f)) {
                 Text(it.toString())
             }
             Row {
-                TextField(newWord)
-                Button(onClick = ::onClickAdd) {
+                TextField(viewModel.newWord)
+                Button(onClick = viewModel::onClickAdd) {
                     Text(R.string.add.resourceToString())
                 }
             }
@@ -52,6 +40,17 @@ class DbSimpleScreen(private val wordQueries: WordQueries = serviceLocator.wordQ
     override fun compose() {
         super.compose()
     }
+}
 
+class DbSimpleViewModel(private val wordQueries: WordQueries = serviceLocator.wordQueries) : BaseViewModel() {
+    val wordList = MutableStateFlow<List<Word>>(listOf())
+    val newWord = MutableStateFlow("")
 
+    override fun onInitialized() {
+        wordList.load(initStatus, wordQueries.selectAll().asListFlow())
+    }
+
+    fun onClickAdd() {
+        wordQueries.insert(newWord.value)
+    }
 }

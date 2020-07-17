@@ -16,7 +16,7 @@ import androidx.ui.res.vectorResource
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import com.example.sampleandroid.CommonState
-import com.example.sampleandroid.R
+
 import com.example.sampleandroid.view.home.HomeScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
@@ -24,6 +24,7 @@ import kim.jeonghyeon.androidlibrary.compose.popUpTo
 import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
+import kim.jeonghyeon.sample.compose.R
 
 @Composable
 fun HomeDrawer() {

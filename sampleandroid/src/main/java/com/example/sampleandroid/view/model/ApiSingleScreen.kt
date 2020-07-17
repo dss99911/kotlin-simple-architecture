@@ -1,60 +1,56 @@
 package com.example.sampleandroid.view.model
 
 import androidx.compose.Composable
-import androidx.compose.mutableStateOf
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
-import com.example.sampleandroid.R
-import kim.jeonghyeon.androidlibrary.compose.data
-import kim.jeonghyeon.androidlibrary.compose.resourceStateOf
-import kim.jeonghyeon.androidlibrary.compose.setSuccess
+import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.api.PreferenceApi
+import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.di.serviceLocator
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class ApiSingleScreen(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelScreen() {
+class ApiSingleScreen(private val viewModel: ApiSingleViewModel = ApiSingleViewModel()) : ModelScreen(viewModel) {
     override val title: String = R.string.single_call.resourceToString()
-
-    private val value = resourceStateOf<String?>()
-    private val input = mutableStateOf("")
-
-    override fun initialize() {
-        value.load(initStatus) {
-            api.getString(title).also {
-                //todo this should be processed same way with switchMap.
-                // stateFor can not be used for this case.
-                // am I sure that this architecture is proper for compose?
-                // my architecture is just same way different one is writing ui in kotlin.
-                // what is the benefit to use compose?
-                input.value = it ?: ""
-            }
-        }
-    }
 
     @Composable
     override fun compose() {
         super.compose()
     }
 
-    private fun onClick() {
-        val text = input.value
-        status.load {
-            api.setString(title, text)
-            value.setSuccess(text)
+    @Composable
+    override fun view() {
+        Column {
+            Text("key : $title\nvalue : ${+viewModel.result}")
+            TextField(viewModel.input)
+            Button(viewModel::onClick) {
+                Text("update")
+            }
+        }
+    }
+}
+
+class ApiSingleViewModel(private val api: PreferenceApi = serviceLocator.preferenceApi) : BaseViewModel() {
+    val KEY = "someKey"
+
+    val result = MutableStateFlow("")
+    val input = MutableStateFlow("")
+        .withSource(result) { value = it }
+
+
+    override fun onInitialized() {
+        result.load(initStatus) {
+            api.getString(KEY) ?: ""
         }
     }
 
-    @Composable
-    override fun view() {
-
-        Column {
-            Text("key : $title\nvalue : ${value.data()}")
-            TextField(input)
-            Button(::onClick) {
-                Text("update")
-            }
+    fun onClick() {
+        result.load(status) {
+            val text = input.value
+            api.setString(KEY, text)
+            text
         }
     }
 }

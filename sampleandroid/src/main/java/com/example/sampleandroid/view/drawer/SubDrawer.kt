@@ -15,6 +15,7 @@ import androidx.ui.material.icons.filled.ArrowBack
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
 import com.example.sampleandroid.CommonState
+import com.example.sampleandroid.view.SubScreen
 import com.example.sampleandroid.view.model.ModelScreen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 import kim.jeonghyeon.androidlibrary.compose.replace
@@ -22,14 +23,14 @@ import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 
 @Composable
-fun ModelDrawer() {
+fun SubDrawer(screens: List<Pair<String, () -> SubScreen>>) {
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
         Logo()
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = .2f))
 
 
-        ModelScreen.screens.forEach {
+        screens.forEach {
             DrawerButton(
                 label = it.first,
                 isSelected = ScreenStack.last().title == it.first,
@@ -57,7 +58,7 @@ private fun Logo() {
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
             )
             SpacerW(24.dp)
-            Text((ScreenStack.last() as ModelScreen).parentTitle)
+            Text((ScreenStack.last() as SubScreen).parentTitle)
         }
     }
 
@@ -99,5 +100,5 @@ private fun DrawerButton(
 @Preview
 @Composable
 fun PreviewModelDrawer() {
-    ModelDrawer()
+    SubDrawer(ModelScreen.screens)
 }
