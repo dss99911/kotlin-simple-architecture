@@ -5,11 +5,11 @@ import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
 import androidx.ui.material.Button
-import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.compose.widget.VerticalListView
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.api.PreferenceApi
+import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.async

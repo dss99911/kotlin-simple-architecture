@@ -13,6 +13,7 @@ import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
 import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

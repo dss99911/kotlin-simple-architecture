@@ -1,10 +1,11 @@
-package kim.jeonghyeon.mobile
+package kim.jeonghyeon.client
 
 import kotlinx.coroutines.*
 import platform.darwin.*
 import kotlin.coroutines.CoroutineContext
 
-actual fun dispatcherUI(): CoroutineDispatcher = UI
+
+actual fun dispatcherViewModel(): CoroutineDispatcher = UI
 
 @UseExperimental(InternalCoroutinesApi::class)
 private object UI : CoroutineDispatcher(), Delay {

@@ -3,8 +3,8 @@ package com.example.sampleandroid.view.model
 import androidx.compose.Composable
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
-import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.coroutine.polling
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SimpleApi

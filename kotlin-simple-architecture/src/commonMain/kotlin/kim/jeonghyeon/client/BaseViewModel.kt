@@ -1,13 +1,11 @@
-package kim.jeonghyeon.androidlibrary.compose
+package kim.jeonghyeon.client
 
-import androidx.annotation.CallSuper
-import androidx.compose.FrameManager
+
 import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import java.util.concurrent.atomic.AtomicBoolean
 
 typealias StatusStateFlow = MutableStateFlow<Status>
 typealias ResourceStateFlow<T> = MutableStateFlow<Resource<T>>
@@ -20,7 +18,7 @@ open class BaseViewModel {
     val initStatus: StatusStateFlow = StatusStateFlow()
     val status: StatusStateFlow = StatusStateFlow()
 
-    val isInitialized: AtomicBoolean = AtomicBoolean(false)
+    val isInitialized: AtomicReference<Boolean> = atomic(false)
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
@@ -28,7 +26,7 @@ open class BaseViewModel {
     open fun onInitialized() {
     }
 
-    @CallSuper
+    //@CallSuper
     open fun onCleared() {
         scope.close()
     }
@@ -140,10 +138,8 @@ fun <T> CoroutineScope.loadFlow(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         flow.collect {
-            FrameManager.framed {
-                resourceState?.value = it
-                statusState?.value = it
-            }
+            resourceState?.value = it
+            statusState?.value = it
         }
     }.also {
         resourceState?.value = Resource.Loading { it.cancel() }
@@ -160,10 +156,8 @@ fun <T> CoroutineScope.loadDataFromFlow(
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
         flow.collect {
-            FrameManager.framed {
-                it.onSuccess { data.value = it }
-                status.value = it
-            }
+            it.onSuccess { data.value = it }
+            status.value = it
         }
     }.also {
         status.value = Resource.Loading { it.cancel() }

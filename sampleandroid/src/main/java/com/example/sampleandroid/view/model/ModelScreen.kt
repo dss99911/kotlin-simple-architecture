@@ -1,8 +1,8 @@
 package com.example.sampleandroid.view.model
 
 import com.example.sampleandroid.view.SubScreen
-import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.compose.R
 
 abstract class ModelScreen(vararg viewModels: BaseViewModel) : SubScreen(*viewModels) {

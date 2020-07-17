@@ -6,77 +6,28 @@
 import Foundation
 import SwiftUI
 import KotlinApi
-//struct Screen<Content> : View where Content : View {
-//    init(initState: Binding<Bool>, state: Binding<Bool>, content: () -> Content) {
-//
-//    }
-//    var body: some View {
-//        VStack {
-//            Text("")
-//        }
-//    }
-//
-//    init() {
-//    }
-//}
-//
+
 protocol Screen : View {
-    associatedtype Children : View
-
-    var children: Self.Children { get }
+    associatedtype Content : View
+    associatedtype ViewModel : Kotlin_simple_architectureBaseViewModelIos
+    var model: ViewModel { get }
+    var content: Self.Content { get }
+    var title: String { get }
     
-    var state: Resource<AnyObject> { get }
-    var initState: Resource<AnyObject> { get }
-
-    func onInitialized()
-    
-    var isInitialized: Bool { get }
 }
 
 extension Screen {
-
-    //todo check if this save the value or call whenever refer it.
-
-
-    /// Declares the content and behavior of this view.
-
-
     var body: some View {
-        ZStack {
-            if (initState.isLoading()) {
-                Text("full Loading")
-            } else if (initState.isError()) {
-                Text("full Error")
-            } else {
-                children
-                
-                if (state.isLoading()) {
-                    Text("Loading")
-                } else if (state.isError()) {
-                    Text("Error")
-                }
-            }
+        StatusView(viewModel: model) {
+            self.content
         }
     }
     
-    var isInitialized: Bool {
-        return true
+    var title: String {
+        ""
     }
-
+    
+    func asStringBinding(_ flow: Kotlin_simple_architectureCFlow<NSString>) -> Binding<String> {
+        return Binding<String>(get: { () -> String in flow.value as String? ?? "" }, set: { (v: String) in flow.value = NSString(utf8String: v)  })
+    }
 }
-//func a() {
-//    var state: Kotlin_simple_architectureResource<NSString>
-//}
-//class ApiScreen : View {
-//
-//
-//    }
-//    var body: some View {
-//        Screen {
-//            Text("")
-//        }
-//    }
-//
-//    init() {
-//    }
-//}

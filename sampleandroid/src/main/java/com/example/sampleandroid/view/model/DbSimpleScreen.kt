@@ -6,10 +6,10 @@ import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
 import androidx.ui.material.Button
-import kim.jeonghyeon.androidlibrary.compose.BaseViewModel
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.compose.widget.VerticalListView
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
