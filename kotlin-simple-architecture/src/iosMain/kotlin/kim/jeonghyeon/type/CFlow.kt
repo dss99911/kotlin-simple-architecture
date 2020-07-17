@@ -1,73 +1,28 @@
 package kim.jeonghyeon.type
 
-import io.ktor.utils.io.core.Closeable
-import kim.jeonghyeon.coroutine.observeTrial
-import kim.jeonghyeon.mobile.dispatcherUI
-import kotlinx.coroutines.CancellationException
+import kim.jeonghyeon.client.dispatcherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-fun <T> Flow<T>.asCFlow(): CFlow<T> = CFlow(this)
-fun <T> ResourceFlow<T>.asCRFlow(): CRFlow<T> = CRFlow(this)
+fun <T> MutableStateFlow<T>.asCFlow(scope: CoroutineScope = CoroutineScope(dispatcherViewModel())): CFlow<T> = CFlow(scope, this)
 
-class CRFlow<T>(origin: ResourceFlow<T>) : CFlow<Resource<T>>(origin) {
+open class CFlow<T>(private val scope: CoroutineScope, private val origin: MutableStateFlow<T>) : Flow<T> by origin {
     @InternalCoroutinesApi
-    override fun watch(block: (Resource<T>) -> Unit): Closeable {
-        val job = Job()
-
-        block(Resource.Loading { job.cancel() })
-
-        onEach {
-            block(it)
-        }.launchIn(CoroutineScope(dispatcherUI() + job))
-
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
+    open fun watch(block: (T) -> Unit) {
+        scope.launch {
+            collect {
+                block(it)
             }
         }
     }
-}
 
-open class CFlow<T>(private val origin: Flow<T>) : Flow<T> by origin {
-    @InternalCoroutinesApi
-    open fun watch(block: (T) -> Unit): Closeable {
-        val job = Job()
-
-        onEach {
-            block(it)
-        }.launchIn(CoroutineScope(dispatcherUI() + job))
-
-        return object : Closeable {
-            override fun close() {
-                job.cancel()
-            }
+    var value: T
+        get() = origin.value
+        set(value) {
+            origin.value = value
         }
-    }
-}
-
-
-fun <T> suspendToCRFlow(action: suspend () -> T): CRFlow<T> {
-    return flow {
-        observeTrial { retry ->
-            try {
-                Resource.Success(action())
-            } catch (e: CancellationException) {
-                //if cancel. then ignore it
-                null
-            } catch (e: ResourceError) {
-                Resource.Error<T>(e) { retry() }
-            } catch (e: Throwable) {
-                Resource.Error<T>(UnknownResourceError(e)) { retry() }
-            }?.let {
-                emit(it)
-            }
-        }
-
-    }.asCRFlow()
 }
