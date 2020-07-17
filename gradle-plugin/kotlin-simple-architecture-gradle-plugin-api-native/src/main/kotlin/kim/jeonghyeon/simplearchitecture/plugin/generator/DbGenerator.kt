@@ -74,7 +74,7 @@ class DbGenerator(
 
     private fun List<GeneratedDbSource>.generateDbFunctionFile(): List<File> {
         var expectFile: File? = null
-        val filePath = "kim/jeonghyeon/generated/db/DbEx.kt"
+        val filePath = "kim/jeonghyeon/generated/db/Db${pluginOptions.postFix.capitalize()}Ex.kt"
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(
                 pluginOptions.buildPath,

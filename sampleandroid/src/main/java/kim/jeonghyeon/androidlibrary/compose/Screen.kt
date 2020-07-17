@@ -53,8 +53,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     @Composable
     open fun compose() {
         viewModels
-            .filter { !it.isInitialized.getAndSet(true) }
-            .forEach { it.onInitialized() }
+            .forEach { it.onCompose() }
 
         Stack {
             if (composeInitStatus()) {
