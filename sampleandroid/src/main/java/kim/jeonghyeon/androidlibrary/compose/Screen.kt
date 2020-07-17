@@ -1,8 +1,12 @@
 package kim.jeonghyeon.androidlibrary.compose
 
+import androidx.annotation.FloatRange
 import androidx.compose.Composable
+import androidx.compose.State
+import androidx.compose.collectAsState
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
+import androidx.ui.layout.ColumnScope.weight
 import androidx.ui.layout.RowScope.gravity
 import androidx.ui.layout.Stack
 import kim.jeonghyeon.androidlibrary.R
@@ -10,9 +14,9 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
 import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.type.Resource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.coroutines.CoroutineContext
 
 /**
  * statusStateOf() shouldn't be lazy. if lazy, it's not working while setValue()
@@ -31,30 +35,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  * todo communication between screen.
  * todo multiple first root screen by logic.
  */
-abstract class Screen {
+abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(BaseViewModel())) {
+
     open val title: String = ""
-
-    /**
-     * similar with [status] but full page error is shown.
-     */
-    val initStatus = statusStateOf()
-
-    /**
-     * screen status of error or loading for event like click
-     */
-    val status = statusStateOf()
-
-    val scope: ScreenScope by lazy { ScreenScope() }
-
-    var isInitialized: AtomicBoolean = AtomicBoolean(false)
-
-    protected open fun initialize() {
-
-    }
-
-    fun clear() {
-        scope.close()
-    }
+    open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
 
     /**
      * !! Limitation !!
@@ -67,55 +51,59 @@ abstract class Screen {
      */
     @Composable
     open fun compose() {
-        if (!isInitialized.getAndSet(true)) {
-            initialize()
-        }
+        viewModels
+            .filter { !it.isInitialized.getAndSet(true) }
+            .forEach { it.onInitialized() }
 
         Stack {
-            when (initStatus.value) {
-                is Resource.Loading -> {
-                    composeFullLoading()
-                    return@Stack
-                }
-                is Resource.Error -> {
-                    composeFullError()
-                    return@Stack
-                }
-                else -> {
-                }
+            if (composeInitStatus()) {
+                return@Stack
             }
             view()
-
-            when (status.value) {
-                is Resource.Loading -> composeLoading()
-                is Resource.Error -> composeError()
-                else -> {
-                }
-            }
+            composeStatus()
         }
     }
 
     @Composable
     abstract fun view()
 
-    fun <T> ResourceState<T>.load(work: suspend CoroutineScope.() -> T): ResourceState<T> {
-        scope.loadResource(this, work)
-        return this
+    /**
+     * LIMITATION : if several viewModel use iniStatus. this won't work properly
+     * I recommend to initialize on one viewModel. as it's difficult to show error UI, and retry
+     * @return if handled, then return true. handled means no need to compose view()
+     */
+    @Composable
+    private fun composeInitStatus(): Boolean {
+        viewModels.forEach {
+            when (val resource = it.initStatus.asState().value) {
+                is Resource.Loading -> {
+                    composeFullLoading()
+                    return true
+                }
+
+                is Resource.Error -> {
+                    composeFullError(resource)
+                    return true
+                }
+
+                else -> {
+                }
+            }
+        }
+
+        return false
     }
 
-    fun <T> ResourceState<T>.load(flow: Flow<Resource<T>>): ResourceState<T> {
-        scope.loadFlow(this, null, flow)
-        return this
-    }
-
-    fun <T> ResourceState<T>.load(status: StatusState, flow: Flow<Resource<T>>): ResourceState<T> {
-        scope.loadFlow(this, status, flow)
-        return this
-    }
-
-    fun <T> ResourceState<T>.load(status: StatusState, work: suspend CoroutineScope.() -> T): ResourceState<T> {
-        scope.loadResource(this, status, work)
-        return this
+    @Composable
+    private fun composeStatus() {
+        viewModels.forEach {
+            when (val resource = it.status.asState().value) {
+                is Resource.Loading -> composeLoading()
+                is Resource.Error -> composeError(resource)
+                else -> {
+                }
+            }
+        }
     }
 
     @Composable
@@ -129,31 +117,53 @@ abstract class Screen {
     }
 
     @Composable
-    protected open fun composeError() {
-        if (status.value.isError()) {
-            val error = status.value as Resource.Error
-            ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
-                error.retry()
-            }
+    protected open fun composeError(error: Resource.Error<*>) {
+        ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+            error.retry()
         }
     }
 
     @Composable
-    protected open fun composeFullError() {
-        if (initStatus.value.isError()) {
-            val error = initStatus.value as Resource.Error
-            ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
-                error.retry()
-            }
+    protected open fun composeFullError(error: Resource.Error<*>) {
+        ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+            error.retry()
         }
     }
 
-    open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
+    fun clear() {
+        viewModels.forEach { it.onCleared() }
+    }
+
+    @Composable
+    operator fun <T> MutableStateFlow<T>.unaryPlus(): T = asState().value
+
+    @Composable
+    fun <T> MutableStateFlow<T>.asValue(): T = asState().value
+
+    @Composable
+    inline fun <T> MutableStateFlow<T>.asState(
+        context: CoroutineContext = Dispatchers.Main
+    ): State<T> = collectAsState(context)
 
     protected companion object {
         fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)
+        fun weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
+            Modifier.weight(weight, fill)
 
         val Bottom = Alignment.Bottom
         val Top = Alignment.Top
     }
+
 }
+
+
+@Composable
+inline fun <T> MutableStateFlow<T>.asState(
+    context: CoroutineContext = Dispatchers.Main
+): State<T> = collectAsState(context)
+
+@Composable
+fun <T> MutableStateFlow<T>.asValue(): T = asState().value
+
+@Composable
+operator fun <T> MutableStateFlow<T>.unaryPlus(): T = asValue()

@@ -8,11 +8,11 @@ import androidx.ui.layout.fillMaxWidth
 import androidx.ui.layout.padding
 import androidx.ui.material.Button
 import androidx.ui.unit.dp
-import com.example.sampleandroid.R
 import com.example.sampleandroid.view.model.ModelScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.sample.compose.R
 
 class ModelTabScreen : Screen() {
     override val title: String = R.string.model.resourceToString()
