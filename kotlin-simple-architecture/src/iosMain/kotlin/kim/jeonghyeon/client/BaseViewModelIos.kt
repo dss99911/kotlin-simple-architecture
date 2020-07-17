@@ -22,9 +22,11 @@ abstract class BaseViewModelIos {
         }
     }
 
-    fun onInitialized() {
-        viewModel.onInitialized()
+    fun onAppear() {
+        viewModel.onCompose()
     }
+
+    val isInitialized get() = viewModel.isInitialized.value
 
     open fun onCleared() {
         viewModel.onCleared()

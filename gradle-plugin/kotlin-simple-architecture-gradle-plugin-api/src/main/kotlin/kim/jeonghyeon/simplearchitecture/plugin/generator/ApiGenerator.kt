@@ -143,7 +143,7 @@ class ApiGenerator(
 
     private fun List<GeneratedApiSource>.generateApiFunctionFile(): List<File> {
         var expectFile: File? = null
-        val filePath = "kim/jeonghyeon/generated/net/HttpClientEx.kt"
+        val filePath = "kim/jeonghyeon/generated/net/HttpClient${pluginOptions.postFix.capitalize()}Ex.kt"
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(pluginOptions.buildPath, SOURCE_SET_NAME_COMMON)
             expectFile = File("$expectPath/$filePath")

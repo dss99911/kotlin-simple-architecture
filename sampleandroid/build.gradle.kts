@@ -1,3 +1,5 @@
+import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -15,9 +17,13 @@ val androidKeyPassword: String by project
 val androidStoreFile: String by project
 val androidStorePassword: String by project
 
+//todo the reason to add this is that same HttpClientEx is created. and sample class file cause error while processing r8 proguard
+simpleArchExtension?.postfix = "sampleAndroid"
+simpleArchExtension?.simpleConfig = false
+
 android {
 
-    val appId = "kim.jeonghyeon.sample"
+    val appId = "kim.jeonghyeon.sample.compose"
 
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)

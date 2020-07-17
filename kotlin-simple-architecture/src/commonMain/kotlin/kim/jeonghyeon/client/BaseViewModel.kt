@@ -1,6 +1,7 @@
 package kim.jeonghyeon.client
 
 
+import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -22,11 +23,16 @@ open class BaseViewModel {
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    //todo is it possible to use init {}
+    fun onCompose() {
+        if (!isInitialized.getAndSet(true)) {
+            onInitialized()
+        }
+    }
+
     open fun onInitialized() {
     }
 
-    //@CallSuper
+    @CallSuper
     open fun onCleared() {
         scope.close()
     }

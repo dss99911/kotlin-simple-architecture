@@ -12,7 +12,6 @@ import KotlinApi
 
 struct StatusView<Content> : View where Content : View {
     @ObservedObject private var wrapper: ViewModelWrapper
-    @State var initialized = false
     
     /// Screen refers to CommonStatusView. if use generic View. then the viewModel also should know which View is root view on Screen. so decided to use AnyView
     let content: () -> Content
@@ -46,10 +45,7 @@ struct StatusView<Content> : View where Content : View {
                 }
             }
         }.onAppear {
-            if (!self.initialized) {
-                self.initialized = true
-                self.wrapper.onInitialized()
-            }
+            self.wrapper.onAppear()
         }
     }
 }
@@ -63,13 +59,16 @@ class ViewModelWrapper: ObservableObject {
         self.viewModel = viewModel
     }
     
-    func onInitialized() {
-        viewModel.forEachFlow { (flow) in
-            flow.watch { (data) in
-                self.reloadView()
+    func onAppear() {
+        if (!viewModel.isInitialized) {
+            viewModel.forEachFlow { (flow) in
+                flow.watch { (data) in
+                    self.reloadView()
+                }
             }
         }
-        viewModel.onInitialized()
+        
+        viewModel.onAppear()
     }
     
     func reloadView() {
