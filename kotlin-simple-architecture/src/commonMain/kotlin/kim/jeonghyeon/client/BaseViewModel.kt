@@ -181,6 +181,6 @@ private suspend fun <T> CoroutineScope.getResource(
     null
 } catch (e: ResourceError) {
     Resource.Error(e, retry = retry)
-} catch (e: Exception) {
+} catch (e: Throwable) {
     Resource.Error(UnknownResourceError(e), retry = retry)
 }

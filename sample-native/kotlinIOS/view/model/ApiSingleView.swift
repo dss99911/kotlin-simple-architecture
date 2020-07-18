@@ -6,10 +6,7 @@
 import Foundation
 import SwiftUI
 import KotlinApi
-/*
-* TODO: deinit is working?
-* TODO: error is not recognized
-*/
+
 struct ApiSingleView: Screen {
     var title = "ApiSingleView"
     

@@ -26,22 +26,23 @@ struct StatusView<Content> : View where Content : View {
     var body: some View {
         
         ZStack {
-            //this is just for reloading view
-            if (wrapper.empty != "") {
-                Text(wrapper.empty)
+            
+            if (wrapper.appearCount < 0) {
+                //this is just for redrawing view on appeared.
+                //in case NavigationLink. if this is not redrawn, destination view is not initialized again.
             }
             
             if (wrapper.isInitLoading()) {
                 Text("full Loading")
             } else if (wrapper.isInitError()) {
-                Text("full Error")
+                Button(action: { self.wrapper.retryOnInitError() }, label: { Text("full Error") })
             } else {
                 self.content()
                 
                 if (wrapper.isLoading()) {
                     Text("Loading")
                 } else if (wrapper.isError()) {
-                    Text("Error")
+                    Button(action: { self.wrapper.retryOnError() }, label: { Text("Error") })
                 }
             }
         }.onAppear {
@@ -51,7 +52,7 @@ struct StatusView<Content> : View where Content : View {
 }
 
 class ViewModelWrapper: ObservableObject {
-    @Published var empty = ""
+    @Published var appearCount = 0
     
     let viewModel: Kotlin_simple_architectureBaseViewModelIos
     
@@ -66,8 +67,11 @@ class ViewModelWrapper: ObservableObject {
                     self.reloadView()
                 }
             }
+        } else {
+            //when this is changed, view is redrawn.
+            //on initialized, it's drawn, so, no need to draw again.
+            appearCount += 1
         }
-        
         viewModel.onAppear()
     }
     
@@ -89,6 +93,18 @@ class ViewModelWrapper: ObservableObject {
     
     func isError() -> Bool {
         return (viewModel.status.value)?.isError() ?? false
+    }
+    
+    func retryOnError() {
+        (viewModel.status.value)?.onError(onResult: { (error, last, retry) in
+            retry()
+        })
+    }
+    
+    func retryOnInitError() {
+        (viewModel.initStatus.value)?.onError(onResult: { (error, last, retry) in
+            retry()
+        })
     }
     
     deinit {
