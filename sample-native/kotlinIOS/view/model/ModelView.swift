@@ -8,13 +8,16 @@
 
 import SwiftUI
 import KotlinApi
-struct ModelView: View {
-    var body: some View {
+struct ModelView: Screen {
+    @State var model = EmptyViewModelIos()
+
+    var content: some View {
         List {
+            
             NavigationLink(destination: ApiSingleView()) {
                 Text("Api Single Call").font(.headline)
             }
-            NavigationLink(destination: ApiSequentialView()) {
+            NavigationLink(destination: ApiSequentialView(ab: 1)) {
                 Text("Api Sequential Call").font(.headline)
             }
         }.navigationBarTitle("Sample")

@@ -120,8 +120,8 @@
 			isa = PBXGroup;
 			children = (
 				217DEF1824EFAADD3B4276FE /* ModelView.swift */,
-				217DEE3B682615044BBE3A02 /* ApiSingleView.swift */,
 				217DE6EE57F23D4B217BB70D /* ApiSequentialView.swift */,
+				217DEE3B682615044BBE3A02 /* ApiSingleView.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
