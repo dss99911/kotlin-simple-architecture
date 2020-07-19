@@ -1,20 +1,21 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
+import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.di.serviceLocator
-import kim.jeonghyeon.sample.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class ApiDbViewModel(private val repository: WordRepository = serviceLocator.wordRepository) : BaseViewModel() {
+class DbSimpleViewModel(private val wordQueries: WordQueries = serviceLocator.wordQueries) : BaseViewModel() {
     val wordList = MutableStateFlow<List<Word>>(listOf())
     val newWord = MutableStateFlow("")
 
     override fun onInitialized() {
-        wordList.loadFlow(initStatus) { repository.getWord() }
+        wordList.loadFlow(initStatus) { wordQueries.selectAll().asListFlow() }
     }
 
     fun onClickAdd() {
-        status.load { repository.insertWord(newWord.value) }
+        wordQueries.insert(newWord.value)
     }
 }
