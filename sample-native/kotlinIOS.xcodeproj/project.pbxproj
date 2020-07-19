@@ -7,14 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		217DE0C43E60CADFC9077557 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE99EA3E787E045150526 /* HomeView.swift */; };
-		217DE5254A595A0CDFE3F81A /* ApiSequentialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialView.swift */; };
-		217DE6372CB0387049C217DE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainView.swift */; };
-		217DE7F45D2268D93E19DAC4 /* DrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF6641618AF2D9880285 /* DrawerView.swift */; };
-		217DEA88C759222AE75F283A /* NavigationDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE88269B9ED35F0009DDD /* NavigationDrawer.swift */; };
-		217DEA9B23DF153709F3A0F7 /* ApiSingleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleView.swift */; };
-		217DEBC820DDFC41B950C985 /* ModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelView.swift */; };
-		217DEC0BA60581DCCBEC8D29 /* ViewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewView.swift */; };
+		217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */; };
+		217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */; };
+		217DE6372CB0387049C217DE /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainScreen.swift */; };
+		217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */; };
+		217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */; };
+		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
+		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
 		5546F9AB24B7539F00027FD1 /* KotlinApi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5530048D249A76BC00981F3E /* KotlinApi.framework */; };
 		5546F9AC24B7539F00027FD1 /* KotlinApi.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5530048D249A76BC00981F3E /* KotlinApi.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -26,6 +25,9 @@
 		5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 559105FF24424C4200ADA03F /* LaunchScreen.storyboard */; };
 		5591060C24424C4200ADA03F /* kotlinIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591060B24424C4200ADA03F /* kotlinIOSTests.swift */; };
 		5591061724424C4200ADA03F /* kotlinIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591061624424C4200ADA03F /* kotlinIOSUITests.swift */; };
+		55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55D47FB924C3427A00BEBA59 /* Localizable.strings */; };
+		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
+		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
 		55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* StatusView.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,14 +64,13 @@
 
 /* Begin PBXFileReference section */
 		217DE07307A8043209549F8E /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
-		217DE0F7F8C5CB9236798A97 /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		217DE5420D87907E024BD89B /* ViewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewView.swift; sourceTree = "<group>"; };
-		217DE6EE57F23D4B217BB70D /* ApiSequentialView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialView.swift; sourceTree = "<group>"; };
-		217DE88269B9ED35F0009DDD /* NavigationDrawer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationDrawer.swift; sourceTree = "<group>"; };
-		217DE99EA3E787E045150526 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		217DEE3B682615044BBE3A02 /* ApiSingleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSingleView.swift; sourceTree = "<group>"; };
-		217DEF1824EFAADD3B4276FE /* ModelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelView.swift; sourceTree = "<group>"; };
-		217DEF6641618AF2D9880285 /* DrawerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerView.swift; sourceTree = "<group>"; };
+		217DE0F7F8C5CB9236798A97 /* MainScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
+		217DE5420D87907E024BD89B /* ViewScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewScreen.swift; sourceTree = "<group>"; };
+		217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiDbScreen.swift; sourceTree = "<group>"; };
+		217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialScreen.swift; sourceTree = "<group>"; };
+		217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSingleScreen.swift; sourceTree = "<group>"; };
+		217DEF1824EFAADD3B4276FE /* ModelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelScreen.swift; sourceTree = "<group>"; };
+		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559105F124424C4100ADA03F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,6 +88,10 @@
 		5591061824424C4200ADA03F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55910625244259C200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		5591062F24425B9200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
+		55D47FBA24C3427A00BEBA59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = kotlinIOS/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		55D47FBC24C3429400BEBA59 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = kotlinIOS/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
 		55EC719C24B9A5FC0012D64E /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,9 +124,12 @@
 		217DE10741337F1B3AEFAB19 /* model */ = {
 			isa = PBXGroup;
 			children = (
-				217DEF1824EFAADD3B4276FE /* ModelView.swift */,
-				217DE6EE57F23D4B217BB70D /* ApiSequentialView.swift */,
-				217DEE3B682615044BBE3A02 /* ApiSingleView.swift */,
+				217DEF1824EFAADD3B4276FE /* ModelScreen.swift */,
+				217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */,
+				217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */,
+				55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */,
+				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
+				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -131,28 +139,9 @@
 			children = (
 				217DE10741337F1B3AEFAB19 /* model */,
 				217DEE88BF00C36CA4BB1701 /* view */,
-				217DE0F7F8C5CB9236798A97 /* MainView.swift */,
-				217DE9F2FC2BD541CE6D1906 /* drawer */,
-				217DE9B98DDE2A4CCD9C3CEE /* home */,
+				217DE0F7F8C5CB9236798A97 /* MainScreen.swift */,
 			);
 			path = view;
-			sourceTree = "<group>";
-		};
-		217DE9B98DDE2A4CCD9C3CEE /* home */ = {
-			isa = PBXGroup;
-			children = (
-				217DE99EA3E787E045150526 /* HomeView.swift */,
-			);
-			path = home;
-			sourceTree = "<group>";
-		};
-		217DE9F2FC2BD541CE6D1906 /* drawer */ = {
-			isa = PBXGroup;
-			children = (
-				217DE88269B9ED35F0009DDD /* NavigationDrawer.swift */,
-				217DEF6641618AF2D9880285 /* DrawerView.swift */,
-			);
-			path = drawer;
 			sourceTree = "<group>";
 		};
 		217DEC1EE1072C25820B9664 /* library */ = {
@@ -160,6 +149,7 @@
 			children = (
 				217DE07307A8043209549F8E /* Screen.swift */,
 				55EC719C24B9A5FC0012D64E /* StatusView.swift */,
+				55D47FBD24C343D000BEBA59 /* Localizable.swift */,
 			);
 			path = library;
 			sourceTree = "<group>";
@@ -167,6 +157,7 @@
 		217DEE717923577513CF6F77 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				55D47FB924C3427A00BEBA59 /* Localizable.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -174,7 +165,7 @@
 		217DEE88BF00C36CA4BB1701 /* view */ = {
 			isa = PBXGroup;
 			children = (
-				217DE5420D87907E024BD89B /* ViewView.swift */,
+				217DE5420D87907E024BD89B /* ViewScreen.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -341,6 +332,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = 559105E524424C4100ADA03F;
 			productRefGroup = 559105EF24424C4100ADA03F /* Products */;
@@ -360,6 +352,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */,
+				55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */,
 				559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */,
 				559105FB24424C4200ADA03F /* Assets.xcassets in Resources */,
 			);
@@ -407,19 +400,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */,
+				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F224424C4100ADA03F /* AppDelegate.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
 				559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */,
-				217DEBC820DDFC41B950C985 /* ModelView.swift in Sources */,
-				217DEC0BA60581DCCBEC8D29 /* ViewView.swift in Sources */,
+				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
+				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
 				55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */,
-				217DE6372CB0387049C217DE /* MainView.swift in Sources */,
-				217DEA88C759222AE75F283A /* NavigationDrawer.swift in Sources */,
-				217DE7F45D2268D93E19DAC4 /* DrawerView.swift in Sources */,
-				217DE0C43E60CADFC9077557 /* HomeView.swift in Sources */,
-				217DEA9B23DF153709F3A0F7 /* ApiSingleView.swift in Sources */,
-				217DE5254A595A0CDFE3F81A /* ApiSequentialView.swift in Sources */,
+				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
+				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
+				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
+				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,
+				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +457,15 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		55D47FB924C3427A00BEBA59 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55D47FBA24C3427A00BEBA59 /* Base */,
+				55D47FBC24C3429400BEBA59 /* ko */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -470,6 +473,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -530,6 +534,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

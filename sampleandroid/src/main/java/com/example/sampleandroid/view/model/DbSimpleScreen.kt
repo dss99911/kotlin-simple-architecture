@@ -1,7 +1,6 @@
 package com.example.sampleandroid.view.model
 
 import androidx.compose.Composable
-import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.layout.Row
@@ -24,7 +23,7 @@ class DbSimpleScreen(private val viewModel: DbSimpleViewModel = DbSimpleViewMode
     override fun view() {
         //todo check if job is cancelled if composable leave
         Column {
-            VerticalListView(+viewModel.wordList, Modifier.weight(1f)) {
+            VerticalListView(+viewModel.wordList, weight(1f)) {
                 Text(it.toString())
             }
             Row {
@@ -47,7 +46,7 @@ class DbSimpleViewModel(private val wordQueries: WordQueries = serviceLocator.wo
     val newWord = MutableStateFlow("")
 
     override fun onInitialized() {
-        wordList.load(initStatus, wordQueries.selectAll().asListFlow())
+        wordList.loadFlow(initStatus) { wordQueries.selectAll().asListFlow() }
     }
 
     fun onClickAdd() {

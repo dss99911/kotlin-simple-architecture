@@ -1,10 +1,18 @@
 package com.example.sampleandroid.view.home
 
 import androidx.compose.Composable
+import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
-import com.example.sampleandroid.R
+import androidx.ui.layout.Column
+import androidx.ui.layout.fillMaxWidth
+import androidx.ui.layout.padding
+import androidx.ui.material.Button
+import androidx.ui.unit.dp
+import com.example.sampleandroid.view.view.ViewScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.sample.compose.R
 
 class ViewTabScreen : Screen() {
     override val title: String = R.string.view.resourceToString()
@@ -25,6 +33,9 @@ class ViewTabScreen : Screen() {
     // block back button when modal dialog or progress bar is shown.
     // routing function on Screen. so, provide history sub stack for each screen. if screen is not shown then state will be cleared. so. need to keep on Screen.
     // deeplink
+    // consider navigation link like swiftui for stack. so, navigation stack is saved on the navigation view
+    // savedstate
+    // view stack은 ios의 NavigationView 같은 방식으로 하는게 좋을듯..
     @Composable
     override fun compose() {
         super.compose()
@@ -32,7 +43,17 @@ class ViewTabScreen : Screen() {
 
     @Composable
     override fun view() {
-        Text(title)
+        Column {
+            ViewScreen.screens.forEach {
+                Button(
+                    onClick = { it.second().push() },
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    Text(it.first)
+                }
+            }
+        }
     }
 }
 

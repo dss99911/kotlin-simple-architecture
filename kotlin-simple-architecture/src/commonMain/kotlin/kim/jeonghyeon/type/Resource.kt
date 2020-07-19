@@ -1,8 +1,6 @@
 package kim.jeonghyeon.type
 
 import kim.jeonghyeon.util.log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 /**
  * Resource = data + status
@@ -90,19 +88,3 @@ sealed class Resource<out T> {
 }
 
 typealias Status = Resource<Any?>
-
-typealias ResourceFlow<T> = Flow<Resource<T>>
-
-/**
- * @param map this is invoked only on success, on other status, even if there is data. data will be converted to null
- */
-fun <T, U> ResourceFlow<T>.successMap(map: (T) -> U): ResourceFlow<U> = map {
-    when (it) {
-        is Resource.Start -> it
-        is Resource.Loading -> Resource.Loading(cancel = it.cancel)
-        is Resource.Success -> it.map(map)
-        is Resource.Error -> Resource.Error<U>(it.error, retry = it.retry)
-    }
-}
-
-fun <T, U> ResourceFlow<T>.dataMap(map: (T) -> U): ResourceFlow<U> = map { it.map(map) }

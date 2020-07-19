@@ -24,7 +24,7 @@ struct StatusView<Content> : View where Content : View {
     }
     
     var body: some View {
-        
+
         ZStack {
             
             if (wrapper.appearCount < 0) {
@@ -45,7 +45,8 @@ struct StatusView<Content> : View where Content : View {
                     Button(action: { self.wrapper.retryOnError() }, label: { Text("Error") })
                 }
             }
-        }.onAppear {
+        }
+        .onAppear {
             self.wrapper.onAppear()
         }
     }

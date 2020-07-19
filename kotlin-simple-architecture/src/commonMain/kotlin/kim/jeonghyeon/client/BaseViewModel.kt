@@ -60,11 +60,11 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    fun <T> ResourceStateFlow<T>.load(flow: Flow<Resource<T>>) {
+    fun <T> ResourceStateFlow<T>.loadFlow(flow: () -> Flow<T>) {
         scope.loadFlow(this, null, flow)
     }
 
-    fun <T> MutableStateFlow<T>.load(status: StatusStateFlow, flow: ResourceFlow<T>) {
+    fun <T> MutableStateFlow<T>.loadFlow(status: StatusStateFlow, flow: () -> Flow<T>) {
         scope.loadDataFromFlow(this, status, flow)
     }
 
@@ -139,13 +139,16 @@ fun <T> CoroutineScope.loadDataAndStatus(
 fun <T> CoroutineScope.loadFlow(
     resourceState: ResourceStateFlow<T>? = null,
     statusState: StatusStateFlow? = null,
-    flow: ResourceFlow<T>
+    flow: () -> Flow<T>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
-        flow.collect {
-            resourceState?.value = it
-            statusState?.value = it
+        getResource(flow(),
+            onResult = {
+                resourceState?.value = it
+                statusState?.value = it
+            }) {
+            this@loadFlow.loadFlow(resourceState, statusState, flow)
         }
     }.also {
         resourceState?.value = Resource.Loading { it.cancel() }
@@ -157,13 +160,16 @@ fun <T> CoroutineScope.loadFlow(
 fun <T> CoroutineScope.loadDataFromFlow(
     data: MutableStateFlow<T>,
     status: StatusStateFlow,
-    flow: ResourceFlow<T>
+    flow: () -> Flow<T>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
     launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
-        flow.collect {
-            it.onSuccess { data.value = it }
-            status.value = it
+        getResource(flow(),
+            onResult = {
+                it.onSuccess { data.value = it }
+                status.value = it
+            }) {
+            this@loadDataFromFlow.loadDataFromFlow(data, status, flow)
         }
     }.also {
         status.value = Resource.Loading { it.cancel() }
@@ -183,4 +189,23 @@ private suspend fun <T> CoroutineScope.getResource(
     Resource.Error(e, retry = retry)
 } catch (e: Throwable) {
     Resource.Error(UnknownResourceError(e), retry = retry)
+}
+
+
+private suspend fun <T> CoroutineScope.getResource(
+    flow: Flow<T>,
+    onResult: (Resource<T>) -> Unit,
+    retry: () -> Unit
+) {
+    return try {
+        flow.collect {
+            onResult(Resource.Success(it))
+        }
+    } catch (e: CancellationException) {
+        //if cancel. then ignore it
+    } catch (e: ResourceError) {
+        onResult(Resource.Error(e, retry = retry))
+    } catch (e: Throwable) {
+        onResult(Resource.Error(UnknownResourceError(e), retry = retry))
+    }
 }

@@ -123,7 +123,7 @@ class SimpleRouting(val config: Configuration) {
             //todo is this proper process? how to make json writer to set quotes?
             // if response type is String, then client error with the log below
             // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
-            response = "\"$response\""
+            response = "\"${response.replace("\\", "\\\\")}\""
         }
         //todo does json writer not know null to null text??
         call.respond(response ?: "null")
