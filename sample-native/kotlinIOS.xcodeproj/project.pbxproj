@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */; };
+		217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */; };
 		217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */; };
 		217DE6372CB0387049C217DE /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainScreen.swift */; };
 		217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */; };
@@ -68,6 +69,7 @@
 		217DE5420D87907E024BD89B /* ViewScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewScreen.swift; sourceTree = "<group>"; };
 		217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiDbScreen.swift; sourceTree = "<group>"; };
 		217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialScreen.swift; sourceTree = "<group>"; };
+		217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DbSimpleScreen.swift; sourceTree = "<group>"; };
 		217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSingleScreen.swift; sourceTree = "<group>"; };
 		217DEF1824EFAADD3B4276FE /* ModelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelScreen.swift; sourceTree = "<group>"; };
 		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 				55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */,
 				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
+				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -414,6 +417,7 @@
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
 				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,
 				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
+				217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

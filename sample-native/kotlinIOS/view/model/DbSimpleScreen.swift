@@ -1,16 +1,17 @@
 //
-// Created by hyun kim on 19/07/20.
+// Created by hyun kim on 20/07/20.
 // Copyright (c) 2020 hyun kim. All rights reserved.
 //
 
 import Foundation
+
 import SwiftUI
 import KotlinApi
 
 /// TODO this is not working https://github.com/cashapp/sqldelight/issues/1845
-struct ApiDbScreen: Screen {
-    var title = "DB Api Together".localized()
-    @State var model = ApiDbViewModelIos()
+struct DbSimpleScreen: Screen {
+    var title = "Simple DB Call".localized()
+    @State var model = DbSimpleViewModelIos()
 
     var content: some View {
         VStack {

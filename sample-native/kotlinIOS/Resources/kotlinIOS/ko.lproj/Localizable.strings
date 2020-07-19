@@ -6,5 +6,6 @@
 "View" = "뷰";
 "Api Polling" = "API 폴링";
 "Api Parallel Call" = "병령 API 호출";
-"DB Api Together" = "DB와 Api 함께 사용";
+"DB Api Together" = "DB와 Api 함께 사";
 "Add" = "추가";
+"Simple DB Call" = "간단한 DB 호출";
