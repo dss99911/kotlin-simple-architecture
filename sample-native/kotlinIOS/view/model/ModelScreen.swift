@@ -29,6 +29,9 @@ struct ModelScreen: NavigationScreen {
             NavigationLink(destination: ApiDbScreen()) {
                 Text("DB Api Together").font(.headline)
             }
+            NavigationLink(destination: ApiDbScreen()) {
+                Text("Simple DB Call").font(.headline)
+            }
         }
     }
     
