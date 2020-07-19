@@ -11,6 +11,7 @@ apply(plugin = "org.jetbrains.kotlin.kapt")
 apply(plugin = "androidx.navigation.safeargs")
 
 apply(plugin = "kotlin-simple-architecture-gradle-plugin")
+apply(plugin = "com.google.gms.google-services")
 
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
@@ -28,8 +29,8 @@ android {
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
     defaultConfig {
-        versionCode = 10000
-        versionName = "1.00.00"
+        versionCode = 10001
+        versionName = "1.00.01"
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
 
@@ -129,4 +130,5 @@ dependencies {
 
     //todo remove
     implementation("androidx.ui:ui-material-icons-extended:${versions.android.compose}")
+    implementation("com.google.firebase:firebase-analytics:17.2.2")
 }

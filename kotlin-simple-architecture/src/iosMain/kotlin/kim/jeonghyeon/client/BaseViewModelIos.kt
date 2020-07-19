@@ -6,31 +6,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 //todo consider to delete this on 1.4
 abstract class BaseViewModelIos {
+
     abstract val viewModel: BaseViewModel
+
+    val flows: MutableList<Lazy<CFlow<*>>> = mutableListOf()
 
     val initStatus by cflow { viewModel.initStatus }
     val status by cflow { viewModel.status }
-
-    abstract val flows: Array<CFlow<*>>
+    val isInitialized get() = viewModel.isInitialized.value
 
     fun forEachFlow(action: (CFlow<*>) -> Unit) {
-        action(initStatus)
-        action(status)
-
-        flows.forEach {
-            action(it)
-        }
+        flows.forEach { action(it.value) }
     }
 
     fun onAppear() {
         viewModel.onCompose()
     }
 
-    val isInitialized get() = viewModel.isInitialized.value
-
     open fun onCleared() {
         viewModel.onCleared()
     }
 
-    fun <T> cflow(flow: () -> MutableStateFlow<T>): Lazy<CFlow<T>> = lazy { flow().asCFlow(viewModel.scope) }
+    fun <T> cflow(flow: () -> MutableStateFlow<T>): Lazy<CFlow<T>> = lazy {
+        flow().asCFlow(viewModel.scope)
+    }
+        .also { flows.add(it) }
+
+
 }

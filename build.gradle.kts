@@ -29,6 +29,8 @@ buildscript {
         classpath(deps.simpleArch.pluginGradle)
         classpath(deps.sqldelight.gradle)
         classpath(deps.koin.gradle)
+        //todo check if possible to add on sample module only not here
+        classpath("com.google.gms:google-services:4.3.3")
     }
 }
 

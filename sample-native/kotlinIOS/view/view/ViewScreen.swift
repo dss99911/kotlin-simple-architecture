@@ -7,15 +7,20 @@
 //
 
 import SwiftUI
+import KotlinApi
 
-struct ViewView: View {
-    var body: some View {
+struct ViewScreen: NavigationScreen {
+    
+    var title: String = "View".localized()
+    @State var model = EmptyViewModelIos()
+    
+    var content: some View {
         Text("View")
     }
 }
 
 struct ViewView_Previews: PreviewProvider {
     static var previews: some View {
-        ViewView()
+        ViewScreen()
     }
 }

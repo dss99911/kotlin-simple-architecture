@@ -9,7 +9,7 @@ import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiSingleViewModel
 
-class ApiSingleScreen(private val viewModel: ApiSingleViewModel = ApiSingleViewModel()) : ModelScreen(viewModel) {
+class ApiSingleScreen(private val model: ApiSingleViewModel = ApiSingleViewModel()) : ModelScreen(model) {
     override val title: String = R.string.single_call.resourceToString()
 
     @Composable
@@ -20,34 +20,11 @@ class ApiSingleScreen(private val viewModel: ApiSingleViewModel = ApiSingleViewM
     @Composable
     override fun view() {
         Column {
-            Text("key : $title\nvalue : ${+viewModel.result}")
-            TextField(viewModel.input)
-            Button(viewModel::onClick) {
+            Text("current value : ${+model.result}")
+            TextField(model.input)
+            Button(model::onClick) {
                 Text("update")
             }
         }
     }
 }
-
-//class ApiSingleViewModel(private val api: PreferenceApi = serviceLocator.preferenceApi) : BaseViewModel() {
-//    val KEY = "someKey"
-//
-//    val result = MutableStateFlow("")
-//    val input = MutableStateFlow("")
-//        .withSource(result) { value = it }
-//
-//
-//    override fun onInitialized() {
-//        result.load(initStatus) {
-//            api.getString(KEY) ?: ""
-//        }
-//    }
-//
-//    fun onClick() {
-//        result.load(status) {
-//            val text = input.value
-//            api.setString(KEY, text)
-//            text
-//        }
-//    }
-//}

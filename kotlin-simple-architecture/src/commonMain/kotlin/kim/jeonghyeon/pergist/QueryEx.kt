@@ -1,54 +1,36 @@
 package kim.jeonghyeon.pergist
 
 import com.squareup.sqldelight.Query
-import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.ResourceFlow
-import kim.jeonghyeon.type.UnknownResourceError
-import kim.jeonghyeon.type.successMap
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
-fun <T : Any> Query<T>.asResourceFlow(): ResourceFlow<Query<T>> = flow {
-    val channel = Channel<Unit>(Channel.CONFLATED).apply { offer(Unit) }
+fun <T : Any> Query<T>.asListFlow(hasInit: Boolean = true): Flow<List<T>> = getChangeFlow(hasInit) { it.executeAsList() }
 
-    val listener = object : Query.Listener {
+inline fun <reified T : Any> Query<T>.asOneFlow(hasInit: Boolean = true): Flow<T> = getChangeFlow(hasInit) { it.executeAsOne() }
+inline fun <reified T : Any> Query<T>.asOneOrNullFlow(hasInit: Boolean): Flow<T?> =
+    getChangeFlow(hasInit) { it.executeAsOneOrNull() }
+
+/**
+ * flow is collected if value is really changed.
+ */
+inline fun <T : Any, reified U> Query<T>.getChangeFlow(getInit: Boolean = true, crossinline transform: (Query<T>) -> U): Flow<U> {
+    val flow: MutableStateFlow<Any?> = MutableStateFlow(if (getInit) transform(this) else INIT)
+    addListener(object : Query.Listener {
         override fun queryResultsChanged() {
-            channel.offer(Unit)
+            flow.value = transform(this@getChangeFlow)
         }
-    }
-    addListener(listener)
-    try {
-        for (item in channel) {
-            val resource = getResource(this@asResourceFlow) { channel.offer(Unit) }
-            resource?.let { emit(it) }
+    })
+
+    return flow<U> {
+        flow.collect {
+            if (it is U) {
+                emit(it)
+            }
         }
-    } finally {
-        //todo check if the data refreshed when other Screen update data.
-        //this may be called when Screen is not used. then there will be problem.
-        //consider to use addWeakListener.
-        //solutions
-        //1. make ScreenScope which survive when it doesn't exist on history stack.
-        //I considered only android. should consider IOS and server as well.
-        removeListener(listener)
     }
 }
 
-fun <T : Any> Query<T>.asListFlow(): ResourceFlow<List<T>> = asResourceFlow().successMap { it.executeAsList() }
-fun <T : Any> Query<T>.asOneFlow(): ResourceFlow<T> = asResourceFlow().successMap { it.executeAsOne() }
-fun <T : Any> Query<T>.asOneOrNullFlow(): ResourceFlow<T?> = asResourceFlow().successMap { it.executeAsOneOrNull() }
+object INIT
 
-
-internal fun <T : Any> getResource(query: Query<T>, retry: () -> Unit): Resource<Query<T>>? = try {
-    Resource.Success(query)
-} catch (e: CancellationException) {
-    //if cancel. then ignore it
-    //todo check if cancel is working
-    null
-} catch (e: Exception) {
-    //todo check if this is working
-
-    Resource.Error(UnknownResourceError(e)) {
-        retry()
-    }
-}
