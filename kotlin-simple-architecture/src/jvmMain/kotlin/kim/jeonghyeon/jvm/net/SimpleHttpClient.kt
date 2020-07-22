@@ -18,7 +18,9 @@ import kotlin.reflect.jvm.kotlinFunction
  * available only on JVM
  * - no need to add @Api annotation on api interface
  * - no need to add @Serializable on request and response body
+ *
  */
+@Deprecated("this is not maintained. as it's available only on JVM", ReplaceWith("@Api"))
 inline fun <reified T> HttpClient.create(baseUrl: String) =
     suspendProxy(T::class.java) { method, arguments ->
         val mainPath = T::class.java.name

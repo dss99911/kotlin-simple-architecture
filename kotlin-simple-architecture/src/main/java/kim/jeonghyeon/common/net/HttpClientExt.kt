@@ -17,7 +17,7 @@ val clientAndroid = httpClientDefault {
 private class AndroidLogger : Logger {
     override fun log(message: String) {
         message.split("\n").forEach {
-            kim.jeonghyeon.androidlibrary.util.log(it)
+            kim.jeonghyeon.util.log(it)
         }
 
     }

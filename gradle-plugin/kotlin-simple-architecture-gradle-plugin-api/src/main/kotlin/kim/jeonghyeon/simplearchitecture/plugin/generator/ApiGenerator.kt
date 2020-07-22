@@ -12,7 +12,10 @@ import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import java.io.File
-
+// TODO: 29/06/20 if sqldelight model is used. serializable is not supported
+//  List, nullable, set also not supported. String.serializer().list/nullable/set
+//  if add comment above function. it misdetect suspend not exists.
+//  if import list contains the imports which is added here. then duplication error occurs
 class ApiGenerator(
     private val pluginOptions: PluginOptions,
     private val origin: Collection<KtFile>
@@ -50,6 +53,7 @@ class ApiGenerator(
 
     private fun KtClass.isApiInterface(): Boolean = name != null && isInterface() && hasAnnotation<Api>()
 
+
     private fun KtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT
     |${makePackage()}
@@ -81,6 +85,9 @@ class ApiGenerator(
         |import kotlinx.serialization.json.JsonConfiguration
         |import kotlinx.serialization.json.json
         |import kotlinx.serialization.builtins.serializer
+        |import kotlinx.serialization.builtins.list
+        |import kotlinx.serialization.builtins.nullable
+        |import kotlinx.serialization.builtins.set
         """.trimMargin()
 
     private fun KtClass.makeClassDefinition() =
@@ -123,20 +130,20 @@ class ApiGenerator(
         |${returnTypeString?.let {
             """
             |val json = Json(JsonConfiguration.Stable)
-            |return json.parse($it.serializer(), response.readText())
+            |return json.parse(${makeSerializer(it)}, response.readText())
             """.trimMargin()
         } ?: ""}
         """.trimMargin()
     }
 
     private fun GeneratedApiSource.generateApiClassFile(): File? =
-        File("$sourceSetPath/${packageName.replace(".", "/")}/${fileName}")
+        File("$sourceSetPath/${packageName.replace(".", "/")}/$fileName")
             .takeIf { !it.exists() }
             ?.write { append(source) }
 
     private fun List<GeneratedApiSource>.generateApiFunctionFile(): List<File> {
         var expectFile: File? = null
-        val filePath = "kim/jeonghyeon/generated/net/HttpClientEx.kt"
+        val filePath = "kim/jeonghyeon/generated/net/HttpClient${pluginOptions.postFix.capitalize()}Ex.kt"
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(pluginOptions.buildPath, SOURCE_SET_NAME_COMMON)
             expectFile = File("$expectPath/$filePath")
@@ -149,7 +156,7 @@ class ApiGenerator(
 
                         import io.ktor.client.HttpClient
 
-                        expect inline fun <reified T> HttpClient.create(baseUrl: String): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T
 
                         """.trimIndent()
                     )
@@ -167,14 +174,14 @@ class ApiGenerator(
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create(baseUrl: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T {
                 |
                 |${INDENT}return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl) as T" }.prependIndent(
                         indent(2)
                     )}
                 |
-                |$INDENT${INDENT}else -> error("can not create " + T::class.qualifiedName)
+                |$INDENT${INDENT}else -> error("can not create " + T::class.simpleName)
                 |$INDENT}
                 |}
                 """.trimMargin()
@@ -182,6 +189,30 @@ class ApiGenerator(
             }
         }
         return listOfNotNull(actualPath, expectFile)
+    }
+
+    private fun makeSerializer(typeString: String): String {
+        return when {
+            typeString.endsWith("?") -> {
+                makeSerializer(typeString.substring(0, typeString.length - 1)) + ".nullable"
+            }
+            typeString.endsWith(">") -> {
+                val firstType = typeString.substringBefore("<")
+                val innerType = typeString.substring(typeString.indexOf("<") + 1, typeString.lastIndexOf(">"))
+                makeSerializer(innerType) + when (firstType) {
+                    "List" -> {
+                        ".list"
+                    }
+                    "Set" -> {
+                        ".set"
+                    }
+                    else -> error("Serializing $firstType is not supported by api generator")
+                }
+            }
+            else -> {
+                "$typeString.serializer()"
+            }
+        }
     }
 }
 

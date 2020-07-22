@@ -7,6 +7,7 @@ import kim.jeonghyeon.simplearchitecture.plugin.task.getDeleteGeneratedSourceTas
 import kim.jeonghyeon.simplearchitecture.plugin.task.getGenerateLocalAddressTask
 import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
 import kim.jeonghyeon.simplearchitecture.plugin.util.dependsOnCompileTask
+import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -24,16 +25,26 @@ open class MainGradlePlugin : Plugin<Project> {
             kotlinOptions.jvmTarget = "1.8"
         }
 
+        project.extensions.create(
+            "simpleArch",
+            SimpleArchExtension::class.java
+        )
+
         with(project) {
             applyAndroid()
-            addSimpleArchitectureDependency()
+
+            //todo this is not working properly if there is library module. and application module. and both add same dependency
+//            addSimpleArchitectureDependency()
 
             afterEvaluate {//to perform after source set is initialized.
                 getSourceDirectorySetAndNames().forEach {
                     it.addGeneratedSourceDirectory(project)
                 }
                 dependsOnCompileTask { getDeleteGeneratedSourceTask(it) }
-                dependsOnCompileTask { getGenerateLocalAddressTask(it) }
+                if (project.simpleArchExtension!!.simpleConfig) {
+                    dependsOnCompileTask { getGenerateLocalAddressTask(it) }
+                }
+
 
             }
         }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY appname "Android Sample">]>
 <resources>
     <string name="app_name">&appname;</string>
-    <string name="app_name2">&appname;2</string>
     <string name="mvvm">MVVM</string>
     <string name="chrome_custom_tab">Chrome Custom Tab</string>
     <string name="api_call">Api call</string>
@@ -13,19 +12,21 @@
     <string name="open">open</string>
     <string name="settings_fragment_text">settings fragment</string>
     <string name="setting">setting</string>
-    <string name="home">home</string>
+    <string name="home">Home</string>
     <string name="deeplink">deeplink</string>
     <string name="action_search">search</string>
     <string name="share">share</string>
     <string name="add">add</string>
     <string name="input_text">Input text</string>
     <string name="view_model_related">View Model related</string>
+    <string name="model">Model</string>
     <string name="paging">Paging</string>
     <string name="debounce">Debounce</string>
     <string name="navargs">NavArgs</string>
     <string name="parent_viewmodel">parent viewmodel</string>
     <string name="menu">Menu</string>
     <string name="view_related">View Related</string>
+    <string name="view">View</string>
     <string name="list">list</string>
     <string name="other_viewmodel">other viewModel</string>
     <string name="simple_list">simple list</string>
@@ -34,9 +35,10 @@
     <string name="keyword">keyword</string>
     <string name="search">Search</string>
     <string name="comparable_list">comparable list</string>
-    <string name="multiple_sequential_call">multiple sequential call</string>
+    <string name="multiple_sequential_call">Api call sequentially </string>
     <string name="polling">polling</string>
-    <string name="multiple_parallel_call">multiple parallel call</string>
+    <string name="multiple_parallel_call">Api call in parallel</string>
+    <string name="single_call">Single Api call</string>
     <string name="call_in_idle">call in idle</string>
     <string name="threading">Threading</string>
     <string name="callback">Callback</string>
@@ -58,6 +60,11 @@
     <string name="action">action</string>
     <string name="no_data_exists">No data exists</string>
     <string name="db">DB</string>
+    <string name="db_simple">Simple DB call</string>
+    <string name="db_observe">DB Observe</string>
+    <string name="db_api">DB Api together</string>
+    <string name="preference">Preference</string>
+    <string name="switch_map_call">SwitchMap Call</string>
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
@@ -68,4 +75,6 @@
     <string name="message_accessibility_guide">"'%s' accessibility service is turned on. it may affect on my service.\n\nif it is not working properly, please turn off other accessibility service, then try again"</string>
     <string name="toast_fingerprint_wrong">Too many attempt with wrong fingerprint.\nPlease try later</string>
     <string name="fragment">fragment</string>
+    <string name="sample">Sample</string>
+    <string name="update">Update</string>
 </resources>

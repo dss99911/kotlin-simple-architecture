@@ -7,17 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */; };
+		217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */; };
+		217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */; };
+		217DE6372CB0387049C217DE /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainScreen.swift */; };
+		217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */; };
+		217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */; };
+		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
+		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
+		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
+		5546F9AB24B7539F00027FD1 /* KotlinApi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5530048D249A76BC00981F3E /* KotlinApi.framework */; };
+		5546F9AC24B7539F00027FD1 /* KotlinApi.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5530048D249A76BC00981F3E /* KotlinApi.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		559105F224424C4100ADA03F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F124424C4100ADA03F /* AppDelegate.swift */; };
 		559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F324424C4100ADA03F /* SceneDelegate.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
-		559105F924424C4100ADA03F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F824424C4100ADA03F /* ContentView.swift */; };
 		559105FB24424C4200ADA03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FA24424C4200ADA03F /* Assets.xcassets */; };
 		559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FD24424C4200ADA03F /* Preview Assets.xcassets */; };
 		5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 559105FF24424C4200ADA03F /* LaunchScreen.storyboard */; };
 		5591060C24424C4200ADA03F /* kotlinIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591060B24424C4200ADA03F /* kotlinIOSTests.swift */; };
 		5591061724424C4200ADA03F /* kotlinIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591061624424C4200ADA03F /* kotlinIOSUITests.swift */; };
-		5591063024425B9200ADA03F /* KotlinApi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5591062F24425B9200ADA03F /* KotlinApi.framework */; };
-		5591063124425B9200ADA03F /* KotlinApi.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5591062F24425B9200ADA03F /* KotlinApi.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55D47FB924C3427A00BEBA59 /* Localizable.strings */; };
+		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
+		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
+		55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* StatusView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,13 +50,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		5591063224425B9200ADA03F /* Embed Frameworks */ = {
+		5546F9AD24B7539F00027FD1 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5591063124425B9200ADA03F /* KotlinApi.framework in Embed Frameworks */,
+				5546F9AC24B7539F00027FD1 /* KotlinApi.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,11 +64,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		217DE07307A8043209549F8E /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
+		217DE0F7F8C5CB9236798A97 /* MainScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
+		217DE5420D87907E024BD89B /* ViewScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewScreen.swift; sourceTree = "<group>"; };
+		217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiDbScreen.swift; sourceTree = "<group>"; };
+		217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialScreen.swift; sourceTree = "<group>"; };
+		217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DbSimpleScreen.swift; sourceTree = "<group>"; };
+		217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSingleScreen.swift; sourceTree = "<group>"; };
+		217DEF1824EFAADD3B4276FE /* ModelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelScreen.swift; sourceTree = "<group>"; };
+		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
+		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559105F124424C4100ADA03F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		559105F324424C4100ADA03F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		559105F624424C4100ADA03F /* kotlinIOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = kotlinIOS.xcdatamodel; sourceTree = "<group>"; };
-		559105F824424C4100ADA03F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		559105FA24424C4200ADA03F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		559105FD24424C4200ADA03F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5591060024424C4200ADA03F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -69,6 +90,11 @@
 		5591061824424C4200ADA03F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55910625244259C200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		5591062F24425B9200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
+		55D47FBA24C3427A00BEBA59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = kotlinIOS/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		55D47FBC24C3429400BEBA59 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = kotlinIOS/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
+		55EC719C24B9A5FC0012D64E /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5591063024425B9200ADA03F /* KotlinApi.framework in Frameworks */,
+				5546F9AB24B7539F00027FD1 /* KotlinApi.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +123,56 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		217DE10741337F1B3AEFAB19 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				217DEF1824EFAADD3B4276FE /* ModelScreen.swift */,
+				217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */,
+				217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */,
+				55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */,
+				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
+				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
+				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		217DE988B40143161010BB0B /* view */ = {
+			isa = PBXGroup;
+			children = (
+				217DE10741337F1B3AEFAB19 /* model */,
+				217DEE88BF00C36CA4BB1701 /* view */,
+				217DE0F7F8C5CB9236798A97 /* MainScreen.swift */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
+		217DEC1EE1072C25820B9664 /* library */ = {
+			isa = PBXGroup;
+			children = (
+				217DE07307A8043209549F8E /* Screen.swift */,
+				55EC719C24B9A5FC0012D64E /* StatusView.swift */,
+				55D47FBD24C343D000BEBA59 /* Localizable.swift */,
+			);
+			path = library;
+			sourceTree = "<group>";
+		};
+		217DEE717923577513CF6F77 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				55D47FB924C3427A00BEBA59 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		217DEE88BF00C36CA4BB1701 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				217DE5420D87907E024BD89B /* ViewScreen.swift */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
 		559105E524424C4100ADA03F = {
 			isa = PBXGroup;
 			children = (
@@ -123,12 +199,14 @@
 			children = (
 				559105F124424C4100ADA03F /* AppDelegate.swift */,
 				559105F324424C4100ADA03F /* SceneDelegate.swift */,
-				559105F824424C4100ADA03F /* ContentView.swift */,
 				559105FA24424C4200ADA03F /* Assets.xcassets */,
 				559105FF24424C4200ADA03F /* LaunchScreen.storyboard */,
 				5591060224424C4200ADA03F /* Info.plist */,
 				559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */,
 				559105FC24424C4200ADA03F /* Preview Content */,
+				217DEE717923577513CF6F77 /* Resources */,
+				217DE988B40143161010BB0B /* view */,
+				217DEC1EE1072C25820B9664 /* library */,
 			);
 			path = kotlinIOS;
 			sourceTree = "<group>";
@@ -162,6 +240,7 @@
 		55910624244259C200ADA03F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5530048D249A76BC00981F3E /* KotlinApi.framework */,
 				5591062F24425B9200ADA03F /* KotlinApi.framework */,
 				55910625244259C200ADA03F /* KotlinApi.framework */,
 			);
@@ -175,11 +254,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5591061B24424C4200ADA03F /* Build configuration list for PBXNativeTarget "kotlinIOS" */;
 			buildPhases = (
-				5591063324425C1800ADA03F /* ShellScript */,
+				5591063324425C1800ADA03F /* Run Script */,
 				559105EA24424C4100ADA03F /* Sources */,
 				559105EB24424C4100ADA03F /* Frameworks */,
 				559105EC24424C4100ADA03F /* Resources */,
-				5591063224425B9200ADA03F /* Embed Frameworks */,
+				5546F9AD24B7539F00027FD1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -256,6 +335,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = 559105E524424C4100ADA03F;
 			productRefGroup = 559105EF24424C4100ADA03F /* Products */;
@@ -275,6 +355,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */,
+				55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */,
 				559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */,
 				559105FB24424C4200ADA03F /* Assets.xcassets in Resources */,
 			);
@@ -297,7 +378,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5591063324425C1800ADA03F /* ShellScript */ = {
+		5591063324425C1800ADA03F /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -306,6 +387,7 @@
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -321,10 +403,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */,
+				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F224424C4100ADA03F /* AppDelegate.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
-				559105F924424C4100ADA03F /* ContentView.swift in Sources */,
 				559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */,
+				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
+				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
+				55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */,
+				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
+				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
+				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
+				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
+				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,
+				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
+				217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +461,15 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		55D47FB924C3427A00BEBA59 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55D47FBA24C3427A00BEBA59 /* Base */,
+				55D47FBC24C3429400BEBA59 /* ko */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -375,6 +477,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -435,6 +538,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -493,7 +597,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"kotlinIOS/Preview Content\"";
 				DEVELOPMENT_TEAM = GXBZ28WR2M;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "../common/build/fat-framework";
+				FRAMEWORK_SEARCH_PATHS = "../sample/build/fat-framework";
 				INFOPLIST_FILE = kotlinIOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -514,7 +618,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"kotlinIOS/Preview Content\"";
 				DEVELOPMENT_TEAM = GXBZ28WR2M;
 				ENABLE_PREVIEWS = YES;
-				FRAMEWORK_SEARCH_PATHS = "../common/build/fat-framework";
+				FRAMEWORK_SEARCH_PATHS = "../sample/build/fat-framework";
 				INFOPLIST_FILE = kotlinIOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
