@@ -29,8 +29,6 @@ include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native")
 
 
 if (includeSample) {
-//    include("androidtesting", "testing")
-//    include ("sample"/*, "kotlin-sample", "sample-testing-codelab", "sample-sunflower"*/)
     include("sample")
 }
 
