@@ -1,0 +1,14 @@
+apply plugin: 'com.android.application'
+
+application_id = "kim.jeonghyeon.sample.sunflower"
+apply from: (project(':library').projectDir.toString() + '/base.gradle')
+
+dependencies {
+
+    kapt "com.github.bumptech.glide:compiler:4.10.0"
+    implementation "com.github.bumptech.glide:glide:4.10.0"
+    androidTestImplementation "androidx.work:work-testing:2.1.0"
+    androidTestImplementation "androidx.arch.core:core-testing:2.0.0"
+    implementation "com.google.android.material:material:1.1.0-alpha09"
+
+}
