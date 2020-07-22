@@ -1,0 +1,15 @@
+include ':app'
+include ':sample', ':library', ':kotlinlibrary', ':androidtesting', ':testing'
+project(':sample').projectDir = new File(pathLibrary + "/sample")
+project(':library').projectDir = new File(pathLibrary + "/library")
+project(':kotlinlibrary').projectDir = new File(pathLibrary + "/kotlinlibrary")
+project(':androidtesting').projectDir = new File(pathLibrary + "/androidtesting")
+project(':testing').projectDir = new File(pathLibrary + "/testing")
+
+if (useSample == 'true') {
+    include ':kotlin-sample', ':sample-testing-codelab', ':sample-sunflower'
+    project(':kotlin-sample').projectDir = new File(pathLibrary + "/kotlin-sample")
+    project(':sample-testing-codelab').projectDir = new File(pathLibrary + "/sample-testing-codelab")
+    project(':sample-sunflower').projectDir = new File(pathLibrary + "/sample-sunflower")
+    project(':sample-sunflower').projectDir = new File(pathLibrary + "/sample-sunflower")
+}

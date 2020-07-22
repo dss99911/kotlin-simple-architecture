@@ -1,0 +1,7 @@
+apply plugin: 'com.android.application'
+apply from: (project(':library').projectDir.toString() + '/base.gradle')
+
+
+dependencies {
+    // Add your dependencies
+}
