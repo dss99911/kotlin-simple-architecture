@@ -5,30 +5,28 @@ plugins {
     `java-gradle-plugin`
     id("kotlin-kapt")
     maven
+    id("com.gradle.plugin-publish") version "0.12.0"
 }
 
 group = deps.simpleArch.pluginGradle.getGroupId()
 val archivesBaseName = deps.simpleArch.pluginGradle.getArtifactId()
 version = deps.simpleArch.pluginGradle.getVersion()
 
-//TODO HYUN [multi-platform2] : change to remote class path
-tasks.install {
-    repositories.withGroovyBuilder {
-        "mavenInstaller" {
-            "pom" {
-                setProperty("artifactId", archivesBaseName)
-            }
-        }
-    }
+
+//region gradle plugin publish
+pluginBundle {
+    website = "https://github.com/dss99911/kotlin-simple-architecture"
+    vcsUrl = "https://github.com/dss99911/kotlin-simple-architecture.git"
+    tags = listOf("kotlin", "multiplatform", "architecture", "kotlincompilerplugin")
 }
 
 gradlePlugin {
     plugins {
-        register("gradlePlugin") {
-            id =
-                archivesBaseName// users will do `apply plugin: "kotlin-simple-architecture-gradle-plugin"`
-            implementationClass =
-                "kim.jeonghyeon.simplearchitecture.plugin.MainGradlePlugin" // entry-point class
+        create("mainPlugin") {//name is for unique in all plugins
+            id = "$group.$archivesBaseName"
+            displayName = "Kotlin Simple Architecture Plugin"
+            description = "Generate code for Simple Api and Simple DB, etc"
+            implementationClass = "kim.jeonghyeon.simplearchitecture.plugin.MainGradlePlugin" // entry-point class
         }
     }
 }
@@ -43,12 +41,16 @@ dependencies {
 
 }
 
+//build all plugins by one time
 tasks.build {
     dependsOn(":gradle-plugin:${deps.simpleArch.pluginApi.getArtifactId()}:build")
     dependsOn(":gradle-plugin:${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
 
     finalizedBy(tasks.install)
 }
+
+
+//region plugin generated config
 
 val GENERATED_SOURCE_PATH = "build/generated/source/simpleArch"
 
@@ -72,8 +74,11 @@ tasks.create("pluginConfig") {
             val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API = "${deps.simpleArch.pluginApi}"
             val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API_NATIVE = "${deps.simpleArch.pluginApiNative}"
             val VERSION_COMPOSE = "${versions.android.compose}"
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }
 
 tasks.getByName("compileKotlin").dependsOn("pluginConfig")
+
+//endregion plugin generated config
