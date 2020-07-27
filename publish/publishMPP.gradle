@@ -1,0 +1,16 @@
+apply(plugin: "maven-publish")
+
+//todo if this is gradle.kts, publishing is not recognized
+publishing {
+    repositories {
+        maven {
+            url  = "https://api.bintray.com/maven/hyun/kotlin-simple-architecture/${project.name}/;publish=1;override=1"
+            credentials {
+                username = bintrayUser
+                password = bintrayApiKey
+            }
+        }
+    }
+}
+
+publish.dependsOn build

@@ -1,38 +1,17 @@
 plugins {
     `kotlin-dsl`
-    `maven-publish`
     id("org.jetbrains.kotlin.jvm")
     `java-gradle-plugin`
     id("kotlin-kapt")
+    `maven-publish`
     maven
-    id("com.gradle.plugin-publish") version "0.12.0"
 }
 
 group = deps.simpleArch.pluginGradle.getGroupId()
-val archivesBaseName = deps.simpleArch.pluginGradle.getArtifactId()
 version = deps.simpleArch.pluginGradle.getVersion()
 
-
-//region gradle plugin publish
-pluginBundle {
-    website = "https://github.com/dss99911/kotlin-simple-architecture"
-    vcsUrl = "https://github.com/dss99911/kotlin-simple-architecture.git"
-    tags = listOf("kotlin", "multiplatform", "architecture", "kotlincompilerplugin")
-}
-
-gradlePlugin {
-    plugins {
-        create("mainPlugin") {//name is for unique in all plugins
-            id = "$group.$archivesBaseName"
-            displayName = "Kotlin Simple Architecture Plugin"
-            description = "Generate code for Simple Api and Simple DB, etc"
-            implementationClass = "kim.jeonghyeon.simplearchitecture.plugin.MainGradlePlugin" // entry-point class
-        }
-    }
-}
-
 dependencies {
-    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(deps.simpleArch.pluginShared)
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
 
@@ -42,12 +21,11 @@ dependencies {
 }
 
 //build all plugins by one time
-tasks.build {
-    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApi.getArtifactId()}:build")
-    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
-
-    finalizedBy(tasks.install)
-}
+//tasks.build {
+////    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApi.getArtifactId()}:build")
+////    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
+//    finalizedBy(tasks.install)
+//}
 
 
 //region plugin generated config
@@ -82,3 +60,5 @@ tasks.create("pluginConfig") {
 tasks.getByName("compileKotlin").dependsOn("pluginConfig")
 
 //endregion plugin generated config
+
+publishGradlePlugin()

@@ -1,10 +1,3 @@
-// extras
-// artifact_id : ex) jvm
-// artifact_name : ex) JVM
-// publish_version : ex) 1.0.1
-
-
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -20,14 +13,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar, javadocJar
 }
-
-
-
-
-group = 'kim.jeonghyeon'
-version = publish_version
-def packageName = "kotlin-simple-architecture-$artifact_id"
-
 
 def pomConfig = {
     licenses {
@@ -52,42 +37,33 @@ def pomConfig = {
     }
 }
 
-
 publishing {
+    repositories {
+        maven {
+            url  = "https://api.bintray.com/maven/hyun/kotlin-simple-architecture/${project.name}/;publish=1;override=1"
+            credentials {
+                username = bintrayUser
+                password = bintrayApiKey
+            }
+        }
+    }
+
     publications {
         Production(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
-            groupId group
-            artifactId packageName
+            groupId project.group
+            artifactId project.name
             version = project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', "Kotlin Simple Architecture - $artifact_name")
-                root.appendNode('name', "Kotlin Simple Architecture - $artifact_name")
+                root.appendNode('description', "Kotlin Simple Architecture - ${project.name}")
+                root.appendNode('name', "Kotlin Simple Architecture - ${project.name}")
                 root.appendNode('url', "https://github.com/dss99911/kotlin-simple-architecture")
                 root.children().last() + pomConfig
             }
         }
     }
 }
-
-bintray {
-    user = bintrayUser
-    key = bintrayApiKey
-    publications = ['Production']
-    publish = true
-    pkg {
-
-        repo = 'kotlin-simple-architecture'
-        name = packageName
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/dss99911/kotlin-simple-architecture.git'
-        version {
-            name = version.name
-//            vcsTag = ""//git tag
-            released  = new Date()
-        }
-    }
-}
+publish.dependsOn build
