@@ -21,16 +21,20 @@ pluginManagement {
 
 enableFeaturePreview("GRADLE_METADATA")
 
-include("kotlin-simple-architecture")
-include("gradle-plugin:kotlin-simple-architecture-gradle-plugin")
-include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api")
+include("kotlin-simple-architecture-annotation")
 include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-shared")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api")
 include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native")
+include("gradle-plugin:kotlin-simple-architecture-gradle-plugin")
+include("kotlin-simple-architecture")
+//
+//////plugins
 
 
+//
+//
 if (includeSample) {
     include("sample")
+    //todo remove after bug fixed
+    include(":sampleandroid")
 }
-
-//todo remove after bug fixed
-include(":sampleandroid")

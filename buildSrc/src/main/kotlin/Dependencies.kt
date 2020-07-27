@@ -24,8 +24,6 @@ object deps {
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)
-        val atomicfuGradle = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:${versions.kotlin.atomicfu}"
-        val atomicfuCommon = "org.jetbrains.kotlinx:atomicfu-common:${versions.kotlin.atomicfu}"
     }
 
     object ktor {
@@ -50,37 +48,13 @@ object deps {
 
     object android {
         const val buildToolGradle = "com.android.tools.build:gradle:${versions.android.buildTool}"
-        const val navigationGradle = "androidx.navigation:navigation-safe-args-gradle-plugin:${versions.android.xUi}"
         const val supportCompat = "com.android.support:support-compat:28.0.0"
         const val appCompat = "androidx.appcompat:appcompat:${versions.android.xBase}"
         const val core = "androidx.core:core-ktx:1.3.0"
         const val vectordrawable = "androidx.vectordrawable:vectordrawable:${versions.android.xBase}"
-        const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
         const val material = "com.google.android.material:material:${versions.android.material}"
-        const val preference = "androidx.preference:preference:1.1.0"
-        const val fragment = "androidx.fragment:fragment-ktx:${versions.android.fragment}"
-        const val fragmentTesting = "androidx.fragment:fragment-testing:${versions.android.fragment}"
-        const val viewPager = "androidx.viewpager2:viewpager2:1.0.0"
         const val work = "androidx.work:work-runtime-ktx:2.3.1"
-        const val paging = "androidx.paging:paging-runtime-ktx:2.1.1"
-        const val constraintlayout = "androidx.constraintlayout:constraintlayout:${versions.android.constraintLayout}"
-        val lifecycle = listOf(
-            "androidx.lifecycle:lifecycle-extensions:${versions.android.xUi}",
-            "androidx.lifecycle:lifecycle-livedata-ktx:${versions.android.xUi}",
-            "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.android.xUi}",
-            "androidx.lifecycle:lifecycle-common-java8:${versions.android.xUi}",
-            "androidx.lifecycle:lifecycle-viewmodel-savedstate:${versions.android.xUi}"
-        )
-        val navigation = listOf(
-            "androidx.navigation:navigation-fragment-ktx:${versions.android.xUi}",
-            "androidx.navigation:navigation-ui-ktx:${versions.android.xUi}"
-        )
-        val room = listOf(
-            "androidx.room:room-runtime:${versions.android.room}",
-            "androidx.room:room-ktx:${versions.android.room}"
-        )
 
-        const val picasso = "com.squareup.picasso:picasso:2.71828"
         const val anko = "org.jetbrains.anko:anko:0.10.8"
         const val timber = "com.jakewharton.timber:timber:4.7.1"
 
@@ -93,7 +67,6 @@ object deps {
             "androidx.test:runner:${versions.android.xTest}",
             "org.mockito:mockito-core:3.2.4",
             kotlin.coroutineTest,
-            "androidx.room:room-testing:${versions.android.room}",
             "com.google.truth:truth:1.0.1"
         )
 
@@ -105,44 +78,26 @@ object deps {
         )
     }
 
-    object koin {
-        const val core = "org.koin:koin-core:${versions.koin}"
-        const val android = "org.koin:koin-android:${versions.koin}"
-        const val androidXScope = "org.koin:koin-androidx-scope:${versions.koin}"
-        const val androidXViewModel = "org.koin:koin-androidx-viewmodel:${versions.koin}"
-        const val ktor = "org.koin:koin-ktor:${versions.koin}"
-        const val gradle = "org.koin:koin-gradle-plugin:${versions.koin}"
-    }
-
-
     object simpleArch {
-        val common = depSimpleArchitecture(version = PublishConfig.versionLibrary)
-        val jvm = depSimpleArchitecture("jvm", PublishConfig.versionLibrary)
-        val android = depSimpleArchitecture("android", PublishConfig.versionLibrary)
+        val common = depSimpleArchitecture(version = versions.simpleArch)
 
-        val androidTest = depSimpleArchitecture("android-test", PublishConfig.versionTest)
-        val androidAndroidTest =
-            depSimpleArchitecture("android-androidtest", PublishConfig.versionTest)
+        val jvm = depSimpleArchitecture("jvm", versions.simpleArch)
+        val android = depSimpleArchitecture("android", versions.simpleArch)
 
-        val pluginShared =
-            depSimpleArchitecture("gradle-plugin-api-shared", PublishConfig.versionLibrary)
-        val pluginApi = depSimpleArchitecture("gradle-plugin-api", PublishConfig.versionLibrary)
-        val pluginApiNative =
-            depSimpleArchitecture("gradle-plugin-api-native", PublishConfig.versionLibrary)
-        val pluginGradle = depSimpleArchitecture("gradle-plugin", PublishConfig.versionLibrary)
-    }
-
-
-    object bintrary {
-        const val gradle = "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
+        val pluginShared = depSimpleArchitecture("gradle-plugin-api-shared", versions.simpleArch)
+        val pluginApi = depSimpleArchitecture("gradle-plugin-api", versions.simpleArch)
+        val pluginApiNative = depSimpleArchitecture("gradle-plugin-api-native", versions.simpleArch)
+        val pluginGradle = depSimpleArchitecture("gradle-plugin", versions.simpleArch)
+        val annotation = depSimpleArchitecture("annotation", versions.simpleArch)
+        val annotationJvm = depSimpleArchitecture("annotation-jvm", versions.simpleArch)
     }
 
     object plugin {
         val gradleApi = depKotlin("gradle-plugin-api", versions.kotlin.version)
         val compilerEmbeddable = depKotlin("compiler-embeddable", versions.kotlin.version)
         val compiler = depKotlin("compiler", versions.kotlin.version)
-        const val poet = "com.squareup:kotlinpoet:1.3.0"
         const val auto = "com.google.auto.service:auto-service:1.0-rc6"
+        const val gradlePublish = "com.gradle.publish:plugin-publish-plugin:0.12.0"
     }
 
     object sqldelight {
