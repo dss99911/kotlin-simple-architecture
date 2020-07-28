@@ -1,41 +1,15 @@
 package kim.jeonghyeon.simplearchitecture.plugin.generator
 
 import kim.jeonghyeon.annotation.Api
-import kim.jeonghyeon.simplearchitecture.plugin.model.GeneratedApiSource
-import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
-import kim.jeonghyeon.simplearchitecture.plugin.model.SOURCE_SET_NAME_COMMON
-import kim.jeonghyeon.simplearchitecture.plugin.util.*
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtPackageDirective
-import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import kim.jeonghyeon.simplearchitecture.plugin.model.*
+import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.write
 import java.io.File
 
-/**
- * compiler-embeddable and compiler kotlin library use different Psi related classes.
- * so, it's difficult to use common class for Jvm, Native as this class depends on the Psi related classes a lot.
- * It's required to update this class when Jvm's same class is changed.
- * TODO To make one class.
- *  There is solution by Intellij Platform SDK
- *  But, in order to make PsiFile, need to configure mock project(kotlin compilation, source path setting etc..) of the SDK is required.
- *  I couldn't find the sample to make the mock with Kotlin language.
- *  SqlDelight project use mock. but it's for sql language. and I don't know how to configure for Kotlin
- *  Let's try this later
- *  - Merits by this approach
- *      1. one plugin module is enough. current there are 3 modules for just a simple plugin
- *      2. remove duplication of ApiImplementationGenerator
- *      3. this generating file task should processed before compile task. but in current approach, the task is processed inside of compile task. it's not good structure.
- *      4. if using kapt, this is called two times, able to prevent duplicated process.
- *  - Demerits
- *      1. before make PsiFile, it's required to index files. and also convert file to PsiFile. it's not small processing. if there are lots of files, it'll take much time. and it's duplicated with compile task.
- */
 class ApiGenerator(
     private val pluginOptions: PluginOptions,
-    private val origin: Collection<KtFile>
+    private val origin: Collection<SharedKtFile>
 ) {
-
     /**
      * this is called two times. so, 2nd time's [origin] contains generated file as well.
      * we ignore if generated file already exists.
@@ -53,25 +27,25 @@ class ApiGenerator(
         return apiFiles + apiFunctionFiles
     }
 
-    private val KtFile.generatedApiSources
-        get(): List<GeneratedApiSource> = getChildrenOfType<KtClass>()
+    private val SharedKtFile.generatedApiSources
+        get(): List<GeneratedApiSource> = getChildrenOfKtClass()
             .filter { it.isApiInterface() }
             .map {
                 GeneratedApiSource(
-                    getApiImplementationName(it.name!!) + ".kt",
-                    it.name!!,
-                    packageFqName.asString(),
+                    getApiImplementationName(it.name) + ".kt",
+                    it.name,
+                    packageFqName,
                     pluginOptions.getGeneratedTargetVariantsPath(),
                     it.makeApiClassSource()
                 )
             }
 
-    private fun KtClass.isApiInterface(): Boolean = name != null && isInterface() && hasAnnotation<Api>()
+    private fun SharedKtClass.isApiInterface(): Boolean = name != null && isInterface() && hasAnnotation(Api::class)
 
 
-    private fun KtClass.makeApiClassSource(): String = """
+    private fun SharedKtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT
-    |${makePackage()}
+    |${packageName?.takeIf { it.isNotEmpty() }?.let { "package $it" } ?: ""}
     |${makeImport()}
     |
     |${makeClassDefinition()} {
@@ -82,12 +56,9 @@ class ApiGenerator(
     |}
     """.trimMargin()
 
-    //todo if package is empty?
-    private fun KtClass.makePackage(): String = parent.getChildOfType<KtPackageDirective>()!!.text
 
-    //todo if import is nuLL
-    private fun KtClass.makeImport(): String = """
-        |${importList.text}
+    private fun SharedKtClass.makeImport(): String = """
+        |${importSourceCode}
         |import io.ktor.client.HttpClient
         |import io.ktor.client.request.post
         |import io.ktor.client.statement.HttpResponse
@@ -105,27 +76,26 @@ class ApiGenerator(
         |import kotlinx.serialization.builtins.set
         """.trimMargin()
 
-    private fun KtClass.makeClassDefinition() =
-        "class ${getApiImplementationName(name!!)}(val client: HttpClient, val baseUrl: String) : $name"
+    private fun SharedKtClass.makeClassDefinition() =
+        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String) : $name"
 
-    private fun KtClass.makeMainPathProperty(): String =
-        "val mainPath = \"${parent.getChildOfType<KtPackageDirective>()!!.fqName.asString()
-            .replace(".", "/")}/${name}\""
+    private fun SharedKtClass.makeMainPathProperty(): String =
+        "val mainPath = \"${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}\""
 
-    private fun KtClass.makeFunctions(): String = functions
+    private fun SharedKtClass.makeFunctions(): String = functions
         .filter { !it.hasBody() }
         .also { check(it.all { it.isSuspend() }) { "$name has abstract function which is not suspend" } }
         .map { it.makeFunction() }
         .joinToString("\n\n") { it }
 
-    private fun KtNamedFunction.makeFunction(): String = """
+    private fun SharedKtNamedFunction.makeFunction(): String = """
     |override ${nameAndPrefix}(${parameters.joinToString { it.nameAndType }})${returnTypeName?.let { ": $it" } ?: ""} {
     |${makeFunctionBody().prependIndent(INDENT)}
     |}
     """.trimMargin()
 
-    private fun KtNamedFunction.makeFunctionBody(): String {
-        val returnTypeString = typeReference?.text?.takeIf { it != "Unit" && it != "kotlin.Unit" }
+    private fun SharedKtNamedFunction.makeFunctionBody(): String {
+        val returnTypeString = returnTypeName?.takeIf { it != "Unit" && it != "kotlin.Unit" }
         return """
         |val subPath = "$name"
         |val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl

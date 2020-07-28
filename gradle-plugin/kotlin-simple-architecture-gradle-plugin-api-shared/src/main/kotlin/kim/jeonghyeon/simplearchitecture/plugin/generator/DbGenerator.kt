@@ -1,16 +1,10 @@
 package kim.jeonghyeon.simplearchitecture.plugin.generator
 
 import com.squareup.sqldelight.Transacter
-import kim.jeonghyeon.simplearchitecture.plugin.model.GeneratedDbSource
-import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
-import kim.jeonghyeon.simplearchitecture.plugin.model.SOURCE_SET_NAME_COMMON
+import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
-import kim.jeonghyeon.simplearchitecture.plugin.util.hasImport
 import kim.jeonghyeon.simplearchitecture.plugin.util.write
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.findDescendantOfType
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import java.io.File
 
 /**
@@ -31,7 +25,7 @@ import java.io.File
  */
 class DbGenerator(
     private val pluginOptions: PluginOptions,
-    private val origin: Collection<KtFile>
+    private val origin: Collection<SharedKtFile>
 ) {
 
     /**
@@ -49,13 +43,13 @@ class DbGenerator(
             .generateDbFunctionFile()
     }
 
-    private val KtFile.generatedDbSources
-        get(): List<GeneratedDbSource> = getChildrenOfType<KtClass>()
+    private val SharedKtFile.generatedDbSources
+        get(): List<GeneratedDbSource> = getChildrenOfKtClass()
             .filter { it.isDbInterface() }
             .map {
                 GeneratedDbSource(
-                    it.name!!,
-                    packageFqName.asString(),
+                    it.name,
+                    packageFqName,
                     pluginOptions.getGeneratedTargetVariantsPath()
                 )
             }
@@ -64,12 +58,11 @@ class DbGenerator(
     /**
      * filter interface which implement `Transacter`, and Companion object contains property 'Schema'
      */
-    private fun KtClass.isDbInterface(): Boolean {
-        return name != null
-                && isInterface()
-                && findDescendantOfType<KtSuperTypeList>()?.text == Transacter::class.simpleName
-                && containingKtFile.hasImport<Transacter>()
-                && findDescendantOfType<KtObjectDeclaration> { it.isCompanion() }?.findDescendantOfType<KtProperty> { it.name == "Schema" } != null
+    private fun SharedKtClass.isDbInterface(): Boolean {
+        return isInterface()
+                && superTypeText == Transacter::class.simpleName
+                && containingKtFile.hasImport(Transacter::class)
+                && hasCompanionPropertyName("Schema")
     }
 
     private fun List<GeneratedDbSource>.generateDbFunctionFile(): List<File> {
@@ -151,9 +144,10 @@ class DbGenerator(
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }
         } + """
-            import com.squareup.sqldelight.Transacter
-            ${joinToString("\n") { "import " + it.packageName + "." + it.name }}
-        """.trimIndent()
+            |
+            |import com.squareup.sqldelight.Transacter
+            |${joinToString("\n|") { "import " + it.packageName + "." + it.name }}
+        """.trimMargin()
 
     }
 
@@ -174,3 +168,6 @@ class DbGenerator(
         }
     }
 }
+
+
+
