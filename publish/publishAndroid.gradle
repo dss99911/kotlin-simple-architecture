@@ -2,7 +2,7 @@
 // artifact_id : ex) jvm
 // artifact_name : ex) JVM
 // publish_version : ex) 1.0.1
-
+//todo refactor this
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 

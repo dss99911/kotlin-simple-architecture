@@ -1,16 +1,18 @@
-import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
 
 //todo 1.4 remove
 val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
-    `maven-publish`
     id("com.android.library")
     kotlin("multiplatform")
     id("com.squareup.sqldelight")
+    id("kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 }
 
-apply(plugin = "kotlin-simple-architecture-gradle-plugin")
+simpleArch {
+    postfix = "simple"
+    simpleConfig = false
+}
 
 group = deps.simpleArch.common.getGroupId()
 version = deps.simpleArch.common.getVersion()
@@ -20,10 +22,6 @@ sqldelight {
         packageName = "kim.jeonghyeon.db"
     }
 }
-
-//todo why I can't make simpleArch { postfix = "simple"}???
-simpleArchExtension?.postfix = "simple"
-simpleArchExtension?.simpleConfig = false
 
 kotlin {
 
@@ -65,6 +63,9 @@ kotlin {
                 api(deps.ktor.clientLogging)
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
+
+                //todo fix this bug of annotation module
+//                api(deps.simpleArch.annotation)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -185,6 +186,4 @@ android {
     }
 }
 
-tasks.build {
-    finalizedBy(tasks.publishToMavenLocal)
-}
+publishMPP()

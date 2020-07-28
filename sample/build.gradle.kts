@@ -23,10 +23,8 @@ plugins {
 
     //backend
     id("com.github.johnrengelman.shadow")
-
+    id("kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 }
-
-apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 
 sqldelight {
 

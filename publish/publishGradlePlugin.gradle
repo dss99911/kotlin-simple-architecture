@@ -1,0 +1,20 @@
+apply plugin: "com.gradle.plugin-publish"
+
+pluginBundle {
+    website = "https://github.com/dss99911/kotlin-simple-architecture"
+    vcsUrl = "https://github.com/dss99911/kotlin-simple-architecture.git"
+    tags = ["kotlin", "multiplatform", "architecture", "kotlincompilerplugin"]
+}
+
+gradlePlugin {
+    plugins {
+        mainPlugin {//name is for unique in all plugins
+            id = "${project.group}.${project.name}"
+            displayName = "Kotlin Simple Architecture Plugin"
+            description = "Generate code for Simple Api and Simple DB, etc"
+            implementationClass = "kim.jeonghyeon.simplearchitecture.plugin.MainGradlePlugin" // entry-point class
+        }
+    }
+}
+
+publishPlugins.dependsOn build

@@ -1,0 +1,60 @@
+apply(plugin: "maven-publish")
+apply(plugin: "com.github.johnrengelman.shadow")
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': project.version,
+                'Main-Class': 'kim.jeonghyeon.simplearchitecture.plugin.NativeApiComponentRegistrar'
+    }
+    archiveBaseName = project.name
+    archiveVersion = project.version
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+shadowJar {
+    manifest {
+        inheritFrom project.tasks.fatJar.manifest
+    }
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    classifier = null
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+    repositories {
+        maven {
+            url  = "https://api.bintray.com/maven/hyun/kotlin-simple-architecture/${project.name}/;publish=1;override=1"
+            credentials {
+                username = bintrayUser
+                password = bintrayApiKey
+            }
+        }
+    }
+}
+
+build.dependsOn shadowJar
+publish.dependsOn build

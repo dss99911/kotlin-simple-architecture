@@ -27,6 +27,7 @@ fun Project.addDependency(multiplatformDependency: String, jvmDependency: String
             dependencies.create(multiplatformDependency)
         )
     } else {
+        //todo if use this function, add android dependency also
         configurations.getByName("api").dependencies.add(
             dependencies.create(jvmDependency)
         )

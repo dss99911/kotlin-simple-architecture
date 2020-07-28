@@ -5,9 +5,11 @@ import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
 import androidx.ui.unit.dp
+import com.example.sampleandroid.activity.OtherDeeplinkActivity
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.androidlibrary.extension.startActivity
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.compose.R
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +37,10 @@ class DeeplinkScreen(private val viewModel: DeeplinkViewModel = DeeplinkViewMode
 
             Button(viewModel::onClickDeeplinkGenerate) {
                 Text("create Deeplink Url")
+            }
+
+            Button({ startActivity<OtherDeeplinkActivity>() }) {
+                Text("go to deeplink page")
             }
         }
     }

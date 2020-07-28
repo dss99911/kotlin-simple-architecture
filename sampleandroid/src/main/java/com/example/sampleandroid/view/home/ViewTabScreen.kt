@@ -36,6 +36,7 @@ class ViewTabScreen : Screen() {
     // consider navigation link like swiftui for stack. so, navigation stack is saved on the navigation view
     // savedstate
     // view stack은 ios의 NavigationView 같은 방식으로 하는게 좋을듯..
+    // viewpager, list view(simple, checked, onClick, paging)
     @Composable
     override fun compose() {
         super.compose()

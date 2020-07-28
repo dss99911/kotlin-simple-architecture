@@ -1,16 +1,13 @@
-import kim.jeonghyeon.simplearchitecture.plugin.util.simpleArchExtension
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 }
 
 apply(plugin = "kotlinx-serialization")
 apply(plugin = "kotlin-android-extensions")//for @Parcelize
 apply(plugin = "org.jetbrains.kotlin.kapt")
-apply(plugin = "androidx.navigation.safeargs")
 
-apply(plugin = "kotlin-simple-architecture-gradle-plugin")
 apply(plugin = "com.google.gms.google-services")
 
 val androidKeyAlias: String by project
@@ -19,8 +16,10 @@ val androidStoreFile: String by project
 val androidStorePassword: String by project
 
 //todo the reason to add this is that same HttpClientEx is created. and sample class file cause error while processing r8 proguard
-simpleArchExtension?.postfix = "sampleAndroid"
-simpleArchExtension?.simpleConfig = false
+simpleArch {
+    postfix = "sampleAndroid"
+    simpleConfig = false
+}
 
 android {
 
@@ -29,8 +28,8 @@ android {
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
     defaultConfig {
-        versionCode = 10001
-        versionName = "1.00.01"
+        versionCode = 10002
+        versionName = "1.00.02"
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
 
@@ -131,4 +130,5 @@ dependencies {
     //todo remove
     implementation("androidx.ui:ui-material-icons-extended:${versions.android.compose}")
     implementation("com.google.firebase:firebase-analytics:17.2.2")
+    implementation("com.google.firebase:firebase-dynamic-links-ktx:19.1.0")
 }

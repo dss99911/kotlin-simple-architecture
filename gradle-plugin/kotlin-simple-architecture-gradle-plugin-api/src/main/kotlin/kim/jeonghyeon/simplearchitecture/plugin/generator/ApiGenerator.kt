@@ -20,7 +20,6 @@ class ApiGenerator(
     private val pluginOptions: PluginOptions,
     private val origin: Collection<KtFile>
 ) {
-
     /**
      * this is called two times. so, 2nd time's [origin] contains generated file as well.
      * we ignore if generated file already exists.
