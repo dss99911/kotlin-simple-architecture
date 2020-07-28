@@ -142,7 +142,7 @@ class ApiGenerator(
 
     private fun List<GeneratedApiSource>.generateApiFunctionFile(): List<File> {
         var expectFile: File? = null
-        val filePath = "kim/jeonghyeon/generated/net/HttpClient${pluginOptions.postFix.capitalize()}Ex.kt"
+        val filePath = "${pluginOptions.packagePath}/generated/net/HttpClient${pluginOptions.postFix.capitalize()}Ex.kt"
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(pluginOptions.buildPath, SOURCE_SET_NAME_COMMON)
             expectFile = File("$expectPath/$filePath")
@@ -151,7 +151,7 @@ class ApiGenerator(
                     append(
                         """
                         // $GENERATED_FILE_COMMENT
-                        package kim.jeonghyeon.generated.net
+                        package ${pluginOptions.packageName}.generated.net
 
                         import io.ktor.client.HttpClient
 
@@ -167,7 +167,7 @@ class ApiGenerator(
                 append(
                     """
                 |// $GENERATED_FILE_COMMENT
-                |package kim.jeonghyeon.generated.net
+                |package ${pluginOptions.packageName}.generated.net
                 |
                 |import io.ktor.client.HttpClient
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}

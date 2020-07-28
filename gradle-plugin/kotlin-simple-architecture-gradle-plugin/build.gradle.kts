@@ -11,7 +11,7 @@ group = deps.simpleArch.pluginGradle.getGroupId()
 version = deps.simpleArch.pluginGradle.getVersion()
 
 dependencies {
-    implementation(deps.simpleArch.pluginShared)
+    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
 

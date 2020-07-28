@@ -8,7 +8,7 @@ group = deps.simpleArch.pluginApi.getGroupId()
 version = deps.simpleArch.pluginApi.getVersion()
 
 dependencies {
-    implementation(deps.simpleArch.pluginShared)
+    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)

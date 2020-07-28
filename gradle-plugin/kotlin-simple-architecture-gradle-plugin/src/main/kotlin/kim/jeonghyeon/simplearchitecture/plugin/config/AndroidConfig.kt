@@ -1,24 +1,32 @@
-package kim.jeonghyeon.simplearchitecture.plugin.buildscript
+package kim.jeonghyeon.simplearchitecture.plugin.config
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
+import kim.jeonghyeon.simplearchitecture.plugin.extension.simpleArchExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
-fun Project.applyAndroid() {
-    if (!hasAndroid) return
+fun Project.applyAndroidConfig() {
+    afterEvaluate {
+        if (!project.simpleArchExtension.androidConfig) {
+            return@afterEvaluate
+        }
 
-    //todo how to set version?
-    apply(plugin = "kotlinx-serialization")
-    apply(plugin = "kotlin-android-extensions")//for @Parcelize
-    apply(plugin = "org.jetbrains.kotlin.kapt")
+        if (!hasAndroid) return@afterEvaluate
 
-    androidExtension!!.initDefault()
+        //todo how to set version?
+        apply(plugin = "kotlinx-serialization")
+        apply(plugin = "kotlin-android-extensions")//for @Parcelize
+        apply(plugin = "org.jetbrains.kotlin.kapt")
+
+        androidExtension!!.initDefault()
+    }
+
 }
 
 fun BaseExtension.initDefault() {

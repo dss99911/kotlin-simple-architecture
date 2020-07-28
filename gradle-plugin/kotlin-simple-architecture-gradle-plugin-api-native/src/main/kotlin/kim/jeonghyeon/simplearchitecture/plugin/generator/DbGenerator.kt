@@ -74,7 +74,7 @@ class DbGenerator(
 
     private fun List<GeneratedDbSource>.generateDbFunctionFile(): List<File> {
         var expectFile: File? = null
-        val filePath = "kim/jeonghyeon/generated/db/Db${pluginOptions.postFix.capitalize()}Ex.kt"
+        val filePath = "${pluginOptions.packagePath}/generated/db/Db${pluginOptions.postFix.capitalize()}Ex.kt"
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(
                 pluginOptions.buildPath,
@@ -86,7 +86,7 @@ class DbGenerator(
                     append(
                         """
                         // $GENERATED_FILE_COMMENT
-                        package kim.jeonghyeon.generated.db
+                        package ${pluginOptions.packageName}.generated.db
 
                         import com.squareup.sqldelight.Transacter
                         
@@ -111,7 +111,7 @@ class DbGenerator(
                 append(
                     """
                 |// $GENERATED_FILE_COMMENT
-                |package kim.jeonghyeon.generated.db
+                |package ${pluginOptions.packageName}.generated.db
                 |
                 |${makeImport()}
                 |

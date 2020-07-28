@@ -15,12 +15,6 @@ val androidKeyPassword: String by project
 val androidStoreFile: String by project
 val androidStorePassword: String by project
 
-//todo the reason to add this is that same HttpClientEx is created. and sample class file cause error while processing r8 proguard
-simpleArch {
-    postfix = "sampleAndroid"
-    simpleConfig = false
-}
-
 android {
 
     val appId = "kim.jeonghyeon.sample.compose"

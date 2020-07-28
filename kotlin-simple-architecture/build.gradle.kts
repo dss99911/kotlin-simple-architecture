@@ -63,9 +63,7 @@ kotlin {
                 api(deps.ktor.clientLogging)
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
-
-                //todo fix this bug of annotation module
-//                api(deps.simpleArch.annotation)
+                api(deps.simpleArch.annotation)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here

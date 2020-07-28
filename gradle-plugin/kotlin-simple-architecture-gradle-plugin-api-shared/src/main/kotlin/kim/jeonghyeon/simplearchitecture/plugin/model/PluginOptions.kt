@@ -17,11 +17,14 @@ data class PluginOptions(
     val isMultiplatform: Boolean,
     val buildPath: String,
     val compileTargetVariantsName: String,
-    val postFix: String//HttpClient.create(), db() prefix.if this is "simple" result will be HttpClient.createSimple(), dbSimple(). as the generated code only takes care of each module's source code. each module should use different prefix.
+    val postFix: String,//HttpClient.create(), db() prefix.if this is "simple" result will be HttpClient.createSimple(), dbSimple(). as the generated code only takes care of each module's source code. each module should use different prefix.
+    val packageName: String
 ) {
     fun getGeneratedTargetVariantsPath(): String =
         generatedSourceSetPath(
             buildPath,
             compileTargetVariantsName
         )
+
+    val packagePath: String = packageName.replace(".", "/")
 }
