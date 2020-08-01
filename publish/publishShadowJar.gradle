@@ -58,3 +58,4 @@ publishing {
 
 build.dependsOn shadowJar
 publish.dependsOn build
+publishToMavenLocal.dependsOn build

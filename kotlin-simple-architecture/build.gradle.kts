@@ -1,18 +1,29 @@
 
+buildscript {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath(deps.simpleArch.pluginGradle)
+    }
+}
+
 //todo 1.4 remove
 val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    id("com.squareup.sqldelight")
-    id("kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 }
 
 simpleArch {
     postfix = "simple"
     simpleConfig = false
 }
+apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 
 group = deps.simpleArch.common.getGroupId()
 version = deps.simpleArch.common.getVersion()
@@ -63,9 +74,7 @@ kotlin {
                 api(deps.ktor.clientLogging)
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
-
-                //todo fix this bug of annotation module
-//                api(deps.simpleArch.annotation)
+                api(deps.simpleArch.annotation)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here

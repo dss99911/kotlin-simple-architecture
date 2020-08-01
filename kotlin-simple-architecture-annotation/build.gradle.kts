@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id("com.android.library")
 }
 
 group = deps.simpleArch.annotation.getGroupId()
@@ -15,10 +16,15 @@ kotlin {
     val iosArm64 = iosArm64("iosArm64")
     val iosX64 = iosX64("iosX64")
 
+    //todo is this required? try to remove
+    android {
+        publishLibraryVariants("release", "debug")
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(deps.kotlin.stdlibCommon)
+                implementation(deps.kotlin.stdlib)
             }
         }
         val jvmMain by getting {
@@ -32,6 +38,16 @@ kotlin {
                 implementation(deps.kotlin.stdlibJs)
             }
         }
+    }
+}
+
+android {
+    compileSdkVersion(config.compileSdkVersion)
+    buildToolsVersion(config.buildToolVersion)
+    defaultConfig {
+        minSdkVersion(config.minSdkVersion)
+        targetSdkVersion(config.targetSdkVersion)
+
     }
 }
 

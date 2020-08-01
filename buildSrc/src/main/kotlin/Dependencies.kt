@@ -13,14 +13,10 @@ object deps {
         val coroutineCoreNative = depKotlinx("coroutines-core-native", versions.kotlin.coroutine)
         val coroutineCoreJs = depKotlinx("coroutines-core-js", versions.kotlin.coroutine)
         val coroutineTest = depKotlinx("coroutines-test", versions.kotlin.coroutine)
-        val serializationRuntimeCommon =
-            depKotlinx("serialization-runtime-common", versions.kotlin.serialization)
-        val serializationRuntime =
-            depKotlinx("serialization-runtime", versions.kotlin.serialization)
-        val serializationRuntimeNative =
-            depKotlinx("serialization-runtime-native", versions.kotlin.serialization)
-        val serializationRuntimeJs =
-            depKotlinx("serialization-runtime-js", versions.kotlin.serialization)
+        val serializationRuntimeCommon = depKotlinx("serialization-runtime-common", versions.kotlin.serialization)
+        val serializationRuntime = depKotlinx("serialization-runtime", versions.kotlin.serialization)
+        val serializationRuntimeNative = depKotlinx("serialization-runtime-native", versions.kotlin.serialization)
+        val serializationRuntimeJs = depKotlinx("serialization-runtime-js", versions.kotlin.serialization)
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)

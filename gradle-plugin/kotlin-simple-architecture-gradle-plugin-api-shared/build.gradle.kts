@@ -25,7 +25,7 @@ dependencies {
 //    api(deps.simpleArch.annotationJvm)
 }
 
-//todo able to remove?
+//todo what is this for?
 kapt {
     includeCompileClasspath = true
 }
