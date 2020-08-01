@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven {
-            url = java.net.URI("https://plugins.gradle.org/m2/")
+            url = uri("https://plugins.gradle.org/m2/")
         }
     }
 
