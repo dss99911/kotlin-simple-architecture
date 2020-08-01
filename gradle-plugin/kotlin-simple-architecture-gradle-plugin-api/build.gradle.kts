@@ -8,19 +8,16 @@ group = deps.simpleArch.pluginApi.getGroupId()
 version = deps.simpleArch.pluginApi.getVersion()
 
 dependencies {
-    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+//    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(deps.simpleArch.pluginShared)
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
 }
 
-//todo able to remove?
+//todo what is this for?
 kapt {
     includeCompileClasspath = true
-}
-
-tasks.build {
-//    dependsOn(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}:build")
 }
 
 publishJvm()

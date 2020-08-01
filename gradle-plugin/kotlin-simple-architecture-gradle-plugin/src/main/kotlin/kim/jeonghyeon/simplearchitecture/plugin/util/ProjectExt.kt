@@ -18,18 +18,17 @@ val Project.isMultiplatform get() = plugins.hasPlugin("org.jetbrains.kotlin.mult
 val Project.multiplatformExtension get() = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
 
 
-fun Project.addDependency(multiplatformDependency: String, jvmDependency: String) {
+fun Project.addDependency(dependency: String) {
     if (isMultiplatform) {
         val sourceSets = multiplatformExtension!!.sourceSets
         val sourceSet = (sourceSets.findByName("commonMain") as? DefaultKotlinSourceSet?) ?: return
         //todo if commonMain is not used?
         configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-            dependencies.create(multiplatformDependency)
+            dependencies.create(dependency)
         )
     } else {
-        //todo if use this function, add android dependency also
         configurations.getByName("implementation").dependencies.add(
-            dependencies.create(jvmDependency)
+            dependencies.create(dependency)
         )
     }
 }

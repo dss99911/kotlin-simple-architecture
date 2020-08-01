@@ -3,33 +3,27 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
     `java-gradle-plugin`
     id("kotlin-kapt")
-    `maven-publish`
-    maven
+    `maven-publish`//for local publish
 }
 
 group = deps.simpleArch.pluginGradle.getGroupId()
 version = deps.simpleArch.pluginGradle.getVersion()
 
 dependencies {
-    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+//    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(deps.simpleArch.pluginShared)
     implementation(deps.kotlin.gradle)
     implementation(deps.android.buildToolGradle)
+    implementation(deps.sqldelight.gradle)
 
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
 
 }
 
-//build all plugins by one time
-//tasks.build {
-////    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApi.getArtifactId()}:build")
-////    dependsOn(":gradle-plugin:${deps.simpleArch.pluginApiNative.getArtifactId()}:build")
-//    finalizedBy(tasks.install)
-//}
-
 
 //region plugin generated config
-
+//todo how to move to other kts file? sourceSets is not recognized
 val GENERATED_SOURCE_PATH = "build/generated/source/simpleArch"
 
 sourceSets {
@@ -46,7 +40,7 @@ tasks.create("pluginConfig") {
         configFile.parentFile.mkdirs()
         configFile.writeText("""
             package kim.jeonghyeon.simplearchitecture.plugin
-            
+
             val DEPENDENCY_SIMPLE_ARCHITECTURE = "${deps.simpleArch.common}"
             val DEPENDENCY_SIMPLE_ARCHITECTURE_JVM = "${deps.simpleArch.jvm}"
             val DEPENDENCY_SIMPLE_ARCHITECTURE_PLUGIN_API = "${deps.simpleArch.pluginApi}"

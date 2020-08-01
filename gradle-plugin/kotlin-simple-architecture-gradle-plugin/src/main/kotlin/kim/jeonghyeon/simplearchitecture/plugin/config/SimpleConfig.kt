@@ -26,5 +26,5 @@ fun Project.applySimpleConfig() {
 }
 
 fun Project.addSimpleArchitectureDependency() {
-    addDependency(DEPENDENCY_SIMPLE_ARCHITECTURE, DEPENDENCY_SIMPLE_ARCHITECTURE_JVM)
+    addDependency(DEPENDENCY_SIMPLE_ARCHITECTURE)
 }

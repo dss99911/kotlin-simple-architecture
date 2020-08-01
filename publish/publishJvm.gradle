@@ -67,3 +67,4 @@ publishing {
     }
 }
 publish.dependsOn build
+publishToMavenLocal.dependsOn build

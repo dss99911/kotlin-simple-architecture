@@ -12,21 +12,16 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
 fun Project.applyAndroidConfig() {
-    afterEvaluate {
-        if (!project.simpleArchExtension.androidConfig) {
-            return@afterEvaluate
-        }
-
-        if (!hasAndroid) return@afterEvaluate
-
-        //todo how to set version?
-        apply(plugin = "kotlinx-serialization")
-        apply(plugin = "kotlin-android-extensions")//for @Parcelize
-        apply(plugin = "org.jetbrains.kotlin.kapt")
-
-        androidExtension!!.initDefault()
+    if (!project.simpleArchExtension.androidConfig) {
+        return
     }
 
+    if (!hasAndroid) return
+
+    apply(plugin = "kotlin-android-extensions")//for @Parcelize
+    apply(plugin = "org.jetbrains.kotlin.kapt")
+
+    androidExtension!!.initDefault()
 }
 
 fun BaseExtension.initDefault() {

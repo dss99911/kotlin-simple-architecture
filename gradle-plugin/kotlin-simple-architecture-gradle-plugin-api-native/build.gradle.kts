@@ -8,20 +8,17 @@ group = deps.simpleArch.pluginApiNative.getGroupId()
 version = deps.simpleArch.pluginApiNative.getVersion()
 
 dependencies {
-    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+//    implementation(project(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}"))
+    implementation(deps.simpleArch.pluginShared)
     compileOnly(deps.plugin.compiler)//for native
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
 }
 
 
-//todo able to remove?
+//todo what is this for?
 kapt {
     includeCompileClasspath = true
-}
-
-tasks.build {
-//    dependsOn(":gradle-plugin:${deps.simpleArch.pluginShared.getArtifactId()}:build")
 }
 
 publishShadowJar()
