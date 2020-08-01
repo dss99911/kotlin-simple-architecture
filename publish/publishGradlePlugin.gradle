@@ -18,3 +18,4 @@ gradlePlugin {
 }
 
 publishPlugins.dependsOn build
+publishToMavenLocal.dependsOn build

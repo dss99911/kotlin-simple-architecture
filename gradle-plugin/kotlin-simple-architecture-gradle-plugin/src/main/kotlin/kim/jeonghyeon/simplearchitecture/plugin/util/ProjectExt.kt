@@ -4,7 +4,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.api.BaseVariant
-import kim.jeonghyeon.simplearchitecture.plugin.SimpleArchExtension
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -17,19 +16,19 @@ val Project.androidExtension get() = project.extensions.findByType(BaseExtension
 val Project.hasAndroid get() = androidExtension != null
 val Project.isMultiplatform get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
 val Project.multiplatformExtension get() = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
-val Project.simpleArchExtension get() = project.extensions.findByType(SimpleArchExtension::class.java)
 
-fun Project.addDependency(multiplatformDependency: String, jvmDependency: String) {
+
+fun Project.addDependency(dependency: String) {
     if (isMultiplatform) {
         val sourceSets = multiplatformExtension!!.sourceSets
         val sourceSet = (sourceSets.findByName("commonMain") as? DefaultKotlinSourceSet?) ?: return
+        //todo if commonMain is not used?
         configurations.getByName(sourceSet.apiConfigurationName).dependencies.add(
-            dependencies.create(multiplatformDependency)
+            dependencies.create(dependency)
         )
     } else {
-        //todo if use this function, add android dependency also
-        configurations.getByName("api").dependencies.add(
-            dependencies.create(jvmDependency)
+        configurations.getByName("implementation").dependencies.add(
+            dependencies.create(dependency)
         )
     }
 }
