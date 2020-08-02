@@ -2,6 +2,7 @@ package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
 import kim.jeonghyeon.simplearchitecture.plugin.impl.asShared
+import kim.jeonghyeon.simplearchitecture.plugin.util.KtFileAnalyzer
 import kim.jeonghyeon.simplearchitecture.plugin.util.toKtFile
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -43,7 +44,7 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     project: Project
                 ): Collection<KtFile> {
                     //this is used for analyze kt file
-                    //KtFileAnalyzer(knownSources).analyze("SampleDb.kt")
+                    KtFileAnalyzer(knownSources).analyze("SimpleApi.kt")
 
                     return SourceCodeGenerator
                         .generate(

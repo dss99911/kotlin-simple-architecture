@@ -1,6 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin.generator
 
-import kim.jeonghyeon.annotation.Api
+import kim.jeonghyeon.annotation.*
 import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.write
@@ -60,27 +60,23 @@ class ApiGenerator(
     private fun SharedKtClass.makeImport(): String = """
         |${importSourceCode}
         |import io.ktor.client.HttpClient
-        |import io.ktor.client.request.post
-        |import io.ktor.client.statement.HttpResponse
-        |import io.ktor.client.statement.readText
-        |import io.ktor.http.ContentType
-        |import io.ktor.http.contentType
-        |import kim.jeonghyeon.common.net.throwException
-        |import kim.jeonghyeon.common.net.validateResponse
-        |import kotlinx.serialization.json.Json
-        |import kotlinx.serialization.json.JsonConfiguration
-        |import kotlinx.serialization.json.json
-        |import kotlinx.serialization.builtins.serializer
-        |import kotlinx.serialization.builtins.list
-        |import kotlinx.serialization.builtins.nullable
-        |import kotlinx.serialization.builtins.set
+        |import io.ktor.client.request.*
+        |import io.ktor.client.statement.*
+        |import kim.jeonghyeon.common.net.*
+        |import io.ktor.http.*
+        |import kotlinx.serialization.json.*
+        |import kotlinx.serialization.builtins.*
         """.trimMargin()
 
     private fun SharedKtClass.makeClassDefinition() =
         "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String) : $name"
 
-    private fun SharedKtClass.makeMainPathProperty(): String =
-        "val mainPath = \"${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}\""
+    private fun SharedKtClass.makeMainPathProperty(): String {
+        val definedPath = getAnnotationString(Api::class)?.getAnnotationParameterStringLiteral()
+        val path = definedPath ?: "${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}"
+
+        return "val mainPath = \"${path}\""
+    }
 
     private fun SharedKtClass.makeFunctions(): String = functions
         .filter { !it.hasBody() }
@@ -89,18 +85,20 @@ class ApiGenerator(
         .joinToString("\n\n") { it }
 
     private fun SharedKtNamedFunction.makeFunction(): String = """
-    |override ${nameAndPrefix}(${parameters.joinToString { it.nameAndType }})${returnTypeName?.let { ": $it" } ?: ""} {
+    |override suspend fun ${name}(${parameters.joinToString { it.nameAndType }})${returnTypeName?.let { ": $it" } ?: ""} {
     |${makeFunctionBody().prependIndent(INDENT)}
     |}
     """.trimMargin()
 
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
         val returnTypeString = returnTypeName?.takeIf { it != "Unit" && it != "kotlin.Unit" }
+
+        val subPath = getRequestMethodAnnotationString()?.getAnnotationParameterStringLiteral() ?: name
+
         return """
-        |val subPath = "$name"
-        |val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
+        |val subPath = "$subPath"
         |val response = try {
-        |${INDENT}client.post<HttpResponse>(baseUrlWithoutSlash + "/" + mainPath + "/" + subPath) {
+        |${INDENT}client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
         |$INDENT${INDENT}contentType(ContentType.Application.Json)
         |$INDENT${INDENT}body = json {
         |${parameters.joinToString("\n") { """"${it.name}" to ${it.name}""" }
@@ -119,6 +117,21 @@ class ApiGenerator(
             """.trimMargin()
         } ?: ""}
         """.trimMargin()
+    }
+
+    private fun SharedKtNamedFunction.getRequestMethodFunctionName(): String =
+        getRequestMethodAnnotationString()
+            ?.getAnnotationName()
+            ?.toLowerCase()
+            ?.substringAfterLast(".")//remove package if exists
+            ?:"post"
+
+    val requestMethodAnnotationNames = listOf(Get::class, Delete::class, Head::class, Options::class, Patch::class, Put::class, Post::class)
+
+    private fun SharedKtNamedFunction.getRequestMethodAnnotationString(): String? {
+        return requestMethodAnnotationNames.mapNotNull {
+            getAnnotationString(it)
+        }.firstOrNull()
     }
 
     private fun GeneratedApiSource.generateApiClassFile(): File? =

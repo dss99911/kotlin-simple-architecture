@@ -42,9 +42,7 @@ class SharedKtClassImpl(val ktClass: KtClass) : SharedKtClass {
 
     override fun isInterface(): Boolean = ktClass.isInterface()
 
-    override fun <T : Any> hasAnnotation(clazz: KClass<T>): Boolean {
-        return ktClass.hasAnnotation(clazz)
-    }
+    override fun <T : Any> getAnnotationString(clazz: KClass<T>) = ktClass.getAnnotationString(clazz)
 
     override val functions: List<SharedKtNamedFunction>
         get() = ktClass.functions.map { SharedKtNamedFunctionImpl(it) }
@@ -70,6 +68,8 @@ class SharedKtNamedFunctionImpl(val ktFunc: KtNamedFunction) : SharedKtNamedFunc
 
     override val name: String?
         get() = ktFunc.name
+
+    override fun <T : Any> getAnnotationString(clazz: KClass<T>): String? = ktFunc.getAnnotationString(clazz)
 }
 
 class SharedKtParameterImpl(val parameter: KtParameter) : SharedKtParameter {
