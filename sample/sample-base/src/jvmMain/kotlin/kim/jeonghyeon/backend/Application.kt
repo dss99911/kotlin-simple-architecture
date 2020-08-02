@@ -6,6 +6,7 @@ import io.ktor.application.log
 import io.ktor.util.KtorExperimentalAPI
 import kim.jeonghyeon.api.PreferenceController
 import kim.jeonghyeon.backend.controller.SimpleController
+import kim.jeonghyeon.backend.db.preference
 import kim.jeonghyeon.backend.net.SimpleRouting
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -20,11 +21,10 @@ fun Application.module(testing: Boolean = false) {
     val mode = serviceConfig.property("environment").getString()
     log.info("Environment: $mode")
     val production = mode == "production"
-
     install(SimpleRouting) {
 
         +SimpleController()
-        +PreferenceController()//todo move to library.
+        +PreferenceController(preference)//todo move to library.
         logging = !production
     }
 }
