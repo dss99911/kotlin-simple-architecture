@@ -1,7 +1,7 @@
 package kim.jeonghyeon.backend.controller
 
 import kim.jeonghyeon.CODE_POST_ERROR
-import kim.jeonghyeon.api.preference
+import kim.jeonghyeon.backend.db.preference
 import kim.jeonghyeon.common.net.error.ApiError
 import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.pergist.Preference
