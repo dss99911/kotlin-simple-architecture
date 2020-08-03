@@ -37,6 +37,15 @@ fun <T : Any> KtNamedFunction.getAnnotationString(clazz: KClass<T>): String? {
     }?.text
 }
 
+fun <T : Any> KtParameter.getAnnotationString(clazz: KClass<T>): String? {
+    val hasApiImport = containingKtFile.hasImport(clazz)
+
+    return annotationEntryList.firstOrNull {
+        (it.text.startsWith("@${clazz.simpleName}") && hasApiImport)
+                || it.text.startsWith("@${clazz.qualifiedName}")
+    }?.text
+}
+
 fun <T : Any> KtFile.hasImport(clazz: KClass<T>) = importList?.imports?.any {
     it.importPath?.pathStr == clazz.qualifiedName ||
             it.importPath?.pathStr == clazz.qualifiedName?.replaceAfterLast(".", "*")
@@ -54,8 +63,9 @@ val KtClass.importList get() = parent.getChildOfType<KtImportList>()!!
 
 val KtClass.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
-//todo check
 val KtNamedFunction.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
+
+val KtParameter.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
 val KtNamedFunction.returnTypeName: String? get() = typeReference?.text
 
@@ -70,9 +80,9 @@ val KtNamedFunction.parameters: Array<KtParameter>
     get() = valueParameterList?.getChildrenOfType() ?: emptyArray()
 
 /**
- * ex) int: Int = 1 => int: Int
+ * ex)@Body int: Int = 1 =>  Int
  */
-val KtParameter.nameAndType: String get() = text.substringBefore("=")
+val KtParameter.type: String get() = text.substringBefore("=").substringAfterLast(":")
 
 fun File.toKtFile(project: Project): KtFile {
     val fileSystem =

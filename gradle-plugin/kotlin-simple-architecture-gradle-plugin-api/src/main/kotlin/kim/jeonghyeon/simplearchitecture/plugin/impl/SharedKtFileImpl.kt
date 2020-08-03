@@ -66,15 +66,18 @@ class SharedKtNamedFunctionImpl(val ktFunc: KtNamedFunction) : SharedKtNamedFunc
     override val returnTypeName: String?
         get() = ktFunc.returnTypeName
 
-    override val name: String?
-        get() = ktFunc.name
+    override val name: String
+        get() = ktFunc.name!!
 
     override fun <T : Any> getAnnotationString(clazz: KClass<T>): String? = ktFunc.getAnnotationString(clazz)
 }
 
 class SharedKtParameterImpl(val parameter: KtParameter) : SharedKtParameter {
-    override val nameAndType: String
-        get() = parameter.nameAndType
+    override val type: String
+        get() = parameter.type
     override val name: String?
         get() = parameter.name
+
+    override fun <T : Any> getAnnotationString(clazz: KClass<T>): String? =
+        parameter.getAnnotationString(clazz)
 }

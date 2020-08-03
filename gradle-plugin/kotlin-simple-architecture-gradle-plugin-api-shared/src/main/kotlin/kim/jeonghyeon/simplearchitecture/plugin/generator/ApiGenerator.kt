@@ -85,7 +85,7 @@ class ApiGenerator(
         .joinToString("\n\n") { it }
 
     private fun SharedKtNamedFunction.makeFunction(): String = """
-    |override suspend fun ${name}(${parameters.joinToString { it.nameAndType }})${returnTypeName?.let { ": $it" } ?: ""} {
+    |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ""} {
     |${makeFunctionBody().prependIndent(INDENT)}
     |}
     """.trimMargin()
@@ -93,17 +93,14 @@ class ApiGenerator(
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
         val returnTypeString = returnTypeName?.takeIf { it != "Unit" && it != "kotlin.Unit" }
 
-        val subPath = getRequestMethodAnnotationString()?.getAnnotationParameterStringLiteral() ?: name
-
         return """
-        |val subPath = "$subPath"
+        |val subPath = ${makeSubPathStatement()}
         |val response = try {
         |${INDENT}client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
         |$INDENT${INDENT}contentType(ContentType.Application.Json)
-        |$INDENT${INDENT}body = json {
-        |${parameters.joinToString("\n") { """"${it.name}" to ${it.name}""" }
-            .prependIndent(indent(3))}
-        |$INDENT$INDENT}
+        |$INDENT${INDENT}${makeBodyStatement()}
+        |$INDENT${INDENT}${makeQueryStatement()}
+        |$INDENT${INDENT}${makeHeaderStatement()}
         |$INDENT}
         |} catch (e: Exception) {
         |${INDENT}client.throwException(e)
@@ -117,6 +114,47 @@ class ApiGenerator(
             """.trimMargin()
         } ?: ""}
         """.trimMargin()
+    }
+
+    private fun SharedKtNamedFunction.makeBodyStatement(): String {
+        val bodyParameter = parameters.firstOrNull { it.getAnnotationString(Body::class) != null }
+
+        if (bodyParameter != null) {
+            return "body = ${bodyParameter.name!!}"
+        }
+
+        val bodyParameters = parameters.filter {
+            it.getAnnotationString(Header::class) == null
+                    && it.getAnnotationString(Path::class) == null
+                    && it.getAnnotationString(Query::class) == null
+        }
+
+        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }"""
+    }
+
+    private fun SharedKtNamedFunction.makeQueryStatement(): String = parameters
+        .filter { it.getAnnotationString(Query::class) != null }
+        .map {
+            val key = it.getAnnotationString(Query::class)?.getAnnotationParameterStringLiteral()
+            "parameter(\"$key\", ${it.name})"
+        }.joinToString("; ")
+
+    private fun SharedKtNamedFunction.makeHeaderStatement(): String = parameters
+        .filter { it.getAnnotationString(Header::class) != null }
+        .map {
+            val key = it.getAnnotationString(Header::class)?.getAnnotationParameterStringLiteral()
+            "header(\"$key\", ${it.name})"
+        }.joinToString("; ")
+
+    private fun SharedKtNamedFunction.makeSubPathStatement(): String {
+        val subPath = getRequestMethodAnnotationString()?.getAnnotationParameterStringLiteral() ?: name
+        return "\"$subPath\"" + parameters
+            .filter { it.getAnnotationString(Path::class) != null }
+            .joinToString("") {
+                val pathName = it.getAnnotationString(Path::class)!!.getAnnotationParameterStringLiteral()
+                ".replace(\"{$pathName}\", ${it.name})"
+            }
+
     }
 
     private fun SharedKtNamedFunction.getRequestMethodFunctionName(): String =

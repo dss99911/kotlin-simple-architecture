@@ -26,7 +26,7 @@ interface SharedKtClass {
 }
 
 interface SharedKtNamedFunction {
-    val name: String?
+    val name: String
     val nameAndPrefix: String
     val parameters: Array<SharedKtParameter>
     fun hasBody(): Boolean
@@ -36,8 +36,10 @@ interface SharedKtNamedFunction {
 }
 
 interface SharedKtParameter {
-    val nameAndType: String
+    val type: String
     val name: String?
+    fun <T : Any> getAnnotationString(clazz: KClass<T>): String?//ex) @Api("dsfdsf")
+
 }
 
 
