@@ -19,7 +19,7 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
         serializer = KotlinxSerializer()
     }
 
-    config(this)
+    config()
 }
 
 fun HttpClient.throwException(e: Exception): Nothing {
@@ -57,4 +57,18 @@ suspend fun HttpClient.validateResponse(response: HttpResponse) {
             "unknown error occurred : ${response.status}, Text : ${response.readText()}"
         )
     )
+}
+
+infix fun String.connectPath(end: String): String {
+    if (isEmpty() || end.isEmpty()) return this + end
+
+    if (end.contains("://")) {
+        return end
+    }
+
+    return if (last() == '/' && end.first() == '/') {
+        take(lastIndex) + end
+    } else if (last() != '/' && end.first() != '/') {
+        "$this/$end"
+    } else this + end
 }
