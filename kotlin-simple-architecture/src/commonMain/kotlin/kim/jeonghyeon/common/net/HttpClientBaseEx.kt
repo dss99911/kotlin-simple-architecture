@@ -19,7 +19,7 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
         serializer = KotlinxSerializer()
     }
 
-    config(this)
+    config()
 }
 
 fun HttpClient.throwException(e: Exception): Nothing {
