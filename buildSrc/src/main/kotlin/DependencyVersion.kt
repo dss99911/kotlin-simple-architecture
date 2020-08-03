@@ -22,5 +22,5 @@ object versions {
     const val koin = "2.1.6"
     const val shadow = "5.0.0"
     const val sqldelight = "1.4.0"
-    const val simpleArch = "0.39"
+    const val simpleArch = "0.41"
 }

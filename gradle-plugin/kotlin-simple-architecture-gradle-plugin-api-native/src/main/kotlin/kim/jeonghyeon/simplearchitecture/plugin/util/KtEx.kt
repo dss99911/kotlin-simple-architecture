@@ -16,21 +16,39 @@ import kotlin.reflect.KClass
  * import com.package.ClassName -> ClassName
  * import com.package.ClassName -> com.package.ClassName
  *
- * !!LIMITATION!! we ignore the case below, as we don't know the package.
+ * todo currently we ignore the case below, as we don't know the package. need to check class's package
  * ClassName (if ClassName class is in root package)
  * ClassName (if ClassName class is in same package)
  */
-fun <T : Any> KtClass.hasAnnotation(clazz: KClass<T>): Boolean {
+fun <T : Any> KtClass.getAnnotationString(clazz: KClass<T>): String? {
     val hasApiImport = containingKtFile.hasImport(clazz)
 
-    return annotationEntryList.any {
-        (it.text == "@${clazz.simpleName}" && hasApiImport)
-                || it.text == "@${clazz.qualifiedName}"
-    }
+    return annotationEntryList.firstOrNull {
+        (it.text.startsWith("@${clazz.simpleName}") && hasApiImport)
+                || it.text.startsWith("@${clazz.qualifiedName}")
+    }?.text
+}
+fun <T : Any> KtNamedFunction.getAnnotationString(clazz: KClass<T>): String? {
+    val hasApiImport = containingKtFile.hasImport(clazz)
+
+    return annotationEntryList.firstOrNull {
+        (it.text.startsWith("@${clazz.simpleName}") && hasApiImport)
+                || it.text.startsWith("@${clazz.qualifiedName}")
+    }?.text
+}
+
+fun <T : Any> KtParameter.getAnnotationString(clazz: KClass<T>): String? {
+    val hasApiImport = containingKtFile.hasImport(clazz)
+
+    return annotationEntryList.firstOrNull {
+        (it.text.startsWith("@${clazz.simpleName}") && hasApiImport)
+                || it.text.startsWith("@${clazz.qualifiedName}")
+    }?.text
 }
 
 fun <T : Any> KtFile.hasImport(clazz: KClass<T>) = importList?.imports?.any {
-    it.importPath?.pathStr == clazz.qualifiedName
+    it.importPath?.pathStr == clazz.qualifiedName ||
+            it.importPath?.pathStr == clazz.qualifiedName?.replaceAfterLast(".", "*")
 } ?: false
 
 fun KtFile.getPathStringOf(type: String) =
@@ -38,14 +56,16 @@ fun KtFile.getPathStringOf(type: String) =
         ?.firstOrNull { it.importPath?.importedName?.asString() == type }
         ?.importPath?.pathStr
 
-fun KtNamedFunction.isSuspend() = text.substringBefore("(").contains("suspend")
+//todo ignore annotation
+fun KtNamedFunction.isSuspend() = text.substringBefore("fun").contains("suspend")
 
 val KtClass.importList get() = parent.getChildOfType<KtImportList>()!!
 
-val KtClass.annotationEntryList
-    get() =
-        getChildOfType<KtDeclarationModifierList>()
-            ?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
+val KtClass.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
+
+val KtNamedFunction.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
+
+val KtParameter.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
 val KtNamedFunction.returnTypeName: String? get() = typeReference?.text
 
@@ -54,15 +74,15 @@ val KtClass.functions: List<KtNamedFunction> get() = declarations.mapNotNull { i
 /**
  * ex) suspend fun getName
  */
-val KtNamedFunction.nameAndPrefix: String get() = text.substringBefore("(")
+val KtNamedFunction.nameAndPrefix: String get() = text.substringBeforeLast("(")
 
 val KtNamedFunction.parameters: Array<KtParameter>
     get() = valueParameterList?.getChildrenOfType() ?: emptyArray()
 
 /**
- * ex) int: Int = 1 => int: Int
+ * ex)@Body int: Int = 1 =>  Int
  */
-val KtParameter.nameAndType: String get() = text.substringBefore("=")
+val KtParameter.type: String get() = text.substringBefore("=").substringAfterLast(":")
 
 fun File.toKtFile(project: Project): KtFile {
     val fileSystem =
