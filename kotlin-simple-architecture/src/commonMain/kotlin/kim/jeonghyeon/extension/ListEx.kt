@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 /**
  * [1,2,3,4,5]

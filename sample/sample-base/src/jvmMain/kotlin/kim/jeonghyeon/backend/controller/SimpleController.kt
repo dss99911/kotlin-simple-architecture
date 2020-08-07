@@ -2,8 +2,10 @@ package kim.jeonghyeon.backend.controller
 
 import kim.jeonghyeon.CODE_POST_ERROR
 import kim.jeonghyeon.backend.db.preference
-import kim.jeonghyeon.common.net.error.ApiError
-import kim.jeonghyeon.common.net.error.ApiErrorBody
+import kim.jeonghyeon.backend.net.headers
+import kim.jeonghyeon.net.HEADER_KEY
+import kim.jeonghyeon.net.error.ApiError
+import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SimpleApi
@@ -29,6 +31,10 @@ class SimpleController : SimpleApi {
             add(word)
         }
         preference.setString(preference.WORDS, list.joinToString(","))
+    }
+
+    override suspend fun getHeader(): String {
+        return headers()[HEADER_KEY]!!
     }
 }
 

@@ -44,7 +44,7 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     project: Project
                 ): Collection<KtFile> {
                     //this is used for analyze kt file
-                    KtFileAnalyzer(knownSources).analyze("SimpleApi.kt")
+                    //KtFileAnalyzer(knownSources).analyze("SimpleApi.kt")
 
                     return SourceCodeGenerator
                         .generate(

@@ -12,8 +12,8 @@ import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
-import kim.jeonghyeon.common.extension.alsoIfFalse
-import kim.jeonghyeon.common.extension.alsoIfTrue
+import kim.jeonghyeon.extension.alsoIfFalse
+import kim.jeonghyeon.extension.alsoIfTrue
 
 
 @SuppressLint("ObsoleteSdkInt")

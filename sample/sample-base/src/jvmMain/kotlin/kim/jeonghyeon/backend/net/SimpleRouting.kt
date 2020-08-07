@@ -5,6 +5,7 @@ import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
+import io.ktor.http.Headers
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
@@ -14,10 +15,11 @@ import io.ktor.routing.route
 import io.ktor.util.AttributeKey
 import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
-import kim.jeonghyeon.common.net.error.ApiError
-import kim.jeonghyeon.common.net.error.ApiErrorBody
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
+import kim.jeonghyeon.net.error.ApiError
+import kim.jeonghyeon.net.error.ApiErrorBody
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspend
@@ -118,15 +120,17 @@ class SimpleRouting(val config: Configuration) {
                 arguments[param.name].toJsonString()?.toJsonObject<Any>(param.type.javaType)
             }.toTypedArray()
 
-        var response = function.callSuspend(api, *convertedArgs)
-        if (response is String) {
-            //todo is this proper process? how to make json writer to set quotes?
-            // if response type is String, then client error with the log below
-            // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
-            response = "\"${response.replace("\\", "\\\\")}\""
+        launch(coroutineContext + PipelineContextStore(this)) {
+            var response = function.callSuspend(api, *convertedArgs)
+            if (response is String) {
+                //todo is this proper process? how to make json writer to set quotes?
+                // if response type is String, then client error with the log below
+                // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
+                response = "\"${response.replace("\\", "\\\\")}\""
+            }
+            //todo does json writer not know null to null text??
+            call.respond(response ?: "null")
         }
-        //todo does json writer not know null to null text??
-        call.respond(response ?: "null")
     }
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =

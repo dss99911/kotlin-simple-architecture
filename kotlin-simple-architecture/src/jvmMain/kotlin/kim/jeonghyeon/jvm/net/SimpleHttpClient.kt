@@ -6,9 +6,9 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kim.jeonghyeon.common.extension.replaceLast
-import kim.jeonghyeon.common.net.throwException
-import kim.jeonghyeon.common.net.validateResponse
+import kim.jeonghyeon.extension.replaceLast
+import kim.jeonghyeon.net.throwException
+import kim.jeonghyeon.net.validateResponse
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.reflect.suspendProxy
 import kotlin.reflect.jvm.javaType

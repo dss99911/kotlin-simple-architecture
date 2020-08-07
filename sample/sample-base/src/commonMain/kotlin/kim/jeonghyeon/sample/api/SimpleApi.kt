@@ -13,6 +13,8 @@ interface SimpleApi {
     suspend fun getWords(): List<String>
 
     suspend fun addWord(word: String)
+
+    suspend fun getHeader(): String
 }
 
 @Serializable

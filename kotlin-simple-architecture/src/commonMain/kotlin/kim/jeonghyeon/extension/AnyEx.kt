@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 
 fun <T> T.println(): T = also { println(it) }

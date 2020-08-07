@@ -39,6 +39,7 @@
     <string name="polling">polling</string>
     <string name="multiple_parallel_call">Api call in parallel</string>
     <string name="single_call">Single Api call</string>
+    <string name="header_call">Header Api call</string>
     <string name="call_in_idle">call in idle</string>
     <string name="threading">Threading</string>
     <string name="callback">Callback</string>

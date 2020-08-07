@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 
 fun Int?.plus(value: String?): String? = toString() + value
