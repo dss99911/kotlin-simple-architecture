@@ -1,7 +1,7 @@
 package kim.jeonghyeon.androidlibrary.compose
 
 import androidx.compose.frames.ModelList
-import kim.jeonghyeon.common.extension.removeLast
+import kim.jeonghyeon.extension.removeLast
 import org.jetbrains.anko.collections.forEachReversedByIndex
 
 /**

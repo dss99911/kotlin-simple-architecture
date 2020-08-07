@@ -1,19 +1,24 @@
-package kim.jeonghyeon.common.net
+package kim.jeonghyeon.net
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.HttpClientDsl
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
-import kim.jeonghyeon.common.net.error.ApiError
-import kim.jeonghyeon.common.net.error.ApiErrorBody
-import kim.jeonghyeon.common.net.error.isApiError
+import kim.jeonghyeon.net.error.ApiError
+import kim.jeonghyeon.net.error.ApiErrorBody
+import kim.jeonghyeon.net.error.isApiError
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
+@HttpClientDsl
+expect fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
+
+@HttpClientDsl
 fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient = HttpClient {
     install(JsonFeature) {
         serializer = KotlinxSerializer()

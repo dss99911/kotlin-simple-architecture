@@ -18,7 +18,8 @@ abstract class ModelScreen(vararg viewModels: BaseViewModel) : SubScreen(*viewMo
             ApiParallelScreen().title to { ApiParallelScreen() },
             ApiPollingScreen().title to { ApiPollingScreen() },
             DbSimpleScreen().title to { DbSimpleScreen() },
-            ApiDbScreen().title to { ApiDbScreen() }
+            ApiDbScreen().title to { ApiDbScreen() },
+            ApiHeaderScreen().title to { ApiHeaderScreen() }
         )
     }
 }

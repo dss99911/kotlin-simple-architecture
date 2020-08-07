@@ -2,7 +2,7 @@
 
 package kim.jeonghyeon.jvm.extension
 
-import kim.jeonghyeon.common.extension.letIfNotEmpty
+import kim.jeonghyeon.extension.letIfNotEmpty
 import java.io.File
 
 @Deprecated("old code")
