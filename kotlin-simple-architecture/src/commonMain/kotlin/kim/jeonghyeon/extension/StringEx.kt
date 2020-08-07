@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 fun String?.toDouble(defValue: Double): Double = try {
     this?.toDouble() ?: 0.0

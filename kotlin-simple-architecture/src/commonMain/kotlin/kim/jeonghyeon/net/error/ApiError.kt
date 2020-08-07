@@ -1,4 +1,4 @@
-package kim.jeonghyeon.common.net.error
+package kim.jeonghyeon.net.error
 
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.Serializable

@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 
 inline fun <T> ignoreException(action: () -> T): T? = try {

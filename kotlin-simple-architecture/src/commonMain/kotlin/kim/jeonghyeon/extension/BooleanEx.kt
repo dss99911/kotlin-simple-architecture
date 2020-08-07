@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package kim.jeonghyeon.common.extension
+package kim.jeonghyeon.extension
 
 inline fun <T : Boolean?> T.alsoIfTrue(action: () -> Unit): T = alsoIf(this == true) { action() }
 
