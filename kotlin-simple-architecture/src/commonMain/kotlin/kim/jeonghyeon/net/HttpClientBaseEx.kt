@@ -64,10 +64,15 @@ suspend fun HttpClient.validateResponse(response: HttpResponse) {
     )
 }
 
+/**
+ * todo make concrete logic or use some basic kotlin function
+ */
+fun String.isUri(): Boolean = contains("://")
+
 infix fun String.connectPath(end: String): String {
     if (isEmpty() || end.isEmpty()) return this + end
 
-    if (end.contains("://")) {
+    if (end.isUri()) {
         return end
     }
 

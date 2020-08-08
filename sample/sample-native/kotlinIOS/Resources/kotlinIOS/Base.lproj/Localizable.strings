@@ -1,5 +1,7 @@
 "Model" = "Model";
 "Api Single Call" = "Api Single Call";
+"Api Annotation Call" = "Api Annotation Call";
+"Api External Call" = "Api External Call";
 "Api Sequential Call" = "Api Sequential Call";
 "Enter value" = "Enter value";
 "Update" = "Update";
@@ -9,3 +11,5 @@
 "DB Api Together" = "DB Api Together";
 "Add" = "Add";
 "Simple DB Call" = "Simple DB Call";
+"Keyword" = "Keyword";
+"Call" = "Call";

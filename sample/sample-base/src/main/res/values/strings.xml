@@ -17,6 +17,7 @@
     <string name="action_search">search</string>
     <string name="share">share</string>
     <string name="add">add</string>
+    <string name="call">call</string>
     <string name="input_text">Input text</string>
     <string name="view_model_related">View Model related</string>
     <string name="model">Model</string>
@@ -39,6 +40,8 @@
     <string name="polling">polling</string>
     <string name="multiple_parallel_call">Api call in parallel</string>
     <string name="single_call">Single Api call</string>
+    <string name="annotation_call">Annotation Api call</string>
+    <string name="external_call">External Api call</string>
     <string name="header_call">Header Api call</string>
     <string name="call_in_idle">call in idle</string>
     <string name="threading">Threading</string>

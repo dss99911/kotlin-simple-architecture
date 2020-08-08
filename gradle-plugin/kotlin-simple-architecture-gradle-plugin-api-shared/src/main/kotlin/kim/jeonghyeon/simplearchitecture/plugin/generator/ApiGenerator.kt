@@ -97,7 +97,6 @@ class ApiGenerator(
         |val subPath = ${makeSubPathStatement()}
         |val response = try {
         |${INDENT}client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
-        |$INDENT${INDENT}contentType(ContentType.Application.Json)
         |$INDENT${INDENT}${makeBodyStatement()}
         |$INDENT${INDENT}${makeQueryStatement()}
         |$INDENT${INDENT}${makeHeaderStatement()}
@@ -109,7 +108,7 @@ class ApiGenerator(
         |client.validateResponse(response)
         |${returnTypeString?.let {
             """
-            |val json = Json(JsonConfiguration.Stable)
+            |val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
             |return json.parse(${makeSerializer(it)}, response.readText())
             """.trimMargin()
         } ?: ""}
@@ -120,7 +119,7 @@ class ApiGenerator(
         val bodyParameter = parameters.firstOrNull { it.getAnnotationString(Body::class) != null }
 
         if (bodyParameter != null) {
-            return "body = ${bodyParameter.name!!}"
+            return "body = ${bodyParameter.name!!}; contentType(ContentType.Application.Json)"
         }
 
         val bodyParameters = parameters.filter {
@@ -129,7 +128,11 @@ class ApiGenerator(
                     && it.getAnnotationString(Query::class) == null
         }
 
-        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }"""
+        if (bodyParameters.isEmpty()) {
+            return ""
+        }
+
+        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }; contentType(ContentType.Application.Json)"""
     }
 
     private fun SharedKtNamedFunction.makeQueryStatement(): String = parameters
@@ -234,14 +237,21 @@ class ApiGenerator(
             }
             typeString.endsWith(">") -> {
                 val firstType = typeString.substringBefore("<")
-                val innerType = typeString.substring(typeString.indexOf("<") + 1, typeString.lastIndexOf(">"))
-                makeSerializer(innerType) + when (firstType) {
+                val innerTypes = typeString.substring(typeString.indexOf("<") + 1, typeString.lastIndexOf(">")).split(",").map { it.trim() }
+                val innerSerializers = innerTypes.map { makeSerializer(it) }
+
+                //todo support with packagename as well, and super type of map
+                when (firstType) {
                     "List" -> {
-                        ".list"
+                        "${innerSerializers.first()}.list"
                     }
                     "Set" -> {
-                        ".set"
+                        "${innerSerializers.first()}.set"
                     }
+                    "Pair" -> "PairSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
+                    "Map.Entry" -> "MapEntrySerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
+                    "Triple" -> "TripleSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
+                    "Map" -> "MapSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
                     else -> error("Serializing $firstType is not supported by api generator")
                 }
             }
