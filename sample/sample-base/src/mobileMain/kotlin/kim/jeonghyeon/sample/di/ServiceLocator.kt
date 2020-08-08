@@ -10,6 +10,7 @@ import kim.jeonghyeon.net.client
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.SampleDb
 import kim.jeonghyeon.sample.WordQueries
+import kim.jeonghyeon.sample.api.GithubApi
 import kim.jeonghyeon.sample.api.SimpleApi
 import kim.jeonghyeon.sample.repository.WordRepository
 import kim.jeonghyeon.sample.repository.WordRepositoryImpl
@@ -22,6 +23,7 @@ interface ServiceLocator {
     val preferenceApi: PreferenceApi
     val preference: Preference
     val simpleApi: SimpleApi
+    val githubApi: GithubApi
     val wordQueries: WordQueries
     val wordRepository: WordRepository
 }
@@ -29,6 +31,7 @@ interface ServiceLocator {
 class ServiceLocatorImpl : ServiceLocator {
     //whenever call, make new instance
     override val simpleApi: SimpleApi get() = api(baseUrl)
+    override val githubApi: GithubApi get() = api(baseUrl)
     override val preferenceApi: PreferenceApi get() = client.createSimple(baseUrl)
     override val preference: Preference = Preference()
 

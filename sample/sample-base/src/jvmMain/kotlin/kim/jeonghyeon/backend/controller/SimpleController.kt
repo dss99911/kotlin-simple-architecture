@@ -9,6 +9,7 @@ import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SimpleApi
+import kim.jeonghyeon.util.log
 import kotlin.random.Random
 
 class SimpleController : SimpleApi {
@@ -35,6 +36,18 @@ class SimpleController : SimpleApi {
 
     override suspend fun getHeader(): String {
         return headers()[HEADER_KEY]!!
+    }
+
+    override suspend fun getAnnotation(
+        id: String,
+        action: String,
+        auth: String
+    ): Pair<Post, String> {
+        return Pair(Post(1, "postValue"), "received $id, $action, $auth")
+    }
+
+    override suspend fun putAnnotation(id: String, post: Post) {
+        log("id=$id, post=$post")
     }
 }
 

@@ -1,5 +1,7 @@
 "Model" = "모델";
 "Api Single Call" = "단일 API 호출";
+"Api Annotation Call" = "Annotation을 통한 API 호출";
+"Api External Call" = "외부 API 호출";
 "Api Sequential Call" = "연속 API 호출";
 "Enter value" = "값을 입력해주세요";
 "Update" = "갱신";
@@ -9,3 +11,5 @@
 "DB Api Together" = "DB와 Api 함께 사";
 "Add" = "추가";
 "Simple DB Call" = "간단한 DB 호출";
+"Keyword" = "키워드";
+"Call" = "호출";
