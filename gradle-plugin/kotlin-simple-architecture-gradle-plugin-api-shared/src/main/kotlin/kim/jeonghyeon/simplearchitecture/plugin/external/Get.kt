@@ -8,5 +8,5 @@ package kim.jeonghyeon.annotation
  *  if it's path, baseUrl + Api's path + this
  */
 @Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Get(val path: String = "")

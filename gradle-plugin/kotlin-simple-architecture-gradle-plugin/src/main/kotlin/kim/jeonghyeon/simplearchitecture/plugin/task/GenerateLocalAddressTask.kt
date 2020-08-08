@@ -38,6 +38,7 @@ fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvi
                     | *  1. building environment and application's device should connect same network lik Wifi
                     | *  2. build application
                     | *  3. run server in local
+                    | *  4. todo if build is passed with no source code change. but ip address changed. this is not changed. find the solution
                     | */
                     |object SimpleConfig {
                     |    val BUILD_TIME_LOCAL_IP_ADDRESS = "${socket.localAddress}"

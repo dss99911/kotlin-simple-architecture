@@ -1,5 +1,5 @@
 package kim.jeonghyeon.annotation
 
 @Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Head(val path: String)

@@ -32,6 +32,12 @@ struct ModelScreen: NavigationScreen {
             NavigationLink(destination: ApiDbScreen()) {
                 Text("Simple DB Call").font(.headline)
             }
+            NavigationLink(destination: ApiAnnotationScreen()) {
+                Text("Api Annotation Call").font(.headline)
+            }
+            NavigationLink(destination: ApiExternalScreen()) {
+                Text("Api External Call").font(.headline)
+            }
         }
     }
     
