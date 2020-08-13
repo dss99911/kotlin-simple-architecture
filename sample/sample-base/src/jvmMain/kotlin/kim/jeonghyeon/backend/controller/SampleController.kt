@@ -1,37 +1,39 @@
 package kim.jeonghyeon.backend.controller
 
-import kim.jeonghyeon.CODE_POST_ERROR
-import kim.jeonghyeon.backend.db.preference
+import kim.jeonghyeon.backend.const.WORDS
+import kim.jeonghyeon.backend.di.serviceLocator
+import kim.jeonghyeon.backend.log
 import kim.jeonghyeon.backend.net.headers
+import kim.jeonghyeon.const.post
 import kim.jeonghyeon.net.HEADER_KEY
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
+import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.Post
-import kim.jeonghyeon.sample.api.SimpleApi
-import kim.jeonghyeon.util.log
+import kim.jeonghyeon.sample.api.SampleApi
 import kotlin.random.Random
 
-class SimpleController : SimpleApi {
+class SampleController(val pref: Preference = serviceLocator.preference) : SampleApi {
     override suspend fun getToken(id: String, password: String): String {
         return "token"
     }
 
     override suspend fun submitPost(token: String, post: Post) {
         if (Random.nextBoolean()) {
-            throw ApiError(ApiErrorBody(ApiErrorBody.CODE_POST_ERROR, "post error"))
+            errorApi(ApiErrorBody.post)
         }
     }
 
     override suspend fun getWords(): List<String> {
-        return preference.getString(preference.WORDS)?.split(",") ?: emptyList()
+        return pref.getString(pref.WORDS)?.split(",") ?: emptyList()
     }
 
     override suspend fun addWord(word: String) {
         val list = getWords().toMutableList().apply {
             add(word)
         }
-        preference.setString(preference.WORDS, list.joinToString(","))
+        pref.setString(pref.WORDS, list.joinToString(","))
     }
 
     override suspend fun getHeader(): String {
@@ -47,9 +49,7 @@ class SimpleController : SimpleApi {
     }
 
     override suspend fun putAnnotation(id: String, post: Post) {
-        log("id=$id, post=$post")
+        log.info("id=$id, post=$post")
     }
 }
 
-@Suppress("unused")
-val Preference.WORDS get() = "KEY_WORDS"

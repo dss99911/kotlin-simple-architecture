@@ -5,6 +5,7 @@ import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.write
 import java.io.File
+import kotlin.reflect.KClass
 
 class ApiGenerator(
     private val pluginOptions: PluginOptions,
@@ -42,7 +43,6 @@ class ApiGenerator(
 
     private fun SharedKtClass.isApiInterface(): Boolean = name != null && isInterface() && hasAnnotation(Api::class)
 
-
     private fun SharedKtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT
     |${packageName?.takeIf { it.isNotEmpty() }?.let { "package $it" } ?: ""}
@@ -56,26 +56,33 @@ class ApiGenerator(
     |}
     """.trimMargin()
 
-
     private fun SharedKtClass.makeImport(): String = """
         |${importSourceCode}
         |import io.ktor.client.HttpClient
         |import io.ktor.client.request.*
         |import io.ktor.client.statement.*
         |import kim.jeonghyeon.net.*
+        |import kotlinx.coroutines.*
         |import io.ktor.http.*
         |import kotlinx.serialization.json.*
         |import kotlinx.serialization.builtins.*
+        |import kotlin.coroutines.coroutineContext
         """.trimMargin()
 
     private fun SharedKtClass.makeClassDefinition() =
         "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String) : $name"
 
     private fun SharedKtClass.makeMainPathProperty(): String {
-        val definedPath = getAnnotationString(Api::class)?.getAnnotationParameterStringLiteral()
-        val path = definedPath ?: "${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}"
 
-        return "val mainPath = \"${path}\""
+        val path = getDefinedPathStatement() ?: "\"${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}\""
+
+        return "val mainPath = $path"
+    }
+
+    private fun SharedKtClass.getDefinedPathStatement(): String? {
+        return getAnnotationString(Api::class)
+            ?.trimParenthesis()
+            ?.getParameterString(Api::path.name, 0)
     }
 
     private fun SharedKtClass.makeFunctions(): String = functions
@@ -95,21 +102,25 @@ class ApiGenerator(
 
         return """
         |val subPath = ${makeSubPathStatement()}
-        |val response = try {
-        |${INDENT}client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
-        |$INDENT${INDENT}${makeBodyStatement()}
-        |$INDENT${INDENT}${makeQueryStatement()}
-        |$INDENT${INDENT}${makeHeaderStatement()}
-        |$INDENT}
+        |val response: HttpResponse
+        |val responseText: String
+        |try {
+        |${INDENT}response = client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
+        |${INDENT}${INDENT}${makeBodyStatement()}
+        |${INDENT}${INDENT}${makeContentTypeStatement()}
+        |${INDENT}${INDENT}${makeQueryStatement()}
+        |${INDENT}${INDENT}${makeHeaderStatement()}
+        |${INDENT}}
+        |${INDENT}responseText = response.readText()
         |} catch (e: Exception) {
         |${INDENT}client.throwException(e)
         |}
         |
-        |client.validateResponse(response)
+        |client.validateResponse(response, responseText)
         |${returnTypeString?.let {
             """
             |val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-            |return json.parse(${makeSerializer(it)}, response.readText())
+            |return json.parse(${makeSerializer(it)}, responseText)
             """.trimMargin()
         } ?: ""}
         """.trimMargin()
@@ -119,7 +130,7 @@ class ApiGenerator(
         val bodyParameter = parameters.firstOrNull { it.getAnnotationString(Body::class) != null }
 
         if (bodyParameter != null) {
-            return "body = ${bodyParameter.name!!}; contentType(ContentType.Application.Json)"
+            return "body = ${bodyParameter.name!!}"
         }
 
         val bodyParameters = parameters.filter {
@@ -132,40 +143,53 @@ class ApiGenerator(
             return ""
         }
 
-        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }; contentType(ContentType.Application.Json)"""
+        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }"""
+    }
+
+    private fun SharedKtNamedFunction.makeContentTypeStatement(): String = when(getRequestMethodAnnotation()) {
+        Post::class, Put::class, Delete::class, Patch::class ->
+            "contentType(ContentType.Application.Json)"
+        else -> ""
     }
 
     private fun SharedKtNamedFunction.makeQueryStatement(): String = parameters
         .filter { it.getAnnotationString(Query::class) != null }
         .map {
-            val key = it.getAnnotationString(Query::class)?.getAnnotationParameterStringLiteral()
-            "parameter(\"$key\", ${it.name})"
+            val key = it.getAnnotationString(Query::class)!!
+                .trimParenthesis()!!
+                .getParameterString(Query::name.name, 0)
+
+            "parameter($key, ${it.name})"
         }.joinToString("; ")
 
     private fun SharedKtNamedFunction.makeHeaderStatement(): String = parameters
         .filter { it.getAnnotationString(Header::class) != null }
         .map {
-            val key = it.getAnnotationString(Header::class)?.getAnnotationParameterStringLiteral()
-            "header(\"$key\", ${it.name})"
+            val key = it.getAnnotationString(Header::class)!!
+                .trimParenthesis()!!
+                .getParameterString(Header::name.name, 0)
+            "header($key, ${it.name})"
         }.joinToString("; ")
 
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
-        val subPath = getRequestMethodAnnotationString()?.getAnnotationParameterStringLiteral() ?: name
-        return "\"$subPath\"" + parameters
+        val subPath = getRequestMethodAnnotationString()
+            ?.trimParenthesis()
+            ?.getParameterString(Get::path.name, 0)
+            ?: "\"$name\""
+
+        return subPath + parameters
             .filter { it.getAnnotationString(Path::class) != null }
             .joinToString("") {
-                val pathName = it.getAnnotationString(Path::class)!!.getAnnotationParameterStringLiteral()
-                ".replace(\"{$pathName}\", ${it.name})"
+                val pathName = it.getAnnotationString(Path::class)!!
+                    .trimParenthesis()!!
+                    .getParameterString(Path::name.name, 0)
+                """.replace("{" + $pathName + "}", ${it.name})"""
             }
 
     }
 
     private fun SharedKtNamedFunction.getRequestMethodFunctionName(): String =
-        getRequestMethodAnnotationString()
-            ?.getAnnotationName()
-            ?.toLowerCase()
-            ?.substringAfterLast(".")//remove package if exists
-            ?:"post"
+        getRequestMethodAnnotation().simpleName!!.toLowerCase()
 
     val requestMethodAnnotationNames = listOf(Get::class, Delete::class, Head::class, Options::class, Patch::class, Put::class, Post::class)
 
@@ -173,6 +197,12 @@ class ApiGenerator(
         return requestMethodAnnotationNames.mapNotNull {
             getAnnotationString(it)
         }.firstOrNull()
+    }
+
+    private fun SharedKtNamedFunction.getRequestMethodAnnotation(): KClass<out Annotation> {
+        return requestMethodAnnotationNames.firstOrNull {
+            getAnnotationString(it) != null
+        }?:Post::class
     }
 
     private fun GeneratedApiSource.generateApiClassFile(): File? =

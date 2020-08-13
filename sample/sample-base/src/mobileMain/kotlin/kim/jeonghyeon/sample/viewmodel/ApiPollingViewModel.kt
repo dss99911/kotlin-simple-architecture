@@ -3,11 +3,11 @@ package kim.jeonghyeon.sample.viewmodel
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.coroutine.polling
 import kim.jeonghyeon.sample.api.Post
-import kim.jeonghyeon.sample.api.SimpleApi
+import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class ApiPollingViewModel(private val api: SimpleApi = serviceLocator.simpleApi) : BaseViewModel() {
+class ApiPollingViewModel(private val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
     val result = MutableStateFlow("")
     val count = MutableStateFlow(0)
 

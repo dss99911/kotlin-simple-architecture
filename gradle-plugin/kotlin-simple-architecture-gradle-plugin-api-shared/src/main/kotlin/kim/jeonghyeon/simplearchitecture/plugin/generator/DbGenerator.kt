@@ -111,7 +111,7 @@ class DbGenerator(
                 |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db${pluginOptions.postFix.capitalize()}(path: String, properties: Map<String?, String?>): T {
                 |
                 |${INDENT}return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance()})" }.prependIndent(indent(2))}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance(it.name)})" }.prependIndent(indent(2))}
                 |
                 |$INDENT${INDENT}else -> error("can not create database name " + T::class.simpleName)
                 |$INDENT} as T
@@ -151,7 +151,7 @@ class DbGenerator(
 
     }
 
-    fun GeneratedDbSource.makeDriverInstance(): String {
+    fun GeneratedDbSource.makeDriverInstance(dbName: String): String {
         return when (pluginOptions.platformType) {
             KotlinPlatformType.androidJvm -> {
                 "AndroidSqliteDriver(${name}.Schema, ctx, path)"
@@ -160,7 +160,7 @@ class DbGenerator(
                 "NativeSqliteDriver(${name}.Schema, path)"
             }
             KotlinPlatformType.jvm -> {
-                "JdbcSqliteDriver(path, Properties().apply { properties.forEach { this.setProperty(it.key, it.value) } })"
+                "JdbcSqliteDriver(path, Properties().apply { properties.forEach { this.setProperty(it.key, it.value) } }).also { try { $dbName.Schema.create(it) } catch (e: Exception) { } }"
             }
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
@@ -168,6 +168,5 @@ class DbGenerator(
         }
     }
 }
-
 
 

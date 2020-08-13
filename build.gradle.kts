@@ -7,9 +7,8 @@ plugins {
 buildscript {
     repositories {
         mavenLocal()
-
-        google()
         mavenCentral()
+        google()
         jcenter()
     }
 
@@ -28,11 +27,6 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven("https://dl.bintray.com/kotlin/kotlinx")
-        maven("https://dl.bintray.com/kotlin/ktor")
-        maven("https://dl.bintray.com/sargunster/maven")
-        maven("https://dl.bintray.com/kotlin/squash")
-        maven("https://dl.bintray.com/kotlin/kotlin-dev")
         google()
         jcenter()
     }

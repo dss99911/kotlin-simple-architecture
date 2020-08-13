@@ -4,7 +4,7 @@ import kim.jeonghyeon.annotation.*
 import kotlinx.serialization.Serializable
 
 @Api
-interface SimpleApi {
+interface SampleApi {
     suspend fun getToken(id: String, password: String): String
 
     suspend fun submitPost(token: String, post: Post)

@@ -3,7 +3,7 @@ package kim.jeonghyeon.sample.repository
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
-import kim.jeonghyeon.sample.api.SimpleApi
+import kim.jeonghyeon.sample.api.SampleApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -15,7 +15,7 @@ interface WordRepository {
 
 var fetchedWordApi = false
 
-class WordRepositoryImpl(val api: SimpleApi, val query: WordQueries) : WordRepository {
+class WordRepositoryImpl(val api: SampleApi, val query: WordQueries) : WordRepository {
 
     override fun getWord(): Flow<List<Word>> = flow {
         if (!fetchedWordApi) {

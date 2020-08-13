@@ -2,6 +2,12 @@
 
 package kim.jeonghyeon.extension
 
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.parse
+import kotlinx.serialization.stringify
+
 fun String?.toDouble(defValue: Double): Double = try {
     this?.toDouble() ?: 0.0
 } catch (e: NumberFormatException) {
@@ -17,4 +23,14 @@ inline fun CharSequence?.isNotEmpty(): Boolean = this != null && !isEmpty()
 fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean = false): String {
     val index = lastIndexOf(oldValue, ignoreCase = ignoreCase)
     return if (index < 0) this else replaceRange(index, index + oldValue.length, newValue)
+}
+
+@ImplicitReflectionSerializer
+inline fun <reified T : Any> T.toJsonString(): String {
+    return Json(JsonConfiguration.Default).stringify(this)
+}
+
+@ImplicitReflectionSerializer
+inline fun <reified T : Any> String.fromJsonString(): T {
+    return Json(JsonConfiguration.Default).parse(this)
 }
