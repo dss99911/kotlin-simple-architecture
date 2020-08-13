@@ -1,9 +1,8 @@
 package kim.jeonghyeon.androidlibrary.compose
 
+import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
-import androidx.compose.Composable
-import androidx.compose.State
-import androidx.compose.collectAsState
+import androidx.compose.*
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.layout.ColumnScope.weight
@@ -13,10 +12,13 @@ import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
 import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.androidlibrary.extension.toast
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -41,6 +43,43 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     open val title: String = ""
     open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
 
+    init {
+        //in the Fragment approach, there was event concept that should be called one time for a data.
+        //the reason, the event concept is created, is that Fragment or Activity can be recreated,
+        //and when observe LiveData, if there is already the data, it observe again, and observer is invoked again.
+        //it's Fragment/Activity's limitation.
+        //but after migrated to compose, it's not required.
+        //now dialog or navigating page all is state. so, no need event to call just one time.
+        //just set data. then it'll be reflected
+        //and Screen also keep in memory even if activity destroyed. so, no need to handle recreate case.
+        //Fragment way was difficult to handle dialog, toast, navigation, so, it couldn't apply MVVM perfectly but event had to use MVP or event implementation on MVVM
+        //now complete MVVM is reflected on the architecture, thanks to Jetpack Compose
+        viewModels.forEach { viewModel ->
+            viewModel.eventGoBack.launchAndCollectNotNull {
+                goBack()
+            }
+            viewModel.eventToast.launchAndCollectNotNull {
+                toast(it)
+            }
+        }
+    }
+
+    fun <T> MutableStateFlow<T>.launchAndCollect(onCollect: (T) -> Unit) {
+        viewModels[0].scope.launch {
+            collect {
+                onCollect(it)
+            }
+        }
+    }
+
+    fun <T> MutableStateFlow<T?>.launchAndCollectNotNull(onCollect: (T) -> Unit) {
+        launchAndCollect {
+            if (it != null) {
+                onCollect(it)
+            }
+        }
+    }
+
     /**
      * !! Limitation !!
      * this function should be overridden in each screen like below
@@ -52,8 +91,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
      */
     @Composable
     open fun compose() {
-        viewModels
-            .forEach { it.onCompose() }
+        viewModels.forEach { it.onCompose() }
 
         Stack {
             if (composeInitStatus()) {
@@ -75,7 +113,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     @Composable
     private fun composeInitStatus(): Boolean {
         viewModels.forEach {
-            when (val resource = it.initStatus.asState().value) {
+            when (val resource = +it.initStatus) {
                 is Resource.Loading -> {
                     composeFullLoading()
                     return true
@@ -97,7 +135,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     @Composable
     private fun composeStatus() {
         viewModels.forEach {
-            when (val resource = it.status.asState().value) {
+            when (val resource = +it.status) {
                 is Resource.Loading -> composeLoading()
                 is Resource.Error -> composeError(resource)
                 else -> {
@@ -130,6 +168,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
         }
     }
 
+    @CallSuper
     fun clear() {
         viewModels.forEach { it.onCleared() }
     }
@@ -144,6 +183,10 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     inline fun <T> MutableStateFlow<T>.asState(
         context: CoroutineContext = Dispatchers.Main
     ): State<T> = collectAsState(context)
+
+    fun goBack() {
+        popUpTo(true)
+    }
 
     protected companion object {
         fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)

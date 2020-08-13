@@ -23,6 +23,9 @@ open class BaseViewModel {
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
+    val eventGoBack = MutableStateFlow<Unit?>(null)
+    val eventToast = MutableStateFlow<String?>(null)
+
     fun onCompose() {
         if (!isInitialized.getAndSet(true)) {
             onInitialized()
@@ -37,6 +40,14 @@ open class BaseViewModel {
         scope.close()
     }
 
+    fun goBack() {
+        eventGoBack.value = Unit
+    }
+
+    fun toast(message: String) {
+        eventToast.value = message
+    }
+
     fun <T> ResourceStateFlow<T>.load(work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, work)
     }
@@ -47,6 +58,10 @@ open class BaseViewModel {
 
     fun <T> MutableStateFlow<T>.load(status: StatusStateFlow, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
+    }
+
+    fun <T, U> MutableStateFlow<U>.load(status: StatusStateFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
+        scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
     fun <T> ResourceStateFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
@@ -129,6 +144,27 @@ fun <T> CoroutineScope.loadDataAndStatus(
         }?.also {
             it.onSuccess { data.value = it }
             status.value = it
+        }
+    }.also {
+        status.value = Resource.Loading { it.cancel() }
+        it.start()
+    }
+}
+
+fun <T, U> CoroutineScope.loadDataAndStatus(
+    data: MutableStateFlow<U>,
+    status: StatusStateFlow,
+    work: suspend CoroutineScope.() -> T,
+    transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
+) {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    launch(CoroutineExceptionHandler { _, _ -> }, CoroutineStart.LAZY) {
+        getResource(work) {
+            this@loadDataAndStatus.loadDataAndStatus(data, status, work, transform)
+        }?.also {
+            val transformed = transform(it)
+            transformed.onSuccess { data.value = it }
+            status.value = transformed
         }
     }.also {
         status.value = Resource.Loading { it.cancel() }

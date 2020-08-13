@@ -8,6 +8,11 @@ import java.io.File
 
 object SourceCodeGenerator {
     fun generate(pluginOptions: PluginOptions, origin: Collection<SharedKtFile>): Collection<File> {
+        if (pluginOptions.compileTargetVariantsName.startsWith("metadata")) {
+            //metadata, common both are built. ignore meta data
+            return emptyList()
+        }
+
         val apiFiles = ApiGenerator(pluginOptions, origin).generate()
         val dbFiles = DbGenerator(pluginOptions, origin).generate()
         return apiFiles + dbFiles

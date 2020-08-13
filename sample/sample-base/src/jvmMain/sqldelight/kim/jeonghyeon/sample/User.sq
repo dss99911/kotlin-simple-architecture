@@ -1,0 +1,18 @@
+CREATE TABLE user (
+  id TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL,
+  password TEXT NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM user;
+
+selectOne:
+SELECT *
+FROM user
+WHERE id = ?;
+
+insert:
+INSERT INTO user(id, name, password)
+VALUES (?, ?, ?);

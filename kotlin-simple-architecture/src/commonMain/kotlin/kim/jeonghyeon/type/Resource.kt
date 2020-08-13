@@ -28,6 +28,8 @@ sealed class Resource<out T> {
     }
 
     fun successData(): T = if (isSuccess()) data() else error("Resource is not success")
+    fun errorData(): ResourceError = if (this is Error) this.error else error("Resource is not error")
+    fun <E : ResourceError> errorOf(): E = errorData() as E
 
     fun onLoading(onResult: (last: T?, cancel: () -> Unit) -> Unit): Resource<T> {
         if (this is Loading) {

@@ -11,6 +11,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 
+//todo when ip address changed, generated file is not updated.
 fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvider<Task> =
     tasks.register("generateLocalAddressOn${compileSourceSetName.capitalize()}") {
         description = "generate LocalAddress of build environment"
@@ -20,6 +21,7 @@ fun Project.getGenerateLocalAddressTask(compileSourceSetName: String): TaskProvi
                 if (isMultiplatform) "commonMain" else compileSourceSetName
             )
         )
+
         outputs.dir(outputDir)
 
         doLast {
