@@ -47,7 +47,7 @@ interface SharedKtParameter {
 /**
  * @Api("ddsf", true) ==> "ddsf", true
  */
-fun String.getAnnotationParameterString(): String? {
+fun String.trimParenthesis(): String? {
     val parenthesisStartIndex = indexOf("(")
     val parenthesisEndIndex = lastIndexOf(")")
     if (parenthesisStartIndex == -1 || parenthesisEndIndex == -1) {
@@ -58,6 +58,42 @@ fun String.getAnnotationParameterString(): String? {
 }
 
 /**
+ * 1. "ddd", true => "ddd"
+ * 2. path: "ddd", encoded: true
+ *
+ */
+fun String.getParameterString(name: String, index: Int): String? {
+    val params = split(",")//todo need to improve logic to split params
+        .map { it.trim() }
+
+    val namedParameter = params
+        //has parameter name. todo need to improve logic to detect name exists
+        .firstOrNull { it.startsWith(name) }
+        ?.let { it.trimParameterName() }
+
+    if (namedParameter != null) {
+        return namedParameter
+    }
+
+    val indexNameExists = params
+        //has other parameter name. todo need to improve logic to detect name exists
+        .indexOfFirst { it.contains("=") }
+        .let { if (it == -1) params.size else it }
+    return if (index < indexNameExists) {
+        if (params[index].isBlank()) {
+            null
+        } else {
+            params[index]
+        }
+    } else null
+}
+
+/**
+ * path: "ddd" => "ddd"
+ */
+fun String.trimParameterName(): String = substringAfter("=").trim()
+
+/**
  * @Api("ddsf", true) ==> Api
  */
 fun String.getAnnotationName(): String {
@@ -66,19 +102,4 @@ fun String.getAnnotationName(): String {
     if (startIndexOfName == -1) error("annotation string doesn't contains @")
 
     return substring(startIndexOfName + 1, endIndexOfName).trim()
-}
-/**
- * @Api("ddsf", true) ==> ddsf
- *
- * Limitation : doesn't support const string.
- * todo : consider several parameters, and also parameters' order is different
- */
-fun String.getAnnotationParameterStringLiteral(): String? {
-    if (!contains("\"")) {
-        return null
-    }
-    if (contains("\"\"\"")) {
-        return substring(indexOf("\"\"\"") + 3, lastIndexOf("\"\"\""))
-    }
-    return substring(indexOf("\"") + 1, lastIndexOf("\""))
 }

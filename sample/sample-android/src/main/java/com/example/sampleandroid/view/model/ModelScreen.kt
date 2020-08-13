@@ -21,7 +21,8 @@ abstract class ModelScreen(vararg viewModels: BaseViewModel) : SubScreen(*viewMo
             ApiDbScreen().title to { ApiDbScreen() },
             ApiHeaderScreen().title to { ApiHeaderScreen() },
             ApiAnnotationScreen().title to { ApiAnnotationScreen() },
-            ApiExternalScreen().title to { ApiExternalScreen() }
+            ApiExternalScreen().title to { ApiExternalScreen() },
+            SignInScreen().title to { SignInScreen() }
         )
     }
 }

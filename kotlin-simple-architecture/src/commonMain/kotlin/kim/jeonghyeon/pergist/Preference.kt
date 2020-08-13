@@ -2,8 +2,11 @@ package kim.jeonghyeon.pergist
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import kim.jeonghyeon.db.SimpleDB
+import kim.jeonghyeon.extension.fromJsonString
+import kim.jeonghyeon.extension.toJsonString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.ImplicitReflectionSerializer
 
 expect class Preference() : AbstractPreference {
     override val db: SimpleDB
@@ -25,6 +28,13 @@ abstract class AbstractPreference {
         return getString(key) ?: defValue
     }
 
+    @ImplicitReflectionSerializer
+    inline fun <reified T : Any> get(key: String): T? {
+        return getString(key)?.fromJsonString()
+    }
+
+    //todo issue : if Preference is created several times, and other preference change value. then this won't be invoked.
+    // make this preference singleton or check sqldelight implementation
     fun getStringFlow(key: String): Flow<String?> {
         return queries.get(key).asFlow().map { it.executeAsOneOrNull()?.value }
     }
@@ -32,4 +42,10 @@ abstract class AbstractPreference {
     fun setString(key: String, value: String?) {
         queries.set(key, value)
     }
+
+    @ImplicitReflectionSerializer
+    inline fun <reified T : Any> set(key: String, value: T?) {
+        setString(key, value?.toJsonString())
+    }
+
 }

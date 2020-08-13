@@ -26,6 +26,9 @@ object deps {
         const val gson = "io.ktor:ktor-gson:${versions.kotlin.ktor}"
         const val serialization = "io.ktor:ktor-serialization:${versions.kotlin.ktor}"
         const val serverNetty = "io.ktor:ktor-server-netty:${versions.kotlin.ktor}"
+        const val auth = "io.ktor:ktor-auth:${versions.kotlin.ktor}"
+        const val serverSessions = "io.ktor:ktor-server-sessions:${versions.kotlin.ktor}"
+
         const val clientCore = "io.ktor:ktor-client-core:${versions.kotlin.ktor}"
         const val clientCoreJvm = "io.ktor:ktor-client-core-jvm:${versions.kotlin.ktor}"
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"

@@ -69,21 +69,17 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
+                implementation(deps.ktor.auth)
                 implementation(deps.ktor.gson)
                 implementation(deps.ktor.serverNetty)
                 implementation(deps.ktor.serialization)
                 implementation(deps.logback)
+                implementation(deps.ktor.serverSessions)
             }
         }
 
         val androidMain by getting {
             dependsOn(mobileMain)
-            dependencies {
-                implementation("com.android.support:customtabs:23.3.0")
-                implementation("io.reactivex.rxjava2:rxjava:2.2.19")
-                implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-                implementation("com.squareup.retrofit2:adapter-rxjava2:2.2.0")//todo Rxjava3 released, but adapter seems not exsits yet.
-            }
         }
 
         val androidDebug by getting {

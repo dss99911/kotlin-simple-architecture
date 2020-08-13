@@ -18,3 +18,7 @@ actual fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit): HttpClient 
 
         config()
     }
+
+
+//todo check exception type
+actual fun Exception.isConnectException(): Boolean = false

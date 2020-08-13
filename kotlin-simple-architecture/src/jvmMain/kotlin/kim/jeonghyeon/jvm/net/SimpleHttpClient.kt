@@ -31,22 +31,26 @@ inline fun <reified T> HttpClient.create(baseUrl: String) =
         val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
         val returnType = method.kotlinFunction!!.returnType
 
-        val response = try {
-            post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
+        val response: HttpResponse
+        val responseText: String
+
+        try {
+            response = post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
                 contentType(ContentType.Application.Json)
 
                 //can not use kotlin serialization.
                 //type mismatch. required: capturedtype(out any). found: any
                 body = arguments
             }
+            responseText = response.readText()
         } catch (e: Exception) {
             throwException(e)
         }
-        validateResponse(response)
+        validateResponse(response, responseText)
 
         if (returnType.classifier == Unit::class) {
             Unit
         } else {
-            response.readText().toJsonObject<Any?>(returnType.javaType)
+            responseText.toJsonObject<Any?>(returnType.javaType)
         }
     }

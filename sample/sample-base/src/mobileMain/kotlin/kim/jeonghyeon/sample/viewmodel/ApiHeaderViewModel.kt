@@ -2,14 +2,14 @@ package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.net.headerKeyValue
-import kim.jeonghyeon.sample.api.SimpleApi
+import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * shows how backend get header and how common header is working.
  */
-class ApiHeaderViewModel(private val api: SimpleApi = serviceLocator.simpleApi) : BaseViewModel() {
+class ApiHeaderViewModel(private val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
     val result = MutableStateFlow("")
     val input = MutableStateFlow("")
         .withSource(result) { value = it }

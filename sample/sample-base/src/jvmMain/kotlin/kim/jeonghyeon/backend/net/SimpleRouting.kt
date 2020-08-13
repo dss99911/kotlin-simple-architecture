@@ -1,6 +1,7 @@
 package kim.jeonghyeon.backend.net
 
 import io.ktor.application.*
+import io.ktor.auth.authenticate
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.ContentTransformationException
@@ -21,6 +22,7 @@ import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.isUri
 import kotlinx.coroutines.launch
+import java.lang.reflect.InvocationTargetException
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -57,16 +59,30 @@ class SimpleRouting(val config: Configuration) {
 
     fun initialize(pipeline: Application) {
         pipeline.install(StatusPages) {
+            val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit = {
+                pipeline.environment.log.error(it)
+                call.respond(HttpStatusCode.ApiError, ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, it.message))
+            }
+
+            val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit = {
+                call.respond(HttpStatusCode.ApiError, it.body)
+            }
+
+            exception<Throwable> { error ->
+                unknownException(error)
+            }
+
             exception<ApiError> { error ->
-                call.respond(HttpStatusCode.ApiError, error.body)
+                apiException(error)
             }
-            exception<Throwable> { cause ->
-                pipeline.environment.log.error(cause)
-                call.respond(
-                    HttpStatusCode.ApiError,
-                    ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, cause.message)
-                )
+
+            exception<InvocationTargetException> { error ->
+                when (val targetException = error.targetException) {
+                    is ApiError -> apiException(targetException)
+                    else -> unknownException(targetException)
+                }
             }
+
         }
 
         pipeline.install(ContentNegotiation) {
@@ -74,7 +90,7 @@ class SimpleRouting(val config: Configuration) {
         }
 
         pipeline.install(Routing) {
-            attachRoutes(config.controllerList)
+            installControllers(config.controllerList)
         }
 
         if (config.logging) {
@@ -83,20 +99,32 @@ class SimpleRouting(val config: Configuration) {
 
     }
 
-    private fun Routing.attachRoutes(controllers: List<Any>) {
-        controllers.forEach { attachRoute(it) }
+    private fun Routing.installControllers(controllers: List<Any>) {
+        controllers.forEach { installController(it) }
     }
 
-    private fun Routing.attachRoute(controller: Any) {
+    private fun Routing.installController(controller: Any) {
 
         controller::class.superclasses
             .filter { it.getApiAnnotation() != null }
             .forEach { apiInterface ->
                 val mainPath = apiInterface.getMainPath() ?: return@forEach
-                route(mainPath) {
-                    this.attachSubPaths(controller, apiInterface)
+                installAuthenticate(apiInterface.annotations) {
+                    route(mainPath) {
+                        this.installSubPaths(controller, apiInterface)
+                    }
                 }
             }
+    }
+
+    fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
+        val authenticateAnnotation = annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
+
+        if (authenticateAnnotation.name.isBlank()) {
+            authenticate(build = build)
+        } else {
+            authenticate(authenticateAnnotation.name, build = build)
+        }
     }
 
     private fun KClass<*>.getApiAnnotation(): Api? =
@@ -113,13 +141,16 @@ class SimpleRouting(val config: Configuration) {
         }
     }
 
-    private fun Route.attachSubPaths(controller: Any, apiInterface: KClass<*>) {
+    private fun Route.installSubPaths(controller: Any, apiInterface: KClass<*>) {
         apiInterface.declaredFunctions.forEach { kfunction ->
             val subPath = kfunction.getSubPath() ?: return@forEach
             val method = kfunction.getMethod()
-            route(subPath, method) {
-                handle {
-                    handleRequest(controller, kfunction)
+
+            installAuthenticate(kfunction.annotations) {
+                route(subPath, method) {
+                    handle {
+                        handleRequest(controller, kfunction)
+                    }
                 }
             }
         }
