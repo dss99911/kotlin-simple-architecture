@@ -8,10 +8,7 @@ import kim.jeonghyeon.net.apiSimple
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.SampleDb
 import kim.jeonghyeon.sample.WordQueries
-import kim.jeonghyeon.sample.api.GithubApi
-import kim.jeonghyeon.sample.api.SampleApi
-import kim.jeonghyeon.sample.api.SignApi
-import kim.jeonghyeon.sample.api.UserApi
+import kim.jeonghyeon.sample.api.*
 import kim.jeonghyeon.sample.repository.WordRepository
 import kim.jeonghyeon.sample.repository.WordRepositoryImpl
 
@@ -22,7 +19,8 @@ interface ServiceLocator {
     val preference: Preference
     val sampleApi: SampleApi
     val githubApi: GithubApi
-    val signApi: SignApi
+    val signApi: SignBasicApi
+    val signDigestApi: SignDigestApi
     val userApi: UserApi
     val wordQueries: WordQueries
     val wordRepository: WordRepository
@@ -32,7 +30,8 @@ class ServiceLocatorImpl : ServiceLocator {
     //whenever call, make new instance
     override val sampleApi: SampleApi get() = api()
     override val githubApi: GithubApi get() = api()
-    override val signApi: SignApi get() = api()
+    override val signApi: SignBasicApi get() = api()
+    override val signDigestApi: SignDigestApi get() = api()
     override val userApi: UserApi get() = api()
     override val preferenceApi: PreferenceApi get() = apiSimple()
     override val preference: Preference = Preference()

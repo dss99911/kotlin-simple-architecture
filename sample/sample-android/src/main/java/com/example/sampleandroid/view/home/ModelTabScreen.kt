@@ -3,6 +3,7 @@ package com.example.sampleandroid.view.home
 import androidx.compose.Composable
 import androidx.ui.core.Modifier
 import androidx.ui.foundation.Text
+import androidx.ui.foundation.VerticalScroller
 import androidx.ui.layout.Column
 import androidx.ui.layout.fillMaxWidth
 import androidx.ui.layout.padding
@@ -33,7 +34,7 @@ class ModelTabScreen : Screen() {
 
     @Composable
     override fun view() {
-        Column {
+        VerticalScroller {
             ModelScreen.screens.forEach {
                 Button(
                     onClick = { it.second().push() },

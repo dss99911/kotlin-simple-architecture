@@ -30,6 +30,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.functions
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.javaType
 
@@ -254,7 +255,7 @@ class SimpleRouting(val config: Configuration) {
     } else response?:"null" //todo does json writer not know null to null text??
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =
-        this::class.declaredFunctions.first {
+        this::class.functions.first {
             func.name == it.name
         }
 

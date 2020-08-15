@@ -40,6 +40,10 @@
     <string name="polling">polling</string>
     <string name="multiple_parallel_call">Api call in parallel</string>
     <string name="single_call">Single Api call</string>
+    <string name="digest_sign_in">Digest Sign in</string>
+    <string name="digest_sign_up">Digest Sign up</string>
+    <string name="basic_sign_in">Basic Sign in</string>
+    <string name="basic_sign_up">Basic Sign up</string>
     <string name="annotation_call">Annotation Api call</string>
     <string name="external_call">External Api call</string>
     <string name="header_call">Header Api call</string>

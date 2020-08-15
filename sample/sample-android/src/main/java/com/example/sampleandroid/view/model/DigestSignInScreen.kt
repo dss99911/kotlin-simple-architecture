@@ -1,22 +1,18 @@
 package com.example.sampleandroid.view.model
 
 import androidx.compose.Composable
-import androidx.compose.launchInComposition
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
 import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
-import kim.jeonghyeon.androidlibrary.extension.toast
-import kim.jeonghyeon.client.collectEvent
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.SignInViewModel
-import kotlinx.coroutines.launch
-import java.net.ConnectException
+import kim.jeonghyeon.sample.viewmodel.DigestSignInViewModel
 
-class SignInScreen(private val model: SignInViewModel = SignInViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.single_call.resourceToString()
+class DigestSignInScreen(private val model: DigestSignInViewModel = DigestSignInViewModel()) :
+    ModelScreen(model) {
+    override val title: String = R.string.digest_sign_in.resourceToString()
 
     @Composable
     override fun compose() {
@@ -44,7 +40,7 @@ class SignInScreen(private val model: SignInViewModel = SignInViewModel()) : Mod
             Text("Sign In")
         }
 
-        Button({ SignUpScreen({ model.onSignedUp() }).push() }) {
+        Button({ DigestSignUpScreen({ model.onSignedUp() }).push() }) {
             Text("Sign Up")
         }
     }
