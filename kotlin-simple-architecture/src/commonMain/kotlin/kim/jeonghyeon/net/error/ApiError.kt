@@ -10,6 +10,8 @@ class ApiError(val body: ApiErrorBody, cause: Throwable? = null) :
     val errorMessage get() = body.message
 }
 
+fun Exception.isApiErrorOf(expectedBody: ApiErrorBody): Boolean = this is ApiError && body.code == expectedBody.code
+
 fun errorApi(code: Int, message: String? = null, cause: Throwable? = null): Nothing {
     throw ApiError(ApiErrorBody(code, message), cause)
 }

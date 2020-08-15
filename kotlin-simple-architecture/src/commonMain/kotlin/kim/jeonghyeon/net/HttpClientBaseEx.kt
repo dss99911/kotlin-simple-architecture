@@ -21,6 +21,7 @@ import kotlinx.serialization.json.JsonConfiguration
 expect fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
 
 expect fun Exception.isConnectException(): Boolean
+
 @HttpClientDsl
 fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient = HttpClient {
     install(JsonFeature) {
@@ -30,7 +31,22 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
     config()
 }
 
-fun HttpClient.throwException(e: Exception): Nothing {
+suspend fun HttpClient.fetchResponseText(call: suspend ()-> HttpResponse): String {
+    val response: HttpResponse
+    val responseText: String
+    try {
+        response = call()
+        setResponse(response)
+        responseText = response.readText()
+    } catch (e: Exception) {
+        throwException(e)
+    }
+
+    validateResponse(response, responseText)
+    return responseText
+}
+
+private fun throwException(e: Exception): Nothing {
     if (e.isConnectException()) {
         throw ApiError(ApiErrorBody.NoNetwork, e)
     }
@@ -53,7 +69,7 @@ fun HttpClient.throwException(e: Exception): Nothing {
  * @throws ApiError if error
  * @return if success
  */
-suspend fun HttpClient.validateResponse(response: HttpResponse, responseText: String) {
+private suspend fun validateResponse(response: HttpResponse, responseText: String) {
     //TODO HYUN [multi-platform2] : consider how to set header of response
 
     if (response.status.isApiError()) {

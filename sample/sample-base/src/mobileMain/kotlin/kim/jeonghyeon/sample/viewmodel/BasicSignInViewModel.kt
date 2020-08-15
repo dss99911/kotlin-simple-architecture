@@ -3,16 +3,15 @@ package kim.jeonghyeon.sample.viewmodel
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
-import kim.jeonghyeon.sample.api.SignApi
+import kim.jeonghyeon.sample.api.SignBasicApi
 import kim.jeonghyeon.sample.api.UserApi
 import kim.jeonghyeon.sample.api.UserDetail
-import kim.jeonghyeon.sample.api.constructBasicAuthorizationHeader
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SignInViewModel(
-    val signApi: SignApi = serviceLocator.signApi,
+class BasicSignInViewModel(
+    val signApi: SignBasicApi = serviceLocator.signApi,
     val userApi: UserApi = serviceLocator.userApi
 ) : BaseViewModel() {
     val inputId = MutableStateFlow("")
@@ -44,7 +43,7 @@ class SignInViewModel(
         }
 
         status.load {
-            signApi.signIn(constructBasicAuthorizationHeader(inputId.value, inputPassword.value))
+            signApi.signIn(inputId.value, inputPassword.value)
             getUserDetail()
         }
     }

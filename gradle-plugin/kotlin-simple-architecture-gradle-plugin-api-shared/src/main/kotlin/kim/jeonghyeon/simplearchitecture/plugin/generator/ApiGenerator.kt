@@ -102,27 +102,18 @@ class ApiGenerator(
 
         return """
         |val subPath = ${makeSubPathStatement()}
-        |val response: HttpResponse
-        |val responseText: String
-        |try {
-        |${INDENT}response = client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
-        |${INDENT}${INDENT}${makeBodyStatement()}
-        |${INDENT}${INDENT}${makeContentTypeStatement()}
-        |${INDENT}${INDENT}${makeQueryStatement()}
-        |${INDENT}${INDENT}${makeHeaderStatement()}
-        |${INDENT}}
-        |${INDENT}responseText = response.readText()
-        |} catch (e: Exception) {
-        |${INDENT}client.throwException(e)
+        |val responseText = client.fetchResponseText {
+        |    client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
+        |        ${makeBodyStatement()}
+        |        ${makeContentTypeStatement()}
+        |        ${makeQueryStatement()}
+        |        ${makeHeaderStatement()}
+        |    }
         |}
-        |
-        |client.validateResponse(response, responseText)
-        |${returnTypeString?.let {
-            """
-            |val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-            |return json.parse(${makeSerializer(it)}, responseText)
-            """.trimMargin()
-        } ?: ""}
+        |${returnTypeString?.let { """
+        |val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+        |return json.parse(${makeSerializer(it)}, responseText)
+        """.trimMargin() } ?: ""}
         """.trimMargin()
     }
 
