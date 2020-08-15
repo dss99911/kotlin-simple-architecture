@@ -7,10 +7,10 @@ import androidx.ui.material.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
+import kim.jeonghyeon.sample.viewmodel.BasicSignUpViewModel
 
-class SignUpScreen(val onSignedUp: () -> Unit, private val model: SignUpViewModel = SignUpViewModel(onSignedUp)) : ModelScreen(model) {
-    override val title: String = R.string.single_call.resourceToString()
+class BasicSignUpScreen(val onSignedUp: () -> Unit, private val model: BasicSignUpViewModel = BasicSignUpViewModel(onSignedUp)) : ModelScreen(model) {
+    override val title: String = R.string.basic_sign_up.resourceToString()
 
     @Composable
     override fun compose() {

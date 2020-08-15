@@ -3,14 +3,12 @@ package kim.jeonghyeon.jvm.net
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kim.jeonghyeon.extension.replaceLast
-import kim.jeonghyeon.net.throwException
-import kim.jeonghyeon.net.validateResponse
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.reflect.suspendProxy
+import kim.jeonghyeon.net.fetchResponseText
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -31,22 +29,15 @@ inline fun <reified T> HttpClient.create(baseUrl: String) =
         val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
         val returnType = method.kotlinFunction!!.returnType
 
-        val response: HttpResponse
-        val responseText: String
-
-        try {
-            response = post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
+        val responseText = fetchResponseText {
+            post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
                 contentType(ContentType.Application.Json)
 
                 //can not use kotlin serialization.
                 //type mismatch. required: capturedtype(out any). found: any
                 body = arguments
             }
-            responseText = response.readText()
-        } catch (e: Exception) {
-            throwException(e)
         }
-        validateResponse(response, responseText)
 
         if (returnType.classifier == Unit::class) {
             Unit

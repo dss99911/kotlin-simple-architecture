@@ -34,7 +34,6 @@ object deps {
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
         const val clientJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
         const val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
-        const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
         const val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
         const val clientLoggingJvm = "io.ktor:ktor-client-logging-jvm:${versions.kotlin.ktor}"
         const val clientLoggingNative = "io.ktor:ktor-client-logging-native:${versions.kotlin.ktor}"
@@ -43,6 +42,8 @@ object deps {
         const val clientSerializationJvm = "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
         const val clientSerializationNative = "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
         const val clientSerializationJs = "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
+
+        const val clientAuth = "io.ktor:ktor-client-auth:${versions.kotlin.ktor}"
     }
 
     object android {

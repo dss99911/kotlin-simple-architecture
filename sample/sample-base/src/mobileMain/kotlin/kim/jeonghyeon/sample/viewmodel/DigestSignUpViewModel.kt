@@ -1,11 +1,13 @@
 package kim.jeonghyeon.sample.viewmodel
 
+import io.ktor.util.InternalAPI
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.sample.api.SignApi
+import kim.jeonghyeon.sample.api.SignBasicApi
+import kim.jeonghyeon.sample.api.SignDigestApi
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class SignUpViewModel(val onSignedUp: () -> Unit, val api: SignApi = serviceLocator.signApi) : BaseViewModel() {
+class DigestSignUpViewModel(val onSignedUp: () -> Unit, val api: SignDigestApi = serviceLocator.signDigestApi) : BaseViewModel() {
     val inputId = MutableStateFlow("")
     val inputName = MutableStateFlow("")
     val inputPassword = MutableStateFlow("")
@@ -27,7 +29,7 @@ class SignUpViewModel(val onSignedUp: () -> Unit, val api: SignApi = serviceLoca
         }
 
         status.load {
-            api.signUp(inputId.value, inputName.value, inputPassword.value)
+            api.signUp(inputId.value, inputPassword.value, inputName.value)
             toast("success to sign up")
             goBack()
             onSignedUp()

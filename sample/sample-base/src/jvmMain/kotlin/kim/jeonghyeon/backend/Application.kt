@@ -4,19 +4,21 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.basic
+import io.ktor.auth.digest
+import io.ktor.request.uri
 import io.ktor.sessions.*
 import io.ktor.util.KtorExperimentalAPI
 import kim.jeonghyeon.api.PreferenceController
 import kim.jeonghyeon.backend.controller.SampleController
 import kim.jeonghyeon.backend.di.serviceLocator
 import kim.jeonghyeon.backend.net.SimpleRouting
-import kim.jeonghyeon.backend.user.SignController
-import kim.jeonghyeon.backend.user.UserController
-import kim.jeonghyeon.backend.user.validateUser
+import kim.jeonghyeon.backend.user.*
 import kim.jeonghyeon.net.USER_COOKIE_NAME
 import kim.jeonghyeon.sample.User
+import kim.jeonghyeon.sample.api.AUTHENTICATE_NAME_DIGEST
+import kim.jeonghyeon.sample.api.REALM_SIMPLE_API
+import kim.jeonghyeon.sample.api.SignDigestApi
 import java.io.File
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -39,12 +41,25 @@ fun Application.module(testing: Boolean = false) {
             }
             skipWhen { it.sessions.get<User>() != null }
         }
+        digest(AUTHENTICATE_NAME_DIGEST) {
+            realm = REALM_SIMPLE_API
+            digestProvider { userName, realm ->
+                validateUserDigest(userName)
+            }
+            skipWhen {
+                if (it.request.uri.isNonceApiUri()) {
+                    return@skipWhen false
+                }
+                it.sessions.get<User>() != null
+            }
+        }
     }
 
     install(SimpleRouting) {
         +SampleController()
         +PreferenceController(serviceLocator.preference)//todo move to library.
-        +SignController()
+        +SignBasicController()
+        +SignDigestController()
         +UserController()
         logging = !production
     }

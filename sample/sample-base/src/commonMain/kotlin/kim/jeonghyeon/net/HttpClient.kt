@@ -3,7 +3,8 @@ package kim.jeonghyeon.net
 import androidLibrary.sample.samplebase.generated.SimpleConfig
 import androidLibrary.sample.samplebase.generated.net.create
 import io.ktor.client.HttpClient
-import io.ktor.client.features.cookies.*
+import io.ktor.client.features.cookies.CookiesStorage
+import io.ktor.client.features.cookies.HttpCookies
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.http.*
@@ -12,29 +13,30 @@ import io.ktor.util.date.GMTDate
 import io.ktor.util.toLowerCasePreservingASCIIRules
 import kim.jeonghyeon.kotlinsimplearchitecture.generated.net.createSimple
 import kim.jeonghyeon.pergist.Preference
-import kim.jeonghyeon.util.log
-import kotlinx.serialization.*
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.Serializable
 
 const val HEADER_KEY = "KEY"
 
 val client: HttpClient = httpClientSimple {
-        defaultRequest {
-            //this is called whenever api is called
-            header(HEADER_KEY, headerKeyValue)
-        }
-
-        //todo is this proper approach? I used cookies because when we support js, cookie may be simpler.
-        // this is not fixed approach. let's consider to use header.
-        install(HttpCookies) {
-            // Will keep an in-memory map with all the cookies from previous requests.
-            storage = TokenStorage()
-        }
+    defaultRequest {
+        //this is called whenever api is called
+        header(HEADER_KEY, headerKeyValue)
     }
+
+    //todo is this proper approach? I used cookies because when we support js, cookie may be simpler.
+    // this is not fixed approach. let's consider to use header.
+    install(HttpCookies) {
+        // Will keep an in-memory map with all the cookies from previous requests.
+        storage = TokenStorage()
+    }
+}
 
 val serverUrl: String = "http://${SimpleConfig.BUILD_TIME_LOCAL_IP_ADDRESS}:8080"
 
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 inline fun <reified API> apiSimple(baseUrl: String = serverUrl): API = client.createSimple(baseUrl)
+
 
 var headerKeyValue = "Header test"
 
@@ -47,10 +49,11 @@ const val USER_COOKIE_NAME = "simple-user"
 class TokenStorage(val preference: Preference = Preference()) : CookiesStorage {
     @ImplicitReflectionSerializer
     var cache: Cookie? = preference.get<SerializableCookie>(preference.KEY_USER_COOKIE)?.toCookie()
+
     @InternalAPI
     @ImplicitReflectionSerializer
     override suspend fun get(requestUrl: Url): List<Cookie> {
-        cache?:return emptyList()
+        cache ?: return emptyList()
 
         if (cache?.matches(requestUrl) != true) {
             return emptyList()
@@ -95,10 +98,32 @@ data class SerializableCookie(
     val httpOnly: Boolean = false,
     val extensions: Map<String, String?> = emptyMap()
 ) {
-    fun toCookie() = Cookie(name, value, CookieEncoding.valueOf(encoding), maxAge, expires?.let { GMTDate(it) }, domain, path, secure, httpOnly, extensions)
+    fun toCookie() = Cookie(
+        name,
+        value,
+        CookieEncoding.valueOf(encoding),
+        maxAge,
+        expires?.let { GMTDate(it) },
+        domain,
+        path,
+        secure,
+        httpOnly,
+        extensions
+    )
 }
 
-fun Cookie.toSerializable() = SerializableCookie(name, value, encoding.name, maxAge, expires?.timestamp, domain, path, secure, httpOnly, extensions)
+fun Cookie.toSerializable() = SerializableCookie(
+    name,
+    value,
+    encoding.name,
+    maxAge,
+    expires?.timestamp,
+    domain,
+    path,
+    secure,
+    httpOnly,
+    extensions
+)
 
 @InternalAPI
 fun Cookie.matches(requestUrl: Url): Boolean {
