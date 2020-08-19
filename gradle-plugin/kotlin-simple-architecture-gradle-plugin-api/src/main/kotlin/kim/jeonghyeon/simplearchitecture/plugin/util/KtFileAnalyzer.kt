@@ -1,6 +1,5 @@
 package kim.jeonghyeon.simplearchitecture.plugin.util
 
-import kim.jeonghyeon.simplearchitecture.plugin.generator.INDENT
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.PsiElementBase
 import org.jetbrains.kotlin.psi.*
@@ -23,7 +22,7 @@ class KtFileAnalyzer(val files: Collection<KtFile>) {
         log("declarations=${file.declarations.map { it.text }}")
 
 
-        file.children.forEach { it.printElement(INDENT) }
+        file.children.forEach { it.printElement("    ") }
     }
 
 
@@ -50,7 +49,7 @@ class KtFileAnalyzer(val files: Collection<KtFile>) {
 
             is KtImportList -> {
                 logElement("imports=")
-                imports.forEach { it.printElement(indent + INDENT) }
+                imports.forEach { it.printElement(indent + "    ") }
             }
 
             is KtImportDirective -> {
@@ -65,9 +64,9 @@ class KtFileAnalyzer(val files: Collection<KtFile>) {
                 logElement("modifiers=${modifierList}")
 
                 logElement("parameters=")
-                parameters.forEach { it.printElement(indent + INDENT) }
+                parameters.forEach { it.printElement(indent + "    ") }
                 logElement("reference=")
-                typeReference?.typeElement?.printElement(indent + INDENT)
+                typeReference?.typeElement?.printElement(indent + "    ")
                 logElement("keyword=${funKeyword?.text}")
                 logElement("hasReturn=${hasDeclaredReturnType()}")
                 logElement("colon=${colon?.text}")
@@ -75,17 +74,17 @@ class KtFileAnalyzer(val files: Collection<KtFile>) {
 
             is KtTypeReference -> {
                 logElement("annotations=")
-                this.annotations.forEach { it.printElement(indent + INDENT) }
+                this.annotations.forEach { it.printElement(indent + "    ") }
                 logElement("reference=${this.reference?.canonicalText}")
                 logElement("references=${this.references.map { it.canonicalText }}")
                 logElement("typeElement?=")
-                typeElement?.printElement(indent + INDENT)
+                typeElement?.printElement(indent + "    ")
 
             }
         }
 
         logElement("children=")
-        this.children.forEach { it.printElement(indent + INDENT) }
+        this.children.forEach { it.printElement(indent + "    ") }
     }
 }
 

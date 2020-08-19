@@ -1,13 +1,14 @@
 package kim.jeonghyeon.sample.viewmodel
 
-import io.ktor.util.InternalAPI
+import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.sample.api.SignBasicApi
-import kim.jeonghyeon.sample.api.SignDigestApi
+import kim.jeonghyeon.extension.toJsonString
+import kim.jeonghyeon.sample.api.SerializableUserDetail
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.Serializable
 
-class DigestSignUpViewModel(val onSignedUp: () -> Unit, val api: SignDigestApi = serviceLocator.signDigestApi) : BaseViewModel() {
+class SignUpViewModel(val onSignedUp: () -> Unit, val api: SignApi = serviceLocator.signApi) : BaseViewModel() {
     val inputId = MutableStateFlow("")
     val inputName = MutableStateFlow("")
     val inputPassword = MutableStateFlow("")
@@ -29,7 +30,8 @@ class DigestSignUpViewModel(val onSignedUp: () -> Unit, val api: SignDigestApi =
         }
 
         status.load {
-            api.signUp(inputId.value, inputPassword.value, inputName.value)
+            api.signUp(inputId.value, inputPassword.value, SerializableUserDetail(null, inputName.value).toJsonString())
+            api.signIn(inputId.value, inputPassword.value)
             toast("success to sign up")
             goBack()
             onSignedUp()

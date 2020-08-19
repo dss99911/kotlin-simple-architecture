@@ -1,5 +1,4 @@
-package kim.jeonghyeon.sample.api
-
+package kim.jeonghyeon.auth
 import io.ktor.util.*
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.*
@@ -11,13 +10,16 @@ const val HEADER_AUTHORIZATION = "Authorization"
 
 @Api
 interface SignBasicApi : SignApi {
+    /**
+     * use extra for additional user data
+     */
     override suspend fun signUp(id: String, password: String, extra: String)
 
     @Authenticate
     suspend fun signIn(@Header(HEADER_AUTHORIZATION)authorization: String)
 
     @Authenticate
-    suspend fun signOut()
+    override suspend fun signOut()
 
     override suspend fun signIn(id: String, password: String) {
         signIn(constructBasicAuthorizationHeader(id, password))
@@ -31,15 +33,3 @@ interface SignBasicApi : SignApi {
         return "Basic $authBuf"
     }
 }
-
-interface SignApi {
-    suspend fun signIn(id: String, password: String)
-
-    /**
-     * @param extra you can add any additional user information here. and override signUp on SignController
-     */
-    suspend fun signUp(id: String, password: String, extra: String)
-}
-
-
-

@@ -1,22 +1,22 @@
 package kim.jeonghyeon.sample.viewmodel
 
+import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
-import kim.jeonghyeon.sample.api.SignBasicApi
+import kim.jeonghyeon.sample.api.SerializableUserDetail
 import kim.jeonghyeon.sample.api.UserApi
-import kim.jeonghyeon.sample.api.UserDetail
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class BasicSignInViewModel(
-    val signApi: SignBasicApi = serviceLocator.signApi,
+class SignInViewModel(
+    val signApi: SignApi = serviceLocator.signApi,
     val userApi: UserApi = serviceLocator.userApi
 ) : BaseViewModel() {
     val inputId = MutableStateFlow("")
     val inputPassword = MutableStateFlow("")
-    val user = MutableStateFlow<UserDetail?>(null)
+    val user = MutableStateFlow<SerializableUserDetail?>(null)
 
     override fun onInitialized() {
         getUserDetail()
@@ -55,7 +55,7 @@ class BasicSignInViewModel(
             //if unauthorized error, show login page.
             if (it.isErrorOf<ApiError>()) {
                 if (it.errorOf<ApiError>().code == ApiErrorBody.Unauthorized.code) {
-                    return@load Resource.Success<UserDetail?>(null)
+                    return@load Resource.Success<SerializableUserDetail?>(null)
                 }
             }
             it

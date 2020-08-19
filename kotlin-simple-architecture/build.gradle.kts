@@ -75,6 +75,7 @@ kotlin {
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
                 api(deps.simpleArch.annotation)
+                api(deps.ktor.clientAuth)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -103,11 +104,20 @@ kotlin {
             dependsOn(jvmShareMain)
             dependencies {
                 api(deps.sqldelight.jvm)
+                api(deps.ktor.auth)
+                api(deps.ktor.authJwt)
+                api(deps.ktor.gson)
+                api(deps.ktor.serverNetty)
+                api(deps.ktor.serialization)
+                api(deps.logback)
+                api(deps.ktor.serverSessions)
+                api(deps.ktor.clientAuthJvm)
             }
         }
 
         //todo add frontend js and backend Js
         val jsMain by getting {
+            dependsOn(mobileMain)
             dependencies {
                 api(deps.kotlin.stdlibJs)
                 api(deps.kotlin.serializationRuntimeJs)
@@ -116,6 +126,7 @@ kotlin {
                 api(deps.ktor.clientJs)
                 api(deps.ktor.clientSerializationJs)
                 api(deps.ktor.clientLoggingJs)
+                api(deps.ktor.clientAuthJs)
             }
         }
 
@@ -142,6 +153,7 @@ kotlin {
 
                 api(deps.android.timber)
                 api(deps.sqldelight.android)
+                api(deps.ktor.clientAuthJvm)
             }
         }
 
@@ -170,7 +182,9 @@ kotlin {
                 api(deps.ktor.clientIos)
                 api(deps.ktor.clientSerializationNative)
                 api(deps.ktor.clientLoggingNative)
+                api(deps.ktor.clientAuthNative)
                 api(deps.sqldelight.native)
+
             }
         }
         //todo 1.4 remove

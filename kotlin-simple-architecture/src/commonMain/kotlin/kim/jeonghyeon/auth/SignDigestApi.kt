@@ -1,29 +1,23 @@
-package kim.jeonghyeon.sample.api
-
+package kim.jeonghyeon.auth
 import io.ktor.client.features.auth.providers.DigestAuthProvider
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.auth.parseAuthorizationHeader
 import io.ktor.util.*
-import io.ktor.util.encodeBase64
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.*
 import kim.jeonghyeon.annotation.Api
 import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.annotation.Header
 import kim.jeonghyeon.net.HttpResponseStore
-import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.net.error.isApiErrorOf
 import kim.jeonghyeon.net.response
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
-const val AUTHENTICATE_NAME_DIGEST = "digest"
 const val REALM_SIMPLE_API = "simpleRealm"
 private const val HASH_ALGORITHM = "MD5"
 
@@ -32,7 +26,7 @@ interface SignDigestApi : SignApi {
 
     suspend fun signUpHashed(id: String, ha1: String, extra: String)
 
-    @Authenticate(AUTHENTICATE_NAME_DIGEST)
+    @Authenticate
     suspend fun getNonce()
 
     override suspend fun signUp(id: String, password: String, extra: String) {
@@ -76,10 +70,10 @@ interface SignDigestApi : SignApi {
         }
     }
 
-    @Authenticate(AUTHENTICATE_NAME_DIGEST)
+    @Authenticate
     suspend fun signIn(@Header(HEADER_AUTHORIZATION)authorization: String)
 
-    @Authenticate(AUTHENTICATE_NAME_DIGEST)
-    suspend fun signOut()
+    @Authenticate
+    override suspend fun signOut()
 
 }
