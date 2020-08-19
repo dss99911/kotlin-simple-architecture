@@ -1,4 +1,4 @@
-package kim.jeonghyeon.backend.net
+package kim.jeonghyeon.net
 
 import io.ktor.application.*
 import io.ktor.auth.authenticate
@@ -16,11 +16,13 @@ import io.ktor.util.AttributeKey
 import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
 import kim.jeonghyeon.annotation.*
+import kim.jeonghyeon.auth.authType
+import kim.jeonghyeon.auth.getCheckingAuthTypes
+import kim.jeonghyeon.di.log
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
-import kim.jeonghyeon.net.isUri
 import kotlinx.coroutines.launch
 import java.lang.reflect.InvocationTargetException
 import java.util.*
@@ -28,17 +30,22 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.functions
-import kotlin.reflect.full.superclasses
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaType
 
-//todo move this to jvm library
-//todo support other platfrom by @Api annotation.
+private val preControllers: MutableList<Any> = mutableListOf()
+
+fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
+    check(featureOrNull(SimpleRouting) == null) {
+        "SimpleRouting should be installed after adding '${_controller::class.simpleName}'"
+    }
+
+    preControllers.add(_controller)
+}
+
 class SimpleRouting(val config: Configuration) {
     class Configuration {
-        val controllerList = mutableListOf<Any>()
+        val controllerList = mutableListOf(*preControllers.toTypedArray())
         var logging: Boolean = false
 
         operator fun Any.unaryPlus() {
@@ -92,6 +99,11 @@ class SimpleRouting(val config: Configuration) {
 
         pipeline.install(Routing) {
             installControllers(config.controllerList)
+            if (config.logging) {
+                trace {
+                    log.trace(it.buildText())
+                }
+            }
         }
 
         if (config.logging) {
@@ -101,16 +113,18 @@ class SimpleRouting(val config: Configuration) {
     }
 
     private fun Routing.installControllers(controllers: List<Any>) {
+        log.trace("==Routing install Start==")
         controllers.forEach { installController(it) }
     }
 
     private fun Routing.installController(controller: Any) {
 
-        controller::class.superclasses
+        controller::class.allSuperclasses
             .filter { it.getApiAnnotation() != null }
             .forEach { apiInterface ->
                 val mainPath = apiInterface.getMainPath() ?: return@forEach
                 installAuthenticate(apiInterface.annotations) {
+                    log.trace("Route Main Path : $mainPath, ${controller::class.simpleName}")
                     route(mainPath) {
                         this.installSubPaths(controller, apiInterface)
                     }
@@ -119,13 +133,9 @@ class SimpleRouting(val config: Configuration) {
     }
 
     fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
-        val authenticateAnnotation = annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
+        annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
 
-        if (authenticateAnnotation.name.isBlank()) {
-            authenticate(build = build)
-        } else {
-            authenticate(authenticateAnnotation.name, build = build)
-        }
+        authenticate(*authType.getCheckingAuthTypes().map { it.name }.toTypedArray(), build = build)
     }
 
     private fun KClass<*>.getApiAnnotation(): Api? =
@@ -149,6 +159,7 @@ class SimpleRouting(val config: Configuration) {
 
             installAuthenticate(kfunction.annotations) {
                 route(subPath, method) {
+                    log.trace("     Route Sub Path : $subPath $method")
                     handle {
                         handleRequest(controller, kfunction)
                     }
@@ -256,7 +267,9 @@ class SimpleRouting(val config: Configuration) {
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =
         this::class.functions.first {
-            func.name == it.name
+            func.name == it.name &&
+            func.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }  ==
+                    it.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }
         }
 
 }

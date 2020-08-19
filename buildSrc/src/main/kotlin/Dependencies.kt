@@ -27,6 +27,7 @@ object deps {
         const val serialization = "io.ktor:ktor-serialization:${versions.kotlin.ktor}"
         const val serverNetty = "io.ktor:ktor-server-netty:${versions.kotlin.ktor}"
         const val auth = "io.ktor:ktor-auth:${versions.kotlin.ktor}"
+        const val authJwt = "io.ktor:ktor-auth-jwt:${versions.kotlin.ktor}"
         const val serverSessions = "io.ktor:ktor-server-sessions:${versions.kotlin.ktor}"
 
         const val clientCore = "io.ktor:ktor-client-core:${versions.kotlin.ktor}"
@@ -44,6 +45,10 @@ object deps {
         const val clientSerializationJs = "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
 
         const val clientAuth = "io.ktor:ktor-client-auth:${versions.kotlin.ktor}"
+        const val clientAuthJvm = "io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}"
+        const val clientAuthNative = "io.ktor:ktor-client-auth-native:${versions.kotlin.ktor}"
+        const val clientAuthJs = "io.ktor:ktor-client-auth-js:${versions.kotlin.ktor}"
+
     }
 
     object android {

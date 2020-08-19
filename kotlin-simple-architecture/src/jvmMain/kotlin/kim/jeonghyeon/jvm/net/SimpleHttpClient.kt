@@ -5,6 +5,7 @@ import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.extension.replaceLast
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.reflect.suspendProxy
@@ -29,10 +30,10 @@ inline fun <reified T> HttpClient.create(baseUrl: String) =
         val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
         val returnType = method.kotlinFunction!!.returnType
 
-        val responseText = fetchResponseText {
+        val responseText = fetchResponseText(method.annotations.any { it is Authenticate }) { adder ->
             post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
                 contentType(ContentType.Application.Json)
-
+                adder()
                 //can not use kotlin serialization.
                 //type mismatch. required: capturedtype(out any). found: any
                 body = arguments

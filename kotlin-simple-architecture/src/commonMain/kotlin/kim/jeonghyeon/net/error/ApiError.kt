@@ -26,7 +26,9 @@ fun errorApi(body: ApiErrorBody, cause: Throwable? = null): Nothing {
 private const val HTTP_STATUS_CODE_API_ERROR = 299//if it's not in success bound, ktor client throw exception. so that can't get error body.
 
 /**
- * this error code includes [HttpStatusCode] and custom Error code as well.
+ * 1~999 error code includes [HttpStatusCode].
+ * 1000~1999 error code include library side error
+ * 2000~ recommend to define custom error
  */
 @Serializable
 data class ApiErrorBody(
@@ -37,6 +39,8 @@ data class ApiErrorBody(
         const val CODE_UNKNOWN = 9999
         val Unknown = ApiErrorBody(CODE_UNKNOWN, "Unknown Error")
         val NoNetwork = ApiErrorBody(1000, "Netowrk Error")
+        val credentialInvalid = ApiErrorBody(1002, "ID or Password incorrect")
+        val idAlreadyExists = ApiErrorBody(1003, "ID exists")
         
         //////http status codes///////
 

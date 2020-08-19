@@ -4,16 +4,24 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.HttpClientDsl
 import io.ktor.client.features.ClientRequestException
+import io.ktor.client.features.auth.Auth
+import io.ktor.client.features.cookies.HttpCookies
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.http.isSuccess
 import io.ktor.network.sockets.SocketTimeoutException
+import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.net.error.isApiError
+import kim.jeonghyeon.pergist.Preference
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 
@@ -31,15 +39,23 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
     config()
 }
 
-suspend fun HttpClient.fetchResponseText(call: suspend ()-> HttpResponse): String {
+suspend fun HttpClient.fetchResponseText(isAuthRequired: Boolean, call: suspend (HttpRequestBuilder.() -> Unit)-> HttpResponse): String {
     val response: HttpResponse
     val responseText: String
     try {
-        response = call()
+        response = call {
+            if (isAuthRequired) {
+                putTokenHeader()
+            }
+        }
         setResponse(response)
         responseText = response.readText()
     } catch (e: Exception) {
         throwException(e)
+    }
+
+    if (isAuthRequired) {
+        response.saveToken()
     }
 
     validateResponse(response, responseText)
@@ -101,4 +117,28 @@ infix fun String.connectPath(end: String): String {
     } else if (last() != '/' && end.first() != '/') {
         "$this/$end"
     } else this + end
+}
+
+fun HttpRequestBuilder.putTokenHeader() {
+    //if it's signin, no token required
+    if (headers[HttpHeaders.Authorization] != null) {
+        return
+    }
+
+    val tokenString = Preference().getEncryptedString(HEADER_NAME_TOKEN)
+    if (tokenString.isNullOrEmpty()) {
+        return
+    }
+    //for stateful session based authentication
+    header(HEADER_NAME_TOKEN, tokenString)
+
+    //for jwt token authentication
+    header(HttpHeaders.Authorization, HttpAuthHeader.Single("Bearer", tokenString).render())
+
+}
+
+fun HttpResponse.saveToken() {
+    //if sigh out, tokenString will be ""
+    val tokenString = headers[HEADER_NAME_TOKEN]?:return
+    Preference().setEncryptedString(HEADER_NAME_TOKEN, tokenString)
 }

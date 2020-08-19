@@ -59,7 +59,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(deps.ktor.clientAuth)
                 api(deps.simpleArch.common)
             }
         }
@@ -70,22 +69,12 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation(deps.ktor.auth)
-                implementation(deps.ktor.gson)
-                implementation(deps.ktor.serverNetty)
-                implementation(deps.ktor.serialization)
-                implementation(deps.logback)
-                implementation(deps.ktor.serverSessions)
-                implementation("io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}")
+
             }
         }
 
         val androidMain by getting {
             dependsOn(mobileMain)
-
-            dependencies {
-                implementation("io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}")
-            }
         }
 
         val androidDebug by getting {
