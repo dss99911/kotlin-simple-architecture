@@ -110,11 +110,11 @@ class DbGenerator(
                 |
                 |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db${pluginOptions.postFix.capitalize()}(path: String, properties: Map<String?, String?>): T {
                 |
-                |${INDENT}return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance(it.name)})" }.prependIndent(indent(2))}
+                |    return when (T::class) {
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance(it.name)})" }.prependIndent("        ")}
                 |
-                |$INDENT${INDENT}else -> error("can not create database name " + T::class.simpleName)
-                |$INDENT} as T
+                |        else -> error("can not create database name " + T::class.simpleName)
+                |    } as T
                 |}
                 """.trimMargin()
                 )

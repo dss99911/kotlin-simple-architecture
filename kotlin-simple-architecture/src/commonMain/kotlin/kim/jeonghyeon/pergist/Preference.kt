@@ -33,7 +33,7 @@ abstract class AbstractPreference {
         return getString(key)?.fromJsonString()
     }
 
-    //todo issue : if Preference is created several times, and other preference change value. then this won't be invoked.
+    //todo issue : if Preference is created multiple times, and other preference change value. then this won't be invoked.
     // make this preference singleton or check sqldelight implementation
     fun getStringFlow(key: String): Flow<String?> {
         return queries.get(key).asFlow().map { it.executeAsOneOrNull()?.value }
@@ -48,4 +48,13 @@ abstract class AbstractPreference {
         setString(key, value?.toJsonString())
     }
 
+    //TODO HYUN [KSA-95] : add encyption logic
+    fun getEncryptedString(key: String): String? {
+        return queries.get(key).executeAsOneOrNull()?.value
+    }
+
+    //TODO HYUN [KSA-95] : add encyption logic
+    fun setEncryptedString(key: String, value: String?) {
+        queries.set(key, value)
+    }
 }

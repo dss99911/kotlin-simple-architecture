@@ -27,6 +27,7 @@ interface SharedKtClass {
 
 interface SharedKtNamedFunction {
     val name: String
+    val ktClass: SharedKtClass?
     val nameAndPrefix: String
     val parameters: Array<SharedKtParameter>
     fun hasBody(): Boolean

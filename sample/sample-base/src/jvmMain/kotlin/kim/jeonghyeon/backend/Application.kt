@@ -3,80 +3,72 @@ package kim.jeonghyeon.backend
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
-import io.ktor.auth.Authentication
-import io.ktor.auth.basic
-import io.ktor.auth.digest
-import io.ktor.request.uri
-import io.ktor.sessions.*
 import io.ktor.util.KtorExperimentalAPI
 import kim.jeonghyeon.api.PreferenceController
+import kim.jeonghyeon.auth.AuthenticationType
+import kim.jeonghyeon.auth.SignFeature
+import kim.jeonghyeon.backend.auth.SampleSignBasicController
+import kim.jeonghyeon.backend.auth.SampleSignDigestController
+import kim.jeonghyeon.backend.auth.SampleSignJwtController
 import kim.jeonghyeon.backend.controller.SampleController
+import kim.jeonghyeon.backend.di.SampleServiceLocatorImpl
 import kim.jeonghyeon.backend.di.serviceLocator
-import kim.jeonghyeon.backend.net.SimpleRouting
-import kim.jeonghyeon.backend.user.*
-import kim.jeonghyeon.net.USER_COOKIE_NAME
-import kim.jeonghyeon.sample.User
-import kim.jeonghyeon.sample.api.AUTHENTICATE_NAME_DIGEST
-import kim.jeonghyeon.sample.api.REALM_SIMPLE_API
-import kim.jeonghyeon.sample.api.SignDigestApi
-import java.io.File
+import kim.jeonghyeon.backend.user.UserSessionController
+import kim.jeonghyeon.backend.user.UserJwtController
+import kim.jeonghyeon.net.AUTH_TYPE
+import kim.jeonghyeon.net.SimpleRouting
+import kim.jeonghyeon.net.addControllerBeforeInstallSimpleRouting
+import kim.jeonghyeon.onApplicationCreate
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    application = this
-
     val config = environment.config
     val serviceConfig = config.config("service")
     val mode = serviceConfig.property("environment").getString()
-    log.info("Environment: $mode")
     val production = mode == "production"
 
-    install(Authentication) {
-        basic {
-            validate { credentials ->
-                validateUser(credentials)
-            }
-            skipWhen { it.sessions.get<User>() != null }
-        }
-        digest(AUTHENTICATE_NAME_DIGEST) {
-            realm = REALM_SIMPLE_API
-            digestProvider { userName, realm ->
-                validateUserDigest(userName)
-            }
-            skipWhen {
-                if (it.request.uri.isNonceApiUri()) {
-                    return@skipWhen false
-                }
-                it.sessions.get<User>() != null
-            }
-        }
-    }
+    log.info("Environment: $mode")
+
+    onApplicationCreate(SampleServiceLocatorImpl())
+
+    installSignFeature(AUTH_TYPE)
+
 
     install(SimpleRouting) {
         +SampleController()
-        +PreferenceController(serviceLocator.preference)//todo move to library.
-        +SignBasicController()
-        +SignDigestController()
-        +UserController()
+        +PreferenceController(serviceLocator.preference)
         logging = !production
     }
 
-    //todo https://youtrack.jetbrains.com/issue/KTOR-912
-    // Set-Cookie is attached on every api. and client save it again and again.
-    install(Sessions) {
-        cookie<User>(
-            USER_COOKIE_NAME,
-            directorySessionStorage(File(".sessions"), cached = true)
-        ) {
-            cookie.maxAgeInSeconds = 0
+}
+
+//todo wrap all the simple architecture feature to one feature.
+
+fun Application.installSignFeature(authType: AuthenticationType) {
+    install(SignFeature) {
+        when (authType) {
+            AuthenticationType.JWT -> {
+                jwt {
+                    algorithm = serviceLocator.jwtAlgorithm
+                    controller = SampleSignJwtController()
+                }
+                addControllerBeforeInstallSimpleRouting(UserJwtController())
+            }
+            AuthenticationType.BASIC -> {
+                basic {
+                    controller = SampleSignBasicController()
+                }
+                addControllerBeforeInstallSimpleRouting(UserSessionController())
+            }
+            AuthenticationType.DIGEST -> {
+                digest {
+                    controller = SampleSignDigestController()
+                }
+                addControllerBeforeInstallSimpleRouting(UserSessionController())
+            }
         }
     }
 }
-
-//todo move to library
-lateinit var application: Application
-//todo move to library
-val log get() = application.environment.log

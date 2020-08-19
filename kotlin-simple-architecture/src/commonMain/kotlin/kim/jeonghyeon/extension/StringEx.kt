@@ -25,12 +25,12 @@ fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean =
     return if (index < 0) this else replaceRange(index, index + oldValue.length, newValue)
 }
 
-@ImplicitReflectionSerializer
+@OptIn(ImplicitReflectionSerializer::class)
 inline fun <reified T : Any> T.toJsonString(): String {
     return Json(JsonConfiguration.Default).stringify(this)
 }
 
-@ImplicitReflectionSerializer
+@OptIn(ImplicitReflectionSerializer::class)
 inline fun <reified T : Any> String.fromJsonString(): T {
     return Json(JsonConfiguration.Default).parse(this)
 }

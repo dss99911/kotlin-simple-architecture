@@ -1,6 +1,5 @@
 CREATE TABLE user (
   id TEXT PRIMARY KEY NOT NULL,
-  name TEXT NOT NULL,
   password TEXT NOT NULL
 );
 
@@ -14,5 +13,5 @@ FROM user
 WHERE id = ?;
 
 insert:
-INSERT INTO user(id, name, password)
-VALUES (?, ?, ?);
+INSERT INTO user(id, password)
+VALUES (?, ?);

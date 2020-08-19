@@ -6,6 +6,7 @@ import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtNamedFunction
 import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtParameter
 import kim.jeonghyeon.simplearchitecture.plugin.util.*
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import org.jetbrains.kotlin.psi.psiUtil.findDescendantOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
@@ -65,6 +66,9 @@ class SharedKtNamedFunctionImpl(val ktFunc: KtNamedFunction) : SharedKtNamedFunc
         get() = ktFunc.parameters.map { SharedKtParameterImpl(it) }.toTypedArray()
     override val returnTypeName: String?
         get() = ktFunc.returnTypeName
+
+    override val ktClass: SharedKtClass?
+        get() = ktFunc.containingClass()?.let { SharedKtClassImpl(it) }
 
     override val name: String
         get() = ktFunc.name!!

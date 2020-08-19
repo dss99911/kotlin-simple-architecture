@@ -1,0 +1,13 @@
+CREATE TABLE userDetail (
+  id TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL
+);
+
+selectOne:
+SELECT *
+FROM userDetail
+WHERE id = ?;
+
+insert:
+INSERT INTO userDetail(id, name)
+VALUES (?, ?);

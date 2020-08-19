@@ -8,11 +8,11 @@ import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.DigestSignInViewModel
+import kim.jeonghyeon.sample.viewmodel.SignInViewModel
 
-class DigestSignInScreen(private val model: DigestSignInViewModel = DigestSignInViewModel()) :
+class SignInScreen(private val model: SignInViewModel = SignInViewModel()) :
     ModelScreen(model) {
-    override val title: String = R.string.digest_sign_in.resourceToString()
+    override val title: String = R.string.sign_in.resourceToString()
 
     @Composable
     override fun compose() {
@@ -40,7 +40,7 @@ class DigestSignInScreen(private val model: DigestSignInViewModel = DigestSignIn
             Text("Sign In")
         }
 
-        Button({ DigestSignUpScreen({ model.onSignedUp() }).push() }) {
+        Button({ SignUpScreen({ model.onSignedUp() }).push() }) {
             Text("Sign Up")
         }
     }
