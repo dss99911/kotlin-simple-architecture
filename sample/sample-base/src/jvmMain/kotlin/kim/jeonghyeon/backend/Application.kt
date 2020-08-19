@@ -4,6 +4,7 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.util.KtorExperimentalAPI
+import kim.jeonghyeon.SimpleFeature
 import kim.jeonghyeon.api.PreferenceController
 import kim.jeonghyeon.auth.AuthenticationType
 import kim.jeonghyeon.auth.SignFeature
@@ -32,43 +33,40 @@ fun Application.module(testing: Boolean = false) {
 
     log.info("Environment: $mode")
 
-    onApplicationCreate(SampleServiceLocatorImpl())
+    install(SimpleFeature) {
+        serviceLocator = SampleServiceLocatorImpl()
 
-    installSignFeature(AUTH_TYPE)
-
-
-    install(SimpleRouting) {
-        +SampleController()
-        +PreferenceController(serviceLocator.preference)
-        logging = !production
-    }
-
-}
-
-//todo wrap all the simple architecture feature to one feature.
-
-fun Application.installSignFeature(authType: AuthenticationType) {
-    install(SignFeature) {
-        when (authType) {
-            AuthenticationType.JWT -> {
-                jwt {
-                    algorithm = serviceLocator.jwtAlgorithm
-                    controller = SampleSignJwtController()
+        sign {
+            when (AUTH_TYPE) {
+                AuthenticationType.JWT -> {
+                    jwt {
+                        algorithm = kim.jeonghyeon.backend.di.serviceLocator.jwtAlgorithm
+                        controller = SampleSignJwtController()
+                    }
                 }
-                addControllerBeforeInstallSimpleRouting(UserJwtController())
-            }
-            AuthenticationType.BASIC -> {
-                basic {
-                    controller = SampleSignBasicController()
+                AuthenticationType.BASIC -> {
+                    basic {
+                        controller = SampleSignBasicController()
+                    }
                 }
-                addControllerBeforeInstallSimpleRouting(UserSessionController())
-            }
-            AuthenticationType.DIGEST -> {
-                digest {
-                    controller = SampleSignDigestController()
+                AuthenticationType.DIGEST -> {
+                    digest {
+                        controller = SampleSignDigestController()
+                    }
                 }
-                addControllerBeforeInstallSimpleRouting(UserSessionController())
             }
+        }
+
+        routing {
+            +SampleController()
+            +PreferenceController(kim.jeonghyeon.backend.di.serviceLocator.preference)
+
+            when (AUTH_TYPE) {
+                AuthenticationType.JWT -> +UserJwtController()
+                else -> +UserSessionController()
+            }
+
+            logging = !production
         }
     }
 }
