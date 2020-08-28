@@ -40,7 +40,7 @@ class SignInScreen(private val model: SignInViewModel = SignInViewModel()) :
             Text("Sign In")
         }
 
-        Button({ SignUpScreen({ model.onSignedUp() }).push() }) {
+        Button({ SignUpScreen().push() }) {
             Text("Sign Up")
         }
     }

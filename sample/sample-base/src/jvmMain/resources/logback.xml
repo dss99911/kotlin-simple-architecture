@@ -1,13 +1,34 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+    <contextListener class="kim.jeonghyeon.backend.log.LoggerStartupListener"/>
+
+    <property name="FILE_PREFIX_NAME" value="sample-backend"/>
+
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} %M - %msg%n
             </pattern>
         </encoder>
     </appender>
 
-    <root level="trace">
-        <appender-ref ref="STDOUT" />
+    <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <FileNamePattern>${LOG_PATH}/${FILE_PREFIX_NAME}.%d{yyyy-MM-dd}.log</FileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <level value="${LOG_LEVEL}"/>
+        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="dailyRollingFileAppender"/>
     </root>
 
     <logger name="org.eclipse.jetty" level="INFO" />

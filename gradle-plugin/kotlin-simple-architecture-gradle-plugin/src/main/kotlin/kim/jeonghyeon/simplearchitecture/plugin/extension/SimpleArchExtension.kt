@@ -9,6 +9,12 @@ open class SimpleArchExtension {
     var androidConfig: Boolean = true
     var commonConfig: Boolean = true
     var generationConfig: Boolean = true
+
+    /**
+     * "a" to "1" => const val a = 1
+     * "a" to "\"1\"" => const val a = "1"
+     */
+    val simpleProperties: MutableMap<String, String> = mutableMapOf()
 }
 
 val Project.simpleArchExtension get() = project.extensions.findOrCreate("simpleArch", SimpleArchExtension::class.java)

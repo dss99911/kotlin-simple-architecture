@@ -37,12 +37,12 @@ class OtherDeeplinkActivity : AppCompatActivity() {
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                log(pendingDynamicLinkData?.link?.toString())
+                log.i(pendingDynamicLinkData?.link?.toString())
                 textView.text = textView.text.toString() + pendingDynamicLinkData?.link?.toString()
             }
             .addOnFailureListener(this) { e ->
                 toast(e.message)
-                log(e)
+                log.i(e)
             }
 
     }

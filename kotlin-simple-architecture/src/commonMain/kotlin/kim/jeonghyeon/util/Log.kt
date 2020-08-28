@@ -1,10 +1,14 @@
 package kim.jeonghyeon.util
 
-@Suppress("NOTHING_TO_INLINE")
-expect inline fun log(e: Throwable)
 
-@Suppress("NOTHING_TO_INLINE")
-expect inline fun log(message: String)
+val log = Logger()
 
-@Suppress("NOTHING_TO_INLINE")
-expect inline fun log(vararg obj: Any?)
+expect class Logger() {
+    inline fun i(message: String)
+    inline fun i(vararg obj: Any?)
+    inline fun d(message: String)
+    inline fun d(vararg obj: Any?)
+    inline fun e(e: Throwable)
+    inline fun e(e: String)
+    inline fun e(vararg obj: Any?)
+}

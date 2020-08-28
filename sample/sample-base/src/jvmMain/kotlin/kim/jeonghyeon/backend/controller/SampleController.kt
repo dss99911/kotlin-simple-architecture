@@ -3,7 +3,6 @@ package kim.jeonghyeon.backend.controller
 import kim.jeonghyeon.backend.const.WORDS
 import kim.jeonghyeon.backend.di.serviceLocator
 import kim.jeonghyeon.const.post
-import kim.jeonghyeon.di.log
 import kim.jeonghyeon.net.HEADER_KEY
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
@@ -12,6 +11,7 @@ import kim.jeonghyeon.net.headers
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SampleApi
+import kim.jeonghyeon.util.log
 import kotlin.random.Random
 
 class SampleController(val pref: Preference = serviceLocator.preference) : SampleApi {
@@ -49,7 +49,7 @@ class SampleController(val pref: Preference = serviceLocator.preference) : Sampl
     }
 
     override suspend fun putAnnotation(id: String, post: Post) {
-        log.info("id=$id, post=$post")
+        log.i("id=$id, post=$post")
     }
 }
 

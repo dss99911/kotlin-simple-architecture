@@ -1,9 +1,8 @@
 package kim.jeonghyeon.simplearchitecture.plugin.config
 
 import kim.jeonghyeon.simplearchitecture.plugin.DEPENDENCY_SIMPLE_ARCHITECTURE
-import kim.jeonghyeon.simplearchitecture.plugin.DEPENDENCY_SIMPLE_ARCHITECTURE_JVM
 import kim.jeonghyeon.simplearchitecture.plugin.extension.simpleArchExtension
-import kim.jeonghyeon.simplearchitecture.plugin.task.getGenerateLocalAddressTask
+import kim.jeonghyeon.simplearchitecture.plugin.task.getGenerateSimpleConfigTask
 import kim.jeonghyeon.simplearchitecture.plugin.util.addDependency
 import kim.jeonghyeon.simplearchitecture.plugin.util.dependsOnCompileTask
 import org.gradle.api.Project
@@ -21,7 +20,7 @@ fun Project.applySimpleConfig() {
 
         addSimpleArchitectureDependency()
 
-        dependsOnCompileTask { getGenerateLocalAddressTask(it) }
+        dependsOnCompileTask { getGenerateSimpleConfigTask(it, simpleArchExtension.simpleProperties) }
     }
 }
 

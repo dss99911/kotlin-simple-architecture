@@ -18,4 +18,5 @@ if (includingModuleName != null) {
     include("sample")
     include("sample:sample-base")
     include("sample:sample-android")
+    include("sample:sample-backend")
 }

@@ -11,7 +11,7 @@ sealed class Resource<out T> {
     data class Success<T>(internal val dat: T) : Resource<T>()
     data class Error<T>(val error: ResourceError, val last: T? = null, val retry: () -> Unit = {}) : Resource<T>() {
         init {
-            log(error)
+            log.e(error)
         }
     }
 

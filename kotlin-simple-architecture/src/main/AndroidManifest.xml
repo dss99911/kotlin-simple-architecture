@@ -2,6 +2,6 @@
     package="kim.jeonghyeon.androidlibrary">
     <!--use below for inherit BaseApplication -->
     <!--tools:replace="android:name"-->
-    <application android:name=".BaseApplication" />
+    <application android:name=".BaseApplication"/>
 
 </manifest>
