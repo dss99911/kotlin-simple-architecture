@@ -6,11 +6,15 @@ import io.ktor.routing.*
 import io.ktor.util.*
 import kim.jeonghyeon.SimpleFeature
 import kim.jeonghyeon.api.PreferenceController
-import kim.jeonghyeon.auth.*
+import kim.jeonghyeon.auth.JwtServiceAuthConfiguration
+import kim.jeonghyeon.auth.ServiceAuthType
+import kim.jeonghyeon.auth.SessionServiceAuthConfiguration
+import kim.jeonghyeon.auth.SignInAuthType
 import kim.jeonghyeon.backend.auth.SampleSignBasicController
 import kim.jeonghyeon.backend.auth.SampleSignDigestController
 import kim.jeonghyeon.backend.auth.SampleSignOAuthController
 import kim.jeonghyeon.backend.controller.SampleController
+import kim.jeonghyeon.backend.di.ServiceLocatorBackendImpl
 import kim.jeonghyeon.backend.user.UserController
 import kim.jeonghyeon.net.AUTH_TYPE_SERVICE
 import kim.jeonghyeon.net.AUTH_TYPE_SIGN_IN
@@ -22,6 +26,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
 
     install(SimpleFeature) {
+        kim.jeonghyeon.backend.di.serviceLocator = ServiceLocatorBackendImpl(this@module)
         serviceLocator = kim.jeonghyeon.backend.di.serviceLocator
 
         sign {
@@ -76,9 +81,13 @@ fun Application.module(testing: Boolean = false) {
 
 }
 
+//todo code generator from application.conf
+// consider value can be changed on production.
 val Application.googleClient get() = environment.config.config("oauth.google")
 val Application.googleClientId get() = googleClient.property("clientId").getString()
 val Application.googleClientSecret get() = googleClient.property("clientSecret").getString()
 val Application.facebookClient get() = environment.config.config("oauth.facebook")
 val Application.facebookClientId get() = facebookClient.property("clientId").getString()
 val Application.facebookClientSecret get() = facebookClient.property("clientSecret").getString()
+val Application.dbPath get() = environment.config.property("dbPath").getString()
+val Application.jwtSecret get() = environment.config.property("jwtSecret").getString()
