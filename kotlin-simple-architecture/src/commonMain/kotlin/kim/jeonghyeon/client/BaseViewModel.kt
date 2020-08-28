@@ -4,11 +4,16 @@ package kim.jeonghyeon.client
 import io.ktor.http.*
 import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.annotation.SimpleArchInternal
-import kim.jeonghyeon.type.*
-import kotlinx.coroutines.*
+import kim.jeonghyeon.type.AtomicReference
+import kim.jeonghyeon.type.Resource
+import kim.jeonghyeon.type.Status
+import kim.jeonghyeon.type.atomic
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -94,29 +99,23 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    //todo delete?
-    fun <T> ResourceStateFlow<T>.loadFlow(flow: () -> Flow<T>) {
-        scope.loadFlow(this, null, flow)
-    }
-
-    //todo delete?
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T> MutableStateFlow<T>.loadFlow(status: StatusStateFlow, flow: () -> Flow<T>) {
-        scope.loadDataFromFlow(this, status, flow)
-    }
-
     fun <T> ResourceStateFlow<T>.load(flow: Flow<Resource<T>>) {
-        scope.loadFlow2(this, null, flow)
+        scope.loadFlow(this, null, flow)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> MutableStateFlow<T>.load(status: StatusStateFlow, flow: Flow<Resource<T>>) {
-        scope.loadDataFromFlow(this, status, flow)
+        scope.loadResourceFromFlow(this, status, flow)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun <T, U> MutableStateFlow<U>.load(status: StatusStateFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
-        scope.loadDataFromFlow(this, status, flow, transform = transform)
+        scope.loadResourceFromFlow(this, status, flow, transform = transform)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun <T> MutableStateFlow<T>.loadFlow(status: StatusStateFlow, flow: Flow<T>) {
+        scope.loadDataFromFlow(this, status, flow)
     }
 
     fun <T, U> MutableStateFlow<T>.withSource(
