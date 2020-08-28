@@ -5,14 +5,14 @@ import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.sample.api.SerializableUserDetail
-import kim.jeonghyeon.sample.api.UserApi
 import kim.jeonghyeon.sample.di.serviceLocator
+import kim.jeonghyeon.sample.repository.UserRepository
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class SignInViewModel(
     val signApi: SignApi = serviceLocator.signApi,
-    val userApi: UserApi = serviceLocator.userApi
+    val userRepo: UserRepository = serviceLocator.userRepository
 ) : BaseViewModel() {
     val inputId = MutableStateFlow("")
     val inputPassword = MutableStateFlow("")
@@ -22,13 +22,9 @@ class SignInViewModel(
         getUserDetail()
     }
 
-    fun onSignedUp() {
-        getUserDetail()
-    }
-
     fun onClickLogOut() = status.load {
         signApi.signOut()
-        getUserDetail()
+        userRepo.invalidateUser()
     }
 
     fun onClickSignIn() {
@@ -44,14 +40,12 @@ class SignInViewModel(
 
         status.load {
             signApi.signIn(inputId.value, inputPassword.value)
-            getUserDetail()
+            userRepo.invalidateUser()
         }
     }
 
     private fun getUserDetail() {
-        user.load(initStatus, work = {
-            userApi.getUser()
-        }) {
+        user.load(initStatus, userRepo.userDetail) {
             //if unauthorized error, show login page.
             if (it.isErrorOf<ApiError>()) {
                 if (it.errorOf<ApiError>().code == ApiErrorBody.Unauthorized.code) {

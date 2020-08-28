@@ -7,22 +7,22 @@ import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.annotation.Header
 
 const val HEADER_AUTHORIZATION = "Authorization"
-
+const val AUTH_NAME_BASIC = "BASIC"
 @Api
 interface SignBasicApi : SignApi {
     /**
      * use extra for additional user data
      */
-    override suspend fun signUp(id: String, password: String, extra: String)
+    override suspend fun signUp(signId: String, password: String, extra: String?)
 
-    @Authenticate
+    @Authenticate(AUTH_NAME_BASIC)
     suspend fun signIn(@Header(HEADER_AUTHORIZATION)authorization: String)
 
     @Authenticate
     override suspend fun signOut()
 
-    override suspend fun signIn(id: String, password: String) {
-        signIn(constructBasicAuthorizationHeader(id, password))
+    override suspend fun signIn(signId: String, password: String) {
+        signIn(constructBasicAuthorizationHeader(signId, password))
     }
 
     @OptIn(InternalAPI::class)

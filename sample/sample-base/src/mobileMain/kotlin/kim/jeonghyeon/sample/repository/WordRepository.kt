@@ -17,6 +17,7 @@ var fetchedWordApi = false
 
 class WordRepositoryImpl(val api: SampleApi, val query: WordQueries) : WordRepository {
 
+    //this shows how to call api then save data, and notify observers.
     override fun getWord(): Flow<List<Word>> = flow {
         if (!fetchedWordApi) {
             val response = api.getWords()

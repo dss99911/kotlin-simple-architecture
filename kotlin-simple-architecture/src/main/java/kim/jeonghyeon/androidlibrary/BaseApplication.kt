@@ -37,7 +37,7 @@ abstract class BaseApplication : Application() {
 
     private fun initExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            log(e)
+            log.e(e)
             defaultUncaughtExceptionHandler.uncaughtException(t, e)
         }
     }

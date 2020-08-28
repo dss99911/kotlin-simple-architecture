@@ -9,7 +9,7 @@ import kim.jeonghyeon.db.UserQueries
  */
 
 lateinit var application: Application
-val log get() = application.environment.log
+val logger get() = application.environment.log
 
 internal lateinit var serviceLocator: ServiceLocator
 

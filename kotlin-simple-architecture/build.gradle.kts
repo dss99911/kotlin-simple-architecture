@@ -112,6 +112,7 @@ kotlin {
                 api(deps.logback)
                 api(deps.ktor.serverSessions)
                 api(deps.ktor.clientAuthJvm)
+                api(deps.ktor.clientApache)
             }
         }
 

@@ -1,1 +1,0 @@
-./gradlew :sample:sample-base:run

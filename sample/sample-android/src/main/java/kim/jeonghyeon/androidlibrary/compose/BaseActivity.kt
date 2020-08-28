@@ -1,9 +1,12 @@
 package kim.jeonghyeon.androidlibrary.compose
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.Composable
 import androidx.ui.core.setContent
+import io.ktor.http.*
+import kotlin.reflect.KClass
 
 abstract class BaseActivity : AppCompatActivity() {
     //todo onStart, onStop, onResume, on Pause. deliver to current screen
@@ -16,6 +19,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
     abstract val rootScreen: Screen
 
+    /**
+     * Activity's launch mode is singleInstance : one task, one activity only
+     * Screen's launch mode is singleTop : if the screen is on top, just send 'onDeeplinkReceived' event
+     * todo consider navigate screens by deeplink only.
+     */
+    open val deeplinks: Map<String, Pair<KClass<*>, () -> Screen>> = emptyMap()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,6 +33,24 @@ abstract class BaseActivity : AppCompatActivity() {
             rootScreen.push()
             content()
         }
+
+        deliverDeeplink(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        deliverDeeplink(intent)
+    }
+
+    private fun deliverDeeplink(intent: Intent?) {
+        val screen = deeplinks[intent?.data?.path?:return]?:return
+        //single top
+        var last = ScreenStack.last()
+        if (last::class != screen.first) {
+            last = screen.second().apply { push() }
+        }
+
+        last.onDeeplinkReceived(Url(intent?.dataString!!))
     }
 
     override fun onBackPressed() {

@@ -125,6 +125,65 @@ fun <T> CoroutineScope.loadDataFromFlow(
     }
 }
 
+//todo check and remove previous function
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> CoroutineScope.loadFlow2(
+    resourceState: ResourceStateFlow<T>? = null,
+    statusState: StatusStateFlow? = null,
+    flow: Flow<Resource<T>>
+) {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+        flow.collect {
+            resourceState?.value = it
+            statusState?.value = it
+        }
+    }.also {
+        resourceState?.value = Resource.Loading { it.cancel() }
+        statusState?.value = Resource.Loading { it.cancel() }
+        it.start()
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> CoroutineScope.loadDataFromFlow(
+    data: MutableStateFlow<T>,
+    status: StatusStateFlow? = null,
+    flow: Flow<Resource<T>>
+) {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+        flow.collect {
+            it.onSuccess { data.value = it }
+            status?.value = it
+        }
+    }.also {
+        status?.value = Resource.Loading { it.cancel() }
+        it.start()
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T, U> CoroutineScope.loadDataFromFlow(
+    data: MutableStateFlow<U>,
+    status: StatusStateFlow? = null,
+    flow: Flow<Resource<T>>,
+    transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
+) {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+        flow.collect {
+            val transformed = transform(it)
+            transformed.onSuccess { data.value = it }
+            status?.value = transformed
+        }
+    }.also {
+        status?.value = Resource.Loading { it.cancel() }
+        it.start()
+    }
+}
+
+
 private suspend fun <T> CoroutineScope.getResource(
     action: suspend CoroutineScope.() -> T,
     retry: () -> Unit

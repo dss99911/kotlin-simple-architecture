@@ -92,7 +92,7 @@ class ApiGenerator(
         .joinToString("\n\n") { it }
 
     private fun SharedKtNamedFunction.makeFunction(): String = """
-    |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ""} {
+    |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ""} = SimpleApiUtil.run {
     |${makeFunctionBody().prependIndent("    ")}
     |}
     """.trimMargin()
@@ -103,7 +103,7 @@ class ApiGenerator(
         val isAuthenticating = getAnnotationString(Authenticate::class) != null || ktClass?.getAnnotationString(Authenticate::class) != null
         return """
         |val subPath = ${makeSubPathStatement()}
-        |val responseText = client.fetchResponseText($isAuthenticating) { adder ->
+        |val responseText = fetchResponseText($isAuthenticating) { adder ->
         |    client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
         |        ${makeBodyStatement()}
         |        ${makeContentTypeStatement()}
@@ -152,7 +152,7 @@ class ApiGenerator(
                 .trimParenthesis()!!
                 .getParameterString(Query::name.name, 0)
 
-            "parameter($key, ${it.name})"
+            "parameter($key, convertParameter(${it.name}))"
         }.joinToString("; ")
 
     private fun SharedKtNamedFunction.makeHeaderStatement(): String = parameters
@@ -161,7 +161,7 @@ class ApiGenerator(
             val key = it.getAnnotationString(Header::class)!!
                 .trimParenthesis()!!
                 .getParameterString(Header::name.name, 0)
-            "header($key, ${it.name})"
+            "header($key, convertParameter(${it.name}))"
         }.joinToString("; ")
 
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
