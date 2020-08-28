@@ -12,7 +12,7 @@ class DbSimpleViewModel(private val wordQueries: WordQueries = serviceLocator.wo
     val newWord = MutableStateFlow("")
 
     override fun onInitialized() {
-        wordList.loadFlow(initStatus) { wordQueries.selectAll().asListFlow() }
+        wordList.loadFlow(initStatus, wordQueries.selectAll().asListFlow())
     }
 
     fun onClickAdd() {

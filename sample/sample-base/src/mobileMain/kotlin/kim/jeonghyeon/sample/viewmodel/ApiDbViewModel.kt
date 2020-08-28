@@ -11,7 +11,7 @@ class ApiDbViewModel(private val repository: WordRepository = serviceLocator.wor
     val newWord = MutableStateFlow("")
 
     override fun onInitialized() {
-        wordList.loadFlow(initStatus) { repository.getWord() }
+        wordList.load(initStatus, repository.getWord())
     }
 
     fun onClickAdd() {

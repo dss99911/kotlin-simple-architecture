@@ -84,50 +84,8 @@ fun <T, U> CoroutineScope.loadDataAndStatus(
     }
 }
 
-fun <T> CoroutineScope.loadFlow(
-    resourceState: ResourceStateFlow<T>? = null,
-    statusState: StatusStateFlow? = null,
-    flow: () -> Flow<T>
-) {
-    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
-        getResource(flow(),
-            onResult = {
-                resourceState?.value = it
-                statusState?.value = it
-            }) {
-            this@loadFlow.loadFlow(resourceState, statusState, flow)
-        }
-    }.also {
-        resourceState?.value = Resource.Loading { it.cancel() }
-        statusState?.value = Resource.Loading { it.cancel() }
-        it.start()
-    }
-}
-
-fun <T> CoroutineScope.loadDataFromFlow(
-    data: MutableStateFlow<T>,
-    status: StatusStateFlow,
-    flow: () -> Flow<T>
-) {
-    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
-        getResource(flow(),
-            onResult = {
-                it.onSuccess { data.value = it }
-                status.value = it
-            }) {
-            this@loadDataFromFlow.loadDataFromFlow(data, status, flow)
-        }
-    }.also {
-        status.value = Resource.Loading { it.cancel() }
-        it.start()
-    }
-}
-
-//todo check and remove previous function
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T> CoroutineScope.loadFlow2(
+fun <T> CoroutineScope.loadFlow(
     resourceState: ResourceStateFlow<T>? = null,
     statusState: StatusStateFlow? = null,
     flow: Flow<Resource<T>>
@@ -146,7 +104,7 @@ fun <T> CoroutineScope.loadFlow2(
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T> CoroutineScope.loadDataFromFlow(
+fun <T> CoroutineScope.loadResourceFromFlow(
     data: MutableStateFlow<T>,
     status: StatusStateFlow? = null,
     flow: Flow<Resource<T>>
@@ -164,7 +122,26 @@ fun <T> CoroutineScope.loadDataFromFlow(
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T, U> CoroutineScope.loadDataFromFlow(
+fun <T> CoroutineScope.loadDataFromFlow(
+    data: MutableStateFlow<T>,
+    status: StatusStateFlow? = null,
+    flow: Flow<T>
+) {
+    //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+        flow.collect {
+            data.value = it
+            status?.value = Resource.Success(it)
+        }
+    }.also {
+        status?.value = Resource.Loading { it.cancel() }
+        it.start()
+    }
+}
+
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T, U> CoroutineScope.loadResourceFromFlow(
     data: MutableStateFlow<U>,
     status: StatusStateFlow? = null,
     flow: Flow<Resource<T>>,
@@ -196,23 +173,4 @@ private suspend fun <T> CoroutineScope.getResource(
     Resource.Error(e, retry = retry)
 } catch (e: Throwable) {
     Resource.Error(UnknownResourceError(e), retry = retry)
-}
-
-
-private suspend fun <T> CoroutineScope.getResource(
-    flow: Flow<T>,
-    onResult: (Resource<T>) -> Unit,
-    retry: () -> Unit
-) {
-    return try {
-        flow.collect {
-            onResult(Resource.Success(it))
-        }
-    } catch (e: CancellationException) {
-        //if cancel. then ignore it
-    } catch (e: ResourceError) {
-        onResult(Resource.Error(e, retry = retry))
-    } catch (e: Throwable) {
-        onResult(Resource.Error(UnknownResourceError(e), retry = retry))
-    }
 }

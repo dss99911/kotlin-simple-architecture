@@ -1,12 +1,12 @@
 package kim.jeonghyeon.backend.log
 
+import androidLibrary.sample.samplebase.generated.SimpleConfig
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.LoggerContextListener
 import ch.qos.logback.core.spi.ContextAwareBase
 import ch.qos.logback.core.spi.LifeCycle
-import kim.jeonghyeon.backend.di.serviceLocator
 
 class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCycle {
     private var started = false
@@ -20,16 +20,22 @@ class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCyc
 
     private fun configure() {
         /**
-         * Application is created after Logger is initialized, so, can't bring this from application.conf
+         * todo Environment is created after Logger is initialized, so, can't bring this from application.conf
          */
-        val logPath = serviceLocator.environment.logPath
-        val logLevel = serviceLocator.environment.logLevel
+        val logPath = if (SimpleConfig.isProduction) "/home/ec2-user/app/sample-backend" else "."
+        val logLevel = "TRACE"
 
         getContext().apply {
             context.putProperty("LOG_PATH", logPath)
             context.putProperty("LOG_LEVEL", logLevel)
         }
     }
+
+    data class Environment(
+        val logPath: String,
+        val logLevel: String,
+        val dbPath: String
+    )
 
     override fun stop() {}
     override fun isStarted(): Boolean {
