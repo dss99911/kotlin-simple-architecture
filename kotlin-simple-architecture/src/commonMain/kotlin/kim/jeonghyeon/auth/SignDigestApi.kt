@@ -20,21 +20,21 @@ import kotlin.coroutines.coroutineContext
 
 const val REALM_SIMPLE_API = "simpleRealm"
 private const val HASH_ALGORITHM = "MD5"
-
+const val AUTH_NAME_DIGEST = "DIGEST"
 @Api
 interface SignDigestApi : SignApi {
 
-    suspend fun signUpHashed(id: String, ha1: String, extra: String)
+    suspend fun signUpHashed(signId: String, ha1: String, extra: String?)
 
-    @Authenticate
+    @Authenticate(AUTH_NAME_DIGEST)
     suspend fun getNonce()
 
-    override suspend fun signUp(id: String, password: String, extra: String) {
-        signUpHashed(id, hex(makeDigest("$id:$REALM_SIMPLE_API:$password")), extra)
+    override suspend fun signUp(signId: String, password: String, extra: String?) {
+        signUpHashed(signId, hex(makeDigest("$signId:$REALM_SIMPLE_API:$password")), extra)
     }
 
     @OptIn(InternalAPI::class)
-    suspend fun makeDigest(data: String): ByteArray {
+    private suspend fun makeDigest(data: String): ByteArray {
         val digest = Digest(HASH_ALGORITHM)
         return digest.build(data.toByteArray(Charsets.UTF_8))
     }
@@ -43,7 +43,7 @@ interface SignDigestApi : SignApi {
      * if already signed in, throw ApiErrorBody(1001, "Already Signed In")
      * handle this exception and decide if signed out and retry or
      */
-    override suspend fun signIn(id: String, password: String) {
+    override suspend fun signIn(signId: String, password: String) {
         withContext(coroutineContext + HttpResponseStore()) {
             try {
                 getNonce()
@@ -52,7 +52,7 @@ interface SignDigestApi : SignApi {
                     val headerValue = response().headers[HttpHeaders.WWWAuthenticate]?: throw e
                     val httpAuthHeader = parseAuthorizationHeader(headerValue)?: throw e
 
-                    val digestAuthProvider = DigestAuthProvider(id, password, REALM_SIMPLE_API, HASH_ALGORITHM)
+                    val digestAuthProvider = DigestAuthProvider(signId, password, REALM_SIMPLE_API, HASH_ALGORITHM)
                     digestAuthProvider.isApplicable(httpAuthHeader)
                     val request = HttpRequestBuilder().apply {
                         method = HttpMethod.Post
@@ -70,7 +70,7 @@ interface SignDigestApi : SignApi {
         }
     }
 
-    @Authenticate
+    @Authenticate(AUTH_NAME_DIGEST)
     suspend fun signIn(@Header(HEADER_AUTHORIZATION)authorization: String)
 
     @Authenticate

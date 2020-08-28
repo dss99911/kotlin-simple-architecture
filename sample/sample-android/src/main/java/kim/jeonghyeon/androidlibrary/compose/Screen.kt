@@ -8,6 +8,7 @@ import androidx.ui.core.Modifier
 import androidx.ui.layout.ColumnScope.weight
 import androidx.ui.layout.RowScope.gravity
 import androidx.ui.layout.Stack
+import io.ktor.http.*
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
 import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
@@ -104,6 +105,11 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
 
     @Composable
     abstract fun view()
+
+
+    fun onDeeplinkReceived(url: Url) {
+        viewModels.forEach { it.onDeeplinkReceived(url) }
+    }
 
     /**
      * LIMITATION : if several viewModel use iniStatus. this won't work properly

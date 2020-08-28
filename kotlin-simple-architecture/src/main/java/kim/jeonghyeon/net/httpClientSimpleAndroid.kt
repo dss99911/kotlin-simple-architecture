@@ -24,7 +24,7 @@ actual fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit): HttpClient 
 private class AndroidLogger : Logger {
     override fun log(message: String) {
         message.split("\n").forEach {
-            kim.jeonghyeon.util.log(it)
+            kim.jeonghyeon.util.log.d(it)
         }
 
     }

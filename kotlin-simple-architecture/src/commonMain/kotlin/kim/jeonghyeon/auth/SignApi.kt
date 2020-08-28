@@ -1,30 +1,46 @@
 package kim.jeonghyeon.auth
 
 import io.ktor.client.HttpClient
+import kim.jeonghyeon.annotation.Get
 import kim.jeonghyeon.kotlinsimplearchitecture.generated.net.createSimple
 
 
 const val HEADER_NAME_TOKEN = "simple-user-token"
 
 interface SignApi {
-    suspend fun signIn(id: String, password: String)
+
+    @Get
+    suspend fun signIn(signId: String, password: String)
 
     /**
      * @param extra you can add any additional user information here. and override signUp on SignController
      */
-    suspend fun signUp(id: String, password: String, extra: String)
+    @Get
+    suspend fun signUp(signId: String, password: String, extra: String? = null)
 
     suspend fun signOut()
 }
 
-fun HttpClient.createSignApi(baseUrl: String, authType: AuthenticationType): SignApi =
+fun HttpClient.createSignApi(baseUrl: String, authType: SignInAuthType): SignApi =
     when (authType) {
-        AuthenticationType.BASIC -> createSimple<SignBasicApi>(baseUrl)
-        AuthenticationType.DIGEST -> createSimple<SignDigestApi>(baseUrl)
-        AuthenticationType.JWT -> createSimple<SignDigestApi>(baseUrl)
+        SignInAuthType.BASIC -> createSimple<SignBasicApi>(baseUrl)
+        SignInAuthType.DIGEST -> createSimple<SignDigestApi>(baseUrl)
+        SignInAuthType.OAUTH -> error("use ${SignOAuthClient::class.simpleName}")
     }
 
-enum class AuthenticationType {
-    BASIC, DIGEST, JWT
+/**
+ * authenticate on sign in
+ */
+enum class SignInAuthType(val authName: String) {
+    BASIC(AUTH_NAME_BASIC), DIGEST(AUTH_NAME_DIGEST), OAUTH(AUTH_NAME_OAUTH)
 }
 
+/**
+ * authenticate if valid token or session exists
+ *
+ * doesn't support multiple of this type
+ * this is for each service apis,
+ */
+enum class ServiceAuthType {
+    SESSION, JWT
+}

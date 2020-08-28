@@ -9,7 +9,7 @@ import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.extension.replaceLast
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.reflect.suspendProxy
-import kim.jeonghyeon.net.fetchResponseText
+import kim.jeonghyeon.net.SimpleApiUtil
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -20,25 +20,27 @@ import kotlin.reflect.jvm.kotlinFunction
  *
  */
 @Deprecated("this is not maintained. as it's available only on JVM", ReplaceWith("@Api"))
-inline fun <reified T> HttpClient.create(baseUrl: String) =
+inline fun <reified T> HttpClient.create(baseUrl: String) = SimpleApiUtil.run {
     suspendProxy(T::class.java) { method, arguments ->
         val mainPath = T::class.java.name
             .replace(".", "-")
             .replaceLast("-", "/")
 
         val subPath = method.name
-        val baseUrlWithoutSlash = if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
+        val baseUrlWithoutSlash =
+            if (baseUrl.last() == '/') baseUrl.take(baseUrl.lastIndex) else baseUrl
         val returnType = method.kotlinFunction!!.returnType
 
-        val responseText = fetchResponseText(method.annotations.any { it is Authenticate }) { adder ->
-            post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
-                contentType(ContentType.Application.Json)
-                adder()
-                //can not use kotlin serialization.
-                //type mismatch. required: capturedtype(out any). found: any
-                body = arguments
+        val responseText =
+            fetchResponseText(method.annotations.any { it is Authenticate }) { adder ->
+                post<HttpResponse>("$baseUrlWithoutSlash/$mainPath/$subPath") {
+                    contentType(ContentType.Application.Json)
+                    adder()
+                    //can not use kotlin serialization.
+                    //type mismatch. required: capturedtype(out any). found: any
+                    body = arguments
+                }
             }
-        }
 
         if (returnType.classifier == Unit::class) {
             Unit
@@ -46,3 +48,4 @@ inline fun <reified T> HttpClient.create(baseUrl: String) =
             responseText.toJsonObject<Any?>(returnType.javaType)
         }
     }
+}

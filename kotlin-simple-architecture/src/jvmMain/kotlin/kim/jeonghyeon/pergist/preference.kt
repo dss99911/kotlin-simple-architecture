@@ -15,7 +15,7 @@ actual class Preference(path: String, properties: Map<String?, String?> = mapOf(
                     SimpleDB.Schema.create(it)
                 } catch (e: Exception) {
                     //if already created, ignore the message.
-                    log(e.message)
+                    log.e(e.message)
                 }
             }
     )

@@ -48,6 +48,7 @@ object deps {
         const val clientAuthJvm = "io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}"
         const val clientAuthNative = "io.ktor:ktor-client-auth-native:${versions.kotlin.ktor}"
         const val clientAuthJs = "io.ktor:ktor-client-auth-js:${versions.kotlin.ktor}"
+        const val clientApache = "io.ktor:ktor-client-apache:${versions.kotlin.ktor}"
 
     }
 

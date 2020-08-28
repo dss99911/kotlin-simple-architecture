@@ -2,7 +2,6 @@ package kim.jeonghyeon.sample.api
 
 import kim.jeonghyeon.annotation.Api
 import kim.jeonghyeon.annotation.Authenticate
-import kim.jeonghyeon.sample.UserDetail
 import kotlinx.serialization.Serializable
 
 @Api
@@ -13,5 +12,3 @@ interface UserApi {
 
 @Serializable
 data class SerializableUserDetail(val id: String?, val name: String)
-
-fun UserDetail.serializable(): SerializableUserDetail = SerializableUserDetail(id, name)

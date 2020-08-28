@@ -2,23 +2,31 @@ package kim.jeonghyeon.auth
 
 import io.ktor.application.Application
 import io.ktor.application.ApplicationFeature
-import io.ktor.util.AttributeKey
+import io.ktor.sessions.Sessions
+import io.ktor.util.*
+import io.ktor.utils.io.core.toByteArray
 import kim.jeonghyeon.net.addControllerBeforeInstallSimpleRouting
 
 class SignFeature {
     class Configuration {
-        var authConfig: SignAuthConfiguration? = null
+        internal val signInAuthConfigs: MutableList<SignInAuthConfiguration> = mutableListOf()
+
+        /**
+         * currently support only one service authentication
+         * use [SessionServiceAuthConfiguration] or [JwtServiceAuthConfiguration]
+         */
+        var serviceAuthConfig: ServiceAuthConfiguration? = null
 
         fun basic(_config: SignBasicConfiguration.() -> Unit) {
-            authConfig = SignBasicConfiguration().apply(_config)
+            signInAuthConfigs.add(SignBasicConfiguration().apply(_config))
         }
 
         fun digest(_config: SignDigestConfiguration.() -> Unit) {
-            authConfig = SignDigestConfiguration().apply(_config)
+            signInAuthConfigs.add(SignDigestConfiguration().apply(_config))
         }
 
-        fun jwt(_config: SignJwtConfiguration.() -> Unit) {
-            authConfig = SignJwtConfiguration().apply(_config)
+        fun oauth(_config: SignOAuthConfiguration.() -> Unit) {
+            signInAuthConfigs.add(SignOAuthConfiguration().apply(_config))
         }
 
     }
@@ -31,17 +39,28 @@ class SignFeature {
             pipeline: Application,
             configure: Configuration.() -> Unit
         ): SignFeature {
-            val config = Configuration().apply(configure).authConfig!!
-            authType = config.authType
-            pipeline.addControllerBeforeInstallSimpleRouting(config.getController())
+            val config = Configuration().apply(configure)
 
-            config.initialize(pipeline)
+            val serviceAuthConfig = config.serviceAuthConfig?:error("${Configuration::serviceAuthConfig.name} is not configured on ${SignFeature::class.simpleName}")
+            serviceAuthConfig.initialize(pipeline)
+            selectedServiceAuthType = serviceAuthConfig.serviceAuthType
+
+            if (config.signInAuthConfigs.isEmpty()) {
+                error("${Configuration::signInAuthConfigs.name} is empty on ${SignFeature::class.simpleName}")
+            }
+
+            config.signInAuthConfigs.forEach {
+                pipeline.addControllerBeforeInstallSimpleRouting(it.getController())
+                it.initialize(pipeline)
+            }
+
             return SignFeature()
         }
     }
 }
 
-abstract class SignAuthConfiguration(internal val authType: AuthenticationType) {
-    internal abstract fun getController(): SignController
-    abstract fun initialize(pipeline: Application)
+@OptIn(InternalAPI::class)
+internal suspend fun digest(text: String): String {
+    val digest = Digest("SHA-256")
+    return hex(digest.build(text.toByteArray(Charsets.UTF_8)))
 }

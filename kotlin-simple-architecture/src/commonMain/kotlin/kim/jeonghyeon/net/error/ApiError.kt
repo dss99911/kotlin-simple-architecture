@@ -41,6 +41,7 @@ data class ApiErrorBody(
         val NoNetwork = ApiErrorBody(1000, "Netowrk Error")
         val credentialInvalid = ApiErrorBody(1002, "ID or Password incorrect")
         val idAlreadyExists = ApiErrorBody(1003, "ID exists")
+        val invalidSignUpRequest = ApiErrorBody(1004, "Sign Up Request Rejected")
         
         //////http status codes///////
 

@@ -1,5 +1,6 @@
 package kim.jeonghyeon.net
 
+import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.auth.authenticate
 import io.ktor.features.CallLogging
@@ -13,16 +14,13 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.AttributeKey
-import io.ktor.util.error
 import io.ktor.util.pipeline.PipelineContext
 import kim.jeonghyeon.annotation.*
-import kim.jeonghyeon.auth.authType
-import kim.jeonghyeon.auth.getCheckingAuthTypes
-import kim.jeonghyeon.di.log
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
+import kim.jeonghyeon.util.log
 import kotlinx.coroutines.launch
 import java.lang.reflect.InvocationTargetException
 import java.util.*
@@ -45,12 +43,13 @@ fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
 
 class SimpleRouting(val config: Configuration) {
     class Configuration {
-        val controllerList = mutableListOf(*preControllers.toTypedArray())
-        var logging: Boolean = false
+        internal val controllerList = mutableListOf(*preControllers.toTypedArray())
+        var configure: (Routing.() -> Unit)? = null
 
         operator fun Any.unaryPlus() {
             controllerList.add(this)
         }
+
     }
 
     companion object Feature : ApplicationFeature<Application, Configuration, SimpleRouting> {
@@ -68,11 +67,12 @@ class SimpleRouting(val config: Configuration) {
     fun initialize(pipeline: Application) {
         pipeline.install(StatusPages) {
             val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit = {
-                pipeline.environment.log.error(it)
+                log.e(it)
                 call.respond(HttpStatusCode.ApiError, ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, it.message))
             }
 
             val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit = {
+                log.e(it)
                 call.respond(HttpStatusCode.ApiError, it.body)
             }
 
@@ -99,21 +99,15 @@ class SimpleRouting(val config: Configuration) {
 
         pipeline.install(Routing) {
             installControllers(config.controllerList)
-            if (config.logging) {
-                trace {
-                    log.trace(it.buildText())
-                }
-            }
+            config.configure?.invoke(this)
         }
 
-        if (config.logging) {
-            pipeline.install(CallLogging)
-        }
+        pipeline.install(CallLogging)
 
     }
 
     private fun Routing.installControllers(controllers: List<Any>) {
-        log.trace("==Routing install Start==")
+        log.i("[SimpleRouting] Start to install Routing")
         controllers.forEach { installController(it) }
     }
 
@@ -124,7 +118,7 @@ class SimpleRouting(val config: Configuration) {
             .forEach { apiInterface ->
                 val mainPath = apiInterface.getMainPath() ?: return@forEach
                 installAuthenticate(apiInterface.annotations) {
-                    log.trace("Route Main Path : $mainPath, ${controller::class.simpleName}")
+                    log.i("[SimpleRouting] Main Path : $mainPath, ${controller::class.simpleName}")
                     route(mainPath) {
                         this.installSubPaths(controller, apiInterface)
                     }
@@ -132,10 +126,14 @@ class SimpleRouting(val config: Configuration) {
             }
     }
 
-    fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
-        annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
+    private fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
+        val authenticateAnnotation = annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
+        if (authenticateAnnotation.name.isBlank()) {
+            authenticate(build = build)
+        } else {
+            authenticate(authenticateAnnotation.name, build = build)
+        }
 
-        authenticate(*authType.getCheckingAuthTypes().map { it.name }.toTypedArray(), build = build)
     }
 
     private fun KClass<*>.getApiAnnotation(): Api? =
@@ -159,7 +157,7 @@ class SimpleRouting(val config: Configuration) {
 
             installAuthenticate(kfunction.annotations) {
                 route(subPath, method) {
-                    log.trace("     Route Sub Path : $subPath $method")
+                    log.i("[SimpleRouting]     Sub Path : $subPath $method")
                     handle {
                         handleRequest(controller, kfunction)
                     }
@@ -215,26 +213,35 @@ class SimpleRouting(val config: Configuration) {
                 getArgument(param, body)
             }.toTypedArray()
 
-        launch(coroutineContext + PipelineContextStore(this)) {
+        val pipelineContextStore = PipelineContextStore(this)
+        launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
-            call.respond(convertResponse(response))
+            if (!pipelineContextStore.responded) {
+                call.respond(convertResponse(response))
+            }
         }
     }
 
     private fun PipelineContext<Unit, ApplicationCall>.getArgument(param: KParameter, body: Any?): Any? {
-        val parameterAnnotation = param.annotations.filter { it.isParameterAnnotation() }.firstOrNull()
-        if (parameterAnnotation == null) {
-            //if no annotation, it should be body argument
-            body as Map<String, Any?>
-            return body[param.name].toJsonString()?.toJsonObject<Any>(param.type.javaType)
-        }
+        try {
 
-        return when (parameterAnnotation) {
-            is Header -> call.request.headers[parameterAnnotation.name]
-            is Path -> call.parameters[parameterAnnotation.name]
-            is Query -> call.request.queryParameters[parameterAnnotation.name]
-            is Body -> body
-            else -> null
+            val parameterAnnotation = param.annotations.firstOrNull { it.isParameterAnnotation() }
+            if (parameterAnnotation == null) {
+                //if no annotation, it should be body argument
+                body as Map<String, Any?>
+                return body[param.name].toJsonString()?.toJsonObject(param.type.javaType)
+            }
+
+            return (when (parameterAnnotation) {
+                is Header -> call.request.headers[parameterAnnotation.name]
+                is Path -> call.parameters[parameterAnnotation.name]
+                is Query -> call.request.queryParameters[parameterAnnotation.name]
+                is Body -> body?.toJsonString()
+                else -> null
+            })?.revertParameter(param.type)
+        } catch (e: Exception) {
+            log.e(e.message + "\nparam : ${param.name}")
+            throw e
         }
     }
 
@@ -272,4 +279,15 @@ class SimpleRouting(val config: Configuration) {
                     it.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }
         }
 
+
+    fun String.revertParameter(kType: KType): Any? {
+        val javaType = kType.javaType as Class<*>
+        return if (javaType == String::class.java) {
+            this
+        } else if (javaType.isEnum) {
+            "\"$this\"".toJsonObject(javaType)
+        } else {
+            this.toJsonObject(javaType)
+        }
+    }
 }

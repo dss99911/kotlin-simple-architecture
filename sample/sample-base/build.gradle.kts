@@ -1,7 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilationToRunnableFiles
+import kim.jeonghyeon.simplearchitecture.plugin.task.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS
+import kim.jeonghyeon.simplearchitecture.plugin.task.getEnvironment
+import kim.jeonghyeon.simplearchitecture.plugin.task.simpleProperty
 import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 
 val androidKeyAlias: String by project
@@ -22,6 +21,19 @@ plugins {
 
     //backend
     id("com.github.johnrengelman.shadow")
+}
+
+val serverUrl = "https://sample.jeonghyeon.kim"
+val deeplinkPrePath = "/deeplink"
+
+simpleArch {
+    val isProduction by simpleProperty(getEnvironment() == "production")
+    val deeplinkPrePath by simpleProperty(deeplinkPrePath)
+    simpleProperties["serverUrl"] = if (isProduction) {
+        "\"$serverUrl\""
+    } else {
+        "\"http://\$$PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS:8080\""
+    }
 }
 
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
@@ -168,6 +180,11 @@ android {
         buildConfigField("boolean", "isDev", "false")
         buildConfigField("boolean", "isProd", "false")
         buildConfigField("boolean", "isMock", "false")
+
+        val deeplinkUri = uri(serverUrl)
+        resValue("string", "deeplink_scheme", deeplinkUri.scheme)
+        resValue("string", "deeplink_host", deeplinkUri.host)
+        resValue("string", "deeplink_pathPrefix", deeplinkPrePath)
     }
 
     flavorDimensions("mode", "stage")
@@ -189,6 +206,8 @@ android {
             buildConfigField("boolean", "isPro", "true")
         }
 
+        //todo environment is managed by gradle property, is this required?
+        // and change name 'environment' to 'stage'?
         val dev by creating {
             dimension = "stage"
             //todo when removing sampleandroid. uncomment this
@@ -256,28 +275,6 @@ android {
     }
 }
 
-task<JavaExec>("run") {
-    main = "io.ktor.server.netty.EngineMain"
-    val jvm by kotlin.targets.getting {}
-    val main: KotlinCompilation<KotlinCommonOptions> by jvm.compilations
-
-    val runtimeDependencies =
-        (main as KotlinCompilationToRunnableFiles<KotlinCommonOptions>).runtimeDependencyFiles
-    classpath = files(main.output.allOutputs, runtimeDependencies)
-}
-
-tasks.withType<ShadowJar> {
-    val jvmJar: Jar by tasks
-    val jvmRuntimeClasspath by project.configurations
-
-    configurations = listOf(jvmRuntimeClasspath)
-
-    from(jvmJar.archiveFile)
-
-    archiveBaseName.value("jvm")
-    classifier = null
-    version = null
-}
 
 tasks.register<Exec>("showKeyDetail") {
     commandLine(

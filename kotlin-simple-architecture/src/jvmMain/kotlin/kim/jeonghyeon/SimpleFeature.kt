@@ -10,13 +10,6 @@ import kim.jeonghyeon.di.application
 import kim.jeonghyeon.di.serviceLocator
 import kim.jeonghyeon.net.SimpleRouting
 
-fun Application.onApplicationCreate(_serviceLocator: ServiceLocator) {
-    serviceLocator = _serviceLocator
-    application = this
-}
-
-
-
 class SimpleFeature {
     class Configuration {
         var serviceLocator: ServiceLocator? = null
@@ -55,4 +48,10 @@ class SimpleFeature {
             return SimpleFeature()
         }
     }
+}
+
+
+fun Application.onApplicationCreate(_serviceLocator: ServiceLocator) {
+    serviceLocator = _serviceLocator
+    application = this
 }

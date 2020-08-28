@@ -1,17 +1,29 @@
 CREATE TABLE user (
-  id TEXT PRIMARY KEY NOT NULL,
-  password TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  signId TEXT NOT NULL,
+  password TEXT,
+  authType TEXT NOT NULL,
+  oauthName TEXT,
+  extra TEXT
 );
+
+CREATE INDEX idx_user_signId
+ON user (signId);
 
 selectAll:
 SELECT *
 FROM user;
 
-selectOne:
+selectOneById:
 SELECT *
 FROM user
 WHERE id = ?;
 
+selectOneBySignIdAndAuthType:
+SELECT *
+FROM user
+WHERE signId = ? AND authType = ? AND oauthName = ?;
+
 insert:
-INSERT INTO user(id, password)
-VALUES (?, ?);
+INSERT INTO user(signId, password, authType, oauthName, extra)
+VALUES (?, ?, ?, ?, ?);
