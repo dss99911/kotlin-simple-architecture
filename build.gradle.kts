@@ -31,7 +31,7 @@ allprojects {
         jcenter()
     }
 }
-
-tasks.register<Delete>("clean") {
-    delete(rootProject.buildDir)
-}
+//todo error, remove?
+//tasks.register<Delete>("clean") {
+//    delete(rootProject.buildDir)
+//}

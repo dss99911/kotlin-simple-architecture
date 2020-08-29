@@ -7,4 +7,4 @@ package kim.jeonghyeon.annotation
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Authenticate(val name: String = "")
+public annotation class Authenticate(val name: String = "")
