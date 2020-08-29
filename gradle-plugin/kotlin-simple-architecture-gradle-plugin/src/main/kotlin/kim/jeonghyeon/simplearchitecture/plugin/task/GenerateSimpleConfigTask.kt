@@ -2,8 +2,8 @@ package kim.jeonghyeon.simplearchitecture.plugin.task
 
 import kim.jeonghyeon.simplearchitecture.plugin.extension.SimpleArchExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
-import kim.jeonghyeon.simplearchitecture.plugin.util.getPackageName
-import kim.jeonghyeon.simplearchitecture.plugin.util.getPackagePath
+import kim.jeonghyeon.simplearchitecture.plugin.util.getGeneratedPackageName
+import kim.jeonghyeon.simplearchitecture.plugin.util.getGeneratedPackagePath
 import kim.jeonghyeon.simplearchitecture.plugin.util.isMultiplatform
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -31,12 +31,12 @@ fun Project.getGenerateSimpleConfigTask(
         //if output file is not changed, compile won't be executed by this task.
 
         doLast {
-            val configFile = project.file("$outputDir/${getPackagePath()}/generated/SimpleConfig.kt")
+            val configFile = project.file("$outputDir/${getGeneratedPackagePath()}/generated/SimpleConfig.kt")
                 .also { it.parentFile.mkdirs() }
 
             configFile.writeText(
                 """
-                    |package ${getPackageName()}.generated
+                    |package ${getGeneratedPackageName()}.generated
                     |
                     |/** !!CAUTION!! This is Build time's local address. use this for local testing only.
                     | * - How To Test In Local -

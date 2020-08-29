@@ -1,8 +1,8 @@
 package kim.jeonghyeon.auth
 
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kim.jeonghyeon.annotation.Get
-import kim.jeonghyeon.kotlinsimplearchitecture.generated.net.createSimple
+import kotlinsimplearchitecture.generated.net.createSimple
 
 
 const val HEADER_NAME_TOKEN = "simple-user-token"

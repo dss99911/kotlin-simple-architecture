@@ -16,7 +16,6 @@ plugins {
 apply(plugin = "com.google.gms.google-services")
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 
-
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
 val androidStoreFile: String by project
