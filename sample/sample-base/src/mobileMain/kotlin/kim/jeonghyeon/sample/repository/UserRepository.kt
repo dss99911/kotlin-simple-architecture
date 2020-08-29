@@ -1,6 +1,5 @@
 package kim.jeonghyeon.sample.repository
 
-import androidLibrary.sample.samplebase.generated.SimpleConfig
 import io.ktor.http.*
 import kim.jeonghyeon.auth.OAuthServerName
 import kim.jeonghyeon.auth.SignApi
@@ -13,6 +12,7 @@ import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.coroutines.flow.Flow
+import samplebase.generated.SimpleConfig
 
 interface UserRepository {
     val userDetail: Flow<Resource<SerializableUserDetail>>

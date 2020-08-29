@@ -1,7 +1,5 @@
 package kim.jeonghyeon.sample.di
 
-import androidLibrary.sample.samplebase.generated.SimpleConfig
-import androidLibrary.sample.samplebase.generated.db.db
 import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.auth.SignOAuthClient
@@ -21,6 +19,8 @@ import kim.jeonghyeon.sample.repository.UserRepository
 import kim.jeonghyeon.sample.repository.UserRepositoryImpl
 import kim.jeonghyeon.sample.repository.WordRepository
 import kim.jeonghyeon.sample.repository.WordRepositoryImpl
+import samplebase.generated.SimpleConfig
+import samplebase.generated.db.db
 
 var serviceLocator: ServiceLocatorClient = ServiceLocatorClientImpl()
 

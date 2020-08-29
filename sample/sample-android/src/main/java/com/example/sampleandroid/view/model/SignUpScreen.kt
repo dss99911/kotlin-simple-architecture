@@ -1,16 +1,11 @@
 package com.example.sampleandroid.view.model
 
-import android.content.Intent
-import android.net.Uri
-import androidLibrary.sample.samplebase.generated.SimpleConfig
 import androidx.compose.Composable
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Column
 import androidx.ui.material.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.TextField
-import kim.jeonghyeon.androidlibrary.extension.ctx
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
-import kim.jeonghyeon.androidlibrary.extension.startActivityUrl
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
 
