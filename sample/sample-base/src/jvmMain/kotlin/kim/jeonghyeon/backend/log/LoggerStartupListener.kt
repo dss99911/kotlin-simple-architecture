@@ -1,12 +1,12 @@
 package kim.jeonghyeon.backend.log
 
-import androidLibrary.sample.samplebase.generated.SimpleConfig
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.LoggerContextListener
 import ch.qos.logback.core.spi.ContextAwareBase
 import ch.qos.logback.core.spi.LifeCycle
+import samplebase.generated.SimpleConfig
 
 class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCycle {
     private var started = false

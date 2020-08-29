@@ -1,6 +1,5 @@
 package kim.jeonghyeon.backend.di
 
-import androidLibrary.sample.samplebase.generated.db.db
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.application.*
 import kim.jeonghyeon.backend.dbPath
@@ -8,9 +7,10 @@ import kim.jeonghyeon.backend.jwtSecret
 import kim.jeonghyeon.db.SimpleDB
 import kim.jeonghyeon.db.UserQueries
 import kim.jeonghyeon.di.ServiceLocator
-import kim.jeonghyeon.kotlinsimplearchitecture.generated.db.dbSimple
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.SampleDb
+import kotlinsimplearchitecture.generated.db.dbSimple
+import samplebase.generated.db.db
 
 lateinit var serviceLocator: ServiceLocatorBackend
 

@@ -1,13 +1,13 @@
 package kim.jeonghyeon.net
 
-import androidLibrary.sample.samplebase.generated.SimpleConfig
-import androidLibrary.sample.samplebase.generated.net.create
-import io.ktor.client.HttpClient
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.header
+import io.ktor.client.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
 import kim.jeonghyeon.auth.ServiceAuthType
 import kim.jeonghyeon.auth.SignInAuthType
-import kim.jeonghyeon.kotlinsimplearchitecture.generated.net.createSimple
+import kotlinsimplearchitecture.generated.net.createSimple
+import samplebase.generated.SimpleConfig
+import samplebase.generated.net.create
 
 val AUTH_TYPE_SIGN_IN = SignInAuthType.DIGEST
 val AUTH_TYPE_SERVICE = ServiceAuthType.JWT

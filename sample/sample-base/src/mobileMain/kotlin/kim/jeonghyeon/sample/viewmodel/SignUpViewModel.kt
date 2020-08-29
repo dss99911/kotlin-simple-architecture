@@ -1,11 +1,11 @@
 package kim.jeonghyeon.sample.viewmodel
 
-import androidLibrary.sample.samplebase.generated.SimpleConfig
 import io.ktor.http.*
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import samplebase.generated.SimpleConfig
 
 
 class SignUpViewModel(
