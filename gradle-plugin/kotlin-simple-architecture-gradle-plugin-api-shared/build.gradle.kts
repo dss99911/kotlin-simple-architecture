@@ -15,7 +15,6 @@ group = deps.simpleArch.pluginShared.getGroupId()
 version = deps.simpleArch.pluginShared.getVersion()
 
 dependencies {
-    api(deps.kotlin.stdlibJdk8)
     api(deps.gson)
     api(deps.plugin.gradleApi)
 

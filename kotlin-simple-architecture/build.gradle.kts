@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         mavenLocal()
@@ -10,9 +9,6 @@ buildscript {
         classpath(deps.simpleArch.pluginGradle)
     }
 }
-
-//todo 1.4 remove
-val ideaActive = System.getProperty("idea.active") == "true"
 
 plugins {
     id("com.android.library")
@@ -36,6 +32,8 @@ sqldelight {
 
 kotlin {
 
+    explicitApi()
+
     //this is used for server backend.
     jvm()
 
@@ -43,32 +41,22 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
-    js()
-
-
-    //todo 1.4
-    //ios()
-    //iosArm32()
-    //iosArm64()
-    //iosX64()
-
-    //todo 1.4 remove
-    val iosArm32 = iosArm32("iosArm32")
-    val iosArm64 = iosArm64("iosArm64")
-    val iosX64 = iosX64("iosX64")
-
-    if (ideaActive) {
-        iosX64("ios")
+    js {
+        browser()
     }
-    //todo 1.4 remove
+
+
+    ios()
+    iosArm32()
+    iosArm64()
+    iosX64()
 
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.kotlin.stdlib)
-                api(deps.kotlin.coroutineCoreCommon)
-                api(deps.kotlin.serializationRuntimeCommon)
+                api(deps.kotlin.coroutineCore)
+                api(deps.kotlin.serializationCore)
                 api(deps.ktor.clientCore)
                 api(deps.ktor.clientSerialization)
                 api(deps.ktor.clientLogging)
@@ -86,9 +74,6 @@ kotlin {
         val jvmShareMain by creating {
             dependencies {
                 //kotlin
-                api(deps.kotlin.stdlibJdk8)
-                api(deps.kotlin.serializationRuntime)
-                api(deps.kotlin.coroutineCore)
                 api(deps.kotlin.reflect)
 
                 //ktor client
@@ -120,10 +105,6 @@ kotlin {
         val jsMain by getting {
             dependsOn(mobileMain)
             dependencies {
-                api(deps.kotlin.stdlibJs)
-                api(deps.kotlin.serializationRuntimeJs)
-                api(deps.kotlin.coroutineCoreJs)
-
                 api(deps.ktor.clientJs)
                 api(deps.ktor.clientSerializationJs)
                 api(deps.ktor.clientLoggingJs)
@@ -136,9 +117,6 @@ kotlin {
             dependsOn(jvmShareMain)
 
             dependencies {
-                //todo move to library
-
-                api(deps.kotlin.coroutineAndroid)
                 api(deps.ktor.clientAndroid)
 
                 api(deps.android.appCompat)
@@ -162,24 +140,10 @@ kotlin {
         //but, intellij doesn't know that iosMain source set targets ios or not.
         //so, when configuration is for intellij. we have to specify the target for iosMain.
 
-        //todo 1.4
-        //val iosMain by getting {
-
-        //todo 1.4 remove
-        val iosMain = if (ideaActive) {
-            getByName("iosMain")
-        } else {
-            create("iosMain")
-        }
-
-        iosMain.apply {
-            //todo 1.4 remove
+        val iosMain by getting {
             dependsOn(mobileMain)
 
             dependencies {
-                api(deps.kotlin.coroutineCoreNative)
-                api(deps.kotlin.serializationRuntimeNative)
-
                 api(deps.ktor.clientIos)
                 api(deps.ktor.clientSerializationNative)
                 api(deps.ktor.clientLoggingNative)
@@ -188,15 +152,6 @@ kotlin {
 
             }
         }
-        //todo 1.4 remove
-        val iosArm32Main by getting {}
-        val iosArm64Main by getting {}
-        val iosX64Main by getting {}
-
-        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
-            dependsOn(iosMain)
-        }
-        //todo 1.4 remove
     }
 }
 
