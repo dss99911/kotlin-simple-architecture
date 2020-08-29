@@ -8,16 +8,15 @@ val androidKeyPassword: String by project
 val androidStoreFile: String by project
 val androidStorePassword: String by project
 
-//todo 1.4 remove
-val ideaActive = System.getProperty("idea.active") == "true"
-
 plugins {
-    //common
-    kotlin("multiplatform")
-
     //android
     //todo when removing sample-android. change to com.android.application
     id("com.android.library")
+
+    //common
+    kotlin("multiplatform")
+
+
 
     //backend
     id("com.github.johnrengelman.shadow")
@@ -50,23 +49,10 @@ kotlin {
     jvm()//for backend
     android()
 
-    //todo 1.4 remove
-    val iosArm32 = iosArm32("iosArm32")
-    val iosArm64 = iosArm64("iosArm64")
-    val iosX64 = iosX64("iosX64")
-
-    if (ideaActive) {
-        iosX64("ios")
-    }
-    //todo 1.4 remove
-
-    /* todo 1.4
     ios()
     val iosArm32 = iosArm32()
     val iosArm64 = iosArm64()
     val iosX64 = iosX64()
-
-     */
 
     sourceSets {
         val commonMain by getting {
@@ -98,45 +84,16 @@ kotlin {
             }
         }
 
-        //todo 1.4 remove
-        val iosMain = if (ideaActive) {
-            getByName("iosMain")
-        } else {
-            create("iosMain")
-        }
-
-        iosMain.apply {
-            dependsOn(mobileMain)
-        }
-
-        val iosArm32Main by getting {}
-        val iosArm64Main by getting {}
-        val iosX64Main by getting {}
-
-        configure(listOf(iosArm32Main, iosArm64Main, iosX64Main)) {
-            dependsOn(iosMain)
-        }
-        //todo 1.4 remove
-        /* todo 1.4
         val iosMain by getting {
             dependsOn(mobileMain)
         }
-
-         */
     }
 
     val frameworkName = "KotlinApi"
 
     configure(listOf(iosArm32, iosArm64, iosX64)) {
-        compilations {
-            val main by getting {
-                //for supporting kotlin generic in swift. there were discussion that it'll be applied on kotlin 1.3.40. let's see if this script is required or not.
-                kotlinOptions.freeCompilerArgs += "-Xobjc-generics"
-            }
-        }
-
         binaries.framework {
-            export(deps.kotlin.coroutineCoreCommon)
+            export(deps.kotlin.coroutineCore)
             export(deps.simpleArch.common)
             //native will use this name to refer the multiplatform library
             baseName = frameworkName

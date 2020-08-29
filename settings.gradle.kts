@@ -1,5 +1,3 @@
-enableFeaturePreview("GRADLE_METADATA")
-
 val includingModuleName: String? by settings
 
 if (includingModuleName != null) {

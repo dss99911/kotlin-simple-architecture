@@ -62,6 +62,7 @@ fun String.trimParenthesis(): String? {
  * 1. "ddd", true => "ddd"
  * 2. path: "ddd", encoded: true
  *
+ * todo from 1.4, Mixing named and positional arguments is supported.(https://kotlinlang.org/docs/reference/whatsnew14.html#mixing-named-and-positional-arguments)
  */
 fun String.getParameterString(name: String, index: Int): String? {
     val params = split(",")//todo need to improve logic to split params

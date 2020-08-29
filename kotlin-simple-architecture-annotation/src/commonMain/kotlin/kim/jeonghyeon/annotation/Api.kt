@@ -7,4 +7,4 @@ package kim.jeonghyeon.annotation
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Api(val path: String = "")
+public annotation class Api(val path: String = "")
