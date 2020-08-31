@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct StatusView<Content> : View where Content : View {
     @ObservedObject private var wrapper: ViewModelWrapper

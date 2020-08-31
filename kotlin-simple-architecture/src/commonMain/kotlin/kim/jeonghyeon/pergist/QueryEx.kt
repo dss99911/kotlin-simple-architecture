@@ -1,36 +1,31 @@
 package kim.jeonghyeon.pergist
 
 import com.squareup.sqldelight.Query
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
-fun <T : Any> Query<T>.asListFlow(hasInit: Boolean = true): Flow<List<T>> = getChangeFlow(hasInit) { it.executeAsList() }
+fun <T : Any> Query<T>.asListFlow(): Flow<List<T>> = asFlow().map { it.executeAsList() }
 
-inline fun <reified T : Any> Query<T>.asOneFlow(hasInit: Boolean = true): Flow<T> = getChangeFlow(hasInit) { it.executeAsOne() }
-inline fun <reified T : Any> Query<T>.asOneOrNullFlow(hasInit: Boolean): Flow<T?> =
-    getChangeFlow(hasInit) { it.executeAsOneOrNull() }
+inline fun <reified T : Any> Query<T>.asOneFlow(hasInit: Boolean = true): Flow<T> = asFlow().map { it.executeAsOne() }
+inline fun <reified T : Any> Query<T>.asOneOrNullFlow(hasInit: Boolean): Flow<T?> = asFlow().map { it.executeAsOneOrNull() }
 
-/**
- * flow is collected if value is really changed.
- */
-inline fun <T : Any, reified U> Query<T>.getChangeFlow(getInit: Boolean = true, crossinline transform: (Query<T>) -> U): Flow<U> {
-    val flow: MutableStateFlow<Any?> = MutableStateFlow(if (getInit) transform(this) else INIT)
-    addListener(object : Query.Listener {
+fun <T : Any> Query<T>.asFlow(): Flow<Query<T>> = flow {
+    emit(this@asFlow)
+
+    val channel = Channel<Unit>(Channel.CONFLATED)
+    val listener = object : Query.Listener {
         override fun queryResultsChanged() {
-            flow.value = transform(this@getChangeFlow)
-        }
-    })
-
-    return flow<U> {
-        flow.collect {
-            if (it is U) {
-                emit(it)
-            }
+            channel.offer(Unit)
         }
     }
+    addListener(listener)
+    try {
+        for (item in channel) {
+            emit(this@asFlow)
+        }
+    } finally {
+        removeListener(listener)
+    }
 }
-
-object INIT
-

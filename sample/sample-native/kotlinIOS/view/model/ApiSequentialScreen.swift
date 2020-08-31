@@ -6,7 +6,7 @@
 import Foundation
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct ApiSequentialScreen: Screen {
     var title = "Api Sequential Call".localized()

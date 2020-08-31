@@ -11,6 +11,7 @@ object deps {
     }
 
     object ktor {
+        const val core = "io.ktor:ktor-server-core:${versions.kotlin.ktor}"
         const val gson = "io.ktor:ktor-gson:${versions.kotlin.ktor}"
         const val serialization = "io.ktor:ktor-serialization:${versions.kotlin.ktor}"
         const val serverNetty = "io.ktor:ktor-server-netty:${versions.kotlin.ktor}"
@@ -19,7 +20,6 @@ object deps {
         const val serverSessions = "io.ktor:ktor-server-sessions:${versions.kotlin.ktor}"
 
         const val clientCore = "io.ktor:ktor-client-core:${versions.kotlin.ktor}"
-        const val clientCoreJvm = "io.ktor:ktor-client-core-jvm:${versions.kotlin.ktor}"
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
         const val clientJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
         const val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
@@ -36,7 +36,10 @@ object deps {
         const val clientAuthJvm = "io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}"
         const val clientAuthNative = "io.ktor:ktor-client-auth-native:${versions.kotlin.ktor}"
         const val clientAuthJs = "io.ktor:ktor-client-auth-js:${versions.kotlin.ktor}"
-        const val clientApache = "io.ktor:ktor-client-apache:${versions.kotlin.ktor}"
+        const val clientEngineApache = "io.ktor:ktor-client-apache:${versions.kotlin.ktor}"
+        const val clientEngineOkhttp = "io.ktor:ktor-client-okhttp:${versions.kotlin.ktor}"
+        const val clientEngineIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
+        const val clientEngineJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
 
     }
 
@@ -65,10 +68,11 @@ object deps {
         )
 
         val compose = listOf(
-            "androidx.ui:ui-layout:${versions.android.compose}",
+            "androidx.compose.ui:ui:${versions.android.compose}",
+            "androidx.compose.material:material:${versions.android.compose}",
             "androidx.ui:ui-tooling:${versions.android.compose}",
-            "androidx.ui:ui-material:${versions.android.compose}",
-            "androidx.ui:ui-material-icons-extended:${versions.android.compose}"
+            "androidx.compose.foundation:foundation-layout:${versions.android.compose}",
+            "androidx.compose.material:material-icons-extended:${versions.android.compose}"
         )
     }
 

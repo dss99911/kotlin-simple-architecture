@@ -1,7 +1,6 @@
 import kim.jeonghyeon.simplearchitecture.plugin.task.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS
 import kim.jeonghyeon.simplearchitecture.plugin.task.getEnvironment
 import kim.jeonghyeon.simplearchitecture.plugin.task.simpleProperty
-import org.jetbrains.kotlin.gradle.tasks.FatFrameworkTask
 
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
@@ -16,10 +15,11 @@ plugins {
     //common
     kotlin("multiplatform")
 
-
-
     //backend
     id("com.github.johnrengelman.shadow")
+
+    //native
+    kotlin("native.cocoapods")
 }
 
 val serverUrl = "https://sample.jeonghyeon.kim"
@@ -45,30 +45,68 @@ sqldelight {
 }
 
 
+version = "1.0"//for cocoa pod
+
 kotlin {
     jvm()//for backend
+
     android()
 
-    ios()
-    val iosArm32 = iosArm32()
-    val iosArm64 = iosArm64()
-    val iosX64 = iosX64()
+    //todo make this simpler by cocoa?
+    ios {
+//        binaries.framework {
+//            export(deps.kotlin.coroutineCore)
+//            export(deps.simpleArch.common)
+//            //native will use this name to refer the multiplatform library
+//        }
+
+//        if (this.name == "iosX64") {
+//            tasks.register<FatFrameworkTask>("debugFatFramework") {
+//                baseName = frameworkName
+//                group = "Universal framework"
+//                description = "Builds a universal (fat) debug framework"
+//
+//                from(binaries.getFramework("DEBUG"))
+//            }
+//        } else {
+//            tasks.register<FatFrameworkTask>("releaseFatFramework") {
+//                baseName = frameworkName
+//                group = "Universal framework"
+//                description = "Builds a universal (release) debug framework"
+//
+//                from(binaries.getFramework("RELEASE"))
+//            }
+//        }
+    }
+
+    cocoapods {
+        // Configure fields required by CocoaPods.
+        summary = "Sample"
+        homepage = "https://github.com/dss99911/kotlin-simple-architecture"
+        podfile = project.file("../sample-native/Podfile")
+    }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 api(deps.simpleArch.common)
+
+                //todo START there is error on android studio sync. after it's fixed, remove this
+                // https://kotlinlang.slack.com/archives/C3PQML5NU/p1598833788027800
+                api(deps.kotlin.coroutineCore)
+                api(deps.kotlin.serializationCore)
+                api(deps.ktor.clientCore)
+                api(deps.ktor.clientSerialization)
+                api(deps.ktor.clientLogging)
+                api(deps.sqldelight.runtime)
+                api(deps.simpleArch.annotation)
+                api(deps.ktor.clientAuth)
+                //todo END there is error on android studio sync. after it's fixed, remove this
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
         val mobileMain by creating {
             dependsOn(commonMain)
-        }
-
-        val jvmMain by getting {
-            dependencies {
-
-            }
         }
 
         val androidMain by getting {
@@ -80,40 +118,20 @@ kotlin {
                 if (config.useLeakCanary) {
                     implementation("com.squareup.leakcanary:leakcanary-android:2.0")
                 }
-                //    implementation("com.facebook.stetho:stetho:1.5.1")
             }
         }
 
         val iosMain by getting {
             dependsOn(mobileMain)
+
+            dependencies {
+                //todo START there is error on android studio sync. after it's fixed, remove this
+                // https://kotlinlang.slack.com/archives/C3PQML5NU/p1598833788027800
+                implementation(deps.sqldelight.native)
+                implementation(deps.ktor.clientEngineIos)
+                //todo END there is error on android studio sync. after it's fixed, remove this
+            }
         }
-    }
-
-    val frameworkName = "KotlinApi"
-
-    configure(listOf(iosArm32, iosArm64, iosX64)) {
-        binaries.framework {
-            export(deps.kotlin.coroutineCore)
-            export(deps.simpleArch.common)
-            //native will use this name to refer the multiplatform library
-            baseName = frameworkName
-        }
-    }
-
-    tasks.register<FatFrameworkTask>("debugFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (fat) debug framework"
-
-        from(iosX64.binaries.getFramework("DEBUG"))
-    }
-
-    tasks.register<FatFrameworkTask>("releaseFatFramework") {
-        baseName = frameworkName
-        group = "Universal framework"
-        description = "Builds a universal (release) debug framework"
-
-        from(iosArm64.binaries.getFramework("RELEASE"), iosArm32.binaries.getFramework("RELEASE"))
     }
 }
 

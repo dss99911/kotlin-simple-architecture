@@ -1,12 +1,12 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
-import androidx.compose.Composable
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Box
-import androidx.ui.layout.fillMaxSize
-import androidx.ui.layout.wrapContentSize
-import androidx.ui.material.CircularProgressIndicator
+import androidx.compose.foundation.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 
 @Composable
 fun LoadingBox() {

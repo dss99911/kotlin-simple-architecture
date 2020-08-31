@@ -122,6 +122,24 @@ android {
         animationsDisabled = true
     }
 
+
+    //region Jetpack Compose todo try to move to library?
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerVersion = versions.kotlin.version
+        kotlinCompilerExtensionVersion = "1.0.0-alpha01"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+
+    //endregion Jetpack Compose
+
 }
 
 dependencies {

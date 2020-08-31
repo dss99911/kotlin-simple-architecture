@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct ViewScreen: NavigationScreen {
     

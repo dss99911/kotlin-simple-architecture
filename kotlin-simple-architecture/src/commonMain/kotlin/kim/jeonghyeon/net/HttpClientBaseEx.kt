@@ -1,21 +1,14 @@
 package kim.jeonghyeon.net
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.HttpClientDsl
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.features.auth.Auth
-import io.ktor.client.features.cookies.HttpCookies
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.header
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpHeaders
-import io.ktor.http.auth.HttpAuthHeader
-import io.ktor.http.isSuccess
-import io.ktor.network.sockets.SocketTimeoutException
+import io.ktor.client.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.http.auth.*
+import io.ktor.network.sockets.*
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.extension.toJsonString
@@ -25,14 +18,11 @@ import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.net.error.isApiError
 import kim.jeonghyeon.pergist.Preference
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlin.reflect.KType
-
 
 @HttpClientDsl
 expect fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
 
-expect fun Exception.isConnectException(): Boolean
+expect fun Throwable.isConnectException(): Boolean
 
 @HttpClientDsl
 fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient = HttpClient {
@@ -76,7 +66,7 @@ object SimpleApiUtil {
         }
     }
 
-    private fun throwException(e: Exception): Nothing {
+    private fun throwException(e: Throwable): Nothing {
         if (e.isConnectException()) {
             throw ApiError(ApiErrorBody.NoNetwork, e)
         }
@@ -86,7 +76,7 @@ object SimpleApiUtil {
                 ApiError(ApiErrorBody.NoNetwork, e)
             }
             is ClientRequestException -> {
-                val status = e.response.status
+                val status = e.response!!.status
                 ApiError(ApiErrorBody(status.value, status.description), e)
             }
             else -> {
@@ -103,8 +93,8 @@ object SimpleApiUtil {
         //TODO HYUN [multi-platform2] : consider how to get header of response
 
         if (response.status.isApiError()) {
-            val json = Json(JsonConfiguration.Stable)
-            errorApi(json.parse(ApiErrorBody.serializer(), responseText))
+            val json = Json { }
+            errorApi(json.decodeFromString(ApiErrorBody.serializer(), responseText))
         }
 
         if (response.status.isSuccess()) {

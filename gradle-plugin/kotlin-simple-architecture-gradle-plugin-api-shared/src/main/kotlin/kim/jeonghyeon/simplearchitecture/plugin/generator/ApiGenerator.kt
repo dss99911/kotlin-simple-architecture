@@ -113,8 +113,8 @@ class ApiGenerator(
         |    }
         |}
         |${returnTypeString?.let { """
-        |val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-        |return json.parse(${makeSerializer(it)}, responseText)
+        |val json = Json { ignoreUnknownKeys = true }
+        |return json.decodeFromString(${makeSerializer(it)}, responseText)
         """.trimMargin() } ?: ""}
         """.trimMargin()
     }
@@ -136,7 +136,7 @@ class ApiGenerator(
             return ""
         }
 
-        return """body = json { ${bodyParameters.joinToString("; ") { """"${it.name}" to ${it.name}""" }} }"""
+        return """val jsonEncoder = Json {}; body = buildJsonObject { ${bodyParameters.joinToString("; ") { """put("${it.name}", jsonEncoder.encodeToJsonElement(${it.name}))""" }} }"""
     }
 
     private fun SharedKtNamedFunction.makeContentTypeStatement(): String = when(getRequestMethodAnnotation()) {
@@ -264,10 +264,10 @@ class ApiGenerator(
                 //todo support with packagename as well, and super type of map
                 when (firstType) {
                     "List" -> {
-                        "${innerSerializers.first()}.list"
+                        "ListSerializer(${innerSerializers.first()})"
                     }
                     "Set" -> {
-                        "${innerSerializers.first()}.set"
+                        "SetSerializer(${innerSerializers.first()})"
                     }
                     "Pair" -> "PairSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
                     "Map.Entry" -> "MapEntrySerializer(${innerSerializers[0]}, ${innerSerializers[1]})"

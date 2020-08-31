@@ -1,14 +1,12 @@
 package com.example.sampleandroid.view.home
 
-import androidx.compose.Composable
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.VerticalScroller
-import androidx.ui.layout.Column
-import androidx.ui.layout.fillMaxWidth
-import androidx.ui.layout.padding
-import androidx.ui.material.Button
-import androidx.ui.unit.dp
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.example.sampleandroid.view.model.ModelScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.push
@@ -34,7 +32,7 @@ class ModelTabScreen : Screen() {
 
     @Composable
     override fun view() {
-        VerticalScroller {
+        ScrollableColumn {
             ModelScreen.screens.forEach {
                 Button(
                     onClick = { it.second().push() },

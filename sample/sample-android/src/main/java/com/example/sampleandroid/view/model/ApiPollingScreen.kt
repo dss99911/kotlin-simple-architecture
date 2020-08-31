@@ -1,8 +1,8 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.Composable
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiPollingViewModel

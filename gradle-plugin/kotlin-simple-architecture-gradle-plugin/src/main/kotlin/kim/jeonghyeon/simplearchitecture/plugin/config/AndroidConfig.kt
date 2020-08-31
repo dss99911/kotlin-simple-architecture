@@ -1,9 +1,7 @@
 package kim.jeonghyeon.simplearchitecture.plugin.config
 
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
 import kim.jeonghyeon.simplearchitecture.plugin.extension.simpleArchExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
@@ -35,18 +33,6 @@ fun BaseExtension.initDefault() {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-
-    if (this is CommonExtension<*, *, *, *, *, *, *, *>) {
-        buildFeatures {
-            compose = true
-        }
-
-        composeOptions {
-            kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
-            kotlinCompilerExtensionVersion = VERSION_COMPOSE
-        }
-    }
-
 
     //todo is it fine?
     // "More than one file was found with OS independent path 'META-INF/ktor-client-serialization.kotlin_module"
