@@ -1,12 +1,13 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.Composable
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
-import androidx.ui.layout.Row
-import androidx.ui.material.Button
-import kim.jeonghyeon.androidlibrary.compose.widget.TextField
-import kim.jeonghyeon.androidlibrary.compose.widget.VerticalListView
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Button
+import androidx.compose.runtime.Composable
+import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiDbViewModel
@@ -19,14 +20,19 @@ class ApiDbScreen(private val model: ApiDbViewModel = ApiDbViewModel()) : ModelS
     @Composable
     override fun view() {
         Column {
-            VerticalListView(+model.wordList, weight(1f)) {
-                Text(it.toString())
-            }
-            Row {
-                TextField(model.newWord)
-                Button(onClick = model::onClickAdd) {
+            Row(modifier = padding(4.dp)) {
+                OutlinedTextField(
+                    model.newWord,
+                    label = { Text("Input new row")},
+                    modifier = weight(1f)
+                )
+                Button(onClick = model::onClickAdd, modifier = gravity(CenterVertically)) {
                     Text(R.string.add.resourceToString())
                 }
+            }
+
+            ScrollableColumn(+model.wordList, weight(1f).fillMaxWidth()) {
+                Text(it.toString())
             }
         }
     }

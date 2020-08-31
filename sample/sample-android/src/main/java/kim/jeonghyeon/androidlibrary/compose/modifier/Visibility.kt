@@ -1,7 +1,11 @@
 package kim.jeonghyeon.androidlibrary.compose.modifier
 
-import androidx.compose.Composable
-import androidx.ui.core.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.LayoutModifier
+import androidx.compose.ui.Measurable
+import androidx.compose.ui.MeasureScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Constraints
 
 enum class Visibility {
     VISIBLE, INVISIBLE, GONE
@@ -16,8 +20,7 @@ fun Modifier.visible(visible: Boolean) = this + VisibleModifier(if (visible) Vis
 private data class VisibleModifier(val visibility: Visibility) : LayoutModifier {
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints,
-        layoutDirection: LayoutDirection
+        constraints: Constraints
     ): MeasureScope.MeasureResult {
         return if (visibility == Visibility.GONE) {
             layout(0, 0) {

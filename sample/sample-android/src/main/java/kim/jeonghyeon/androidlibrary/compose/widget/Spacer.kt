@@ -1,12 +1,12 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
-import androidx.compose.Composable
-import androidx.ui.core.Modifier
-import androidx.ui.layout.Spacer
-import androidx.ui.layout.preferredHeight
-import androidx.ui.layout.preferredSize
-import androidx.ui.layout.preferredWidth
-import androidx.ui.unit.Dp
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.preferredSize
+import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 
 @Composable
 fun SpacerW(dp: Dp) = Spacer(Modifier.preferredWidth(dp))

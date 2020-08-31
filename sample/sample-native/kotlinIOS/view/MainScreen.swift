@@ -6,7 +6,7 @@
 //  Copyright © 2020 hyun kim. All rights reserved.
 //
 
-import KotlinApi
+import sample_base
 import SwiftUI
 
 struct MainScreen: View {

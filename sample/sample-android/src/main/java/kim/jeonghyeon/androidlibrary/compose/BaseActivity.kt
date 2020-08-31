@@ -2,9 +2,10 @@ package kim.jeonghyeon.androidlibrary.compose
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.Composable
-import androidx.ui.core.setContent
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.setContent
 import io.ktor.http.*
 import kotlin.reflect.KClass
 
@@ -28,6 +29,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //when I test with Jetsurvey sample code
+        //snackbar is shown above keyboard without setting this.
+        //but, it's not working in this project, so, added here, as I think this should be default behavior
+        //If there is way it's working without this, this can be removable
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         setContent {
             rootScreen.push()

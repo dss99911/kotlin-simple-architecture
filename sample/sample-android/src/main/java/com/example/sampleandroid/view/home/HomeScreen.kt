@@ -1,9 +1,9 @@
 package com.example.sampleandroid.view.home
 
-import androidx.compose.Composable
-import androidx.ui.material.icons.Icons
-import androidx.ui.material.icons.filled.Description
-import androidx.ui.material.icons.filled.ViewModule
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.ViewModule
+import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.compose.screen.SimpleTabsScreen
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 

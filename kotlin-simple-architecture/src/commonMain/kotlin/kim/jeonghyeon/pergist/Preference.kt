@@ -1,12 +1,10 @@
 package kim.jeonghyeon.pergist
 
-import com.squareup.sqldelight.runtime.coroutines.asFlow
 import kim.jeonghyeon.db.SimpleDB
 import kim.jeonghyeon.extension.fromJsonString
 import kim.jeonghyeon.extension.toJsonString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.ImplicitReflectionSerializer
 
 expect class Preference() : AbstractPreference {
     override val db: SimpleDB
@@ -28,7 +26,6 @@ abstract class AbstractPreference {
         return getString(key) ?: defValue
     }
 
-    @ImplicitReflectionSerializer
     inline fun <reified T : Any> get(key: String): T? {
         return getString(key)?.fromJsonString()
     }
@@ -43,7 +40,6 @@ abstract class AbstractPreference {
         queries.set(key, value)
     }
 
-    @ImplicitReflectionSerializer
     inline fun <reified T : Any> set(key: String, value: T?) {
         setString(key, value?.toJsonString())
     }
@@ -58,3 +54,4 @@ abstract class AbstractPreference {
         queries.set(key, value)
     }
 }
+

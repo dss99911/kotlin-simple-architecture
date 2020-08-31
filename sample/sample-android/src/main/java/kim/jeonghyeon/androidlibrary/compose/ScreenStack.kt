@@ -1,6 +1,6 @@
 package kim.jeonghyeon.androidlibrary.compose
 
-import androidx.compose.frames.ModelList
+import androidx.compose.runtime.mutableStateListOf
 import kim.jeonghyeon.extension.removeLast
 import org.jetbrains.anko.collections.forEachReversedByIndex
 
@@ -15,7 +15,7 @@ import org.jetbrains.anko.collections.forEachReversedByIndex
  */
 object ScreenStack {
 
-    val instance = ModelList<Screen>()
+    val instance = mutableStateListOf<Screen>()
 
     inline fun <reified T : Screen> find(): T? = instance.findLast { it is T } as T?
 
@@ -58,11 +58,13 @@ object ScreenStack {
         val screenIndex = screenStack.indexOf(screen).takeIf { it >= 0 } ?: return false
         val popIndex = screenIndex + (if (inclusive) 0 else 1)
 
-
         if (popIndex == screenStack.size) return true//there is nothing to pop
 
-        screenStack.removeAll(screenStack.subList(popIndex, screenStack.size))
-
+        //todo remove(screen) or removeAll() is not working.
+        for (index in (popIndex..screenStack.lastIndex).reversed()) {
+            screenStack.removeAt(index)
+        }
+//        screenStack.removeLast(popIndex, screenStack.lastIndex)
         return true
     }
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 /// todo: do we need Screen? how about just using StatusView?
 protocol Screen : View {

@@ -1,10 +1,10 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.Composable
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
-import androidx.ui.material.Button
-import kim.jeonghyeon.androidlibrary.compose.widget.TextField
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
+import androidx.compose.runtime.Composable
+import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel
@@ -20,11 +20,11 @@ class ApiAnnotationScreen(private val model: ApiAnnotationViewModel = ApiAnnotat
     @Composable
     override fun view() {
         Column {
-            Text("current value : ${+model.result}")
-            TextField(model.input)
+            OutlinedTextField(model.input, {"Input value"})
             Button(model::onClick) {
                 Text("update")
             }
+            Text("current value : ${+model.result}")
         }
     }
 }

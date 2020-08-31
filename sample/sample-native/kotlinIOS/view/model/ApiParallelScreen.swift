@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import KotlinApi
+import sample_base
 import SwiftUI
 
 struct ApiParallelScreen: Screen {

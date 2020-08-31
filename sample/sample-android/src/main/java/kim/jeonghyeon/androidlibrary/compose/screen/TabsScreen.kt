@@ -1,9 +1,9 @@
 package kim.jeonghyeon.androidlibrary.compose.screen
 
-import androidx.compose.getValue
-import androidx.compose.mutableStateOf
-import androidx.compose.setValue
-import androidx.ui.graphics.vector.VectorAsset
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.VectorAsset
 import kim.jeonghyeon.androidlibrary.compose.Screen
 
 abstract class TabsScreen : Screen() {

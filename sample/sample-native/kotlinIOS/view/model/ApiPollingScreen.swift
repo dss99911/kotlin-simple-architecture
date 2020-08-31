@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct ApiPollingScreen: Screen {
     var title = "Api Polling".localized()
