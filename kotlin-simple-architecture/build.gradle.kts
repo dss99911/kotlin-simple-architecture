@@ -32,8 +32,6 @@ sqldelight {
 
 kotlin {
 
-    explicitApi()
-
     //this is used for server backend.
     jvm()
 
@@ -41,15 +39,10 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
-    js {
-        browser()
-    }
+    js().browser()
 
 
     ios()
-    iosArm32()
-    iosArm64()
-    iosX64()
 
 
     sourceSets {
@@ -61,7 +54,8 @@ kotlin {
                 api(deps.ktor.clientSerialization)
                 api(deps.ktor.clientLogging)
                 api(deps.sqldelight.runtime)
-                api(deps.sqldelight.coroutine)
+                //todo this is not working, try after coroutin mt released. https://github.com/cashapp/sqldelight/issues/1917
+                //api(deps.sqldelight.coroutine)
                 api(deps.simpleArch.annotation)
                 api(deps.ktor.clientAuth)
             }
@@ -76,11 +70,6 @@ kotlin {
                 //kotlin
                 api(deps.kotlin.reflect)
 
-                //ktor client
-                api(deps.ktor.clientCoreJvm)
-                api(deps.ktor.clientSerializationJvm)
-                api(deps.ktor.clientLoggingJvm)
-
                 api(deps.gson)
             }
         }
@@ -89,6 +78,7 @@ kotlin {
             dependsOn(jvmShareMain)
             dependencies {
                 api(deps.sqldelight.jvm)
+                api(deps.ktor.core)
                 api(deps.ktor.auth)
                 api(deps.ktor.authJwt)
                 api(deps.ktor.gson)
@@ -96,8 +86,7 @@ kotlin {
                 api(deps.ktor.serialization)
                 api(deps.logback)
                 api(deps.ktor.serverSessions)
-                api(deps.ktor.clientAuthJvm)
-                api(deps.ktor.clientApache)
+                api(deps.ktor.clientEngineApache)
             }
         }
 
@@ -105,10 +94,7 @@ kotlin {
         val jsMain by getting {
             dependsOn(mobileMain)
             dependencies {
-                api(deps.ktor.clientJs)
-                api(deps.ktor.clientSerializationJs)
-                api(deps.ktor.clientLoggingJs)
-                api(deps.ktor.clientAuthJs)
+                api(deps.ktor.clientEngineJs)
             }
         }
 
@@ -117,8 +103,6 @@ kotlin {
             dependsOn(jvmShareMain)
 
             dependencies {
-                api(deps.ktor.clientAndroid)
-
                 api(deps.android.appCompat)
                 api(deps.android.supportCompat)
                 api(deps.android.core)
@@ -132,23 +116,16 @@ kotlin {
 
                 api(deps.android.timber)
                 api(deps.sqldelight.android)
-                api(deps.ktor.clientAuthJvm)
+                api(deps.ktor.clientEngineOkhttp)
             }
         }
-
-        //when build ios specific target, it knows that this source set targets the target.
-        //but, intellij doesn't know that iosMain source set targets ios or not.
-        //so, when configuration is for intellij. we have to specify the target for iosMain.
 
         val iosMain by getting {
             dependsOn(mobileMain)
 
             dependencies {
-                api(deps.ktor.clientIos)
-                api(deps.ktor.clientSerializationNative)
-                api(deps.ktor.clientLoggingNative)
-                api(deps.ktor.clientAuthNative)
                 api(deps.sqldelight.native)
+                api(deps.ktor.clientEngineIos)
 
             }
         }

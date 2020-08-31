@@ -5,7 +5,7 @@
 
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 /// TODO this is not working https://github.com/cashapp/sqldelight/issues/1845
 struct ApiDbScreen: Screen {

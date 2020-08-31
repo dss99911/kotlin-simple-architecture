@@ -1,11 +1,11 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.Composable
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
-import androidx.ui.material.Button
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.Text
+import androidx.compose.material.Button
+import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.compose.push
-import kim.jeonghyeon.androidlibrary.compose.widget.TextField
+import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SignInViewModel
@@ -21,7 +21,7 @@ class SignInScreen(private val model: SignInViewModel = SignInViewModel()) :
 
     @Composable
     override fun view() {
-        Column {
+        ScrollableColumn {
             if (+model.user == null) {
                 LogInView()
             } else {
@@ -32,10 +32,8 @@ class SignInScreen(private val model: SignInViewModel = SignInViewModel()) :
 
     @Composable
     fun LogInView() {
-        Text("Id")
-        TextField(model.inputId)
-        Text("Password")
-        TextField(model.inputPassword)
+        OutlinedTextField(model.inputId, label = { Text("Id") })
+        OutlinedTextField(model.inputPassword, label = { Text("Password") })
         Button(model::onClickSignIn) {
             Text("Sign In")
         }

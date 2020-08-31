@@ -1,0 +1,16 @@
+PODS:
+  - sample_base (1.0)
+
+DEPENDENCIES:
+  - sample_base (from `../sample-base`)
+
+EXTERNAL SOURCES:
+  sample_base:
+    :path: "../sample-base"
+
+SPEC CHECKSUMS:
+  sample_base: 966c33f3aa0d36fde422d2028348da293498734e
+
+PODFILE CHECKSUM: 0d7139545c9eb68325cb6a582bd90580a73c7f3c
+
+COCOAPODS: 1.9.3

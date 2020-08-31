@@ -1,9 +1,9 @@
 //todo change package name
 package com.example.sampleandroid
 
-import androidx.compose.Composable
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Surface
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
 import androidx.ui.tooling.preview.Preview
 import com.example.sampleandroid.ui.AndroidLibraryTheme
 import com.example.sampleandroid.view.MainScaffold
@@ -12,10 +12,8 @@ import com.example.sampleandroid.view.model.SignUpScreen
 import kim.jeonghyeon.androidlibrary.compose.BaseActivity
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 
 class MainActivity : BaseActivity() {
     override val rootScreen: Screen = HomeScreen()

@@ -9,7 +9,7 @@
 import Foundation
 
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct ApiExternalScreen: Screen {
     var title = "Api External Call".localized()

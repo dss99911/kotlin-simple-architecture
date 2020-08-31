@@ -11,13 +11,9 @@ kotlin {
 
     //if this multiplatform doesn't include any platform that your project is using, then your project won't recognize this library
     jvm()
-    js {
-        browser()
-    }
+    js().browser()
+
     ios()
-    iosArm32()
-    iosArm64()
-    iosX64()
     //todo is this required? try to remove
     android {
         publishLibraryVariants("release", "debug")

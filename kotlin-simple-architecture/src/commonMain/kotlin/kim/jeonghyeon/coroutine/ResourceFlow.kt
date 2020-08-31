@@ -4,11 +4,9 @@ import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlin.experimental.ExperimentalTypeInference
 
@@ -34,9 +32,9 @@ fun <T> resourceFlow(@BuilderInference block: suspend FlowCollector<T>.(retry: (
         } catch (e: CancellationException) {
             //if cancel. then ignore it
         } catch (e: ResourceError) {
-            emit(Resource.Error(e, retry = retry))
+            emit(Resource.Error<T>(e, retry = retry))
         } catch (e: Throwable) {
-            emit(Resource.Error(UnknownResourceError(e), retry = retry))
+            emit(Resource.Error<T>(UnknownResourceError(e), retry = retry))
         }
 
     }

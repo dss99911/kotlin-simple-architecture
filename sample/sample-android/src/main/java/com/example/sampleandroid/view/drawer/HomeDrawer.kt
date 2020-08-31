@@ -1,22 +1,20 @@
 package com.example.sampleandroid.view.drawer
 
-import androidx.compose.Composable
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Image
-import androidx.ui.foundation.Text
-import androidx.ui.graphics.ColorFilter
-import androidx.ui.graphics.vector.VectorAsset
-import androidx.ui.layout.*
-import androidx.ui.material.Divider
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Surface
-import androidx.ui.material.TextButton
-import androidx.ui.res.vectorResource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import androidx.ui.unit.dp
-import com.example.sampleandroid.CommonState
-
 import com.example.sampleandroid.view.home.HomeScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
@@ -27,11 +25,11 @@ import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 import kim.jeonghyeon.sample.compose.R
 
 @Composable
-fun HomeDrawer() {
+fun HomeDrawer(closeDrawer: () -> Unit) {
     val homeScreen = ScreenStack.find() ?: HomeScreen()
 
     val closeAndNavigateTo: (tab: Screen) -> Unit = { tab ->
-        CommonState.closeDrawer()
+        closeDrawer()
 
         if (!homeScreen.popUpTo(false)) {
             homeScreen.push()
@@ -78,8 +76,10 @@ private fun DrawerButton(
     modifier: Modifier = Modifier
 ) {
     val imageAlpha = if (isSelected) 1f else 0.6f
-    val textIconColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-    val backgroundColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
+    val textIconColor =
+        if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+    val backgroundColor =
+        if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
 
     Surface(
         modifier = modifier
@@ -121,5 +121,5 @@ private fun DrawerButton(
 @Preview
 @Composable
 fun PreviewMainDrawer() {
-    HomeDrawer()
+    HomeDrawer {}
 }

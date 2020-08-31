@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import KotlinApi
+import sample_base
 struct ModelScreen: NavigationScreen {
     var title = "Model".localized()
     @State var model = EmptyViewModelIos()

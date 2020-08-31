@@ -2,12 +2,15 @@ package kim.jeonghyeon.androidlibrary.compose
 
 import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
-import androidx.compose.*
-import androidx.ui.core.Alignment
-import androidx.ui.core.Modifier
-import androidx.ui.layout.ColumnScope.weight
-import androidx.ui.layout.RowScope.gravity
-import androidx.ui.layout.Stack
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ColumnScope.gravity
+import androidx.compose.foundation.layout.RowScope.gravity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import io.ktor.http.*
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
@@ -38,6 +41,7 @@ import kotlin.coroutines.CoroutineContext
  * todo make ScreenScope which survive if it's not in history stack.
  * todo communication between screen.
  * todo multiple first root screen by logic.
+ * todo add menu and different navigation icon
  */
 abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(BaseViewModel())) {
 
@@ -94,7 +98,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     open fun compose() {
         viewModels.forEach { it.onCompose() }
 
-        Stack {
+        Stack(Modifier.fillMaxSize()) {
             if (composeInitStatus()) {
                 return@Stack
             }
@@ -117,7 +121,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
      * @return if handled, then return true. handled means no need to compose view()
      */
     @Composable
-    private fun composeInitStatus(): Boolean {
+    private fun StackScope.composeInitStatus(): Boolean {
         viewModels.forEach {
             when (val resource = +it.initStatus) {
                 is Resource.Loading -> {
@@ -139,7 +143,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     }
 
     @Composable
-    private fun composeStatus() {
+    private fun StackScope.composeStatus() {
         viewModels.forEach {
             when (val resource = +it.status) {
                 is Resource.Loading -> composeLoading()
@@ -161,15 +165,21 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     }
 
     @Composable
-    protected open fun composeError(error: Resource.Error<*>) {
-        ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+    protected open fun StackScope.composeError(error: Resource.Error<*>) {
+        ErrorSnackbar(
+            text = error.error.message ?: defaultErrorMessage,
+            modifier = Modifier.gravity(Alignment.BottomCenter)
+        ) {
             error.retry()
         }
     }
 
     @Composable
-    protected open fun composeFullError(error: Resource.Error<*>) {
-        ErrorSnackbar(text = error.error.message ?: defaultErrorMessage) {
+    protected open fun StackScope.composeFullError(error: Resource.Error<*>) {
+        ErrorSnackbar(
+            text = error.error.message ?: defaultErrorMessage,
+            modifier = Modifier.gravity(Alignment.BottomCenter)
+        ) {
             error.retry()
         }
     }
@@ -194,13 +204,28 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
         popUpTo(true)
     }
 
+    /**
+     * this just call Modifier functions.
+     * the reason to add here same function again,
+     * is that we have to add Modifier keyword always and also need to import. importing also takes time.
+     */
     protected companion object {
         fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)
-        fun weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
+        fun gravity(align: Alignment.Horizontal): Modifier = Modifier.gravity(align)
+
+        fun ColumnScope.weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
             Modifier.weight(weight, fill)
+        fun RowScope.weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
+            Modifier.weight(weight, fill)
+
+        fun padding(all: Dp) = Modifier.padding(all)
 
         val Bottom = Alignment.Bottom
         val Top = Alignment.Top
+        val CenterHorizontally = Alignment.CenterHorizontally
+        val CenterVertically = Alignment.CenterVertically
+
+        inline val Int.dp: Dp get() = Dp(value = this.toFloat())
     }
 
 }

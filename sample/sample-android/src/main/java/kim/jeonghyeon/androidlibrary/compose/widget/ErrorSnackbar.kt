@@ -1,16 +1,18 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
-import androidx.compose.Composable
-import androidx.ui.core.Alignment.Companion.Bottom
-import androidx.ui.core.Modifier
-import androidx.ui.foundation.Text
-import androidx.ui.foundation.contentColor
-import androidx.ui.layout.RowScope.gravity
-import androidx.ui.layout.padding
-import androidx.ui.material.Button
-import androidx.ui.material.MaterialTheme
-import androidx.ui.material.Snackbar
-import androidx.ui.unit.dp
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Box
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.contentColor
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Snackbar
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kim.jeonghyeon.androidlibrary.R
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
@@ -22,19 +24,23 @@ fun ErrorSnackbar(
     modifier: Modifier = Modifier,
     onActionClick: () -> Unit = { }
 ) {
-    Snackbar(
-        modifier = modifier.padding(16.dp).gravity(Bottom),
-        text = { Text(text) },
-        action = {
-            Button(
-                onClick = onActionClick,
-                contentColor = contentColor()
-            ) {
-                Text(
-                    text = actionText,
-                    color = MaterialTheme.colors.error
-                )
-            }
+    Box(modifier = modifier.fillMaxWidth().wrapContentHeight()) {
+        Crossfade(current = text) {
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                text = { Text(text, style = MaterialTheme.typography.body2) },
+                action = {
+                    TextButton(
+                        onClick = onActionClick,
+                        contentColor = contentColor()
+                    ) {
+                        Text(
+                            text = actionText,
+                            color = MaterialTheme.colors.error
+                        )
+                    }
+                }
+            )
         }
-    )
+    }
 }

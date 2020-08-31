@@ -1,13 +1,12 @@
 package com.example.sampleandroid.view.view
 
-import androidx.compose.Composable
-import androidx.ui.foundation.Text
-import androidx.ui.layout.Column
-import androidx.ui.material.Button
-import androidx.ui.unit.dp
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
+import androidx.compose.runtime.Composable
 import com.example.sampleandroid.activity.OtherDeeplinkActivity
+import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
-import kim.jeonghyeon.androidlibrary.compose.widget.TextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.androidlibrary.extension.startActivity
 import kim.jeonghyeon.client.BaseViewModel
@@ -31,7 +30,7 @@ class DeeplinkScreen(private val viewModel: DeeplinkViewModel = DeeplinkViewMode
             Text("Deeplink data : ${+viewModel.deeplinkData}")
             Text("Deeplink Url : ${+viewModel.deeplinkUrl}")
 
-            TextField(viewModel.input)
+            OutlinedTextField(viewModel.input, { Text("Input parameter value")})
 
             SpacerH(30.dp)
 

@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import KotlinApi
+import sample_base
 
 struct ApiAnnotationScreen: Screen {
     var title = "Api Annotation Call".localized()

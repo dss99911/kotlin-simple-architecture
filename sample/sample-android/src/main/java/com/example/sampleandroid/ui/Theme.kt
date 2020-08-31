@@ -1,21 +1,21 @@
 package com.example.sampleandroid.ui
 
-import androidx.compose.Composable
-import androidx.ui.foundation.isSystemInDarkTheme
-import androidx.ui.foundation.shape.corner.RoundedCornerShape
-import androidx.ui.material.*
-import androidx.ui.text.TextStyle
-import androidx.ui.text.font.FontFamily
-import androidx.ui.text.font.FontWeight
-import androidx.ui.unit.dp
-import androidx.ui.unit.sp
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun AndroidLibraryTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
-        darkColorPalette
+        darkThemeColors
     } else {
-        lightColorPalette
+        lightThemeColors
     }
 
     MaterialTheme(
@@ -26,14 +26,14 @@ fun AndroidLibraryTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
     )
 }
 
-private val darkColorPalette = darkColorPalette(
+private val darkThemeColors = darkColors(
     primary = purple200,
     primaryVariant = purple700,
     secondary = teal200,
     error = Red700
 )
 
-private val lightColorPalette = lightColorPalette(
+private val lightThemeColors = lightColors(
     primary = purple500,
     primaryVariant = purple700,
     secondary = teal200,
