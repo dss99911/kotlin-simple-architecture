@@ -10,7 +10,7 @@ import sample_base
 /// TODO this is not working https://github.com/cashapp/sqldelight/issues/1845
 struct ApiDbScreen: Screen {
     var title = "DB Api Together".localized()
-    @State var model = ApiDbViewModelIos()
+    @State var model = ApiDbViewModel()
 
     var content: some View {
         VStack {

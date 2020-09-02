@@ -11,7 +11,7 @@ import sample_base
 struct ApiSequentialScreen: Screen {
     var title = "Api Sequential Call".localized()
 
-    @State var model = ApiSequentialViewModelIos()
+    @State var model = ApiSequentialViewModel()
     
     var content: some View {
         VStack {
@@ -20,17 +20,17 @@ struct ApiSequentialScreen: Screen {
             }
             
             HStack {
-                Text(model.viewModel.KEY1)
+                Text(model.KEY1)
                 TextField("Enter value", text: asStringBinding(model.input1))
             }
             
             HStack {
-                Text(model.viewModel.KEY2)
+                Text(model.KEY2)
                 TextField("Enter value", text: asStringBinding(model.input2))
             }
             
             HStack {
-                Text(model.viewModel.KEY3)
+                Text(model.KEY3)
                 TextField("Enter value", text: asStringBinding(model.input3))
             }
             

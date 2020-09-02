@@ -10,7 +10,7 @@ import sample_base
 /// todo: do we need Screen? how about just using StatusView?
 protocol Screen : View {
     associatedtype Content : View
-    associatedtype ViewModel : Kotlin_simple_architectureBaseViewModelIos
+    associatedtype ViewModel : Kotlin_simple_architectureBaseViewModel
     var model: ViewModel { get }
     var content: Self.Content { get }
     var title: String { get }
@@ -29,7 +29,8 @@ extension Screen {
         ""
     }
     
-    func asStringBinding(_ flow: Kotlin_simple_architectureCFlow<NSString>) -> Binding<String> {
+    // as swift doesn't support generic, use this function.
+    func asStringBinding(_ flow: Kotlin_simple_architectureDataFlow<NSString>) -> Binding<String> {
         return Binding<String>(get: { () -> String in flow.value as String? ?? "" }, set: { (v: String) in flow.value = NSString(utf8String: v)  })
     }
 }
@@ -51,5 +52,15 @@ extension NavigationScreen {
             .navigationBarTitle(title)
         }
         
+    }
+}
+
+struct NavigationLazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    var body: Content {
+        build()
     }
 }

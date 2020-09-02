@@ -7,14 +7,16 @@ import kim.jeonghyeon.sample.api.SerializableUserDetail
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 import kim.jeonghyeon.type.Resource
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class SignInViewModel(
-    val userRepo: UserRepository = serviceLocator.userRepository
-) : BaseViewModel() {
-    val inputId = MutableStateFlow("")
-    val inputPassword = MutableStateFlow("")
-    val user = MutableStateFlow<SerializableUserDetail?>(null)
+class SignInViewModel(val userRepo: UserRepository) : BaseViewModel() {
+
+    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
+    // if it's supported, remove this
+    constructor(): this(serviceLocator.userRepository)
+
+    val inputId = dataFlow("")
+    val inputPassword = dataFlow("")
+    val user = dataFlow<SerializableUserDetail?>(null)
 
     override fun onInitialized() {
         getUserDetail()

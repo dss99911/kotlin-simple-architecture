@@ -5,11 +5,15 @@ import kim.jeonghyeon.coroutine.polling
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class ApiPollingViewModel(private val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
-    val result = MutableStateFlow("")
-    val count = MutableStateFlow(0)
+class ApiPollingViewModel(private val api: SampleApi) : BaseViewModel() {
+
+    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
+    // if it's supported, remove this
+    constructor(): this(serviceLocator.sampleApi)
+
+    val result = dataFlow("")
+    val count = dataFlow(0)
 
     override fun onInitialized() {
         result.load(status) {
