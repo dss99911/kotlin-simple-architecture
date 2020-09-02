@@ -13,9 +13,10 @@ import sample_base
 struct ApiAnnotationScreen: Screen {
     var title = "Api Annotation Call".localized()
     
-    @State var model = ApiAnnotationViewModelIos()
+    @State var model = ApiAnnotationViewModel()
     
     var content: some View {
+        
         VStack(alignment: .center) {
             Text("current value : \(model.result.value!)")
             TextField("update", text: asStringBinding(model.input)).frame(width: 100, alignment: .center)

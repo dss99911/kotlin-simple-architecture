@@ -12,7 +12,7 @@ import sample_base
 
 struct ApiPollingScreen: Screen {
     var title = "Api Polling".localized()
-    @State var model = ApiPollingViewModelIos()
+    @State var model = ApiPollingViewModel()
 
     var content: some View {
         VStack {

@@ -13,7 +13,7 @@ import sample_base
 
 struct ApiExternalScreen: Screen {
     var title = "Api External Call".localized()
-    @State var model = ApiExternalViewModelIos()
+    @State var model = ApiExternalViewModel()
 
     var content: some View {
         VStack {

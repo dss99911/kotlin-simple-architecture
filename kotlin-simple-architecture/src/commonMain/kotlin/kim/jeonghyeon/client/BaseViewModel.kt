@@ -17,28 +17,26 @@ import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-typealias StatusStateFlow = MutableStateFlow<Status>
+typealias StatusFlow = DataFlow<Status>
 @OptIn(ExperimentalCoroutinesApi::class)
-typealias ResourceStateFlow<T> = MutableStateFlow<Resource<T>>
-
-@OptIn(ExperimentalCoroutinesApi::class)
-fun StatusStateFlow(status: Status = Resource.Start): StatusStateFlow = MutableStateFlow(status)
-@OptIn(ExperimentalCoroutinesApi::class)
-fun <T> ResourceStateFlow(resource: Resource<T> = Resource.Start): ResourceStateFlow<T> = MutableStateFlow(resource)
+typealias ResourceFlow<T> = DataFlow<Resource<T>>
 
 open class BaseViewModel {
 
-    val initStatus: StatusStateFlow = StatusStateFlow()
-    val status: StatusStateFlow = StatusStateFlow()
+    @SimpleArchInternal("used on IOS base code. don't use")
+    val flows: MutableList<MutableStateFlow<*>> = mutableListOf()
+
+    val initStatus: StatusFlow = statusFlow()
+    val status: StatusFlow = statusFlow()
 
     val isInitialized: AtomicReference<Boolean> = atomic(false)
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val eventGoBack = MutableStateFlow<Unit?>(null)
+    val eventGoBack = dataFlow<Unit?>(null)
     @OptIn(ExperimentalCoroutinesApi::class)
-    val eventToast = MutableStateFlow<String?>(null)
+    val eventToast = dataFlow<String?>(null)
 
     @SimpleArchInternal
     fun onCompose() {
@@ -55,6 +53,36 @@ open class BaseViewModel {
         scope.close()
     }
 
+    /**
+     * this is used because ios should keep flows to watch changes.
+     * when create flow, use only this
+     */
+    fun <T> dataFlow(value: T): DataFlow<T> {
+        return DataFlow(value).also {
+            flows.add(it)
+        }
+    }
+
+    /**
+     * this is used because ios should keep flows to watch changes.
+     * when create flow, use only this
+     */
+    fun <T> resourceFlow(resource: Resource<T> = Resource.Start): ResourceFlow<T> {
+        return ResourceFlow(resource).also {
+            flows.add(it)
+        }
+    }
+
+    /**
+     * this is used because ios should keep flows to watch changes.
+     * when create flow, use only this
+     */
+    fun statusFlow(resource: Status = Resource.Start): StatusFlow {
+        return StatusFlow(resource).also {
+            flows.add(it)
+        }
+    }
+
     open fun onDeeplinkReceived(url: Url) {
 
     }
@@ -69,26 +97,26 @@ open class BaseViewModel {
         eventToast.value = message
     }
 
-    fun <T> ResourceStateFlow<T>.load(work: suspend CoroutineScope.() -> T) {
+    fun <T> ResourceFlow<T>.load(work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, work)
     }
 
-    fun <T> ResourceStateFlow<T>.loadWithStatus(status: StatusStateFlow, work: suspend CoroutineScope.() -> T) {
+    fun <T> ResourceFlow<T>.loadWithStatus(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, status, work)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T> MutableStateFlow<T>.load(status: StatusStateFlow, work: suspend CoroutineScope.() -> T) {
+    fun <T> DataFlow<T>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T, U> MutableStateFlow<U>.load(status: StatusStateFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
+    fun <T, U> DataFlow<U>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T> ResourceStateFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
+    fun <T> ResourceFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (value.isLoading()) {
             return
         }
@@ -99,35 +127,50 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    fun <T> ResourceStateFlow<T>.load(flow: Flow<Resource<T>>) {
+    fun <T> ResourceFlow<T>.load(flow: Flow<Resource<T>>) {
         scope.loadFlow(this, null, flow)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T> MutableStateFlow<T>.load(status: StatusStateFlow, flow: Flow<Resource<T>>) {
+    fun <T> DataFlow<T>.load(status: StatusFlow, flow: Flow<Resource<T>>) {
         scope.loadResourceFromFlow(this, status, flow)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T, U> MutableStateFlow<U>.load(status: StatusStateFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
+    fun <T, U> DataFlow<U>.load(status: StatusFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadResourceFromFlow(this, status, flow, transform = transform)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun <T> MutableStateFlow<T>.loadFlow(status: StatusStateFlow, flow: Flow<T>) {
+    fun <T> DataFlow<T>.loadFlow(status: StatusFlow, flow: Flow<T>) {
         scope.loadDataFromFlow(this, status, flow)
     }
 
-    fun <T, U> MutableStateFlow<T>.withSource(
+    fun <T, U> DataFlow<T>.withSource(
         source: MutableStateFlow<U>,
         onCollect: MutableStateFlow<T>.(U) -> Unit
-    ): MutableStateFlow<T> {
+    ): DataFlow<T> {
         scope.launch {
             source.collect {
                 onCollect(this@withSource, it)
             }
         }
         return this
+    }
+
+
+    @SimpleArchInternal("used on IOS base code. don't use these code")
+    val initialized: Boolean get() = isInitialized.value
+
+    @SimpleArchInternal("used on IOS base code. don't use these code")
+    fun watchChanges(action: () -> Unit) {
+        flows.forEach {
+            scope.launch {
+                it.collect {
+                   action()
+                }
+            }
+        }
     }
 
 }

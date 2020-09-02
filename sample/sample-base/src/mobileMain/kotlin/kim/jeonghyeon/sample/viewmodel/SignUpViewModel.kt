@@ -4,16 +4,17 @@ import io.ktor.http.*
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
-import kotlinx.coroutines.flow.MutableStateFlow
 import samplebase.generated.SimpleConfig
 
+class SignUpViewModel(val userRepo: UserRepository) : BaseViewModel() {
 
-class SignUpViewModel(
-    val userRepo: UserRepository = serviceLocator.userRepository
-) : BaseViewModel() {
-    val inputId = MutableStateFlow("")
-    val inputName = MutableStateFlow("")
-    val inputPassword = MutableStateFlow("")
+    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
+    // if it's supported, remove this
+    constructor(): this(serviceLocator.userRepository)
+
+    val inputId = dataFlow("")
+    val inputName = dataFlow("")
+    val inputPassword = dataFlow("")
 
     fun onClickSignUp() {
         status.load {

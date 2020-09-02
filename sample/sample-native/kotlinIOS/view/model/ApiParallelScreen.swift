@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ApiParallelScreen: Screen {
     var title = "Api Parallel Call".localized()
-    @State var model = ApiParallelViewModelIos()
+    @State var model = ApiParallelViewModel()
 
     var content: some View {
         VStack {
@@ -18,17 +18,17 @@ struct ApiParallelScreen: Screen {
             }
             
             HStack {
-                Text(model.viewModel.KEY1)
+                Text(model.KEY1)
                 TextField("Enter value", text: asStringBinding(model.input1))
             }
             
             HStack {
-                Text(model.viewModel.KEY2)
+                Text(model.KEY2)
                 TextField("Enter value", text: asStringBinding(model.input2))
             }
             
             HStack {
-                Text(model.viewModel.KEY3)
+                Text(model.KEY3)
                 TextField("Enter value", text: asStringBinding(model.input3))
             }
             

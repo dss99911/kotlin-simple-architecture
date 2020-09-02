@@ -11,7 +11,7 @@ import sample_base
 struct ApiSingleScreen: Screen {
     var title = "Api Single Call".localized()
     
-    @State var model = ApiSingleViewModelIos()
+    @State var model = ApiSingleViewModel()
     
     var content: some View {
         VStack(alignment: .center) {

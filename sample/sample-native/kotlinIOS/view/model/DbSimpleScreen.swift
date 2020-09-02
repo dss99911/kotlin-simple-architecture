@@ -11,7 +11,7 @@ import sample_base
 /// TODO this is not working https://github.com/cashapp/sqldelight/issues/1845
 struct DbSimpleScreen: Screen {
     var title = "Simple DB Call".localized()
-    @State var model = DbSimpleViewModelIos()
+    @State var model = DbSimpleViewModel()
 
     var content: some View {
         VStack {

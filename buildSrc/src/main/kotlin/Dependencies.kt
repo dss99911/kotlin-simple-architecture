@@ -37,9 +37,6 @@ object deps {
         const val clientAuthNative = "io.ktor:ktor-client-auth-native:${versions.kotlin.ktor}"
         const val clientAuthJs = "io.ktor:ktor-client-auth-js:${versions.kotlin.ktor}"
         const val clientEngineApache = "io.ktor:ktor-client-apache:${versions.kotlin.ktor}"
-        const val clientEngineOkhttp = "io.ktor:ktor-client-okhttp:${versions.kotlin.ktor}"
-        const val clientEngineIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
-        const val clientEngineJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
 
     }
 

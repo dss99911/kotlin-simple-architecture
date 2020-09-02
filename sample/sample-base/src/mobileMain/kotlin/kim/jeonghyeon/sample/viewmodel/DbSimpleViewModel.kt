@@ -5,11 +5,15 @@ import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.di.serviceLocator
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class DbSimpleViewModel(private val wordQueries: WordQueries = serviceLocator.wordQueries) : BaseViewModel() {
-    val wordList = MutableStateFlow<List<Word>>(listOf())
-    val newWord = MutableStateFlow("")
+class DbSimpleViewModel(private val wordQueries: WordQueries) : BaseViewModel() {
+
+    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
+    // if it's supported, remove this
+    constructor(): this(serviceLocator.wordQueries)
+
+    val wordList = dataFlow<List<Word>>(listOf())
+    val newWord = dataFlow("")
 
     override fun onInitialized() {
         wordList.loadFlow(initStatus, wordQueries.selectAll().asListFlow())
