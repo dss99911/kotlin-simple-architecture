@@ -10,14 +10,16 @@ import Foundation
 import SwiftUI
 import sample_base
 
+typealias BaseViewModel = Kotlin_simple_architectureBaseViewModel
+
 struct StatusView<Content> : View where Content : View {
     @ObservedObject private var wrapper: ViewModelWrapper
     
     /// Screen refers to CommonStatusView. if use generic View. then the viewModel also should know which View is root view on Screen. so decided to use AnyView
     let content: () -> Content
-    let viewModel: Kotlin_simple_architectureBaseViewModelIos
+    let viewModel: Kotlin_simple_architectureBaseViewModel
     
-    init(viewModel: Kotlin_simple_architectureBaseViewModelIos, @ViewBuilder content: @escaping () -> Content) {
+    init(viewModel: Kotlin_simple_architectureBaseViewModel, @ViewBuilder content: @escaping () -> Content) {
         self.viewModel = viewModel
         self.content = content
         self.wrapper = ViewModelWrapper(viewModel: viewModel)
@@ -55,25 +57,25 @@ struct StatusView<Content> : View where Content : View {
 class ViewModelWrapper: ObservableObject {
     @Published var appearCount = 0
     
-    let viewModel: Kotlin_simple_architectureBaseViewModelIos
+    let viewModel: Kotlin_simple_architectureBaseViewModel
     
-    init(viewModel: Kotlin_simple_architectureBaseViewModelIos) {
+    init(viewModel: Kotlin_simple_architectureBaseViewModel) {
         self.viewModel = viewModel
     }
     
+
+    
     func onAppear() {
-        if (!viewModel.isInitialized) {
-            viewModel.forEachFlow { (flow) in
-                flow.watch { (data) in
-                    self.reloadView()
-                }
+        if (!viewModel.initialized) {
+            viewModel.watchChanges {
+                self.reloadView()
             }
         } else {
             //when this is changed, view is redrawn.
             //on initialized, it's drawn, so, no need to draw again.
             appearCount += 1
         }
-        viewModel.onAppear()
+        viewModel.onCompose()
     }
     
     func reloadView() {

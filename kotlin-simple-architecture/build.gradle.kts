@@ -94,7 +94,7 @@ kotlin {
         val jsMain by getting {
             dependsOn(mobileMain)
             dependencies {
-                api(deps.ktor.clientEngineJs)
+                api(deps.ktor.clientJs)
             }
         }
 
@@ -116,7 +116,7 @@ kotlin {
 
                 api(deps.android.timber)
                 api(deps.sqldelight.android)
-                api(deps.ktor.clientEngineOkhttp)
+                api(deps.ktor.clientAndroid)
             }
         }
 
@@ -125,7 +125,7 @@ kotlin {
 
             dependencies {
                 api(deps.sqldelight.native)
-                api(deps.ktor.clientEngineIos)
+                api(deps.ktor.clientIos)
 
             }
         }

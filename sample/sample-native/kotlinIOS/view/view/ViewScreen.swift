@@ -12,7 +12,7 @@ import sample_base
 struct ViewScreen: NavigationScreen {
     
     var title: String = "View".localized()
-    @State var model = EmptyViewModelIos()
+    @State var model = BaseViewModel()
     
     var content: some View {
         Text("View")

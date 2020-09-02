@@ -128,7 +128,7 @@ kotlin {
                 //todo START there is error on android studio sync. after it's fixed, remove this
                 // https://kotlinlang.slack.com/archives/C3PQML5NU/p1598833788027800
                 implementation(deps.sqldelight.native)
-                implementation(deps.ktor.clientEngineIos)
+                implementation(deps.ktor.clientIos)
                 //todo END there is error on android studio sync. after it's fixed, remove this
             }
         }

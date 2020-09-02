@@ -6,11 +6,10 @@ import kim.jeonghyeon.type.ResourceError
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 
 fun <T> CoroutineScope.loadResource(
-    state: ResourceStateFlow<T>? = null,
+    state: ResourceFlow<T>? = null,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -25,8 +24,8 @@ fun <T> CoroutineScope.loadResource(
 }
 
 fun <T> CoroutineScope.loadResource(
-    resourceState: ResourceStateFlow<T>? = null,
-    statusState: StatusStateFlow? = null,
+    resourceState: ResourceFlow<T>? = null,
+    statusState: StatusFlow? = null,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -45,8 +44,8 @@ fun <T> CoroutineScope.loadResource(
 }
 
 fun <T> CoroutineScope.loadDataAndStatus(
-    data: MutableStateFlow<T>,
-    status: StatusStateFlow,
+    data: DataFlow<T>,
+    status: StatusFlow,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -63,9 +62,10 @@ fun <T> CoroutineScope.loadDataAndStatus(
     }
 }
 
+
 fun <T, U> CoroutineScope.loadDataAndStatus(
-    data: MutableStateFlow<U>,
-    status: StatusStateFlow,
+    data: DataFlow<U>,
+    status: StatusFlow,
     work: suspend CoroutineScope.() -> T,
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
 ) {
@@ -86,8 +86,8 @@ fun <T, U> CoroutineScope.loadDataAndStatus(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> CoroutineScope.loadFlow(
-    resourceState: ResourceStateFlow<T>? = null,
-    statusState: StatusStateFlow? = null,
+    resourceState: ResourceFlow<T>? = null,
+    statusState: StatusFlow? = null,
     flow: Flow<Resource<T>>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -105,8 +105,8 @@ fun <T> CoroutineScope.loadFlow(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> CoroutineScope.loadResourceFromFlow(
-    data: MutableStateFlow<T>,
-    status: StatusStateFlow? = null,
+    data: DataFlow<T>,
+    status: StatusFlow? = null,
     flow: Flow<Resource<T>>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -123,8 +123,8 @@ fun <T> CoroutineScope.loadResourceFromFlow(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> CoroutineScope.loadDataFromFlow(
-    data: MutableStateFlow<T>,
-    status: StatusStateFlow? = null,
+    data: DataFlow<T>,
+    status: StatusFlow? = null,
     flow: Flow<T>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -142,8 +142,8 @@ fun <T> CoroutineScope.loadDataFromFlow(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T, U> CoroutineScope.loadResourceFromFlow(
-    data: MutableStateFlow<U>,
-    status: StatusStateFlow? = null,
+    data: DataFlow<U>,
+    status: StatusFlow? = null,
     flow: Flow<Resource<T>>,
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
 ) {

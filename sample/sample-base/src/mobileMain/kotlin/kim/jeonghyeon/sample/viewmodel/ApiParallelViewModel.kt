@@ -4,18 +4,22 @@ import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class ApiParallelViewModel(private val api: PreferenceApi = serviceLocator.preferenceApi) : BaseViewModel() {
+class ApiParallelViewModel(private val api: PreferenceApi) : BaseViewModel() {
+
+    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
+    // if it's supported, remove this
+    constructor(): this(serviceLocator.preferenceApi)
+
     val KEY1 = "key1"
     val KEY2 = "key2"
     val KEY3 = "key3"
 
 
-    val list = MutableStateFlow(listOf<Pair<String, String?>>())
-    val input1 = MutableStateFlow("")
-    val input2 = MutableStateFlow("")
-    val input3 = MutableStateFlow("")
+    val list = dataFlow(listOf<Pair<String, String?>>())
+    val input1 = dataFlow("")
+    val input2 = dataFlow("")
+    val input3 = dataFlow("")
 
     override fun onInitialized() {
         list.load(initStatus) {
