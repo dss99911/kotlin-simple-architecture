@@ -16,7 +16,6 @@
 		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
 		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
-		556A2D1024F9C2790021E79C /* SignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556A2D0F24F9C2790021E79C /* SignInScreen.swift */; };
 		559105F224424C4100ADA03F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F124424C4100ADA03F /* AppDelegate.swift */; };
 		559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F324424C4100ADA03F /* SceneDelegate.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
@@ -67,7 +66,6 @@
 		499EA68D1EC6F9F6484A4705 /* Pods-kotlinIOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug.xcconfig"; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
-		556A2D0F24F9C2790021E79C /* SignInScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInScreen.swift; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559105F124424C4100ADA03F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		559105F324424C4100ADA03F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -143,7 +141,6 @@
 				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
-				556A2D0F24F9C2790021E79C /* SignInScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -514,7 +511,6 @@
 				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
 				55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */,
 				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
-				556A2D1024F9C2790021E79C /* SignInScreen.swift in Sources */,
 				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
 				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,

@@ -1,6 +1,8 @@
 package kim.jeonghyeon.net
 
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.*
+import kim.jeonghyeon.type.AtomicReference
+import kim.jeonghyeon.type.atomic
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
@@ -13,12 +15,12 @@ class HttpResponseStore : CoroutineContext.Element {
 
     companion object Key : CoroutineContext.Key<HttpResponseStore>
 
-    var response: HttpResponse? = null
+    var response: AtomicReference<HttpResponse?> = atomic(null)
 }
 
-suspend fun response(): HttpResponse = coroutineContext[HttpResponseStore]!!.response!!
+suspend fun response(): HttpResponse = coroutineContext[HttpResponseStore]!!.response.value!!
 
 internal suspend fun setResponse(response: HttpResponse) {
-    coroutineContext[HttpResponseStore]?.response = response
+    coroutineContext[HttpResponseStore]?.response?.value = response
 }
 

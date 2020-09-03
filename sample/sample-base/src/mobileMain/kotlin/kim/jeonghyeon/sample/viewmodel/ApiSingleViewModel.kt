@@ -15,13 +15,10 @@ class ApiSingleViewModel(/*private val api: PreferenceApi*/) : BaseViewModel() {
     val input = dataFlow("")
         .withSource(result) { value = it }
 
-
     override fun onInitialized() {
         result.load(initStatus) {
-//            client.get<String>("https://sample.jeonghyeon.kim/ping").also {
-//                println(it)
-//            }
-
+            //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
+            // use constructor parameter
             serviceLocator.preferenceApi.getString(KEY) ?: ""
         }
     }
@@ -29,6 +26,8 @@ class ApiSingleViewModel(/*private val api: PreferenceApi*/) : BaseViewModel() {
     fun onClick() {
         result.load(status) {
             val text = input.value
+            //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
+            // use constructor parameter
             serviceLocator.preferenceApi.setString(KEY, text)
             text
         }

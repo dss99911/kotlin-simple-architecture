@@ -20,7 +20,7 @@ class ApiAnnotationScreen(private val model: ApiAnnotationViewModel = ApiAnnotat
     @Composable
     override fun view() {
         Column {
-            OutlinedTextField(model.input, {"Input value"})
+            OutlinedTextField(model.input, { Text("Input value") })
             Button(model::onClick) {
                 Text("update")
             }
