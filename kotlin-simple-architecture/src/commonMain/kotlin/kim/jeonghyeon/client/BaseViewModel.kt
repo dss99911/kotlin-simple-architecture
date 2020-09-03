@@ -21,6 +21,11 @@ typealias StatusFlow = DataFlow<Status>
 @OptIn(ExperimentalCoroutinesApi::class)
 typealias ResourceFlow<T> = DataFlow<Resource<T>>
 
+/**
+ * don't use var property.
+ *  - native freeze all field when background thread is running.
+ * if some variable data is required. use [dataFlow] or [AtomicReference]
+ */
 open class BaseViewModel {
 
     @SimpleArchInternal("used on IOS base code. don't use")

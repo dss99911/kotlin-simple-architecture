@@ -8,6 +8,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * if it's class, it's recognize as defined type
  */
 //todo after fix https://github.com/Kotlin/kotlinx.coroutines/issues/2226
-// use MutableStateFlow
-//class DataFlow<T>(value: T) : MutableStateFlow<T> by MutableStateFlow(value)
-expect class DataFlow<T>(value: T) : MutableStateFlow<T>
+// delete this
+actual class DataFlow<T> actual constructor(value: T) : MutableStateFlow<T> by MutableStateFlow(value)
