@@ -13,6 +13,11 @@ class ApiDbViewModel(/*private val repository: WordRepository*/) : BaseViewModel
     val wordList = dataFlow<List<Word>>(listOf())
     val newWord = dataFlow("")
 
+    //todo without this, memory access error. https://hyun.myjetbrains.com/youtrack/issue/KSA-116
+    val duplicatedList = dataFlow<List<Word>>(listOf()).withSource(wordList) {
+        value = it
+    }
+
     override fun onInitialized() {
         //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
         // use constructor parameter
