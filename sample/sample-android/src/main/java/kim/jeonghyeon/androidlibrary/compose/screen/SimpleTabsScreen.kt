@@ -14,12 +14,11 @@ abstract class SimpleTabsScreen : TabsScreen() {
         Column {
             TabRow(tabIndex) {
                 tabs.forEachIndexed { index, tab ->
-                    tab.second.title
                     Tab(
                         selected = tabIndex == index,
                         onClick = { tabIndex = (index) },
                         icon = { tab.first?.let { Icon(it) } },
-                        text = { Text(title) },
+                        text = { Text(tab.second.title) },
                     )
                 }
             }
