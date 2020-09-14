@@ -24,6 +24,7 @@ abstract class BaseActivity : AppCompatActivity() {
      * Activity's launch mode is singleInstance : one task, one activity only
      * Screen's launch mode is singleTop : if the screen is on top, just send 'onDeeplinkReceived' event
      * todo consider navigate screens by deeplink only.
+     * todo consider to delete KClass<*>
      */
     open val deeplinks: Map<String, Pair<KClass<*>, () -> Screen>> = emptyMap()
 
@@ -50,7 +51,9 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun deliverDeeplink(intent: Intent?) {
-        val screen = deeplinks[intent?.data?.path?:return]?:return
+        val screen = deeplinks.entries.firstOrNull {
+            intent?.dataString?.startsWith(it.key)?:false
+        }?.value ?: return
         //single top
         var last = ScreenStack.last()
         if (last::class != screen.first) {

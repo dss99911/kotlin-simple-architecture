@@ -12,7 +12,7 @@ import com.example.sampleandroid.view.model.SignUpScreen
 import kim.jeonghyeon.androidlibrary.compose.BaseActivity
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
+import kim.jeonghyeon.sample.repository.DEEPLINK_PATH_SIGN_UP
 import kotlin.reflect.KClass
 
 class MainActivity : BaseActivity() {
@@ -20,7 +20,7 @@ class MainActivity : BaseActivity() {
 
     //todo think about what is the best approach of deeplink
     override val deeplinks: Map<String, Pair<KClass<*>, () -> Screen>> = mapOf(
-        SignUpViewModel.DEEPLINK_PATH to (SignUpScreen::class to { SignUpScreen() })
+        DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() })
     )
     override val content: @Composable() () -> Unit
         get() = {

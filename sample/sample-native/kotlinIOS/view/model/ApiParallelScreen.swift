@@ -7,11 +7,11 @@ import Foundation
 import sample_base
 import SwiftUI
 
-struct ApiParallelScreen: Screen {
-    var title = "Api Parallel Call".localized()
-    @State var model = ApiParallelViewModel()
+struct ApiParallelScreen: SampleScreen {
 
-    var content: some View {
+    var model = ApiParallelViewModel()
+
+    func content(navigator: Navigator) -> some View {
         VStack {
             List(model.list.value as! [KotlinPair<NSString, NSString>], id: \.self.first) { item in
                 Text("key : \(item.first!), value : \(item.second!)")
@@ -19,21 +19,22 @@ struct ApiParallelScreen: Screen {
             
             HStack {
                 Text(model.KEY1)
-                TextField("Enter value", text: asStringBinding(model.input1))
+                TextField("Enter value", text: +model.input1)
             }
             
             HStack {
                 Text(model.KEY2)
-                TextField("Enter value", text: asStringBinding(model.input2))
+                TextField("Enter value", text: +model.input2)
             }
             
             HStack {
                 Text(model.KEY3)
-                TextField("Enter value", text: asStringBinding(model.input3))
+                TextField("Enter value", text: +model.input3)
             }
             
             Button(action: { self.model.onClick() }, label: { Text("Update") })
         }
+        .navigationTitle("Api Parallel Call".localized())
     }
 
 }

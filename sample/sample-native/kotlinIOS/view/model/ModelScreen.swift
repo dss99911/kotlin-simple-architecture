@@ -8,43 +8,39 @@
 
 import SwiftUI
 import sample_base
-struct ModelScreen: NavigationScreen {
-    var title = "Model".localized()
-    @State var model = BaseViewModel()
+struct ModelScreen: SampleScreen {
     
-    var content: some View {
-        List {
-        NavigationLink(destination:NavigationLazyView(ApiSingleScreen())) {
-                Text("Api Single Call").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiSequentialScreen())) {
-                Text("Api Sequential Call").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiParallelScreen())) {
-                Text("Api Parallel Call").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiPollingScreen())) {
-                Text("Api Polling").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiDbScreen())) {
-                Text("DB Api Together").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(DbSimpleScreen())) {
-                Text("Simple DB Call").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiAnnotationScreen())) {
-                Text("Api Annotation Call").font(.headline)
-            }
-            NavigationLink(destination: NavigationLazyView(ApiExternalScreen())) {
-                Text("Api External Call").font(.headline)
+    func content(navigator: Navigator) -> some View {
+        ScrollView {
+            VStack {
+                Button("Api Single Call") {
+                    navigator.navigate { ApiSingleScreen() }
+                }
+                Button("Api Sequential Call") {
+                    navigator.navigate { ApiSequentialScreen() }
+                }
+                Button("Api Parallel Call") {
+                    navigator.navigate { ApiParallelScreen() }
+                }
+                Button("Api Polling") {
+                    navigator.navigate { ApiPollingScreen() }
+                }
+                Button("DB Api Together") {
+                    navigator.navigate { ApiDbScreen() }
+                }
+                Button("Simple DB Call") {
+                    navigator.navigate { DbSimpleScreen() }
+                }
+                Button("Api Annotation Call") {
+                    navigator.navigate { ApiAnnotationScreen() }
+                }
+                Button("Api External Call") {
+                    navigator.navigate { ApiExternalScreen() }
+                }
+                Button("Sign in") {
+                    navigator.navigate { SigninScreen() }
+                }
             }
         }
-    }
-    
-}
-
-struct ModelView_Previews: PreviewProvider {
-    static var previews: some View {
-        ModelScreen()
     }
 }

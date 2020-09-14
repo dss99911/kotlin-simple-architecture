@@ -10,18 +10,19 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiAnnotationScreen: Screen {
-    var title = "Api Annotation Call".localized()
+
+struct ApiAnnotationScreen: SampleScreen {
     
-    @State var model = ApiAnnotationViewModel()
+    var model = ApiAnnotationViewModel()
     
-    var content: some View {
+    func content(navigator: Navigator) -> some View {
         
         VStack(alignment: .center) {
             Text("current value : \(model.result.value!)")
-            TextField("update", text: asStringBinding(model.input)).frame(width: 100, alignment: .center)
+            TextField("update", text: +model.input).frame(width: 100, alignment: .center)
             Button(action: { self.model.onClick() }, label: { Text("Update")})
         }
+        .navigationTitle("Api Annotation Call".localized())
     }
 }
 

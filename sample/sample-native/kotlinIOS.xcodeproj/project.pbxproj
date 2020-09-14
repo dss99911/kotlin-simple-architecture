@@ -16,20 +16,26 @@
 		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
 		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
-		559105F224424C4100ADA03F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F124424C4100ADA03F /* AppDelegate.swift */; };
-		559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559105F324424C4100ADA03F /* SceneDelegate.swift */; };
+		551F389025053DE8006AC496 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F388F25053DE7006AC496 /* SampleApp.swift */; };
+		55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55595BBB2504029C00BD00AB /* Deelinker.swift */; };
+		55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8C250AF71300DF8271 /* ThreadEx.swift */; };
+		55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
 		559105FB24424C4200ADA03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FA24424C4200ADA03F /* Assets.xcassets */; };
 		559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FD24424C4200ADA03F /* Preview Assets.xcassets */; };
-		5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 559105FF24424C4200ADA03F /* LaunchScreen.storyboard */; };
 		5591060C24424C4200ADA03F /* kotlinIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591060B24424C4200ADA03F /* kotlinIOSTests.swift */; };
 		5591061724424C4200ADA03F /* kotlinIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591061624424C4200ADA03F /* kotlinIOSUITests.swift */; };
 		55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55D47FB924C3427A00BEBA59 /* Localizable.strings */; };
 		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
 		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
+		55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D55399250185270039C0A4 /* SigninScreen.swift */; };
 		55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */; };
 		55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */; };
-		55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* StatusView.swift */; };
+		55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */; };
+		55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392502507F3CF00BB3CCF /* URLEx.swift */; };
+		55F3925325080F1B00BB3CCF /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F3925225080F1B00BB3CCF /* SignUpScreen.swift */; };
+		55F392552508219700BB3CCF /* BindingEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392542508219700BB3CCF /* BindingEx.swift */; };
+		55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392562508248A00BB3CCF /* ViewModelEx.swift */; };
 		86E4CE01AAF7C6D3FFDD9DC8 /* Pods_kotlinIOS_kotlinIOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCF52C36F98ECEEA5E958D04 /* Pods_kotlinIOS_kotlinIOSUITests.framework */; };
 		C5F77298B39D39A2B4703D46 /* Pods_kotlinIOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EA8AE654AD7C8D478FFB88D /* Pods_kotlinIOSTests.framework */; };
 		FD680A30BBAC987BAD281EA8 /* Pods_kotlinIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 999FE5FE74DA92ACE7CCD28A /* Pods_kotlinIOS.framework */; };
@@ -64,15 +70,16 @@
 		217DEF1824EFAADD3B4276FE /* ModelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelScreen.swift; sourceTree = "<group>"; };
 		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
 		499EA68D1EC6F9F6484A4705 /* Pods-kotlinIOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug.xcconfig"; sourceTree = "<group>"; };
+		551F388F25053DE7006AC496 /* SampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleApp.swift; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
+		55595BBB2504029C00BD00AB /* Deelinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deelinker.swift; sourceTree = "<group>"; };
+		55817E8C250AF71300DF8271 /* ThreadEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEx.swift; sourceTree = "<group>"; };
+		55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		559105F124424C4100ADA03F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		559105F324424C4100ADA03F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		559105F624424C4100ADA03F /* kotlinIOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = kotlinIOS.xcdatamodel; sourceTree = "<group>"; };
 		559105FA24424C4200ADA03F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		559105FD24424C4200ADA03F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		5591060024424C4200ADA03F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5591060224424C4200ADA03F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5591060724424C4200ADA03F /* kotlinIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = kotlinIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5591060B24424C4200ADA03F /* kotlinIOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kotlinIOSTests.swift; sourceTree = "<group>"; };
@@ -86,9 +93,14 @@
 		55D47FBC24C3429400BEBA59 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = kotlinIOS/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
+		55D55399250185270039C0A4 /* SigninScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninScreen.swift; sourceTree = "<group>"; };
 		55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiAnnotationScreen.swift; sourceTree = "<group>"; };
 		55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiExternalScreen.swift; sourceTree = "<group>"; };
-		55EC719C24B9A5FC0012D64E /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
+		55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLayout.swift; sourceTree = "<group>"; };
+		55F392502507F3CF00BB3CCF /* URLEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLEx.swift; sourceTree = "<group>"; };
+		55F3925225080F1B00BB3CCF /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
+		55F392542508219700BB3CCF /* BindingEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingEx.swift; sourceTree = "<group>"; };
+		55F392562508248A00BB3CCF /* ViewModelEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelEx.swift; sourceTree = "<group>"; };
 		595F1D231617059587FA55AB /* Pods-kotlinIOS.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug-prod.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug-prod.xcconfig"; sourceTree = "<group>"; };
 		63EA4E5E3548AE2E63B4E66E /* Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig"; path = "Target Support Files/Pods-kotlinIOS-kotlinIOSUITests/Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig"; sourceTree = "<group>"; };
 		82ED0F97B05A321A70613E75 /* Pods-kotlinIOS-kotlinIOSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS-kotlinIOSUITests.release.xcconfig"; path = "Target Support Files/Pods-kotlinIOS-kotlinIOSUITests/Pods-kotlinIOS-kotlinIOSUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -141,6 +153,8 @@
 				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
+				55D55399250185270039C0A4 /* SigninScreen.swift */,
+				55F3925225080F1B00BB3CCF /* SignUpScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -158,9 +172,15 @@
 		217DEC1EE1072C25820B9664 /* library */ = {
 			isa = PBXGroup;
 			children = (
+				55595BBB2504029C00BD00AB /* Deelinker.swift */,
+				55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */,
 				217DE07307A8043209549F8E /* Screen.swift */,
-				55EC719C24B9A5FC0012D64E /* StatusView.swift */,
+				55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */,
 				55D47FBD24C343D000BEBA59 /* Localizable.swift */,
+				55F392502507F3CF00BB3CCF /* URLEx.swift */,
+				55F392542508219700BB3CCF /* BindingEx.swift */,
+				55F392562508248A00BB3CCF /* ViewModelEx.swift */,
+				55817E8C250AF71300DF8271 /* ThreadEx.swift */,
 			);
 			path = library;
 			sourceTree = "<group>";
@@ -206,16 +226,14 @@
 		559105F024424C4100ADA03F /* kotlinIOS */ = {
 			isa = PBXGroup;
 			children = (
-				559105F124424C4100ADA03F /* AppDelegate.swift */,
-				559105F324424C4100ADA03F /* SceneDelegate.swift */,
 				559105FA24424C4200ADA03F /* Assets.xcassets */,
-				559105FF24424C4200ADA03F /* LaunchScreen.storyboard */,
 				5591060224424C4200ADA03F /* Info.plist */,
 				559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */,
 				559105FC24424C4200ADA03F /* Preview Content */,
 				217DEE717923577513CF6F77 /* Resources */,
 				217DE988B40143161010BB0B /* view */,
 				217DEC1EE1072C25820B9664 /* library */,
+				551F388F25053DE7006AC496 /* SampleApp.swift */,
 			);
 			path = kotlinIOS;
 			sourceTree = "<group>";
@@ -385,7 +403,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5591060124424C4200ADA03F /* LaunchScreen.storyboard in Resources */,
 				55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */,
 				559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */,
 				559105FB24424C4200ADA03F /* Assets.xcassets in Resources */,
@@ -502,20 +519,27 @@
 			files = (
 				55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */,
 				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
-				559105F224424C4100ADA03F /* AppDelegate.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
-				559105F424424C4100ADA03F /* SceneDelegate.swift in Sources */,
 				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
 				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
-				55EC719D24B9A5FC0012D64E /* StatusView.swift in Sources */,
+				55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */,
 				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
+				55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */,
+				551F389025053DE8006AC496 /* SampleApp.swift in Sources */,
 				55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */,
 				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
 				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
+				55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */,
+				55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */,
+				55F392552508219700BB3CCF /* BindingEx.swift in Sources */,
+				55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */,
 				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,
+				55F3925325080F1B00BB3CCF /* SignUpScreen.swift in Sources */,
 				55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */,
 				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
+				55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */,
+				55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */,
 				217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -552,14 +576,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		559105FF24424C4200ADA03F /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5591060024424C4200ADA03F /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 		55D47FB924C3427A00BEBA59 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -644,6 +660,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "../sample-base/build/cocoapods/framework";
 				INFOPLIST_FILE = kotlinIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -834,6 +851,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "../sample-base/build/cocoapods/framework";
 				INFOPLIST_FILE = kotlinIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -864,6 +882,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "../sample-base/build/cocoapods/framework";
 				INFOPLIST_FILE = kotlinIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

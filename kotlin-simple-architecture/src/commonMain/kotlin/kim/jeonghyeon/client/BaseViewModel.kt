@@ -29,7 +29,7 @@ typealias ResourceFlow<T> = DataFlow<Resource<T>>
 open class BaseViewModel {
 
     @SimpleArchInternal("used on IOS base code. don't use")
-    val flows: MutableList<MutableStateFlow<*>> = mutableListOf()
+    val flows: MutableList<DataFlow<*>> = mutableListOf()
 
     val initStatus: StatusFlow = statusFlow()
     val status: StatusFlow = statusFlow()
