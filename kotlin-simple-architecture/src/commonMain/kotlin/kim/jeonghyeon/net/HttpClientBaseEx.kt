@@ -36,7 +36,7 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
 @SimpleArchInternal
 object SimpleApiUtil {
     suspend fun fetchResponseText(isAuthRequired: Boolean, call: suspend (HttpRequestBuilder.() -> Unit)-> HttpResponse): String {
-        val response: HttpResponse
+        var response: HttpResponse? = null
         val responseText: String
         try {
             response = call {
@@ -44,9 +44,10 @@ object SimpleApiUtil {
                     putTokenHeader()
                 }
             }
-            setResponse(response)
             responseText = response.readText()
+            setResponse(response)//`freeze` error occurs if call before readText()
         } catch (e: Exception) {
+            response?.let { setResponse(it) }
             throwException(e)
         }
 

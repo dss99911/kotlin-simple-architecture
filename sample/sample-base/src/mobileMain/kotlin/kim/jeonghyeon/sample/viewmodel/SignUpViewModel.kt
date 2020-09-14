@@ -3,7 +3,6 @@ package kim.jeonghyeon.sample.viewmodel
 import io.ktor.http.*
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
-import samplebase.generated.SimpleConfig
 
 class SignUpViewModel(/*val userRepo: UserRepository*/) : BaseViewModel() {
 
@@ -28,7 +27,7 @@ class SignUpViewModel(/*val userRepo: UserRepository*/) : BaseViewModel() {
         status.load {
             //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
             // use constructor parameter serviceLocator.userRepository
-            serviceLocator.userRepository.signGoogle(DEEPLINK_PATH)
+            serviceLocator.userRepository.signGoogle()
         }
     }
 
@@ -36,7 +35,7 @@ class SignUpViewModel(/*val userRepo: UserRepository*/) : BaseViewModel() {
         status.load {
             //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
             // use constructor parameter serviceLocator.userRepository
-            serviceLocator.userRepository.signFacebook(DEEPLINK_PATH)
+            serviceLocator.userRepository.signFacebook()
         }
     }
 
@@ -48,12 +47,8 @@ class SignUpViewModel(/*val userRepo: UserRepository*/) : BaseViewModel() {
     }
 
     private fun finishSuccess() {
-        toast("success to sign up")
+        //todo toast is not supported on ios. how to show ui even while screen is changed.
+//        toast("success to sign up")
         goBack()
-    }
-
-
-    companion object {
-        const val DEEPLINK_PATH = "${SimpleConfig.deeplinkPrePath}/signUp"
     }
 }

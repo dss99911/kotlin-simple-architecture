@@ -109,6 +109,8 @@ object deps {
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
     const val junit = "junit:junit:4.12"
 
+    const val krypto = "com.soywiz.korlibs.krypto:krypto:1.12.0"
+
 }
 
 private fun depKotlin(module: String, version: String? = null): String =

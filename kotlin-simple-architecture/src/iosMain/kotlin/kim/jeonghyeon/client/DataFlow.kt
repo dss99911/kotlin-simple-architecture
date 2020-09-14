@@ -1,13 +1,13 @@
 package kim.jeonghyeon.client
 
+import kotlinx.atomicfu.AtomicRef
+import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.loop
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.collect
 import kotlin.coroutines.resume
 
 /**
@@ -17,14 +17,23 @@ import kotlin.coroutines.resume
  */
 //todo after fix https://github.com/Kotlin/kotlinx.coroutines/issues/2226
 // delete this
-actual class DataFlow<T> actual constructor(value: T) : MutableStateFlow<T> by DataFlowImpl<T>(value ?: NULL2)
+actual class DataFlow<T> actual constructor(value: T) : MutableStateFlow<T> by DataFlowImpl<T>(value ?: NULL2) {
+    fun watch(scope: CoroutineScope, perform: (T) -> Unit) {
+        scope.launch {
+            collect {
+                perform(it)
+            }
+        }
+
+    }
+}
 
 class DataFlowImpl<T>(initialValue: Any) : SynchronizedObject(), MutableStateFlow<T> {
-    private val _state = kotlinx.atomicfu.atomic(initialValue) // T | NULL
-    private val sequence = kotlinx.atomicfu.atomic(0) // serializes updates, value update is in process when sequence is odd
-    private val slots = kotlinx.atomicfu.atomic(arrayOfNulls<StateFlowSlot?>(2))
-    private val nSlots = kotlinx.atomicfu.atomic(0) // T | NULL // number of allocated (!free) slots
-    private val nextIndex = kotlinx.atomicfu.atomic(0) // oracle for the next free slot index
+    private val _state = atomic(initialValue) // T | NULL
+    private val sequence = atomic(0) // serializes updates, value update is in process when sequence is odd
+    private val slots = atomic(arrayOf<AtomicRef<StateFlowSlot?>>(atomic(null), atomic(null)))
+    private val nSlots = atomic(0) // T | NULL // number of allocated (!free) slots
+    private val nextIndex = atomic(0) // oracle for the next free slot index
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Suppress("UNCHECKED_CAST")
@@ -32,7 +41,7 @@ class DataFlowImpl<T>(initialValue: Any) : SynchronizedObject(), MutableStateFlo
         get() = NULL2.unbox(_state.value)
         set(value) {
             var curSequence = 0
-            var curSlots: Array<StateFlowSlot?> = this.slots.value // benign race, we will not use it
+            var curSlots: Array<AtomicRef<StateFlowSlot?>> = this.slots.value // benign race, we will not use it
             val newState = value ?: NULL2
             kotlinx.atomicfu.locks.synchronized(this) {
                 val oldState = _state.value
@@ -61,7 +70,7 @@ class DataFlowImpl<T>(initialValue: Any) : SynchronizedObject(), MutableStateFlo
             while (true) {
                 // Benign race on element read from array
                 for (col in curSlots) {
-                    col?.makePending()
+                    col.value?.makePending()
                 }
                 // check if the value was updated again while we were updating the old one
                 kotlinx.atomicfu.locks.synchronized(this) {
@@ -103,11 +112,19 @@ class DataFlowImpl<T>(initialValue: Any) : SynchronizedObject(), MutableStateFlo
 
     private fun allocateSlot(): StateFlowSlot = kotlinx.atomicfu.locks.synchronized(this) {
         val size = slots.value.size
-        if (nSlots.value >= size) slots.value = slots.value.copyOf(2 * size)
+
+        if (nSlots.value >= size) {
+            val newSlots = mutableListOf<AtomicRef<StateFlowSlot?>>()
+            repeat(size) {
+                newSlots.add(atomic(null))
+            }
+
+            slots.value = slots.value + newSlots
+        }
         var index = nextIndex.value
         var slot: StateFlowSlot
         while (true) {
-            slot = slots.value[index] ?: StateFlowSlot().also { slots.value[index] = it }
+            slot = slots.value[index].value ?: StateFlowSlot().also { slots.value[index].value = it }
             index++
             if (index >= slots.value.size) index = 0
             if (slot.allocate()) break // break when found and allocated free slot
@@ -135,7 +152,7 @@ class StateFlowSlot {
      * It is important that default `null` value is used, because there can be a race between allocation
      * of a new slot and trying to do [makePending] on this slot.
      */
-    private val _state = kotlinx.atomicfu.atomic<Any?>(null)
+    private val _state = atomic<Any?>(null)
 
     fun allocate(): Boolean {
         // No need for atomic check & update here, since allocated happens under StateFlow lock
