@@ -11,20 +11,21 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiExternalScreen: Screen {
-    var title = "Api External Call".localized()
-    @State var model = ApiExternalViewModel()
+struct ApiExternalScreen: SampleScreen {
+   
+    var model = ApiExternalViewModel()
 
-    var content: some View {
+    func content(navigator: Navigator) -> some View {
         VStack {
             List(model.repoList.value as! [Repo], id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.name)")
             }
             HStack {
-                TextField("Keyword", text: asStringBinding(model.input))
+                TextField("Keyword", text: +model.input)
                 Button(action: { self.model.onClickCall() }, label: { Text("Call")})
             }
         }
+        .navigationTitle("Api External Call".localized())
     }
 
 }

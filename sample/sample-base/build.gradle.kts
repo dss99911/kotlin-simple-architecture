@@ -11,22 +11,19 @@ plugins {
     //android
     //todo when removing sample-android. change to com.android.application
     id("com.android.library")
-
     //common
     kotlin("multiplatform")
-
-    //backend
-    id("com.github.johnrengelman.shadow")
 
     //native
     kotlin("native.cocoapods")
 }
 
 val serverUrl = "https://sample.jeonghyeon.kim"
-val deeplinkPrePath = "/deeplink"
+val deeplinkPrePath = "deeplink"
 
 simpleArch {
-    val isProduction by simpleProperty(getEnvironment() == "production")
+    //todo how to set environment on cocoapod?
+    val isProduction by simpleProperty(true/*getEnvironment() == "production"*/)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
     simpleProperties["serverUrl"] = if (isProduction) {
         "\"$serverUrl\""
@@ -54,28 +51,11 @@ kotlin {
 
     //todo make this simpler by cocoa?
     ios {
+        //todo how to export these?
 //        binaries.framework {
 //            export(deps.kotlin.coroutineCore)
 //            export(deps.simpleArch.common)
 //            //native will use this name to refer the multiplatform library
-//        }
-
-//        if (this.name == "iosX64") {
-//            tasks.register<FatFrameworkTask>("debugFatFramework") {
-//                baseName = frameworkName
-//                group = "Universal framework"
-//                description = "Builds a universal (fat) debug framework"
-//
-//                from(binaries.getFramework("DEBUG"))
-//            }
-//        } else {
-//            tasks.register<FatFrameworkTask>("releaseFatFramework") {
-//                baseName = frameworkName
-//                group = "Universal framework"
-//                description = "Builds a universal (release) debug framework"
-//
-//                from(binaries.getFramework("RELEASE"))
-//            }
 //        }
     }
 

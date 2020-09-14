@@ -13,13 +13,12 @@ fun <T> CoroutineScope.loadResource(
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        state?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
+
         getResource(work) {
             this@loadResource.loadResource(state, work)
         }?.also { state?.value = it }
-    }.also {
-        state?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -29,17 +28,15 @@ fun <T> CoroutineScope.loadResource(
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        resourceState?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
+        statusState?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         getResource(work) {
             this@loadResource.loadResource(resourceState, statusState, work)
         }?.also {
             resourceState?.value = it
             statusState?.value = it
         }
-    }.also {
-        resourceState?.value = Resource.Loading { it.cancel() }
-        statusState?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -49,16 +46,14 @@ fun <T> CoroutineScope.loadDataAndStatus(
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        status.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         getResource(work) {
             this@loadDataAndStatus.loadDataAndStatus(data, status, work)
         }?.also {
             it.onSuccess { data.value = it }
             status.value = it
         }
-    }.also {
-        status.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -70,7 +65,8 @@ fun <T, U> CoroutineScope.loadDataAndStatus(
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        status.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         getResource(work) {
             this@loadDataAndStatus.loadDataAndStatus(data, status, work, transform)
         }?.also {
@@ -78,9 +74,6 @@ fun <T, U> CoroutineScope.loadDataAndStatus(
             transformed.onSuccess { data.value = it }
             status.value = transformed
         }
-    }.also {
-        status.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -91,15 +84,13 @@ fun <T> CoroutineScope.loadFlow(
     flow: Flow<Resource<T>>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        resourceState?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
+        statusState?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         flow.collect {
             resourceState?.value = it
             statusState?.value = it
         }
-    }.also {
-        resourceState?.value = Resource.Loading { it.cancel() }
-        statusState?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -110,14 +101,12 @@ fun <T> CoroutineScope.loadResourceFromFlow(
     flow: Flow<Resource<T>>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        status?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         flow.collect {
             it.onSuccess { data.value = it }
             status?.value = it
         }
-    }.also {
-        status?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -128,14 +117,12 @@ fun <T> CoroutineScope.loadDataFromFlow(
     flow: Flow<T>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        status?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         flow.collect {
             data.value = it
             status?.value = Resource.Success(it)
         }
-    }.also {
-        status?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 
@@ -148,15 +135,13 @@ fun <T, U> CoroutineScope.loadResourceFromFlow(
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
-    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore(), CoroutineStart.LAZY) {
+    launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
+        status?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
         flow.collect {
             val transformed = transform(it)
             transformed.onSuccess { data.value = it }
             status?.value = transformed
         }
-    }.also {
-        status?.value = Resource.Loading { it.cancel() }
-        it.start()
     }
 }
 

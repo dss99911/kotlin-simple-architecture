@@ -29,6 +29,11 @@ sealed class Resource<out T> {
 
     fun successData(): T = if (isSuccess()) data() else error("Resource is not success")
     fun errorData(): ResourceError = if (this is Error) this.error else error("Resource is not error")
+    fun retryOnError() {
+        if (this is Error) {
+            this.retry()
+        }
+    }
     fun <E : ResourceError> errorOf(): E = errorData() as E
 
     fun onLoading(onResult: (last: T?, cancel: () -> Unit) -> Unit): Resource<T> {
@@ -72,13 +77,6 @@ sealed class Resource<out T> {
 
     fun asStatus(): Status {
         return this
-    }
-
-    companion object {
-        //used for IOS
-        fun createStart() {
-            Resource.Start
-        }
     }
 
     fun <U> map(change: (T) -> U): Resource<U> = when (this) {

@@ -12,14 +12,13 @@ import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.coroutines.flow.Flow
-import samplebase.generated.SimpleConfig
 
 interface UserRepository {
     val userDetail: Flow<Resource<SerializableUserDetail>>
 
     suspend fun signUp(id: String, password: String, name: String)
-    suspend fun signGoogle(deeplinkPath: String)
-    suspend fun signFacebook(deeplinkPath: String)
+    suspend fun signGoogle()
+    suspend fun signFacebook()
     fun onOAuthDeeplinkReceived(url: Url)
     suspend fun signIn(id: String, password: String)
     suspend fun signOut()
@@ -60,12 +59,12 @@ class UserRepositoryImpl(
         invalidateUser()
     }
 
-    override suspend fun signGoogle(deeplinkPath: String){
-        oauthClient.signUp(OAuthServerName.GOOGLE, "${SimpleConfig.serverUrl}$deeplinkPath")
+    override suspend fun signGoogle(){
+        oauthClient.signUp(OAuthServerName.GOOGLE, DEEPLINK_PATH_SIGN_UP)
     }
 
-    override suspend fun signFacebook(deeplinkPath: String) {
-        oauthClient.signUp(OAuthServerName.FACEBOOK, "${SimpleConfig.serverUrl}$deeplinkPath")
+    override suspend fun signFacebook() {
+        oauthClient.signUp(OAuthServerName.FACEBOOK, DEEPLINK_PATH_SIGN_UP)
     }
 
     override fun onOAuthDeeplinkReceived(url: Url) {
@@ -92,6 +91,7 @@ class UserRepositoryImpl(
     }
 
     //when userdetail is changed, update it.
+    //todo this doesn't suspend until retry is finished. it takes time to refresh after this is invoked. so, sign in page shows different ui while refreshing.
     //todo there is possiblity that server change user data. or client mistakingly doesn't invalidate after user detail changed.
     // so consider to use web socket
     // and also consider use graphQL as this approach need to call api one more time causing user to wait longer time
@@ -99,3 +99,5 @@ class UserRepositoryImpl(
         retry()
     }
 }
+
+expect val DEEPLINK_PATH_SIGN_UP: String

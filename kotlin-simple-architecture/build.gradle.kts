@@ -58,6 +58,7 @@ kotlin {
                 //api(deps.sqldelight.coroutine)
                 api(deps.simpleArch.annotation)
                 api(deps.ktor.clientAuth)
+                api(deps.krypto)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here

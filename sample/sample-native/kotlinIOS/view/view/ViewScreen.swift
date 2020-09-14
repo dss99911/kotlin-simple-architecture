@@ -9,18 +9,11 @@
 import SwiftUI
 import sample_base
 
-struct ViewScreen: NavigationScreen {
+struct ViewScreen: SampleScreen {
+    @State var isSheetShown = false
     
-    var title: String = "View".localized()
-    @State var model = BaseViewModel()
-    
-    var content: some View {
+    func content(navigator: Navigator) -> some View {
         Text("View")
-    }
-}
-
-struct ViewView_Previews: PreviewProvider {
-    static var previews: some View {
-        ViewScreen()
+        
     }
 }
