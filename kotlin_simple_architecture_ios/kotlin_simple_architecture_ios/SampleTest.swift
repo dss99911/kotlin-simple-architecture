@@ -9,11 +9,11 @@
 import Foundation
 
 
-struct SampleTest {
+public struct SampleTest {
     
 }
 
 
-protocol SampleTest2 {
+public protocol SampleTest2 {
   func aa()
 }

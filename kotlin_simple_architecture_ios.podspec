@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "kotlin_simple_architecture_ios"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.summary      = "Kotlin Simple Architecture for Ios"
 
   # This description is used to generate tags and improve search results.
@@ -24,7 +24,9 @@ Pod::Spec.new do |spec|
   #   * Try to keep it short, snappy and to the point.
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
-  spec.description  = "Kotlin Simple Architecture Ios - simple development on IOS"
+  spec.description  = <<-DESC
+  Kotlin Simple Architecture Ios - simple development on IOS
+                      DESC
 
   spec.homepage     = "https://github.com/dss99911/kotlin-simple-architecture"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
@@ -91,7 +93,7 @@ Pod::Spec.new do |spec|
 
   spec.source_files  = "kotlin_simple_architecture_ios/kotlin_simple_architecture_ios/**/*.{h,m,swift}"
   # spec.exclude_files = "Classes/Exclude"
-  spec.swift_versions = '5.0'
+  spec.swift_versions = '5.4'
   # spec.public_header_files = "Classes/**/*.h"
 
 
@@ -117,6 +119,7 @@ Pod::Spec.new do |spec|
 
   # spec.framework  = "SomeFramework"
   # spec.frameworks = "SomeFramework", "AnotherFramework"
+  spec.weak_frameworks = 'SwiftUI', 'Combine'
 
   # spec.library   = "iconv"
   # spec.libraries = "iconv", "xml2"
