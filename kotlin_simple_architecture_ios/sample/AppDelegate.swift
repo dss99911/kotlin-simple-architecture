@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  kotlinIOS
+//  sample
 //
-//  Created by hyun kim on 12/04/20.
+//  Created by hyun kim on 05/09/20.
 //  Copyright © 2020 hyun kim. All rights reserved.
 //
 
@@ -11,24 +11,13 @@ import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+
+
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
     }
-//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        //this enable interactive preview on AppCode
-//        //for the detail, https://www.jetbrains.com/help/objc/create-a-swiftui-application.html
-//        #if DEBUG
-//        var injectionBundlePath = "/Applications/InjectionIII.app/Contents/Resources"
-//        #if targetEnvironment(macCatalyst)
-//        injectionBundlePath = "\(injectionBundlePath)/macOSInjection.bundle"
-//        #elseif os(iOS)
-//        injectionBundlePath = "\(injectionBundlePath)/iOSInjection.bundle"
-//        #endif
-//        Bundle(path: injectionBundlePath)?.load()
-//        #endif
-//        return true
-//    }
 
     // MARK: UISceneSession Lifecycle
 
@@ -53,12 +42,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
         */
-        let container = NSPersistentContainer(name: "kotlinIOS")
+        let container = NSPersistentContainer(name: "sample")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-
+                 
                 /*
                  Typical reasons for an error here include:
                  * The parent directory does not exist, cannot be created, or disallows writing.
@@ -75,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
 
-    func saveContext() {
+    func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
