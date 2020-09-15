@@ -38,7 +38,7 @@ Pod::Spec.new do |spec|
   #
 
   # spec.license      = "MIT (example)"
-  spec.license      = { :type => "Apache License, Version 2.0", :file => "../LICENSE.txt" }
+  spec.license      = { :type => "Apache License, Version 2.0", :file => "LICENSE.txt" }
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -89,7 +89,7 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "kotlin_simple_architecture_ios/**/*.{h,m,swift}"
+  spec.source_files  = "kotlin_simple_architecture_ios/kotlin_simple_architecture_ios/**/*.{h,m,swift}"
   # spec.exclude_files = "Classes/Exclude"
   spec.swift_versions = '5.0'
   # spec.public_header_files = "Classes/**/*.h"
