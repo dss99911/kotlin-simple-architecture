@@ -5,6 +5,8 @@ package kim.jeonghyeon.jvm.extension
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
+
+//todo delete?
 fun Any?.printJson() {
     println(
         GsonBuilder()

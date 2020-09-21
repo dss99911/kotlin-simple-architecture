@@ -4,6 +4,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.coroutines.Continuation
 
+//todo delete?
 typealias SuspendInvoker = suspend (method: Method, arguments: List<Any?>) -> Any?
 
 private interface SuspendFunction {

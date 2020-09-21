@@ -1,7 +1,6 @@
 package kim.jeonghyeon.backend.auth
 
 import kim.jeonghyeon.auth.*
-import kim.jeonghyeon.backend.di.serviceLocator
 import kim.jeonghyeon.db.User
 import kim.jeonghyeon.extension.fromJsonString
 import kim.jeonghyeon.extension.toJsonString

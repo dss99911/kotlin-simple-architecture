@@ -5,6 +5,7 @@ import java.io.File
 import java.io.FileWriter
 import java.io.InputStreamReader
 
+//todo delete?
 fun File.readLines(action: (String) -> Unit) {
     if (!exists()) {
         throw RuntimeException("file not exists")

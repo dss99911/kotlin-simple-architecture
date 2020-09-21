@@ -12,7 +12,8 @@ import kim.jeonghyeon.sample.SampleDb
 import kotlinsimplearchitecture.generated.db.dbSimple
 import samplebase.generated.db.db
 
-lateinit var serviceLocator: ServiceLocatorBackend
+lateinit var serviceLocatorBackend: ServiceLocatorBackend
+
 
 interface ServiceLocatorBackend : ServiceLocator {
     val sampleDb: SampleDb

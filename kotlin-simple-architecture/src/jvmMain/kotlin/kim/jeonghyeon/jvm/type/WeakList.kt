@@ -3,6 +3,7 @@ package kim.jeonghyeon.jvm.type
 import java.lang.ref.WeakReference
 import java.util.*
 
+//todo delete?
 class WeakList<E> {
     val list = ArrayList<WeakReference<E>>()
 

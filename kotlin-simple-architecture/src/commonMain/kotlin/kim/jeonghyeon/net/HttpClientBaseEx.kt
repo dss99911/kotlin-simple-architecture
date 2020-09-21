@@ -1,3 +1,5 @@
+@file:UseSerializers(HttpMethodSerializer::class)
+
 package kim.jeonghyeon.net
 
 import io.ktor.client.*
@@ -17,7 +19,14 @@ import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.net.error.isApiError
 import kim.jeonghyeon.pergist.Preference
+import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+
 
 @HttpClientDsl
 expect fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
@@ -35,15 +44,15 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
 
 @SimpleArchInternal
 object SimpleApiUtil {
-    suspend fun fetchResponseText(isAuthRequired: Boolean, call: suspend (HttpRequestBuilder.() -> Unit)-> HttpResponse): String {
+    suspend inline fun <reified RET> HttpClient.callApi(callInfo: ApiCallInfo): RET {
+        if (isApiBinding()) {
+            throw ApiBindingException(callInfo)
+        }
         var response: HttpResponse? = null
         val responseText: String
+
         try {
-            response = call {
-                if (isAuthRequired) {
-                    putTokenHeader()
-                }
-            }
+            response = requestApi(callInfo)
             responseText = response.readText()
             setResponse(response)//`freeze` error occurs if call before readText()
         } catch (e: Exception) {
@@ -51,12 +60,34 @@ object SimpleApiUtil {
             throwException(e)
         }
 
-        if (isAuthRequired) {
+        if (callInfo.isAuthRequired) {
             response.saveToken()
         }
 
         validateResponse(response, responseText)
-        return responseText
+
+        if (RET::class == Unit::class) {
+            return Unit as RET
+        }
+        return Json { ignoreUnknownKeys = true }.decodeFromString(serializer(), responseText)
+    }
+
+    suspend fun HttpClient.requestApi(callInfo: ApiCallInfo) = request<HttpResponse> {
+        url.takeFrom(callInfo.buildPath())
+        method = callInfo.method
+        callInfo.body()?.let { body = it }
+        if (callInfo.isJsonContentType()) {
+            contentType(ContentType.Application.Json)
+        }
+        callInfo.queries().forEach {
+            parameter(it.first, it.second)
+        }
+        callInfo.headers().forEach {
+            header(it.first, it.second)
+        }
+        if (callInfo.isAuthRequired) {
+            putTokenHeader()
+        }
     }
 
     inline fun <reified T : Any> convertParameter(parameter: T?): String? {
@@ -67,7 +98,7 @@ object SimpleApiUtil {
         }
     }
 
-    private fun throwException(e: Throwable): Nothing {
+    fun throwException(e: Throwable): Nothing {
         if (e.isConnectException()) {
             throw ApiError(ApiErrorBody.NoNetwork, e)
         }
@@ -90,9 +121,7 @@ object SimpleApiUtil {
      * @throws ApiError if error
      * @return if success
      */
-    private suspend fun validateResponse(response: HttpResponse, responseText: String) {
-        //TODO HYUN [multi-platform2] : consider how to get header of response
-
+    suspend fun validateResponse(response: HttpResponse, responseText: String) {
         if (response.status.isApiError()) {
             val json = Json { }
             errorApi(json.decodeFromString(ApiErrorBody.serializer(), responseText))
@@ -103,20 +132,6 @@ object SimpleApiUtil {
         }
 
         errorApi(ApiErrorBody.CODE_UNKNOWN, "unknown error occurred : ${response.status}, Text : ${response.readText()}")
-    }
-
-    infix fun String.connectPath(end: String): String {
-        if (isEmpty() || end.isEmpty()) return this + end
-
-        if (end.isUri()) {
-            return end
-        }
-
-        return if (last() == '/' && end.first() == '/') {
-            take(lastIndex) + end
-        } else if (last() != '/' && end.first() != '/') {
-            "$this/$end"
-        } else this + end
     }
 
     private fun HttpRequestBuilder.putTokenHeader() {
@@ -137,7 +152,7 @@ object SimpleApiUtil {
 
     }
 
-    private fun HttpResponse.saveToken() {
+    fun HttpResponse.saveToken() {
         //if sigh out, tokenString will be ""
         val tokenString = headers[HEADER_NAME_TOKEN]?:return
         Preference().setEncryptedString(HEADER_NAME_TOKEN, tokenString)
@@ -148,3 +163,65 @@ object SimpleApiUtil {
  * todo make concrete logic or use some basic kotlin function
  */
 internal fun String.isUri(): Boolean = contains("://")
+
+@Serializable
+data class ApiCallInfo(
+    val baseUrl: String,
+    val mainPath: String,
+    val subPath: String,
+    val method: HttpMethod,
+    val isAuthRequired: Boolean,
+    val parameters: List<ApiParameterInfo>,
+    val parameterBinding: Map<Int, String> = emptyMap()
+) {
+    fun buildPath(): String {
+        return baseUrl connectPath mainPath connectPath subPath.let {
+            var replacedSubPath = it
+            parameters.filter { it.type == ApiParameterType.PATH }.forEach {
+                replacedSubPath.replace("{${it.key}}", it.value.toString())
+
+            }
+            replacedSubPath
+        }
+    }
+
+    fun body(): Any? = parameters.firstOrNull { it.type == ApiParameterType.BODY }?.value
+
+    fun isJsonContentType() = when (method) {
+        HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, HttpMethod.Patch -> true
+        else -> false
+    }
+    fun queries() = parameters.filter { it.type == ApiParameterType.QUERY }
+            .map { it.key!! to it.value.toString() }
+    fun headers() = parameters.filter { it.type == ApiParameterType.HEADER }
+        .map { it.key!! to it.value.toString() }
+
+
+    private infix fun String.connectPath(end: String): String {
+        if (isEmpty() || end.isEmpty()) return this + end
+
+        if (end.isUri()) {
+            return end
+        }
+
+        return if (last() == '/' && end.first() == '/') {
+            take(lastIndex) + end
+        } else if (last() != '/' && end.first() != '/') {
+            "$this/$end"
+        } else this + end
+    }
+}
+
+@Serializer(forClass = HttpMethod::class)
+internal object HttpMethodSerializer : KSerializer<HttpMethod> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("HttpMethodDefaultSerializer", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): HttpMethod {
+        return HttpMethod(decoder.decodeString())
+    }
+
+    override fun serialize(encoder: Encoder, value: HttpMethod) {
+        encoder.encodeString(value.value)
+    }
+}

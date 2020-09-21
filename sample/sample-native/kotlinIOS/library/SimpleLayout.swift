@@ -100,7 +100,8 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             return isRootShown()
         } else if(isRootShown()) {
             //even if this screen is not root screen, the meaninng root is shown that this is inner screen of root screen
-            //inner screen of root screen always return false
+            //inner screen of root screen always return false.
+            //so, ignore deeplink on inner root screen
             return false
         } else {
             return presentationMode.wrappedValue.isPresented

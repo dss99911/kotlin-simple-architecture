@@ -50,6 +50,7 @@ kotlin {
             dependencies {
                 api(deps.kotlin.coroutineCore)
                 api(deps.kotlin.serializationCore)
+                api(deps.kotlin.reflect)
                 api(deps.ktor.clientCore)
                 api(deps.ktor.clientSerialization)
                 api(deps.ktor.clientLogging)
@@ -70,7 +71,6 @@ kotlin {
             dependencies {
                 //kotlin
                 api(deps.kotlin.reflect)
-
                 api(deps.gson)
             }
         }

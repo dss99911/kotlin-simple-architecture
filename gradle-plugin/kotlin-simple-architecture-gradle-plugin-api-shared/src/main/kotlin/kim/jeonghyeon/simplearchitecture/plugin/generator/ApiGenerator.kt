@@ -92,30 +92,22 @@ class ApiGenerator(
         .joinToString("\n\n") { it }
 
     private fun SharedKtNamedFunction.makeFunction(): String = """
-    |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ""} = SimpleApiUtil.run {
+    |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ": Unit"} = SimpleApiUtil.run {
     |${makeFunctionBody().prependIndent("    ")}
     |}
     """.trimMargin()
 
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
-        val returnTypeString = returnTypeName?.takeIf { it != "Unit" && it != "kotlin.Unit" }
-
         val isAuthenticating = getAnnotationString(Authenticate::class) != null || ktClass?.getAnnotationString(Authenticate::class) != null
         return """
-        |val subPath = ${makeSubPathStatement()}
-        |val responseText = fetchResponseText($isAuthenticating) { adder ->
-        |    client.${getRequestMethodFunctionName()}<HttpResponse>(baseUrl connectPath mainPath connectPath subPath) {
+        |val callInfo = ApiCallInfo(baseUrl, mainPath, ${makeSubPathStatement()}, HttpMethod.${getRequestMethodFunctionName()}, $isAuthenticating,
+        |    listOf(
         |        ${makeBodyStatement()}
-        |        ${makeContentTypeStatement()}
-        |        ${makeQueryStatement()}
-        |        ${makeHeaderStatement()}
-        |        adder()
-        |    }
-        |}
-        |${returnTypeString?.let { """
-        |val json = Json { ignoreUnknownKeys = true }
-        |return json.decodeFromString(${makeSerializer(it)}, responseText)
-        """.trimMargin() } ?: ""}
+        |        ${makeQueryStatement().joinToString("            \n")}
+        |        ${makeHeaderStatement().joinToString("            \n")}
+        |    )
+        |)
+        |return client.callApi(callInfo)
         """.trimMargin()
     }
 
@@ -123,7 +115,7 @@ class ApiGenerator(
         val bodyParameter = parameters.firstOrNull { it.getAnnotationString(Body::class) != null }
 
         if (bodyParameter != null) {
-            return "body = ${bodyParameter.name!!}"
+            return makeApiParameterInfo(ApiParameterType.BODY, "null", bodyParameter.name!!)
         }
 
         val bodyParameters = parameters.filter {
@@ -135,54 +127,42 @@ class ApiGenerator(
         if (bodyParameters.isEmpty()) {
             return ""
         }
-
-        return """val jsonEncoder = Json {}; body = buildJsonObject { ${bodyParameters.joinToString("; ") { """put("${it.name}", jsonEncoder.encodeToJsonElement(${it.name}))""" }} }"""
+        val body = """buildJsonObject { val jsonEncoder = Json {}; ${bodyParameters.joinToString("; ") { """put("${it.name}", jsonEncoder.encodeToJsonElement(${it.name}))""" }} }"""
+        return makeApiParameterInfo(ApiParameterType.BODY, "null", body)
     }
 
-    private fun SharedKtNamedFunction.makeContentTypeStatement(): String = when(getRequestMethodAnnotation()) {
-        Post::class, Put::class, Delete::class, Patch::class ->
-            "contentType(ContentType.Application.Json)"
-        else -> ""
-    }
-
-    private fun SharedKtNamedFunction.makeQueryStatement(): String = parameters
+    private fun SharedKtNamedFunction.makeQueryStatement(): List<String> = parameters
         .filter { it.getAnnotationString(Query::class) != null }
         .map {
             val key = it.getAnnotationString(Query::class)!!
                 .trimParenthesis()!!
-                .getParameterString(Query::name.name, 0)
+                .getParameterString(Query::name.name, 0)!!
 
-            "parameter($key, convertParameter(${it.name}))"
-        }.joinToString("; ")
+            makeApiParameterInfo(ApiParameterType.QUERY, key, "convertParameter(${it.name})")
+        }
 
-    private fun SharedKtNamedFunction.makeHeaderStatement(): String = parameters
+    private fun SharedKtNamedFunction.makeHeaderStatement() = parameters
         .filter { it.getAnnotationString(Header::class) != null }
         .map {
             val key = it.getAnnotationString(Header::class)!!
                 .trimParenthesis()!!
-                .getParameterString(Header::name.name, 0)
-            "header($key, convertParameter(${it.name}))"
-        }.joinToString("; ")
+                .getParameterString(Header::name.name, 0)!!
+            makeApiParameterInfo(ApiParameterType.HEADER, key, "convertParameter(${it.name})")
+        }
+
+    private fun makeApiParameterInfo(type: ApiParameterType, key: String, value: String): String {
+        return "ApiParameterInfo(ApiParameterType.${type.name}, $key, $value),"
+    }
 
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
-        val subPath = getRequestMethodAnnotationString()
+        return getRequestMethodAnnotationString()
             ?.trimParenthesis()
             ?.getParameterString(Get::path.name, 0)
             ?: "\"$name\""
-
-        return subPath + parameters
-            .filter { it.getAnnotationString(Path::class) != null }
-            .joinToString("") {
-                val pathName = it.getAnnotationString(Path::class)!!
-                    .trimParenthesis()!!
-                    .getParameterString(Path::name.name, 0)
-                """.replace("{" + $pathName + "}", ${it.name})"""
-            }
-
     }
 
     private fun SharedKtNamedFunction.getRequestMethodFunctionName(): String =
-        getRequestMethodAnnotation().simpleName!!.toLowerCase()
+        getRequestMethodAnnotation().simpleName!!
 
     val requestMethodAnnotationNames = listOf(Get::class, Delete::class, Head::class, Options::class, Patch::class, Put::class, Post::class)
 
@@ -249,37 +229,6 @@ class ApiGenerator(
             }
         }
         return listOfNotNull(actualPath, expectFile)
-    }
-
-    private fun makeSerializer(typeString: String): String {
-        return when {
-            typeString.endsWith("?") -> {
-                makeSerializer(typeString.substring(0, typeString.length - 1)) + ".nullable"
-            }
-            typeString.endsWith(">") -> {
-                val firstType = typeString.substringBefore("<")
-                val innerTypes = typeString.substring(typeString.indexOf("<") + 1, typeString.lastIndexOf(">")).split(",").map { it.trim() }
-                val innerSerializers = innerTypes.map { makeSerializer(it) }
-
-                //todo support with packagename as well, and super type of map
-                when (firstType) {
-                    "List" -> {
-                        "ListSerializer(${innerSerializers.first()})"
-                    }
-                    "Set" -> {
-                        "SetSerializer(${innerSerializers.first()})"
-                    }
-                    "Pair" -> "PairSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
-                    "Map.Entry" -> "MapEntrySerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
-                    "Triple" -> "TripleSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
-                    "Map" -> "MapSerializer(${innerSerializers[0]}, ${innerSerializers[1]})"
-                    else -> error("Serializing $firstType is not supported by api generator")
-                }
-            }
-            else -> {
-                "$typeString.serializer()"
-            }
-        }
     }
 }
 

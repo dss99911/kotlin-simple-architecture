@@ -15,6 +15,7 @@ import kim.jeonghyeon.backend.auth.SampleSignDigestController
 import kim.jeonghyeon.backend.auth.SampleSignOAuthController
 import kim.jeonghyeon.backend.controller.SampleController
 import kim.jeonghyeon.backend.di.ServiceLocatorBackendImpl
+import kim.jeonghyeon.backend.di.serviceLocatorBackend
 import kim.jeonghyeon.backend.user.UserController
 import kim.jeonghyeon.net.AUTH_TYPE_SERVICE
 import kim.jeonghyeon.net.AUTH_TYPE_SIGN_IN
@@ -26,8 +27,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
 
     install(SimpleFeature) {
-        kim.jeonghyeon.backend.di.serviceLocator = ServiceLocatorBackendImpl(this@module)
-        serviceLocator = kim.jeonghyeon.backend.di.serviceLocator
+        serviceLocator = ServiceLocatorBackendImpl(this@module).also { serviceLocatorBackend = it }
 
         sign {
             //I added all authentication example
@@ -49,7 +49,7 @@ fun Application.module(testing: Boolean = false) {
             // use one of this
             serviceAuthConfig = when (AUTH_TYPE_SERVICE) {
                 ServiceAuthType.SESSION -> SessionServiceAuthConfiguration()
-                ServiceAuthType.JWT -> JwtServiceAuthConfiguration(kim.jeonghyeon.backend.di.serviceLocator.jwtAlgorithm)
+                ServiceAuthType.JWT -> JwtServiceAuthConfiguration(serviceLocatorBackend.jwtAlgorithm)
             }
 
             oauth {
@@ -68,7 +68,7 @@ fun Application.module(testing: Boolean = false) {
 
         routing {
             +SampleController()
-            +PreferenceController(kim.jeonghyeon.backend.di.serviceLocator.preference)
+            +PreferenceController(serviceLocatorBackend.preference)
             +UserController()
 
             configure = {

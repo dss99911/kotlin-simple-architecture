@@ -1,6 +1,7 @@
 package kim.jeonghyeon.net
 
 import io.ktor.client.statement.*
+import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.type.AtomicReference
 import kim.jeonghyeon.type.atomic
 import kotlin.coroutines.CoroutineContext
@@ -20,7 +21,8 @@ class HttpResponseStore : CoroutineContext.Element {
 
 suspend fun response(): HttpResponse = coroutineContext[HttpResponseStore]!!.response.value!!
 
-internal suspend fun setResponse(response: HttpResponse) {
+@SimpleArchInternal
+suspend fun setResponse(response: HttpResponse) {
     coroutineContext[HttpResponseStore]?.response?.value = response
 }
 

@@ -1,5 +1,6 @@
 package kim.jeonghyeon.jvm.type
 
+//todo delete?
 class CacheList<E>(private val limit: Int) {
     val list = ArrayList<E>()
 
