@@ -1,21 +1,18 @@
 package kim.jeonghyeon.net
 
-import com.google.gson.Gson
 import io.ktor.application.*
-import io.ktor.auth.authenticate
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
+import io.ktor.auth.*
+import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
-import io.ktor.features.StatusPages
-import io.ktor.gson.gson
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
+import io.ktor.gson.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.AttributeKey
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.util.*
+import io.ktor.util.pipeline.*
 import kim.jeonghyeon.annotation.*
+import kim.jeonghyeon.api.ApiBindingController
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
@@ -28,10 +25,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.*
+import kotlin.reflect.full.allSuperclasses
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.javaType
 
-private val preControllers: MutableList<Any> = mutableListOf()
+private val preControllers: MutableList<Any> = mutableListOf(ApiBindingController())
 
 fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
     check(featureOrNull(SimpleRouting) == null) {
