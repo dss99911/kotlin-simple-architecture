@@ -4,6 +4,7 @@ package kim.jeonghyeon.net
 
 import io.ktor.client.*
 import kim.jeonghyeon.annotation.Api
+import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.type.AtomicReference
@@ -28,11 +29,6 @@ class ApiCallInfoAndSerializer<T>(val apiCallInfo: ApiCallInfo, val serializer: 
  */
 @Serializable
 data class ApiParameterInfo(val type: ApiParameterType, val key: String?, @Contextual val value: Any?)
-
-//todo delete after annotation library publish
-enum class ApiParameterType {
-    HEADER, QUERY, PATH, BODY
-}
 
 class ApiBindingStore : CoroutineContext.Element {
     override val key: CoroutineContext.Key<*>

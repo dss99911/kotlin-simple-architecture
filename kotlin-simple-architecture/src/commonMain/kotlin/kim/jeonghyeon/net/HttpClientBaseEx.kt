@@ -11,6 +11,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
 import io.ktor.network.sockets.*
+import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.extension.toJsonString

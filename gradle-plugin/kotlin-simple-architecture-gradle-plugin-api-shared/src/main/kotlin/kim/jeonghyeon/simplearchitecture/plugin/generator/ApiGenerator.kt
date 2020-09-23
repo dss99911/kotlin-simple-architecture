@@ -3,7 +3,6 @@ package kim.jeonghyeon.simplearchitecture.plugin.generator
 import kim.jeonghyeon.annotation.*
 import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
-import kim.jeonghyeon.simplearchitecture.plugin.util.write
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -62,6 +61,7 @@ class ApiGenerator(
         |import io.ktor.client.request.*
         |import io.ktor.client.statement.*
         |import kim.jeonghyeon.net.*
+        |import kim.jeonghyeon.annotation.*
         |import kotlinx.coroutines.*
         |import io.ktor.http.*
         |import kotlinx.serialization.json.*
