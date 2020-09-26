@@ -8,11 +8,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
+//todo if set loading inside launch, when same api is called two times at the same time, late call doesn't know if it's already started. but when I use Lazy, there was some issue on IOS. after version up. let's try again
 fun <T> CoroutineScope.loadResource(
     state: ResourceFlow<T>? = null,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
+    //todo the mechanism seems changed, on ExceptionHandler, set Error.
     launch(CoroutineExceptionHandler { _, _ -> } + HttpResponseStore()) {
         state?.value = Resource.Loading { coroutineContext[Job]?.cancel() }
 

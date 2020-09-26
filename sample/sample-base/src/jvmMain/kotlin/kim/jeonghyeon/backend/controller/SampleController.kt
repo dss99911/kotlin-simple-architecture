@@ -25,6 +25,7 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
     }
 
     override suspend fun getWords(): List<String> {
+        log.i("getWords")
         return pref.getString(pref.WORDS)?.split(",") ?: emptyList()
     }
 
@@ -33,6 +34,19 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
             add(word)
         }
         pref.setString(pref.WORDS, list.joinToString(","))
+    }
+
+    override suspend fun addWords(words: List<String>) {
+        log.i("addWords")
+        val list = getWords().toMutableList().apply {
+            addAll(words)
+        }
+        pref.setString(pref.WORDS, list.joinToString(","))
+    }
+
+    override suspend fun removeWords() {
+        log.i("removeWords")
+        pref.setString(pref.WORDS, null)
     }
 
     override suspend fun getHeader(): String {

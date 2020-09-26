@@ -16,19 +16,15 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KProperty0
 
 class ApiCallInfoAndSerializer<T>(val apiCallInfo: ApiCallInfo, val serializer: KSerializer<T>)
 
-
-/**
- * @param key if it's [ApiParameterType.BODY] type, there is no key
- * @param value if it's [ApiParameterType.BODY] type, it's Any?. other type is String.
- */
-@Serializable
-data class ApiParameterInfo(val type: ApiParameterType, val key: String?, @Contextual val value: Any?)
 
 class ApiBindingStore : CoroutineContext.Element {
     override val key: CoroutineContext.Key<*>
@@ -90,7 +86,7 @@ interface ApiBindingApi {
 
 class ApiBinder2<DATA1, DATA2>(val client: HttpClient, val apiCallInfo1: ApiCallInfoAndSerializer<DATA1>, val apiCallInfo2: ApiCallInfoAndSerializer<DATA2>) {
 
-    suspend inline fun <reified DATA3> bindApi(crossinline call: (data1: ResponseBinder<DATA1>, data2: ResponseBinder<DATA2>)-> DATA3): ApiBinder3<DATA1, DATA2, DATA3> =
+    suspend inline fun <reified DATA3> bindApi(crossinline call: suspend (data1: ResponseBinder<DATA1>, data2: ResponseBinder<DATA2>)-> DATA3): ApiBinder3<DATA1, DATA2, DATA3> =
         ApiBinder3(client, apiCallInfo1, apiCallInfo2, getApiCallInfo { call(ResponseBinder(0, apiCallInfo1.serializer), ResponseBinder(1, apiCallInfo2.serializer)) })
 
     suspend fun execute(): Pair<DATA1, DATA2> {
@@ -129,8 +125,8 @@ class ApiBinder3<DATA1, DATA2, DATA3>(val client: HttpClient, val apiCallInfo1: 
         //todo handle exception. if any call is failed return error with success data info.
         return Triple(
             json.decodeFromString(apiCallInfo1.serializer, result[0]),
-            json.decodeFromString(apiCallInfo2.serializer, result[0]),
-            json.decodeFromString(apiCallInfo3.serializer, result[1])
+            json.decodeFromString(apiCallInfo2.serializer, result[1]),
+            json.decodeFromString(apiCallInfo3.serializer, result[2])
         )
     }
 
@@ -179,6 +175,7 @@ fun <T> DeserializationStrategy<T>.createEmpty(): T =
     deserialize(EmptyDecoder())
 
 private class EmptyDecoder : AbstractDecoder() {
+    override val serializersModule: SerializersModule = EmptySerializersModule
     var indexMap = mutableMapOf<SerialDescriptor, Int>()
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return this

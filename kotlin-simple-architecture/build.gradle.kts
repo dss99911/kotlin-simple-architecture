@@ -139,7 +139,11 @@ android {
     defaultConfig {
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
+    }
 
+    //todo after change android build tool to 4.2.0-alpha12 error occurs, try removing this and build again
+    lintOptions {
+        disable("InvalidFragmentVersionForActivityResult")
     }
 }
 

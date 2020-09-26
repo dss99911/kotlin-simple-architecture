@@ -2,7 +2,7 @@ package kim.jeonghyeon.simplearchitecture.plugin.generator
 
 import kim.jeonghyeon.annotation.*
 import kim.jeonghyeon.simplearchitecture.plugin.model.*
-import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
+import kim.jeonghyeon.simplearchitecture.plugin.util.*
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -100,64 +100,46 @@ class ApiGenerator(
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
         val isAuthenticating = getAnnotationString(Authenticate::class) != null || ktClass?.getAnnotationString(Authenticate::class) != null
         return """
-        |val callInfo = ApiCallInfo(baseUrl, mainPath, ${makeSubPathStatement()}, HttpMethod.${getRequestMethodFunctionName()}, $isAuthenticating,
+        |val callInfo = ApiCallInfo(baseUrl, mainPath, ${makeSubPathStatement()}, "${(ktClass!!.packageName?.let { "$it." }?:"") + ktClass!!.name}", "$name", HttpMethod.${getRequestMethodFunctionName()}, $isAuthenticating,
         |    listOf(
-        |        ${makeBodyStatement()}
-        |        ${makeQueryStatement().joinToString("            \n")}
-        |        ${makeHeaderStatement().joinToString("            \n")}
+        |        ${parameters.map { it.toParameterInfo() }.joinToString(",\n        ")}
         |    )
         |)
         |return client.callApi(callInfo)
         """.trimMargin()
     }
 
-    private fun SharedKtNamedFunction.makeBodyStatement(): String {
-        val bodyParameter = parameters.firstOrNull { it.getAnnotationString(Body::class) != null }
-
-        if (bodyParameter != null) {
-            return makeApiParameterInfo(ApiParameterType.BODY, "null", bodyParameter.name!!)
+    private fun SharedKtParameter.toParameterInfo(): String = when {
+        getAnnotationString(Body::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
         }
-
-        val bodyParameters = parameters.filter {
-            it.getAnnotationString(Header::class) == null
-                    && it.getAnnotationString(Path::class) == null
-                    && it.getAnnotationString(Query::class) == null
+        getAnnotationString(Query::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKey(Query::class), "${name}.toParameterString()", null.toString())
         }
-
-        if (bodyParameters.isEmpty()) {
-            return ""
+        getAnnotationString(Header::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKey(Header::class), "${name}.toParameterString()", null.toString())
         }
-        val body = """buildJsonObject { val jsonEncoder = Json {}; ${bodyParameters.joinToString("; ") { """put("${it.name}", jsonEncoder.encodeToJsonElement(${it.name}))""" }} }"""
-        return makeApiParameterInfo(ApiParameterType.BODY, "null", body)
+        getAnnotationString(Path::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKey(Path::class), "${name}.toParameterString()", null.toString())
+        }
+        else -> {
+            makeApiParameterInfo(ApiParameterType.NONE, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
+        }
     }
 
-    private fun SharedKtNamedFunction.makeQueryStatement(): List<String> = parameters
-        .filter { it.getAnnotationString(Query::class) != null }
-        .map {
-            val key = it.getAnnotationString(Query::class)!!
-                .trimParenthesis()!!
-                .getParameterString(Query::name.name, 0)!!
+    private fun SharedKtParameter.getParameterKey(parameterType: KClass<*>): String =
+        getAnnotationString(parameterType)!!
+            .trimParenthesis()!!
+            .getParameterString(Query::name.name, 0)!!//all parametetType's key's field name should be 'name' and index is 0
 
-            makeApiParameterInfo(ApiParameterType.QUERY, key, "convertParameter(${it.name})")
-        }
-
-    private fun SharedKtNamedFunction.makeHeaderStatement() = parameters
-        .filter { it.getAnnotationString(Header::class) != null }
-        .map {
-            val key = it.getAnnotationString(Header::class)!!
-                .trimParenthesis()!!
-                .getParameterString(Header::name.name, 0)!!
-            makeApiParameterInfo(ApiParameterType.HEADER, key, "convertParameter(${it.name})")
-        }
-
-    private fun makeApiParameterInfo(type: ApiParameterType, key: String, value: String): String {
-        return "ApiParameterInfo(ApiParameterType.${type.name}, $key, $value),"
+    private fun makeApiParameterInfo(type: ApiParameterType, parameterName: String, key: String, value: String, jsonElement: String): String {
+        return """ApiParameterInfo(ApiParameterType.${type.name}, $parameterName, $key, $value, $jsonElement)"""
     }
 
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
         return getRequestMethodAnnotationString()
             ?.trimParenthesis()
-            ?.getParameterString(Get::path.name, 0)
+            ?.getParameterString(Get::path.name, 0)//each method type's 'path' field name should be same
             ?: "\"$name\""
     }
 

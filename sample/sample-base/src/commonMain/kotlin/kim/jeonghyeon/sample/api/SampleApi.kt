@@ -14,6 +14,10 @@ interface SampleApi {
 
     suspend fun addWord(word: String)
 
+    suspend fun addWords(words: List<String>)
+
+    suspend fun removeWords()
+
     suspend fun getHeader(): String
 
     @Get("annotation/{id}")

@@ -27,6 +27,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 
 
 @HttpClientDsl
@@ -73,9 +76,22 @@ object SimpleApiUtil {
         return Json { ignoreUnknownKeys = true }.decodeFromString(serializer(), responseText)
     }
 
+    inline fun <reified T : Any?> T.toParameterString(): String? {
+        return when (this) {
+            is String -> this
+            is Enum<*> -> this.name
+            else -> this?.toJsonString()
+        }
+    }
+
+    inline fun <reified  T : Any?> T.toJsonElement(): JsonElement =
+        Json {}.encodeToJsonElement(this)
+
     suspend fun HttpClient.requestApi(callInfo: ApiCallInfo) = request<HttpResponse> {
         url.takeFrom(callInfo.buildPath())
+
         method = callInfo.method
+
         callInfo.body()?.let { body = it }
         if (callInfo.isJsonContentType()) {
             contentType(ContentType.Application.Json)
@@ -88,14 +104,6 @@ object SimpleApiUtil {
         }
         if (callInfo.isAuthRequired) {
             putTokenHeader()
-        }
-    }
-
-    inline fun <reified T : Any> convertParameter(parameter: T?): String? {
-        return when (parameter) {
-            is String -> parameter
-            is Enum<*> -> parameter.name
-            else -> parameter?.toJsonString()
         }
     }
 
@@ -170,6 +178,8 @@ data class ApiCallInfo(
     val baseUrl: String,
     val mainPath: String,
     val subPath: String,
+    val className: String,//if there is no customization, className and mainPath is same
+    val functionName: String,//if there is no customization, subPath and functionName is same
     val method: HttpMethod,
     val isAuthRequired: Boolean,
     val parameters: List<ApiParameterInfo>,
@@ -186,16 +196,31 @@ data class ApiCallInfo(
         }
     }
 
-    fun body(): Any? = parameters.firstOrNull { it.type == ApiParameterType.BODY }?.value
+    fun body(): JsonElement? {
+        parameters.firstOrNull { it.type == ApiParameterType.BODY }?.jsonElement?.let {
+            return it
+        }
+
+        val bodyParameters = parameters.filter { it.type == ApiParameterType.NONE }
+        if (bodyParameters.isEmpty()) {
+            return null
+        }
+
+        return buildJsonObject {
+            bodyParameters.forEach {
+                put(it.parameterName, it.jsonElement!!)
+            }
+        }
+    }
 
     fun isJsonContentType() = when (method) {
         HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, HttpMethod.Patch -> true
         else -> false
     }
     fun queries() = parameters.filter { it.type == ApiParameterType.QUERY }
-            .map { it.key!! to it.value.toString() }
+            .map { it.key!! to it.value }
     fun headers() = parameters.filter { it.type == ApiParameterType.HEADER }
-        .map { it.key!! to it.value.toString() }
+        .map { it.key!! to it.value }
 
 
     private infix fun String.connectPath(end: String): String {
@@ -212,6 +237,22 @@ data class ApiCallInfo(
         } else this + end
     }
 }
+
+
+/**
+ * @param key if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, there is no key
+ * @param value if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, this is null
+ * @param jsonElement if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, this exists.
+ */
+@Serializable
+data class ApiParameterInfo(
+    val type: ApiParameterType,
+    val parameterName: String,//todo this seems not required
+    val key: String?,
+    val value: String?,
+    val jsonElement: JsonElement?
+)
+
 
 @Serializer(forClass = HttpMethod::class)
 internal object HttpMethodSerializer : KSerializer<HttpMethod> {
