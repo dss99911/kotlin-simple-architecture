@@ -243,8 +243,8 @@ class SimpleRouting(val config: Configuration) {
                     json.decodeFromJsonElement(serializer(param.type), it)
                 }
 
-            val jsonElement = if (parameterAnnotation is Body) {
-                body
+            return if (parameterAnnotation is Body) {
+                body?.let { json.decodeFromJsonElement(serializer(param.type), it) }
             } else {
                 when (parameterAnnotation) {
                     is Header -> call.request.headers[parameterAnnotation.name]
@@ -252,11 +252,18 @@ class SimpleRouting(val config: Configuration) {
                     is Query -> call.request.queryParameters[parameterAnnotation.name]
                     else -> null
                 }?.let {
-                    json.encodeToJsonElement(String.serializer(), it)
-                }
-            }?: return null
+                    if (param.type.jvmErasure.let { it == String::class || it.java.isEnum }) {
+                        json.encodeToJsonElement(String.serializer(), it).let {
+                            //TEXT => "TEXT" => String or enum
+                            json.decodeFromJsonElement(serializer(param.type), it)
+                        }
+                    } else {
+                        json.decodeFromString(serializer(param.type), it)
+                    }
 
-            return json.decodeFromJsonElement(serializer(param.type), jsonElement)
+
+                }
+            }
         } catch (e: Exception) {
             log.e(e.message + "\nparam : ${param.name}")
             throw e

@@ -8,4 +8,4 @@ import samplebase.generated.SimpleConfig
  * so, Used custom scheme deeplink
  * TODO: Use Universal Link
  */
-actual val DEEPLINK_PATH_SIGN_UP: String = "kim.jeonghyeon.kotlinIOS://${SimpleConfig.deeplinkPrePath}/signUp"
+actual val DEEPLINK_PATH_SIGN_UP: String = "kim.jeonghyeon.kotlinIOS:/${SimpleConfig.deeplinkPrePath}/signUp"

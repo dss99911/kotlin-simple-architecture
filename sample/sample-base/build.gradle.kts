@@ -19,7 +19,7 @@ plugins {
 }
 
 val serverUrl = "https://sample.jeonghyeon.kim"
-val deeplinkPrePath = "deeplink"
+val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
