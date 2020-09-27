@@ -13,8 +13,8 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.core.content.ContextCompat
-import kim.jeonghyeon.androidlibrary.BaseApplication
 import kim.jeonghyeon.androidlibrary.BuildConfig
+import kim.jeonghyeon.androidlibrary.SimpleInitProvider
 import org.jetbrains.anko.telephonyManager
 
 
@@ -23,11 +23,7 @@ val isTesting = noThrow { Class.forName("androidx.test.espresso.Espresso") } != 
 
 val isDebug = BuildConfig.DEBUG
 
-val ctx: Context
-    inline get() = app
-
-val app: BaseApplication
-    inline get() = BaseApplication.instance
+val ctx: Context inline get() = SimpleInitProvider.instance
 
 val handler by lazy { Handler(Looper.getMainLooper()) }
 

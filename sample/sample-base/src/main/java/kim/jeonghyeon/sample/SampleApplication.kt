@@ -1,10 +1,11 @@
 package kim.jeonghyeon.sample
 
-import kim.jeonghyeon.androidlibrary.BaseApplication
+import android.app.Application
 import kim.jeonghyeon.androidlibrary.extension.isTesting
 
-class SampleApplication : BaseApplication() {
-    override fun onCreated() {
+class SampleApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
         if (BuildConfig.DEBUG) {
             if (!isTesting) {
                 //has exception on testing
