@@ -8,6 +8,7 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
+//todo delete?
 fun String.toDate(formatText: String): Date? {
     val format = SimpleDateFormat(formatText, Locale.getDefault())
     return format.parse(this)

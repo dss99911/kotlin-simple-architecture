@@ -69,6 +69,7 @@
     <string name="db_simple">Simple DB call</string>
     <string name="db_observe">DB Observe</string>
     <string name="db_api">DB Api together</string>
+    <string name="api_binding">Api Binding</string>
     <string name="preference">Preference</string>
     <string name="switch_map_call">SwitchMap Call</string>
 

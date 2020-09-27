@@ -17,9 +17,6 @@ struct ApiSingleScreen: SampleScreen {
             Text("current value : \(model.result.value!)")
             TextField("Enter value", text: +model.input).frame(width: 100, alignment: .center)
             Button(action: { self.model.onClick() }, label: { Text("Update")})
-            Button(action: { navigator.navigate {
-                ApiSequentialScreen()
-            } }, label: { Text("Update")})
         }
         .navigationTitle("Api Single Call".localized())
     }
