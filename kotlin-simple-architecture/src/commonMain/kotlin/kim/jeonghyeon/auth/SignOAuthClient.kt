@@ -49,12 +49,11 @@ class SignOAuthClient(private val serverUrl: String): SignOAuthApi {
         //javscription doesn't support reflection yet
         val mainPath = "kim/jeonghyeon/auth/SignOAuthApi"
         val queryParams = listOf(
-            QUERY_SERVER_URL to convertParameter(serverUrl),//server doesn't know it's entry point url
-            QUERY_OAUTH_SERVER_NAME to convertParameter(oauthServerName),
-            QUERY_REDIRECT_URL to convertParameter(redirectUrl),
-            QUERY_PLATFORM to convertParameter(platform),
-            QUERY_PACKAGE_NAME to convertParameter(packageName)
-
+            QUERY_SERVER_URL to serverUrl.toParameterString(),//server doesn't know it's entry point url
+            QUERY_OAUTH_SERVER_NAME to oauthServerName.toParameterString(),
+            QUERY_REDIRECT_URL to redirectUrl.toParameterString(),
+            QUERY_PLATFORM to platform.toParameterString(),
+            QUERY_PACKAGE_NAME to packageName.toParameterString()
         ).formUrlEncode()
 
         val url = "$serverUrl/$mainPath/$apiName?$queryParams"

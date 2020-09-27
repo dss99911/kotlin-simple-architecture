@@ -125,12 +125,12 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
         viewModels.forEach {
             when (val resource = +it.initStatus) {
                 is Resource.Loading -> {
-                    composeFullLoading()
+                    composeInitLoading()
                     return true
                 }
 
                 is Resource.Error -> {
-                    composeFullError(resource)
+                    composeInitError(resource)
                     return true
                 }
 
@@ -160,7 +160,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     }
 
     @Composable
-    protected open fun composeFullLoading() {
+    protected open fun composeInitLoading() {
         LoadingBox()
     }
 
@@ -175,7 +175,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     }
 
     @Composable
-    protected open fun StackScope.composeFullError(error: Resource.Error<*>) {
+    protected open fun StackScope.composeInitError(error: Resource.Error<*>) {
         ErrorSnackbar(
             text = error.error.message ?: defaultErrorMessage,
             modifier = Modifier.gravity(Alignment.BottomCenter)

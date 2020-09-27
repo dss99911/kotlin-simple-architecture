@@ -1,37 +1,48 @@
 package kim.jeonghyeon.net
 
-import com.google.gson.Gson
 import io.ktor.application.*
-import io.ktor.auth.authenticate
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
+import io.ktor.auth.*
+import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
-import io.ktor.features.StatusPages
+import io.ktor.gson.*
 import io.ktor.gson.gson
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.AttributeKey
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.serialization.*
+import io.ktor.util.*
+import io.ktor.util.pipeline.*
 import kim.jeonghyeon.annotation.*
+import kim.jeonghyeon.api.ApiBindingController
+import kim.jeonghyeon.extension.fromJsonString
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.launch
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.serializer
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.*
+import kotlin.reflect.full.allSuperclasses
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 
-private val preControllers: MutableList<Any> = mutableListOf()
+private val preControllers: MutableList<Any> = mutableListOf(ApiBindingController())
 
 fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
     check(featureOrNull(SimpleRouting) == null) {
@@ -94,7 +105,7 @@ class SimpleRouting(val config: Configuration) {
         }
 
         pipeline.install(ContentNegotiation) {
-            gson()
+            json()
         }
 
         pipeline.install(Routing) {
@@ -206,7 +217,7 @@ class SimpleRouting(val config: Configuration) {
     ) {
         val controllerFunction = controller.findFunction(apiFunction)
 
-        val body: Any? = getBody(apiFunction)
+        val body: JsonObject? = getBody(apiFunction)
         val args = apiFunction.parameters
             .subList(1, apiFunction.parameters.size)//first parameter is for suspend function
             .map { param ->
@@ -217,28 +228,42 @@ class SimpleRouting(val config: Configuration) {
         launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
             if (!pipelineContextStore.responded) {
-                call.respond(convertResponse(response))
+                call.respond(Json{}.encodeToJsonElement(serializer(apiFunction.returnType), response))
             }
         }
     }
 
-    private fun PipelineContext<Unit, ApplicationCall>.getArgument(param: KParameter, body: Any?): Any? {
+    @OptIn(InternalSerializationApi::class)
+    private fun PipelineContext<Unit, ApplicationCall>.getArgument(param: KParameter, body: JsonObject?): Any? {
         try {
-
+            val json = Json { }
             val parameterAnnotation = param.annotations.firstOrNull { it.isParameterAnnotation() }
-            if (parameterAnnotation == null) {
-                //if no annotation, it should be body argument
-                body as Map<String, Any?>
-                return body[param.name].toJsonString()?.toJsonObject(param.type.javaType)
-            }
+                ?: //if no annotation, it's body argument
+                return body!![param.name]?.let {
+                    json.decodeFromJsonElement(serializer(param.type), it)
+                }
 
-            return (when (parameterAnnotation) {
-                is Header -> call.request.headers[parameterAnnotation.name]
-                is Path -> call.parameters[parameterAnnotation.name]
-                is Query -> call.request.queryParameters[parameterAnnotation.name]
-                is Body -> body?.toJsonString()
-                else -> null
-            })?.revertParameter(param.type)
+            return if (parameterAnnotation is Body) {
+                body?.let { json.decodeFromJsonElement(serializer(param.type), it) }
+            } else {
+                when (parameterAnnotation) {
+                    is Header -> call.request.headers[parameterAnnotation.name]
+                    is Path -> call.parameters[parameterAnnotation.name]
+                    is Query -> call.request.queryParameters[parameterAnnotation.name]
+                    else -> null
+                }?.let {
+                    if (param.type.jvmErasure.let { it == String::class || it.java.isEnum }) {
+                        json.encodeToJsonElement(String.serializer(), it).let {
+                            //TEXT => "TEXT" => String or enum
+                            json.decodeFromJsonElement(serializer(param.type), it)
+                        }
+                    } else {
+                        json.decodeFromString(serializer(param.type), it)
+                    }
+
+
+                }
+            }
         } catch (e: Exception) {
             log.e(e.message + "\nparam : ${param.name}")
             throw e
@@ -247,30 +272,15 @@ class SimpleRouting(val config: Configuration) {
 
     private fun Annotation.isParameterAnnotation(): Boolean = this is Header || this is Path || this is Query || this is Body
 
-    private fun KFunction<*>.getBodyType(): KType? = parameters.firstOrNull { it.annotations.any { it is Body } }?.type
-    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(function: KFunction<*>): Any? {
-        val bodyType = function.getBodyType()
-
+    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(function: KFunction<*>): JsonObject? {
         //todo if body not exists, ignore it with better approach.
         return try {
-            if (bodyType == null) {
-                call.receive<Map<String, Any?>>()
-            } else {
-                call.receive(bodyType) as Any?//even if return type is Any? if doesn't mention, it convert to Map
-            }
+            call.receive()
         } catch (e: ContentTransformationException) {
             e.printStackTrace()
             null
         }
     }
-
-
-    private fun convertResponse(response: Any?): Any = if (response is String) {
-        //todo is this proper process? how to make json writer to set quotes?
-        // if response type is String, then client error with the log below
-        // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
-        "\"${response.replace("\\", "\\\\")}\""
-    } else response?:"null" //todo does json writer not know null to null text??
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =
         this::class.functions.first {
@@ -278,16 +288,4 @@ class SimpleRouting(val config: Configuration) {
             func.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }  ==
                     it.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }
         }
-
-
-    fun String.revertParameter(kType: KType): Any? {
-        val javaType = kType.javaType as Class<*>
-        return if (javaType == String::class.java) {
-            this
-        } else if (javaType.isEnum) {
-            "\"$this\"".toJsonObject(javaType)
-        } else {
-            this.toJsonObject(javaType)
-        }
-    }
 }

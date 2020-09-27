@@ -25,7 +25,9 @@ struct MainScreen: SampleNavigationScreen {
                 }
                 .tag(TabIdentifier.model)
                 .onAppear {
-                    title = "Model".localized()
+                    if (navigator.isShown()) {
+                        title = "Model".localized()
+                    }
                 }
             
             ViewScreen()
@@ -36,7 +38,9 @@ struct MainScreen: SampleNavigationScreen {
                 .tag(TabIdentifier.view)
                 // FIXME: when tap on ModelScreen, title is changed to View.
                 .onAppear {
-                    title = "View".localized()
+                    if (navigator.isShown()) {
+                        title = "View".localized()
+                    }
                 }
         }
         .navigationTitle(title)

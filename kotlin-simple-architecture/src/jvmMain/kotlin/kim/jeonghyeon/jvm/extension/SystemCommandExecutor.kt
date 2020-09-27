@@ -5,6 +5,7 @@ package kim.jeonghyeon.jvm.extension
 import kim.jeonghyeon.extension.letIfNotEmpty
 import java.io.File
 
+//todo delete?
 @Deprecated("old code")
 class SystemCommandExecutor(
     private val logOnError: Boolean = false,
