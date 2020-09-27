@@ -10,7 +10,9 @@ import sample_base
 protocol Screen : View {
     associatedtype Content : View
     associatedtype LoadingView : View
+    associatedtype InitLoadingView : View
     associatedtype ErrorView : View
+    associatedtype InitErrorView : View
     associatedtype ViewModel : Kotlin_simple_architectureBaseViewModel
     
     // Set ViewModel
@@ -31,8 +33,14 @@ protocol Screen : View {
     // Customize loading view by override this function
     var loadingView: Self.LoadingView { get }
     
+    // Customize loading view by override this function
+    var initLoadingView: Self.InitLoadingView { get }
+    
     // Customize error view view by override this function
     func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> Self.ErrorView
+    
+    // Customize error view view by override this function
+    func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> Self.InitErrorView
 }
 
 extension Screen {
@@ -47,11 +55,19 @@ extension Screen {
     }
     
     var loadingView: some View {
-        Text("full Loading")
+        Text("Loading")
+    }
+    
+    var initLoadingView: some View {
+        Text("Init Loading")
     }
     
     func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Button(action: { retry() }, label: { Text("full Error") })
+        Button(action: { retry() }, label: { Text("Error \(error.message ?? "nil")") })
+    }
+    
+    func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
+        Button(action: { retry() }, label: { Text("Init Error \(error.message ?? "nil")") })
     }
     
     var deeplinker: Deeplinker {

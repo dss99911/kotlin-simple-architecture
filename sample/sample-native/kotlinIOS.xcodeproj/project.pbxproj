@@ -32,6 +32,7 @@
 		55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */; };
 		55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */; };
 		55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */; };
+		55EE98CD2520905900ECD534 /* ApiBindingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */; };
 		55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392502507F3CF00BB3CCF /* URLEx.swift */; };
 		55F3925325080F1B00BB3CCF /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F3925225080F1B00BB3CCF /* SignUpScreen.swift */; };
 		55F392552508219700BB3CCF /* BindingEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392542508219700BB3CCF /* BindingEx.swift */; };
@@ -97,6 +98,7 @@
 		55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiAnnotationScreen.swift; sourceTree = "<group>"; };
 		55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiExternalScreen.swift; sourceTree = "<group>"; };
 		55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLayout.swift; sourceTree = "<group>"; };
+		55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiBindingScreen.swift; sourceTree = "<group>"; };
 		55F392502507F3CF00BB3CCF /* URLEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLEx.swift; sourceTree = "<group>"; };
 		55F3925225080F1B00BB3CCF /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		55F392542508219700BB3CCF /* BindingEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingEx.swift; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
 				55D55399250185270039C0A4 /* SigninScreen.swift */,
 				55F3925225080F1B00BB3CCF /* SignUpScreen.swift */,
+				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -539,6 +542,7 @@
 				55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */,
 				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
 				55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */,
+				55EE98CD2520905900ECD534 /* ApiBindingScreen.swift in Sources */,
 				55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */,
 				217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */,
 			);

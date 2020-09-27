@@ -40,6 +40,9 @@ struct ModelScreen: SampleScreen {
                 Button("Sign in") {
                     navigator.navigate { SigninScreen() }
                 }
+                Button("Api Biding") {
+                    navigator.navigate { ApiBindingScreen() }
+                }
             }
         }
     }

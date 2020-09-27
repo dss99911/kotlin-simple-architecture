@@ -124,10 +124,10 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
     var body: some View {
         ZStack {
             if (wrapper.isInitLoading()) {
-                screen.loadingView
+                screen.initLoadingView
             } else if (wrapper.isInitError()) {
                 //TODO: errorData can throw error if initStatus is changed to not error
-                screen.errorView(error: self.wrapper.viewModel.initStatus.value!.errorData()) {
+                screen.initErrorView(error: self.wrapper.viewModel.initStatus.value!.errorData()) {
                     self.wrapper.viewModel.initStatus.value!.retryOnError()
                 }
             } else {

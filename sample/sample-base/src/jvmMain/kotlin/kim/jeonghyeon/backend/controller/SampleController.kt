@@ -37,7 +37,7 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
     }
 
     override suspend fun addWords(words: List<String>) {
-        log.i("addWords")
+        log.i("addWords $words")
         val list = getWords().toMutableList().apply {
             addAll(words)
         }
