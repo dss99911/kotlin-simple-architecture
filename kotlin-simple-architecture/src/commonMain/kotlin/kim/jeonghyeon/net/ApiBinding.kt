@@ -4,7 +4,6 @@ package kim.jeonghyeon.net
 
 import io.ktor.client.*
 import kim.jeonghyeon.annotation.Api
-import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.Authenticate
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.type.AtomicReference
@@ -16,14 +15,13 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KProperty0
 
-class ApiCallInfoAndSerializer<T>(val apiCallInfo: ApiCallInfo, val serializer: KSerializer<T>)
+class ApiCallInfoAndSerializer<T>(val apiCallInfo: ApiCallInfo, val serializer: KSerializer<T>, val client: HttpClient)
 
 
 class ApiBindingStore : CoroutineContext.Element {
@@ -52,27 +50,28 @@ class ApiBindingStore : CoroutineContext.Element {
 suspend fun isApiBinding(): Boolean = coroutineContext[ApiBindingStore] != null
 
 
-class ApiBindingException(val apiCallInfo: ApiCallInfo) : RuntimeException()
+class ApiBindingException(val apiCallInfo: ApiCallInfo, val client: HttpClient) : RuntimeException()
 
 suspend inline fun <reified DATA> getApiCallInfo(crossinline call: suspend () -> DATA): ApiCallInfoAndSerializer<DATA> {
     val apiBindingStore = ApiBindingStore()
-    return ApiCallInfoAndSerializer(withContext(coroutineContext + apiBindingStore) {
+    val exception = withContext(coroutineContext + apiBindingStore) {
         try {
             call()
             error("this shouldn't be reached")
         } catch (e: ApiBindingException) {
-            e.apiCallInfo
+            e
         }
-    }.copy(parameterBinding = apiBindingStore.parameterBinding.value), serializer())
+    }
+    return ApiCallInfoAndSerializer(exception.apiCallInfo.copy(parameterBinding = apiBindingStore.parameterBinding.value), serializer(), exception.client)
 }
 
-suspend inline fun <reified DATA1> HttpClient.bindApi(noinline call: suspend ()-> DATA1): ApiBinder1<DATA1> {
-    return ApiBinder1(this, getApiCallInfo(call))
+suspend inline fun <reified DATA1> bindApi(noinline call: suspend ()-> DATA1): ApiBinder1<DATA1> {
+    return ApiBinder1(getApiCallInfo(call))
 }
 
-class ApiBinder1<DATA1>(val client: HttpClient, val apiCallInfo: ApiCallInfoAndSerializer<DATA1>) {
+class ApiBinder1<DATA1>(val apiCallInfo: ApiCallInfoAndSerializer<DATA1>) {
     suspend inline fun <reified DATA2> bindApi(crossinline call: suspend (data1: ResponseBinder<DATA1>)-> DATA2): ApiBinder2<DATA1, DATA2> =
-        ApiBinder2(client, apiCallInfo, getApiCallInfo {
+        ApiBinder2(apiCallInfo.client, apiCallInfo, getApiCallInfo {
             call(ResponseBinder(0, apiCallInfo.serializer))
         })
 }
@@ -90,6 +89,8 @@ class ApiBinder2<DATA1, DATA2>(val client: HttpClient, val apiCallInfo1: ApiCall
         ApiBinder3(client, apiCallInfo1, apiCallInfo2, getApiCallInfo { call(ResponseBinder(0, apiCallInfo1.serializer), ResponseBinder(1, apiCallInfo2.serializer)) })
 
     suspend fun execute(): Pair<DATA1, DATA2> {
+        verifyCallInfos(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo)
+
         val api = client.createSimple<ApiBindingApi>(apiCallInfo1.apiCallInfo.baseUrl)
         val isAuthRequired = apiCallInfo1.apiCallInfo.isAuthRequired || apiCallInfo2.apiCallInfo.isAuthRequired
 
@@ -117,6 +118,7 @@ class ApiBinder3<DATA1, DATA2, DATA3>(val client: HttpClient, val apiCallInfo1: 
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun execute(): Triple<DATA1, DATA2, DATA3> {
+        verifyCallInfos(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo, apiCallInfo3.apiCallInfo)
         val result = client
             .createSimple<ApiBindingApi>(apiCallInfo1.apiCallInfo.baseUrl)
             .call(listOf(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo, apiCallInfo3.apiCallInfo))
@@ -129,7 +131,6 @@ class ApiBinder3<DATA1, DATA2, DATA3>(val client: HttpClient, val apiCallInfo1: 
             json.decodeFromString(apiCallInfo3.serializer, result[2])
         )
     }
-
 }
 
 class ResponseBinder<T>(val responseIndex: Int, val serializer: KSerializer<T>) {
@@ -241,5 +242,12 @@ private class EmptyDecoder : AbstractDecoder() {
         } else {
             CompositeDecoder.DECODE_DONE
         }
+    }
+}
+
+private fun verifyCallInfos(vararg apiCallInfos: ApiCallInfo) {
+    val baseUrls = apiCallInfos.map { it.baseUrl }.toSet()
+    if (baseUrls.size > 1) {
+        error("[Api Binding] There are multiple base urls : $baseUrls")
     }
 }

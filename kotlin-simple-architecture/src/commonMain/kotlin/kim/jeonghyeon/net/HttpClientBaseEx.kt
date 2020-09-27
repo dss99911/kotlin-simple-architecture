@@ -50,7 +50,7 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
 object SimpleApiUtil {
     suspend inline fun <reified RET> HttpClient.callApi(callInfo: ApiCallInfo): RET {
         if (isApiBinding()) {
-            throw ApiBindingException(callInfo)
+            throw ApiBindingException(callInfo, this)
         }
         var response: HttpResponse? = null
         val responseText: String

@@ -228,7 +228,7 @@ class SimpleRouting(val config: Configuration) {
         launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
             if (!pipelineContextStore.responded) {
-                call.respond(convertResponse(response))
+                call.respond(Json{}.encodeToJsonElement(serializer(apiFunction.returnType), response))
             }
         }
     }
@@ -274,14 +274,6 @@ class SimpleRouting(val config: Configuration) {
             null
         }
     }
-
-
-    private fun convertResponse(response: Any?): Any = if (response is String) {
-        //todo is this proper process? how to make json writer to set quotes?
-        // if response type is String, then client error with the log below
-        // Expected string literal with quotes. Use 'JsonConfiguration.isLenient = true' to accept non-compliant
-        "\"${response.replace("\\", "\\\\")}\""
-    } else response?:"null" //todo does json writer not know null to null text??
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =
         this::class.functions.first {
