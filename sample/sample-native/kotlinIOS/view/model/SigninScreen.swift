@@ -10,46 +10,27 @@ import SwiftUI
 import sample_base
 
 struct SigninScreen: SampleScreen {
+    
     var model: SignInViewModel = SignInViewModel()
     func content(navigator: Navigator) -> some View {
         ScrollView {
             VStack {
-                if (model.user.value == nil) {
-                    LogInView(navigator)
-                } else {
-                    LogOutView(navigator)
+                TextField("Id", text: +model.inputId)
+                TextField("Password", text: +model.inputPassword)
+                Button("Sign In") {
+                    model.onClickSignIn()
+                }
+                Button("Sign Up") {
+                    navigator.navigate(to: {
+                        SignUpScreen()
+                    }, onResult: { result in
+                        model.onSignUpResult(result: result)
+                    })
                 }
             }
         }
         .navigationTitle("Sign in".localized())
     }
-    
-    func LogInView(_ navigator: Navigator) -> some View {
-        VStack {
-            TextField("Id", text: +model.inputId)
-            TextField("Password", text: +model.inputPassword)
-            Button("Sign In") {
-                model.onClickSignIn()
-            }
-            Button("Sign Up") {
-                navigator.navigate {
-                    SignUpScreen()
-                }
-            }
-        }
-    }
-    
-    func LogOutView(_ navigator: Navigator) -> some View {
-        VStack {
-            let userDetail = model.user.value!
-            Text("Id : \(userDetail.id!)")
-            Text("Name : \(userDetail.name)")
-            Button("Log Out") {
-                model.onClickLogOut()
-            }
-        }
-    }
-    
 }
 
 

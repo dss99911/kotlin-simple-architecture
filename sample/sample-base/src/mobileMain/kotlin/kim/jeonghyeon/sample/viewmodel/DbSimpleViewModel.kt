@@ -6,7 +6,7 @@ import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class DbSimpleViewModel(private val wordQueries: WordQueries) : BaseViewModel() {
+class DbSimpleViewModel(private val wordQueries: WordQueries) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -15,7 +15,7 @@ class DbSimpleViewModel(private val wordQueries: WordQueries) : BaseViewModel() 
     val wordList = dataFlow<List<Word>>(listOf())
     val newWord = dataFlow("")
 
-    override fun onInitialized() {
+    override fun onInit() {
         wordList.loadFlow(initStatus, wordQueries.selectAll().asListFlow())
     }
 

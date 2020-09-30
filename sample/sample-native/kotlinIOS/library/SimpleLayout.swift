@@ -21,7 +21,7 @@ import sample_base
 //  Working cases & Limitation
 //    1. A Screen is root Screen and navigates to B Screen => WORKING
 //    2. A Screen is root Screen and contains B Screen like TabView. and navigates to other Screen => set A as root Screen. B Screen doesn't receive deeplink. so, deliver deeplink manually to B Screen if required.
-//    3. A View naviates to B Screen => Not supported for now. because first View is not disappear by navigation. as B Screen is not first View. it's disappear when B Screen navigates to other Screen. and it causes some state is not stable.
+//    3. A View navigates to B Screen => Not supported for now. because first View is not disappear by navigation. as B Screen is not first View. it's disappear when B Screen navigates to other Screen. and it causes some state is not stable.
 //    4. multiple root Screen => Not supported
 // TODO: Support Sheet
 protocol Navigator {
@@ -29,7 +29,11 @@ protocol Navigator {
     // if it's by deeplink, set deeplinkUrl. if not, just set nil
     func navigate<Content>(deeplinkUrl: URL, to screen: @escaping () -> Content) where Content: Screen
     
-    func navigate<Content>(to screen: @escaping () -> Content) where Content: Screen
+    func navigate<Content>(to screen: @autoclosure @escaping () -> Content) where Content: Screen
+    
+    func navigate<Content>(_ screen: () -> Content) where Content: Screen
+    
+    func navigate<Content>(to screen: @escaping () -> Content, onResult: @escaping (Kotlin_simple_architectureScreenResult) -> Void) where Content: Screen
     
     // if it's by deeplink, set deeplinkUrl. if not, just set nil
     func navigateToRootView(deeplinkUrl: URL)
@@ -55,6 +59,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
     let content: (_ navigator: Navigator) -> Content
     let isRootView: Bool
     let screen: SCREEN
+    let createdTime: CFAbsoluteTime
     
     init(viewModel: Kotlin_simple_architectureBaseViewModel, isRootView: Bool = false, screen: SCREEN,
          @ViewBuilder content: @escaping (_ navigator: Navigator) -> Content) {
@@ -62,6 +67,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         self.isRootView = isRootView
         self.screen = screen
         self.wrapper = ViewModelWrapper(viewModel: viewModel)
+        self.createdTime = CFAbsoluteTimeGetCurrent()
     }
     
     func navigate<Content>(deeplinkUrl: URL, to screen: @escaping () -> Content) where Content: Screen {
@@ -74,6 +80,14 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         navigate(to: screen())
     }
     
+    func navigate<Content>(to screen: @escaping () -> Content, onResult: @escaping (Kotlin_simple_architectureScreenResult) -> Void) where Content: Screen {
+        navigate(to: screen(), onResult: onResult)
+    }
+    
+    func navigate<Content>(_ screen: () -> Content) where Content: Screen {
+        navigate(to: screen())
+    }
+    
     private func navigate<Content>(to screen: Content) where Content: Screen {
         let view = screen.environmentObject(getRootWrapper())
         
@@ -81,7 +95,29 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         //if it's root's screen's inner screen, navigate by root screen. because, root screen can't recognize if current screen is root screen or other screen if root screen contains inner screen and navigated from the inner screen.
         let baseWrapper = isRootShown() ? getRootWrapper() : wrapper
         baseWrapper.navigation = {AnyView(view)}
-        baseWrapper.showNavigation = true
+        baseWrapper.navigationedViewModel = screen.model
+        
+        //when redirect to other screen directly, screen goes back to previous screen.
+        //so, should wait screen change finished.
+        //if this is not good, consider remove animation and try if it's working.
+        if ((CFAbsoluteTimeGetCurrent() - createdTime) < 1) {
+            delayMain (delayTime: .milliseconds(500)) {
+                baseWrapper.showNavigation = true
+            }
+        } else {
+            baseWrapper.showNavigation = true
+        }
+        
+        
+    }
+    
+    private func navigate<Content>(to screen: Content, onResult: @escaping (Kotlin_simple_architectureScreenResult) -> Void) where Content: Screen {
+        screen.model.screenResult.watch(scope: wrapper.viewModel.scope) { data in
+            if (data != nil) {
+                onResult(data!)
+            }
+        }
+        navigate(to: screen)
     }
     
     func getRootWrapper() -> ViewModelWrapper {
@@ -150,7 +186,18 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             .isDetailLink(false)
         }
         .onAppear {
+            //TODO: if 'onAppear' is called on the same time before initialized is set true, there will be malfunction
+            if (!self.wrapper.isInitialized()) {
+                screen.onInitialized(navigator: self)
+            }
             self.wrapper.onAppear()
+            
+            //TODO: check if onAppear always called after next Screen is closed.
+            let baseWrapper = isRootShown() ? getRootWrapper() : wrapper
+            if (baseWrapper.navigationedViewModel != nil) {
+                baseWrapper.navigationedViewModel?.onBackPressed()
+                baseWrapper.navigationedViewModel = nil
+            }
         }
         .onOpenURL { url in
             if (!isShown()) {

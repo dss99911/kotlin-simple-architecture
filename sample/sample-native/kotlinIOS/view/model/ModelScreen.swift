@@ -37,8 +37,8 @@ struct ModelScreen: SampleScreen {
                 Button("Api External Call") {
                     navigator.navigate { ApiExternalScreen() }
                 }
-                Button("Sign in") {
-                    navigator.navigate { SigninScreen() }
+                Button("User") {
+                    navigator.navigate { UserScreen() }
                 }
                 Button("Api Biding") {
                     navigator.navigate { ApiBindingScreen() }

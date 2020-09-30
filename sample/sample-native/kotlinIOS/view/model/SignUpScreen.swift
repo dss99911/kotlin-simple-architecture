@@ -13,7 +13,7 @@ import sample_base
 struct SignUpScreen : SampleScreen {
     
     var model: SignUpViewModel = SignUpViewModel()
-    
+
     func content(navigator: Navigator) -> some View {
         VStack {
             TextField("Id", text: +model.inputId)

@@ -12,12 +12,35 @@ struct SampleApp: App {
 }
 
 protocol SampleScreen : Screen {
-
+    //TODO: how to change the type of model as SampleViewModel ?
 }
 
 extension SampleScreen {
+    
+    var model: Kotlin_simple_architectureBaseViewModel {
+        SampleViewModel()
+    }
+    
     var deeplinker: Deeplinker {
         SampleDeeplinker()
+    }
+    
+    func onInitialized(navigator: Navigator) {
+        guard let sampleViewModel = model as? SampleViewModel else {
+            return
+        }
+        
+        sampleViewModel.goSignIn.watch(scope: model.scope) { data in
+            if (navigator.isShown()) {
+                if (data != nil) {
+                    navigator.navigate(to: {
+                        SigninScreen()
+                    }, onResult: { result in
+                        data?.onSignInResult(result: result)
+                    })
+                }
+            }
+        }
     }
 }
 

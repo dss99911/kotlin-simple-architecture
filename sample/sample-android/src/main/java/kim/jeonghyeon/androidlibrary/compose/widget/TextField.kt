@@ -19,11 +19,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
+import kim.jeonghyeon.client.DataFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun TextField(
-    text: MutableStateFlow<String>,
+    text: DataFlow<String>,
     label: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     textStyle: TextStyle = currentTextStyle(),
@@ -100,7 +101,7 @@ fun BaseTextField(
 
 @Composable
 fun OutlinedTextField(
-    text: MutableStateFlow<String>,
+    text: DataFlow<String>,
     label: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     textStyle: TextStyle = currentTextStyle(),

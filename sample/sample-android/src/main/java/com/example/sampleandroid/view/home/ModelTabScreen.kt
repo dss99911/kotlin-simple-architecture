@@ -7,13 +7,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.sampleandroid.view.SampleScreen
 import com.example.sampleandroid.view.model.ModelScreen
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 
-class ModelTabScreen : Screen() {
+class ModelTabScreen : SampleScreen() {
     override val title: String = R.string.model.resourceToString()
 
     //todo loadInIdle

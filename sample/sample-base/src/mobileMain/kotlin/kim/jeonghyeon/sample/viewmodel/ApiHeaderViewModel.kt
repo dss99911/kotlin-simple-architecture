@@ -8,7 +8,7 @@ import kim.jeonghyeon.sample.di.serviceLocator
 /**
  * shows how backend get header and how common header is working.
  */
-class ApiHeaderViewModel(private val api: SampleApi) : BaseViewModel() {
+class ApiHeaderViewModel(private val api: SampleApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -18,7 +18,7 @@ class ApiHeaderViewModel(private val api: SampleApi) : BaseViewModel() {
     val input = dataFlow("")
         .withSource(result) { value = it }
 
-    override fun onInitialized() {
+    override fun onInit() {
         result.load(initStatus) {
             api.getHeader()
         }

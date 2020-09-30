@@ -29,6 +29,7 @@
 		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
 		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
 		55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D55399250185270039C0A4 /* SigninScreen.swift */; };
+		55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1FAB252522D5004A8F1B /* UserScreen.swift */; };
 		55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */; };
 		55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */; };
 		55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */; };
@@ -95,6 +96,7 @@
 		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
 		55D55399250185270039C0A4 /* SigninScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninScreen.swift; sourceTree = "<group>"; };
+		55DE1FAB252522D5004A8F1B /* UserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserScreen.swift; sourceTree = "<group>"; };
 		55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiAnnotationScreen.swift; sourceTree = "<group>"; };
 		55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiExternalScreen.swift; sourceTree = "<group>"; };
 		55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLayout.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
 				55D55399250185270039C0A4 /* SigninScreen.swift */,
+				55DE1FAB252522D5004A8F1B /* UserScreen.swift */,
 				55F3925225080F1B00BB3CCF /* SignUpScreen.swift */,
 				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
 			);
@@ -524,6 +527,7 @@
 				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
 				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
+				55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */,
 				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
 				55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */,
 				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,

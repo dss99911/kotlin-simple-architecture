@@ -5,9 +5,8 @@ import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.ColumnScope.gravity
 import androidx.compose.foundation.layout.RowScope.gravity
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -17,13 +16,15 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ErrorSnackbar
 import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.androidlibrary.extension.toast
-import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.type.Resource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kim.jeonghyeon.androidlibrary.compose.ScreenStack
+import kim.jeonghyeon.client.*
 
 /**
  * statusStateOf() shouldn't be lazy. if lazy, it's not working while setValue()
@@ -42,8 +43,12 @@ import kotlin.coroutines.CoroutineContext
  * todo communication between screen.
  * todo multiple first root screen by logic.
  * todo add menu and different navigation icon
+ *
+ * multiple viewModel is not supported
+ * - it makes code complicated on several functions(go back with result, etc)
+ * - only one viewModel is enough(for multiple feature, let viewModel contains sub viewModel)
  */
-abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(BaseViewModel())) {
+abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 
     open val title: String = ""
     open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
@@ -59,29 +64,21 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
         //and Screen also keep in memory even if activity destroyed. so, no need to handle recreate case.
         //Fragment way was difficult to handle dialog, toast, navigation, so, it couldn't apply MVVM perfectly but event had to use MVP or event implementation on MVVM
         //now complete MVVM is reflected on the architecture, thanks to Jetpack Compose
-        viewModels.forEach { viewModel ->
-            viewModel.eventGoBack.launchAndCollectNotNull {
+        launch {
+            viewModel.eventGoBack.collectNotNull {
                 goBack()
             }
-            viewModel.eventToast.launchAndCollectNotNull {
+        }
+        launch {
+            viewModel.eventToast.collectNotNull {
                 toast(it)
             }
         }
     }
 
-    fun <T> MutableStateFlow<T>.launchAndCollect(onCollect: (T) -> Unit) {
-        viewModels[0].scope.launch {
-            collect {
-                onCollect(it)
-            }
-        }
-    }
-
-    fun <T> MutableStateFlow<T?>.launchAndCollectNotNull(onCollect: (T) -> Unit) {
-        launchAndCollect {
-            if (it != null) {
-                onCollect(it)
-            }
+    fun launch(block: suspend CoroutineScope.() -> Unit) {
+        viewModel.scope.launch {
+            block()
         }
     }
 
@@ -96,7 +93,7 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
      */
     @Composable
     open fun compose() {
-        viewModels.forEach { it.onCompose() }
+        viewModel.onCompose()
 
         Stack(Modifier.fillMaxSize()) {
             if (composeInitStatus()) {
@@ -110,9 +107,12 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
     @Composable
     abstract fun view()
 
-
-    fun onDeeplinkReceived(url: Url) {
-        viewModels.forEach { it.onDeeplinkReceived(url) }
+    /**
+     * on default way, it delivers deeplink to viewModel
+     * you can customize it by override this.
+     */
+    open fun onDeeplinkReceived(url: Url) {
+        viewModel.onDeeplinkReceived(url)
     }
 
     /**
@@ -122,20 +122,18 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
      */
     @Composable
     private fun StackScope.composeInitStatus(): Boolean {
-        viewModels.forEach {
-            when (val resource = +it.initStatus) {
-                is Resource.Loading -> {
-                    composeInitLoading()
-                    return true
-                }
+        when (val resource = +viewModel.initStatus) {
+            is Resource.Loading -> {
+                composeInitLoading()
+                return true
+            }
 
-                is Resource.Error -> {
-                    composeInitError(resource)
-                    return true
-                }
+            is Resource.Error -> {
+                composeInitError(resource)
+                return true
+            }
 
-                else -> {
-                }
+            else -> {
             }
         }
 
@@ -144,12 +142,10 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
 
     @Composable
     private fun StackScope.composeStatus() {
-        viewModels.forEach {
-            when (val resource = +it.status) {
-                is Resource.Loading -> composeLoading()
-                is Resource.Error -> composeError(resource)
-                else -> {
-                }
+        when (val resource = +viewModel.status) {
+            is Resource.Loading -> composeLoading()
+            is Resource.Error -> composeError(resource)
+            else -> {
             }
         }
     }
@@ -186,22 +182,42 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
 
     @CallSuper
     fun clear() {
-        viewModels.forEach { it.onCleared() }
+        viewModel.onBackPressed()
     }
 
     @Composable
-    operator fun <T> MutableStateFlow<T>.unaryPlus(): T = asState().value
+    operator fun <T> DataFlow<T>.unaryPlus(): T = asState().value
 
     @Composable
-    fun <T> MutableStateFlow<T>.asValue(): T = asState().value
+    fun <T> DataFlow<T>.asValue(): T = asState().value
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Composable
-    inline fun <T> MutableStateFlow<T>.asState(
+    inline fun <T> DataFlow<T>.asState(
         context: CoroutineContext = Dispatchers.Main
-    ): State<T> = collectAsState(context)
+    ): State<T> = collectDistinctAsState(context)
 
     fun goBack() {
         popUpTo(true)
+    }
+
+    /**
+     * if the screen is on the top
+     */
+    fun isShown() = ScreenStack.last() == this
+
+    /**
+     * @param screen the screen to add
+     * @param onResult receive result after screen is closed if the screen's viewModel call [BaseViewModel.goBack] with result.
+     */
+    fun push(screen: Screen, onResult: (ScreenResult) -> Unit) {
+        launch {
+            //there is multiple viewModel. so used distinct
+            screen.viewModel.screenResult.collectDistinctNotNull {
+                onResult(it)
+            }
+        }
+        ScreenStack.instance.add(screen)
     }
 
     /**
@@ -213,9 +229,16 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
         fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)
         fun gravity(align: Alignment.Horizontal): Modifier = Modifier.gravity(align)
 
-        fun ColumnScope.weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
+        fun ColumnScope.weight(
+            @FloatRange(from = 0.0, fromInclusive = false) weight: Float,
+            fill: Boolean = true
+        ): Modifier =
             Modifier.weight(weight, fill)
-        fun RowScope.weight(@FloatRange(from = 0.0, fromInclusive = false) weight: Float, fill: Boolean = true): Modifier =
+
+        fun RowScope.weight(
+            @FloatRange(from = 0.0, fromInclusive = false) weight: Float,
+            fill: Boolean = true
+        ): Modifier =
             Modifier.weight(weight, fill)
 
         fun padding(all: Dp) = Modifier.padding(all)
@@ -232,12 +255,33 @@ abstract class Screen(private vararg val viewModels: BaseViewModel = arrayOf(Bas
 
 
 @Composable
-inline fun <T> MutableStateFlow<T>.asState(
+inline fun <T> DataFlow<T>.asState(
     context: CoroutineContext = Dispatchers.Main
-): State<T> = collectAsState(context)
+): State<T> = collectDistinctAsState(context)
 
 @Composable
-fun <T> MutableStateFlow<T>.asValue(): T = asState().value
+fun <T> DataFlow<T>.asValue(): T = asState().value
 
 @Composable
-operator fun <T> MutableStateFlow<T>.unaryPlus(): T = asValue()
+operator fun <T> DataFlow<T>.unaryPlus(): T = asValue()
+
+
+@Composable
+fun <T> DataFlow<T>.collectDistinctAsState(
+    context: CoroutineContext = EmptyCoroutineContext
+): State<T> {
+    val state = remember { mutableStateOf(value) }
+    launchInComposition(this, context) {
+        if (context == EmptyCoroutineContext) {
+            collectDistinct {
+                state.value = it
+            }
+        } else withContext(context) {
+            collectDistinct {
+                state.value = it
+            }
+        }
+    }
+    return state
+}
+

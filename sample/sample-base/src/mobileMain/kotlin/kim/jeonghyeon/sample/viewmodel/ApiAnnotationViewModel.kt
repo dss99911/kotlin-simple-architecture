@@ -6,7 +6,7 @@ import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
 
 
-class ApiAnnotationViewModel(private val api: SampleApi) : BaseViewModel() {
+class ApiAnnotationViewModel(private val api: SampleApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -15,7 +15,7 @@ class ApiAnnotationViewModel(private val api: SampleApi) : BaseViewModel() {
     val result = dataFlow("")
     val input = dataFlow("")
 
-    override fun onInitialized() {
+    override fun onInit() {
         result.load(initStatus) {
             api.getAnnotation("idvalue", "actionvalue", "authvalue").toString()
         }

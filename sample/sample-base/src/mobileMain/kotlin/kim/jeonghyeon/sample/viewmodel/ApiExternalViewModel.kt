@@ -5,7 +5,7 @@ import kim.jeonghyeon.sample.api.GithubApi
 import kim.jeonghyeon.sample.api.Repo
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiExternalViewModel(private val api: GithubApi) : BaseViewModel() {
+class ApiExternalViewModel(private val api: GithubApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -14,7 +14,7 @@ class ApiExternalViewModel(private val api: GithubApi) : BaseViewModel() {
     val repoList = dataFlow<List<Repo>>(listOf())
     val input = dataFlow("kotlin simple architecture")
 
-    override fun onInitialized() {
+    override fun onInit() {
         repoList.load(initStatus) {
             callApi()
         }

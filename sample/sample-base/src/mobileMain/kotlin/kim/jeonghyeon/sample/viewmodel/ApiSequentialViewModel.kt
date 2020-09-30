@@ -4,7 +4,7 @@ import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiSequentialViewModel(private val api: PreferenceApi) : BaseViewModel() {
+class ApiSequentialViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -23,7 +23,7 @@ class ApiSequentialViewModel(private val api: PreferenceApi) : BaseViewModel() {
         value = it.map { "key : ${it.first}, value : ${it.second}" }
     }
 
-    override fun onInitialized() {
+    override fun onInit() {
         list.load(initStatus) {
             listOf(
                 Pair(KEY1, api.getString(KEY1)).also { input1.value = it.second ?: "" },

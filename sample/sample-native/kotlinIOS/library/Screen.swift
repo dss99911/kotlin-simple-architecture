@@ -21,6 +21,8 @@ protocol Screen : View {
     // Required for `Navigator` feature
     var isRoot: Bool { get }
     
+    func onInitialized(navigator: Navigator)
+    
     // Add View here instead of `body`
     func content(navigator: Navigator) -> Content
     
@@ -52,6 +54,10 @@ extension Screen {
         SimpleLayout(viewModel: model, isRootView: isRoot, screen: self) { navigator in
             self.content(navigator: navigator)
         }
+    }
+    
+    func onInitialized(navigator: Navigator) {
+        
     }
     
     var loadingView: some View {

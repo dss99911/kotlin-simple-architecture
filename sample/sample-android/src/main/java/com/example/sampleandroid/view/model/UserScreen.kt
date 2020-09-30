@@ -4,13 +4,17 @@ import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.Text
 import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
+import kim.jeonghyeon.androidlibrary.compose.push
 import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SignInViewModel
+import kim.jeonghyeon.sample.viewmodel.UserViewModel
 
-class SignInScreen(private val model: SignInViewModel = SignInViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.sign_in.resourceToString()
+class UserScreen(private val model: UserViewModel = UserViewModel()) :
+    ModelScreen(model) {
+
+    override val title: String = R.string.user.resourceToString()
 
     @Composable
     override fun compose() {
@@ -20,18 +24,11 @@ class SignInScreen(private val model: SignInViewModel = SignInViewModel()) : Mod
     @Composable
     override fun view() {
         ScrollableColumn {
-            OutlinedTextField(model.inputId, label = { Text("Id") })
-            OutlinedTextField(model.inputPassword, label = { Text("Password") })
-            Button(model::onClickSignIn) {
-                Text("Sign In")
-            }
-
-            Button({
-                push(SignUpScreen()) { result ->
-                    model.onSignUpResult(result)
-                }
-            }) {
-                Text("Sign Up")
+            val userDetail = model.user.asValue()?:return@ScrollableColumn
+            Text("Id : ${userDetail.id}")
+            Text("Name : ${userDetail.name}")
+            Button(model::onClickLogOut) {
+                Text("Log Out")
             }
         }
     }

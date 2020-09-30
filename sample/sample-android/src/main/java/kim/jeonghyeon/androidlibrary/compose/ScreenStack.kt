@@ -60,11 +60,10 @@ object ScreenStack {
 
         if (popIndex == screenStack.size) return true//there is nothing to pop
 
-        //todo remove(screen) or removeAll() is not working.
-        for (index in (popIndex..screenStack.lastIndex).reversed()) {
-            screenStack.removeAt(index)
+        for (index in screenStack.lastIndex downTo popIndex) {
+            val removedScreen = screenStack.removeAt(index)
+            removedScreen.clear()
         }
-//        screenStack.removeLast(popIndex, screenStack.lastIndex)
         return true
     }
 }

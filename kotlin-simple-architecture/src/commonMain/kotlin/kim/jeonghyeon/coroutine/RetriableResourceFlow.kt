@@ -21,7 +21,7 @@ import kotlin.experimental.ExperimentalTypeInference
  *  but, if use this way, no need to take care of that.
  */
 @OptIn(ExperimentalTypeInference::class)
-fun <T> resourceFlow(@BuilderInference block: suspend FlowCollector<T>.(retry: () -> Unit) -> Unit): Flow<Resource<T>> = flow {
+fun <T> retriableResourceFlow(@BuilderInference block: suspend FlowCollector<T>.(retry: () -> Unit) -> Unit): Flow<Resource<T>> = flow {
     observeTrial { retry ->
         try {
             block(object: FlowCollector<T> {
@@ -41,7 +41,6 @@ fun <T> resourceFlow(@BuilderInference block: suspend FlowCollector<T>.(retry: (
 }
 
 suspend fun observeTrial(onRepeat: suspend (retry: () -> Unit) -> Unit) {
-
     val channel = Channel<Unit>(Channel.CONFLATED)
     channel.offer(Unit)
 

@@ -9,16 +9,13 @@ import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.atomic
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 typealias StatusFlow = DataFlow<Status>
-@OptIn(ExperimentalCoroutinesApi::class)
 typealias ResourceFlow<T> = DataFlow<Resource<T>>
 
 /**
@@ -38,9 +35,9 @@ open class BaseViewModel {
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    val screenResult = dataFlow<ScreenResult?>(null)
+
     val eventGoBack = dataFlow<Unit?>(null)
-    @OptIn(ExperimentalCoroutinesApi::class)
     val eventToast = dataFlow<String?>(null)
 
     @SimpleArchInternal
@@ -50,9 +47,24 @@ open class BaseViewModel {
         }
     }
 
+    /**
+     * when Screen is created, but not yet drawn. viewModel's init {} is invoked.
+     * It's better to initialize data when Screen is drawn.
+     */
     open fun onInitialized() {
     }
 
+    @CallSuper
+    fun onBackPressed() {
+        if (screenResult.value == null) {
+            screenResult.value = ScreenResult(ScreenResult.RESULT_CODE_CANCEL)
+        }
+        onCleared()
+    }
+
+    /**
+     * this is sometimes not called directly on ios
+     */
     @CallSuper
     open fun onCleared() {
         scope.close()
@@ -92,12 +104,19 @@ open class BaseViewModel {
 
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun goBack() {
         eventGoBack.value = Unit
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    fun goBackWithOk() {
+        goBack(ScreenResult(ScreenResult.RESULT_CODE_OK))
+    }
+
+    fun goBack(result: ScreenResult) {
+        this.screenResult.value = result
+        goBack()
+    }
+
     fun toast(message: String) {
         eventToast.value = message
     }
@@ -110,17 +129,14 @@ open class BaseViewModel {
         scope.loadResource(this, status, work)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T, U> DataFlow<U>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> ResourceFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (value.isLoading()) {
             return
@@ -136,17 +152,14 @@ open class BaseViewModel {
         scope.loadFlow(this, null, flow)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.load(status: StatusFlow, flow: Flow<Resource<T>>) {
         scope.loadResourceFromFlow(this, status, flow)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T, U> DataFlow<U>.load(status: StatusFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadResourceFromFlow(this, status, flow, transform = transform)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.loadFlow(status: StatusFlow, flow: Flow<T>) {
         scope.loadDataFromFlow(this, status, flow)
     }
@@ -178,5 +191,15 @@ open class BaseViewModel {
         }
     }
 
+}
+
+data class ScreenResult(val resultCode: Int, val data: Any? = null) {
+    companion object {
+        val RESULT_CODE_OK = 1
+        val RESULT_CODE_CANCEL = 0
+    }
+
+    val isOk get() = resultCode == RESULT_CODE_OK
+    val isCancel get() = resultCode == RESULT_CODE_CANCEL
 }
 

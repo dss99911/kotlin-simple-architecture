@@ -8,11 +8,13 @@ import androidx.ui.tooling.preview.Preview
 import com.example.sampleandroid.ui.AndroidLibraryTheme
 import com.example.sampleandroid.view.MainScaffold
 import com.example.sampleandroid.view.home.HomeScreen
+import com.example.sampleandroid.view.model.SignInScreen
 import com.example.sampleandroid.view.model.SignUpScreen
 import kim.jeonghyeon.androidlibrary.compose.BaseActivity
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.sample.repository.DEEPLINK_PATH_SIGN_UP
+import kim.jeonghyeon.const.Deeplink.DEEPLINK_PATH_SIGN_IN
+import kim.jeonghyeon.const.Deeplink.DEEPLINK_PATH_SIGN_UP
 import kotlin.reflect.KClass
 
 class MainActivity : BaseActivity() {
@@ -20,7 +22,8 @@ class MainActivity : BaseActivity() {
 
     //todo think about what is the best approach of deeplink
     override val deeplinks: Map<String, Pair<KClass<*>, () -> Screen>> = mapOf(
-        DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() })
+        DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() }),
+        DEEPLINK_PATH_SIGN_IN to (SignInScreen::class to { SignInScreen() }),
     )
     override val content: @Composable() () -> Unit
         get() = {

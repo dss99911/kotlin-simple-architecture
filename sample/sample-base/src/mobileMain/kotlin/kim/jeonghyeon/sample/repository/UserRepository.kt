@@ -4,8 +4,11 @@ import io.ktor.http.*
 import kim.jeonghyeon.auth.OAuthServerName
 import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.auth.SignOAuthClient
-import kim.jeonghyeon.coroutine.resourceFlow
+import kim.jeonghyeon.const.Deeplink.DEEPLINK_PATH_SIGN_UP
+import kim.jeonghyeon.coroutine.retriableResourceFlow
 import kim.jeonghyeon.extension.toJsonString
+import kim.jeonghyeon.pergist.Preference
+import kim.jeonghyeon.pergist.removeUserToken
 import kim.jeonghyeon.sample.api.SerializableUserDetail
 import kim.jeonghyeon.sample.api.UserApi
 import kim.jeonghyeon.sample.di.serviceLocator
@@ -27,12 +30,13 @@ interface UserRepository {
 class UserRepositoryImpl(
     private val userApi: UserApi = serviceLocator.userApi,
     private val signApi: SignApi = serviceLocator.signApi,
-    private val oauthClient: SignOAuthClient = serviceLocator.oauthClient
+    private val oauthClient: SignOAuthClient = serviceLocator.oauthClient,
+    private val preference: Preference = serviceLocator.preference
 ) : UserRepository {
     private var retry: ()-> Unit = {}
 
     //as it's singleton, it keeps data in memory until processor terminated
-    override val userDetail: Flow<Resource<SerializableUserDetail>> = resourceFlow {
+    override val userDetail: Flow<Resource<SerializableUserDetail>> = retriableResourceFlow {
         retry = it
         emit(userApi.getUser())
     }
@@ -86,7 +90,12 @@ class UserRepositoryImpl(
     }
 
     override suspend fun signOut() {
-        signApi.signOut()
+        try {
+            //even if failed. token should be deleted.
+            signApi.signOut()
+        } catch (e: Exception) {
+            preference.removeUserToken()
+        }
         invalidateUser()
     }
 
@@ -99,5 +108,3 @@ class UserRepositoryImpl(
         retry()
     }
 }
-
-expect val DEEPLINK_PATH_SIGN_UP: String
