@@ -262,7 +262,7 @@ open class BaseViewModel {
         }
     }
 
-    inline fun <reified T : Any> Url.getParam(index: Int): T? =
+    inline fun <reified T : Any?> Url.getParam(index: Int): T? =
         parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
 
     inline fun <reified T : Any> Url.getParam(index: Int, type: KClass<T>): T? =

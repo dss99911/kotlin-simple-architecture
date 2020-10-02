@@ -35,6 +35,6 @@ inline fun Any?.toJsonStringNew(): String {
     return (KotlinxSerializer().write(this?: return "null") as TextContent).text
 }
 
-inline fun <reified T : Any> String.fromJsonString(): T {
+inline fun <reified T : Any?> String.fromJsonString(): T {
     return Json { }.decodeFromString(this)
 }

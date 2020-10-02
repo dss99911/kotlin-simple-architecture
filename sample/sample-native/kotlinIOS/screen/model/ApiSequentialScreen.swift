@@ -13,27 +13,29 @@ struct ApiSequentialScreen: SampleScreen {
     var model = ApiSequentialViewModel()
     
     func content(navigator: Navigator) -> some View {
-        VStack {
+        Column {
             List(model.textList.value as! [String], id: \.self) { item in
                 Text(item)
             }
             
-            HStack {
+            Row {
                 Text(model.KEY1)
-                TextField("Enter value", text: +model.input1)
+                SampleTextField("Enter value", model.input1)
             }
             
-            HStack {
+            Row {
                 Text(model.KEY2)
-                TextField("Enter value", text: +model.input2)
+                SampleTextField("Enter value", model.input2)
             }
             
-            HStack {
+            Row {
                 Text(model.KEY3)
-                TextField("Enter value", text: +model.input3)
+                SampleTextField("Enter value", model.input3)
             }
             
-            Button(action: { self.model.onClick() }, label: { Text("Update") })
+            Button("Update") {
+                model.onClick()
+            }
         }
         .navigationTitle("Api Sequential Call".localized())
     }

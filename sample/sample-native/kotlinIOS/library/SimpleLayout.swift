@@ -170,7 +170,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
                 } else if (wrapper.isError()) {
                     //TODO: errorData can throw error if initStatus is changed to not error
                     screen.errorView(error: self.wrapper.viewModel.status.value!.errorData()) {
-                        self.wrapper.viewModel.initStatus.value!.retryOnError()
+                        self.wrapper.viewModel.status.value!.retryOnError()
                     }
                 }
             }

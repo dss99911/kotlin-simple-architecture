@@ -13,10 +13,12 @@ struct ApiSingleScreen: SampleScreen {
     var model: ApiSingleViewModel = ApiSingleViewModel()
     
     func content(navigator: Navigator) -> some View {
-        VStack(alignment: .center) {
-            Text("current value : \(model.result.value!)")
-            TextField("Enter value", text: +model.input).frame(width: 100, alignment: .center)
-            Button(action: { self.model.onClick() }, label: { Text("Update")})
+        Column(alignment: .center) {
+            Text("current value : \(+model.result)")
+            SampleTextField("Enter value", model.input).frame(width: 100, alignment: .center)
+            Button("Update") {
+                model.onClick()
+            }
         }
         .navigationTitle("Api Single Call".localized())
     }

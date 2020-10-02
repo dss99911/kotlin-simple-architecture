@@ -15,8 +15,8 @@ struct SigninScreen: SampleScreen {
     func content(navigator: Navigator) -> some View {
         ScrollView {
             VStack {
-                TextField("Id", text: +model.inputId)
-                TextField("Password", text: +model.inputPassword)
+                SampleTextField("Id", model.inputId)
+                SampleTextField("Password", model.inputPassword)
                 Button("Sign In") {
                     model.onClickSignIn()
                 }

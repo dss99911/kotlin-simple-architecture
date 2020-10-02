@@ -123,7 +123,7 @@ class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
      */
     @OptIn(InternalSerializationApi::class)
     fun onClickNavigateByDeeplinkOnly() {
-        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB, null) {
+        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB, deeplinkSubRequest.value) {
             if (it.isOk) {
                 deeplinkSubResult.value = it.dataOf(DeeplinkSubViewModel.RESPONSE_TYPE)
             }

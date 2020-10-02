@@ -37,6 +37,9 @@ extension SampleNavigationScreen {
 }
 
 class SampleDeeplinker : Deeplinker {
+    
+    // return false if screen not exists.
+    //
     // I want to make function getDeeplinkScreen.
     //  but, Screen required generic type for each screen. and have to return Screen type
     //  so, I couldn't find the way. and used this way
@@ -51,6 +54,8 @@ class SampleDeeplinker : Deeplinker {
             navigate(to: SigninScreen(), data: data)
         } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_UP)) {
             navigate(to: SignUpScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_DEEPLINK_SUB)) {
+            navigate(to: DeeplinkSubScreen(), data: data)
         } else {
             return false
         }

@@ -1,16 +1,16 @@
 package com.example.sampleandroid.view.model
 
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.ApiSingleViewModel
 import kim.jeonghyeon.sample.viewmodel.DeeplinkViewModel
 
-class DeeplinkScreen(private val model: DeeplinkViewModel = DeeplinkViewModel()) : ModelScreen(model) {
+class DeeplinkScreen(private val model: DeeplinkViewModel = DeeplinkViewModel()) :
+    ModelScreen(model) {
     override val title: String = R.string.deeplink.resourceToString()
 
     @Composable
@@ -20,33 +20,34 @@ class DeeplinkScreen(private val model: DeeplinkViewModel = DeeplinkViewModel())
 
     @Composable
     override fun view() {
-        Column {
-            Button(model::onClickClientDeeplink) {
-                Text("Deeplink on client")
+        ScrollableColumn {
+            Button("Deeplink on client") {
+                model.onClickClientDeeplink()
             }
 
-            Button(model::onClickServerDeeplink) {
-                Text("Deeplink from server")
+            Button("Deeplink from server") {
+                model.onClickServerDeeplink()
             }
 
-            Button(model::onClickGoToHome) {
-                Text("Deeplink to home")
+            Button("Deeplink to home") {
+                model.onClickGoToHome()
             }
 
-            Button(model::onClickGoToSignInThenGoHome) {
-                Text("Deeplink to signIn then home")
+            Button("Deeplink to signIn then home") {
+                model.onClickGoToSignInThenGoHome()
             }
 
-            Button(model::onClickGoogleUrl) {
-                Text("link to google")
+            Button("link to google") {
+                model.onClickGoogleUrl()
             }
 
-            OutlinedTextField(model.deeplinkSubRequest, { Text("Input parameter") })
+            SampleTextField("Input parameter", model.deeplinkSubRequest)
             Text("result value : ${+model.deeplinkSubResult}")
 
-            Button(model::onClickNavigateByDeeplinkOnly) {
-                Text("navigate to screen by deeplink only")
+            Button("navigate to screen by deeplink only") {
+                model.onClickNavigateByDeeplinkOnly()
             }
         }
+
     }
 }

@@ -16,13 +16,15 @@ struct ApiExternalScreen: SampleScreen {
     var model = ApiExternalViewModel()
 
     func content(navigator: Navigator) -> some View {
-        VStack {
+        Column {
             List(model.repoList.value as! [Repo], id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.name)")
             }
-            HStack {
-                TextField("Keyword", text: +model.input)
-                Button(action: { self.model.onClickCall() }, label: { Text("Call")})
+            Row {
+                SampleTextField("Keyword", model.input)
+                Button("Call") {
+                    model.onClickCall()
+                }
             }
         }
         .navigationTitle("Api External Call".localized())

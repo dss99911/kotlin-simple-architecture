@@ -28,6 +28,9 @@ class DeeplinkSubViewModel : SampleViewModel() {
     }
 
     companion object {
+        // if nullable is required, use code like the below
+        // url.getParam<String?>
+        // result.dataOf<String?>()
         val REQUEST_TYPE = String::class
         val RESPONSE_TYPE = String::class
     }

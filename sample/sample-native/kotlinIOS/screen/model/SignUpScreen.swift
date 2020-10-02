@@ -15,10 +15,10 @@ struct SignUpScreen : SampleScreen {
     var model: SignUpViewModel = SignUpViewModel()
 
     func content(navigator: Navigator) -> some View {
-        VStack {
-            TextField("Id", text: +model.inputId)
-            TextField("Name", text: +model.inputName)
-            TextField("Password", text: +model.inputPassword)
+        Column {
+            SampleTextField("Id", model.inputId)
+            SampleTextField("Name", model.inputName)
+            SampleTextField("Password", model.inputPassword)
             Button("Sign up") {
                 model.onClickSignUp()
             }

@@ -15,10 +15,10 @@ struct ApiPollingScreen: SampleScreen {
     var model = ApiPollingViewModel()
 
     func content(navigator: Navigator) -> some View {
-        VStack {
-            Text("fail count \(model.count.value as! Int)")
-            if (model.status.value!.isSuccess()) {
-                Text("result \(model.result.value!)")
+        Column {
+            Text("fail count \(+model.count)")
+            if ((+model.status).isSuccess()) {
+                Text("result \(+model.result)")
             }
         }
         .navigationTitle("Api Polling".localized())

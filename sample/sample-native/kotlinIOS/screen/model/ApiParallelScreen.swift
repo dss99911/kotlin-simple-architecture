@@ -12,27 +12,29 @@ struct ApiParallelScreen: SampleScreen {
     var model = ApiParallelViewModel()
 
     func content(navigator: Navigator) -> some View {
-        VStack {
+        Column {
             List(model.list.value as! [KotlinPair<NSString, NSString>], id: \.self.first) { item in
                 Text("key : \(item.first!), value : \(item.second!)")
             }
             
-            HStack {
+            Row {
                 Text(model.KEY1)
-                TextField("Enter value", text: +model.input1)
+                SampleTextField("Enter value", model.input1)
             }
             
-            HStack {
+            Row {
                 Text(model.KEY2)
-                TextField("Enter value", text: +model.input2)
+                SampleTextField("Enter value", model.input2)
             }
             
-            HStack {
+            Row {
                 Text(model.KEY3)
-                TextField("Enter value", text: +model.input3)
+                SampleTextField("Enter value", model.input3)
             }
             
-            Button(action: { self.model.onClick() }, label: { Text("Update") })
+            Button("Update") {
+                model.onClick()
+            }
         }
         .navigationTitle("Api Parallel Call".localized())
     }

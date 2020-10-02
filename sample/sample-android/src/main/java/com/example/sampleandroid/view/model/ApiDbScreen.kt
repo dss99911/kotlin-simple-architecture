@@ -4,9 +4,9 @@ import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
@@ -21,13 +21,13 @@ class ApiDbScreen(private val model: ApiDbViewModel = ApiDbViewModel()) : ModelS
     override fun view() {
         Column {
             Row(modifier = padding(4.dp)) {
-                OutlinedTextField(
+                SampleTextField(
+                    "Input new row",
                     model.newWord,
-                    label = { Text("Input new row")},
                     modifier = weight(1f)
                 )
-                Button(onClick = model::onClickAdd, modifier = gravity(CenterVertically)) {
-                    Text(R.string.add.resourceToString())
+                Button(R.string.add.resourceToString(), modifier = gravity(CenterVertically)) {
+                    model.onClickAdd()
                 }
             }
 

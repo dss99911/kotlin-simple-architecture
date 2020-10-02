@@ -60,6 +60,7 @@ enum TabIdentifier: String {
 
 class MainScreen_Previews: PreviewProvider {
     static var previews: some View {
+        //preview is not working https://hyun.myjetbrains.com/youtrack/issue/KSA-134
         HomeScreen()
     }
     

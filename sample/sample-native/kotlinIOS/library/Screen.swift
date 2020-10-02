@@ -69,11 +69,15 @@ extension Screen {
     }
     
     func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Button(action: { retry() }, label: { Text("Error \(error.message ?? "nil")") })
+        Button("Error \(error.message ?? "nil")") {
+            retry()
+        }
     }
     
     func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Button(action: { retry() }, label: { Text("Init Error \(error.message ?? "nil")") })
+        Button("Init Error \(error.message ?? "nil")") {
+            retry()
+        }
     }
     
     var deeplinker: Deeplinker {
