@@ -41,10 +41,10 @@ object ScreenStack {
 
     //todo consider synchronization. and search what is the proper way.
     fun clearAndPush(rootScreen: Screen) {
-        instance.forEachReversedByIndex {
-            it.clear()
+        for (index in instance.lastIndex downTo 0) {
+            val removedScreen = instance.removeAt(index)
+            removedScreen.clear()
         }
-        instance.clear()
         push(rootScreen)
     }
 

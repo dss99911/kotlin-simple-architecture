@@ -53,6 +53,12 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
     open val title: String = ""
     open val defaultErrorMessage: String = R.string.error_occurred.resourceToString()
 
+    /**
+     * this is used for deeplink to root screen.
+     * when navigating root screen. all screen is cleared and show root only.
+     */
+    open val isRoot: Boolean = false
+
     init {
         //in the Fragment approach, there was event concept that should be called one time for a data.
         //the reason, the event concept is created, is that Fragment or Activity can be recreated,
@@ -72,6 +78,11 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
         launch {
             viewModel.eventToast.collectNotNull {
                 toast(it)
+            }
+        }
+        launch {
+            viewModel.eventDeeplink.collectNotNull {
+                Deeplinker.navigateToDeeplink(this@Screen, it)
             }
         }
     }

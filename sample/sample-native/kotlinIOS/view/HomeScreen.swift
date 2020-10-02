@@ -9,7 +9,7 @@
 import sample_base
 import SwiftUI
 
-struct MainScreen: SampleNavigationScreen {
+struct HomeScreen: SampleNavigationScreen {
     let PARAM_TAB = "tab"
     @State var activeTab: TabIdentifier = .model
     @State var title = "Model".localized()
@@ -60,7 +60,7 @@ enum TabIdentifier: String {
 
 class MainScreen_Previews: PreviewProvider {
     static var previews: some View {
-        MainScreen()
+        HomeScreen()
     }
     
     //    #if DEBUG

@@ -2,6 +2,8 @@
 
 package kim.jeonghyeon.extension
 
+import io.ktor.client.features.json.serializer.*
+import io.ktor.http.content.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -23,8 +25,14 @@ fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean =
     return if (index < 0) this else replaceRange(index, index + oldValue.length, newValue)
 }
 
+@Deprecated("this is not working with Any", ReplaceWith("toJsonStringNew"))
 inline fun <reified T : Any> T.toJsonString(): String {
     return Json { }.encodeToString(this)
+}
+
+//todo change to this function and change name
+inline fun Any?.toJsonStringNew(): String {
+    return (KotlinxSerializer().write(this?: return "null") as TextContent).text
 }
 
 inline fun <reified T : Any> String.fromJsonString(): T {

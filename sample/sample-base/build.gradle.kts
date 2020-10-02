@@ -20,7 +20,7 @@ plugins {
 }
 
 val serverUrl = "https://sample.jeonghyeon.kim"
-val deeplinkScheme = "kim.jeonghyeon.kotlinIOS"
+val deeplinkScheme = "kim.jeonghyeon.kotlinios"
 val deeplinkHost = "sample.jeonghyeon.kim"
 val deeplinkPrePath = "/deeplink"
 

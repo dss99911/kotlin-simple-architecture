@@ -10,7 +10,7 @@
 		217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */; };
 		217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */; };
 		217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */; };
-		217DE6372CB0387049C217DE /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainScreen.swift */; };
+		217DE6372CB0387049C217DE /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */; };
 		217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */; };
 		217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */; };
 		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
@@ -63,7 +63,7 @@
 /* Begin PBXFileReference section */
 		18F78E4DF61B6B8F4E683A3A /* Pods-kotlinIOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOSTests.release.xcconfig"; path = "Target Support Files/Pods-kotlinIOSTests/Pods-kotlinIOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		217DE07307A8043209549F8E /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
-		217DE0F7F8C5CB9236798A97 /* MainScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
+		217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 		217DE5420D87907E024BD89B /* ViewScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewScreen.swift; sourceTree = "<group>"; };
 		217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiDbScreen.swift; sourceTree = "<group>"; };
 		217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialScreen.swift; sourceTree = "<group>"; };
@@ -170,7 +170,7 @@
 			children = (
 				217DE10741337F1B3AEFAB19 /* model */,
 				217DEE88BF00C36CA4BB1701 /* view */,
-				217DE0F7F8C5CB9236798A97 /* MainScreen.swift */,
+				217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -530,7 +530,7 @@
 				55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */,
 				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
 				55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */,
-				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
+				217DE6372CB0387049C217DE /* HomeScreen.swift in Sources */,
 				55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */,
 				551F389025053DE8006AC496 /* SampleApp.swift in Sources */,
 				55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */,
@@ -681,7 +681,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -872,7 +872,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -903,7 +903,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

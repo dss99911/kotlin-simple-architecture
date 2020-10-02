@@ -6,7 +6,7 @@ struct SampleApp: App {
         ApplicationKt.initialize(app: UIApplication.shared)
         
         return WindowGroup {
-            MainScreen()
+            HomeScreen()
         }
     }
 }
@@ -24,24 +24,6 @@ extension SampleScreen {
     var deeplinker: Deeplinker {
         SampleDeeplinker()
     }
-    
-    func onInitialized(navigator: Navigator) {
-        guard let sampleViewModel = model as? SampleViewModel else {
-            return
-        }
-        
-        sampleViewModel.goSignIn.watch(scope: model.scope) { data in
-            if (navigator.isShown()) {
-                if (data != nil) {
-                    navigator.navigate(to: {
-                        SigninScreen()
-                    }, onResult: { result in
-                        data?.onSignInResult(result: result)
-                    })
-                }
-            }
-        }
-    }
 }
 
 protocol SampleNavigationScreen : NavigationScreen {
@@ -54,17 +36,24 @@ extension SampleNavigationScreen {
     }
 }
 
-class SampleDeeplinker : Deeplinker {    
-    override func navigateToDeeplink<SCREEN>(navigator: Navigator, url: URL, currentScreen: SCREEN) where SCREEN : Screen {
-        switch url.path {
-        case "/main":
-            navigator.navigateToRootView(deeplinkUrl: url)
-        case "/signIn":
-            navigate(to: SigninScreen(), url: url, navigator: navigator, currentScreen: currentScreen)
-        case "/signUp":
-            navigate(to: SignUpScreen(), url: url, navigator: navigator, currentScreen: currentScreen)
-        default:
-            navigator.navigateToRootView(deeplinkUrl: url)
+class SampleDeeplinker : Deeplinker {
+    // I want to make function getDeeplinkScreen.
+    //  but, Screen required generic type for each screen. and have to return Screen type
+    //  so, I couldn't find the way. and used this way
+    override func navigateToDeeplink<SCREEN>(
+        data: DeeplinkData<SCREEN>
+    ) -> Bool where SCREEN : Screen {
+        let deeplink = DeeplinkUrl()
+        let url = data.url.absoluteString
+        if (url.starts(with: deeplink.DEEPLINK_PATH_HOME)) {
+            navigate(to: HomeScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_IN)) {
+            navigate(to: SigninScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_UP)) {
+            navigate(to: SignUpScreen(), data: data)
+        } else {
+            return false
         }
+        return true
     }
 }

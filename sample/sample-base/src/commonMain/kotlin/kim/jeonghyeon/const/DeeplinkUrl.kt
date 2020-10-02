@@ -8,10 +8,12 @@ import samplebase.generated.SimpleConfig
  * so, Used custom scheme deeplink. and also use same custom scheme on android to unify deeplink on both ios and android
  * TODO: Use Universal Link and use server url
  */
-object Deeplink {
+object DeeplinkUrl {
     private val prefix = "${SimpleConfig.deeplinkScheme}://${SimpleConfig.deeplinkHost}${SimpleConfig.deeplinkPrePath}"
 
+    val DEEPLINK_PATH_HOME: String = "$prefix/home"
     val DEEPLINK_PATH_SIGN_UP: String = "$prefix/signUp"
     val DEEPLINK_PATH_SIGN_IN: String = "$prefix/signIn"
+    val DEEPLINK_PATH_DEEPLINK_SUB: String = "$prefix/deeplink-sub"
 }
 

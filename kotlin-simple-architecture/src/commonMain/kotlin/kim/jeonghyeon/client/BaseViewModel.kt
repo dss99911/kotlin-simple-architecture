@@ -4,15 +4,21 @@ package kim.jeonghyeon.client
 import io.ktor.http.*
 import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.annotation.SimpleArchInternal
+import kim.jeonghyeon.extension.fromJsonString
+import kim.jeonghyeon.extension.toJsonString
+import kim.jeonghyeon.extension.toJsonStringNew
+import kim.jeonghyeon.net.DeeplinkError
+import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.AtomicReference
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.atomic
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlin.reflect.KClass
 
 
 typealias StatusFlow = DataFlow<Status>
@@ -24,6 +30,9 @@ typealias ResourceFlow<T> = DataFlow<Resource<T>>
  * if some variable data is required. use [dataFlow] or [AtomicReference]
  */
 open class BaseViewModel {
+    companion object {
+        val PARAM_NAME_PARAM = "param"
+    }
 
     @SimpleArchInternal("used on IOS base code. don't use")
     val flows: MutableList<DataFlow<*>> = mutableListOf()
@@ -39,12 +48,68 @@ open class BaseViewModel {
 
     val eventGoBack = dataFlow<Unit?>(null)
     val eventToast = dataFlow<String?>(null)
+    val eventDeeplink = dataFlow<DeeplinkNavigation?>(null)
 
     @SimpleArchInternal
     fun onCompose() {
         if (!isInitialized.getAndSet(true)) {
+            handleDeeplink()
             onInitialized()
         }
+    }
+
+    /**
+     * if need customizing handling deeplink. override this.
+     * ex) show snackbar before navigation
+     */
+    open fun handleDeeplink() {
+        initStatus.handleDeeplink()
+        status.handleDeeplink()
+    }
+
+    /**
+     * use this for custom resource to handle deeplink
+     */
+    fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel {
+        val deeplinkInfo = it.errorOrNullOf<DeeplinkError>()?.deeplinkInfo?:return@collectOnViewModel
+
+        navigateToDeeplink(deeplinkInfo.url) {
+            when (deeplinkInfo.redirectionInfo.type) {
+                RedirectionType.retry -> {
+                    this@handleDeeplink.value.retryOnError()
+                }
+                RedirectionType.redirectionUrl -> {
+                    //todo it seems that,
+                    eventDeeplink.call(DeeplinkNavigation(deeplinkInfo.redirectionInfo.url!!))
+                }
+                RedirectionType.none -> {
+                    //do nothing(show error ui, and when user click retry button, call api again
+                }
+
+            }
+        }
+    }
+
+    fun navigateToDeeplink(url: String, onResult: (ScreenResult) -> Unit = {}) {
+        eventDeeplink.call(DeeplinkNavigation(url, object : DeeplinkResultListener {
+            override fun onDeeplinkResult(result: ScreenResult) {
+                onResult(result)
+            }
+        }))
+    }
+
+    fun navigateToDeeplink(url: String, vararg params: Any?, onResult: (ScreenResult) -> Unit = {}) {
+        val encodedUrl = URLBuilder(url).apply {
+            params.forEachIndexed { index, data ->
+                parameters.append(PARAM_NAME_PARAM + index , data.toJsonStringNew())
+            }
+        }.buildString()
+
+        eventDeeplink.call(DeeplinkNavigation(encodedUrl, object : DeeplinkResultListener {
+            override fun onDeeplinkResult(result: ScreenResult) {
+                onResult(result)
+            }
+        }))
     }
 
     /**
@@ -108,8 +173,8 @@ open class BaseViewModel {
         eventGoBack.value = Unit
     }
 
-    fun goBackWithOk() {
-        goBack(ScreenResult(ScreenResult.RESULT_CODE_OK))
+    fun goBackWithOk(data: Any? = null) {
+        goBack(ScreenResult(ScreenResult.RESULT_CODE_OK, data))
     }
 
     fun goBack(result: ScreenResult) {
@@ -191,6 +256,19 @@ open class BaseViewModel {
         }
     }
 
+    fun <T> DataFlow<T>.collectOnViewModel(action: suspend (value: T) -> Unit): Unit {
+        scope.launch {
+            collect(action)
+        }
+    }
+
+    inline fun <reified T : Any> Url.getParam(index: Int): T? =
+        parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
+
+    inline fun <reified T : Any> Url.getParam(index: Int, type: KClass<T>): T? =
+        parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
+
+
 }
 
 data class ScreenResult(val resultCode: Int, val data: Any? = null) {
@@ -201,5 +279,15 @@ data class ScreenResult(val resultCode: Int, val data: Any? = null) {
 
     val isOk get() = resultCode == RESULT_CODE_OK
     val isCancel get() = resultCode == RESULT_CODE_CANCEL
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> dataOf(): T = data as T
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> dataOf(type: KClass<T>): T = data as T
 }
 
+data class DeeplinkNavigation(val url: String, val resultListener: DeeplinkResultListener? = null)
+
+interface DeeplinkResultListener {
+    fun onDeeplinkResult(result: ScreenResult)
+}

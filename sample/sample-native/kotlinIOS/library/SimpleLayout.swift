@@ -25,10 +25,6 @@ import sample_base
 //    4. multiple root Screen => Not supported
 // TODO: Support Sheet
 protocol Navigator {
-    // changed to lambda when receiving view directly, ViewModelWrapper deinit is not invoked.
-    // if it's by deeplink, set deeplinkUrl. if not, just set nil
-    func navigate<Content>(deeplinkUrl: URL, to screen: @escaping () -> Content) where Content: Screen
-    
     func navigate<Content>(to screen: @autoclosure @escaping () -> Content) where Content: Screen
     
     func navigate<Content>(_ screen: () -> Content) where Content: Screen
@@ -38,6 +34,7 @@ protocol Navigator {
     // if it's by deeplink, set deeplinkUrl. if not, just set nil
     func navigateToRootView(deeplinkUrl: URL)
     func navigateToRootView()
+    func openUrl(url: URL)
   
     func dismiss()
     
@@ -52,6 +49,7 @@ protocol Navigator {
 struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCREEN : Screen {
     @ObservedObject private var wrapper: ViewModelWrapper
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.openURL) var _openURL
     
     // All Screen refer root Screen's ViewModelWrapper. in order to navigate to Root View
     @EnvironmentObject var rootWrapper: ViewModelWrapper
@@ -68,12 +66,6 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         self.screen = screen
         self.wrapper = ViewModelWrapper(viewModel: viewModel)
         self.createdTime = CFAbsoluteTimeGetCurrent()
-    }
-    
-    func navigate<Content>(deeplinkUrl: URL, to screen: @escaping () -> Content) where Content: Screen {
-        let screenView = screen()//create here as `NavigationLink` calls destination several times.
-        screenView.onDeeplinkReceived(url: deeplinkUrl)
-        navigate(to: screenView)
     }
     
     func navigate<Content>(to screen: @escaping () -> Content) where Content: Screen {
@@ -101,7 +93,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         //so, should wait screen change finished.
         //if this is not good, consider remove animation and try if it's working.
         if ((CFAbsoluteTimeGetCurrent() - createdTime) < 1) {
-            delayMain (delayTime: .milliseconds(500)) {
+            delayMain (delayTime: .milliseconds(600)) {
                 baseWrapper.showNavigation = true
             }
         } else {
@@ -118,6 +110,10 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             }
         }
         navigate(to: screen)
+    }
+    
+    func openUrl(url: URL) {
+        _openURL(url)
     }
     
     func getRootWrapper() -> ViewModelWrapper {
@@ -188,6 +184,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         .onAppear {
             //TODO: if 'onAppear' is called on the same time before initialized is set true, there will be malfunction
             if (!self.wrapper.isInitialized()) {
+                watchDeeplink()
                 screen.onInitialized(navigator: self)
             }
             self.wrapper.onAppear()
@@ -206,7 +203,8 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             
             // call after delay, because if there is several screen, onOpenURL is called one by one. and first onOpenURL navigate to some screen. then isShown() status is changed on other screen. so need delay
             delayMain (delayTime: .milliseconds(200)) {
-                screen.deeplinker.navigateToDeeplink(navigator: self, url: url, currentScreen: screen)
+                let data = DeeplinkData(navigator: self, url: url, resultListener: nil, currentScreen: screen)
+                screen.deeplinker.navigateToDeeplinkOrLink(data: data)
             }
         }
         .onChange(of: wrapper.deeplinkUrl) { url in
@@ -221,5 +219,15 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             
         }
         .environmentObject(isRootView ? wrapper : rootWrapper)
+    }
+    
+    func watchDeeplink() {
+        wrapper.viewModel.eventDeeplink.watch(scope: wrapper.viewModel.scope) { data in
+            guard let data = data else { return }
+            guard let url = URL(string: data.url) else { return }
+            
+            let deeplinkData = DeeplinkData(navigator: self, url: url, resultListener: data.resultListener, currentScreen: screen)
+            screen.deeplinker.navigateToDeeplinkOrLink(data: deeplinkData)
+        }
     }
 }

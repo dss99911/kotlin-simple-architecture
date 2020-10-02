@@ -2,16 +2,18 @@ package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.client.ScreenResult
-import kim.jeonghyeon.client.call
+import kim.jeonghyeon.const.DeeplinkUrl
+import kim.jeonghyeon.net.DeeplinkError
+import kim.jeonghyeon.net.DeeplinkInfo
+import kim.jeonghyeon.net.RedirectionInfo
+import kim.jeonghyeon.net.RedirectionType
+import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.ResourceError
 import kotlinx.coroutines.flow.collect
-import kim.jeonghyeon.net.error.isApiErrorOf
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.launch
 
 open class SampleViewModel(private val preference: Preference) : BaseViewModel() {
@@ -27,82 +29,79 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
      */
     open val signInRequired = false
 
-    val goSignIn = dataFlow<SignInResultListener?>(null)
-
     final override fun onInitialized() {
-        checkSignInRequired()
-        collectErrorStatusForSignIn()
+        navigateToSignInOnInitialTimeIfNotSignedIn()
+        navigateToSignInOnUnauthroized()
     }
 
-    fun checkSignInRequired() {
-        val userToken = preference.getUserToken()
-        if (signInRequired && userToken == null) {
-            goSignIn.call(object : SignInResultListener {
-                override fun onSignInResult(result: ScreenResult) {
-                    if (result.isOk) {
-                        onInit()
-                    } else {
-                        //in case, onInit doesn't use initStatus,
-                        // if Error is set before go to signIn page,
-                        // then error will be shown continuously.
-                        // so, check if it's cancelled, then set error.
-                        initStatus.value = Resource.Error(ResourceError("Sign in is required"), null) {
-                            initStatus.value = Resource.Start
-                            checkSignInRequired()
-                        }
-                    }
-                }
-            })
+    fun navigateToSignInOnInitialTimeIfNotSignedIn() {
+        if (signInRequired && preference.getUserToken() == null) {
+            val info = DeeplinkInfo(
+                DeeplinkUrl.DEEPLINK_PATH_SIGN_IN,
+                "Sign in is required",
+                RedirectionInfo(RedirectionType.retry)
+            )
+
+            initStatus.value = Resource.Error(DeeplinkError(info), null) {
+                //this is called when deeplink screen result is ok or click retry button on error ui.
+                initStatus.value = Resource.Start//reset status.
+                navigateToSignInOnInitialTimeIfNotSignedIn()
+            }
         } else {
             onInit()
         }
     }
 
-    private fun collectErrorStatusForSignIn() {
+    private fun navigateToSignInOnUnauthroized() {
         if (isSignViewModel()) {
             return
         }
 
-        scope.launch {
+        initStatus.collectOnViewModel { status ->
+             val error = status.errorOrNullOf<ApiError>()?: return@collectOnViewModel
+
             //we already check signInRequired and navigate to sign in screen.
             //but, in case token is expired. we need api call to check signin.
-            initStatus.collect {
-                it.onError { error, _, _ ->
-                    if (error.isApiErrorOf(ApiErrorBody.Unauthorized)) {
-                        goSignIn.call(object : SignInResultListener {
-                            override fun onSignInResult(result: ScreenResult) {
-                                log.i("onResult")
-                                if (result.isOk) {
-                                    log.i("onResult, retry()")
-                                    initStatus.value.retryOnError()
-                                }
-                            }
-                        })
-                    }
-                }
+            if (error.body != ApiErrorBody.Unauthorized) {
+                return@collectOnViewModel
+            }
+
+            val info = DeeplinkInfo(
+                DeeplinkUrl.DEEPLINK_PATH_SIGN_IN,
+                error.errorMessage,
+                RedirectionInfo(RedirectionType.retry)
+            )
+
+            initStatus.value = Resource.Error(DeeplinkError(info), null) {
+                status.retryOnError()
             }
         }
 
-        scope.launch {
-            status.collect {
-                it.onError { error, _, _ ->
-                    if (error.isApiErrorOf(ApiErrorBody.Unauthorized)) {
-                        goSignIn.call(object : SignInResultListener {
-                            override fun onSignInResult(result: ScreenResult) {
-                                status.value = Resource.Start//hide error view
-                                //do nothing. let user decide to retry or not.
-                                //normally, button click action is performed by user
-                                //and user may change mind not to click the button after sign-in
-                            }
-                        })
-                    }
-                }
+        status.collectOnViewModel { status ->
+            val error = status.errorOrNullOf<ApiError>()?: return@collectOnViewModel
+            if (error.body != ApiErrorBody.Unauthorized) {
+                return@collectOnViewModel
             }
+
+            val info = DeeplinkInfo(
+                DeeplinkUrl.DEEPLINK_PATH_SIGN_IN,
+                error.errorMessage,
+
+                //do nothing. let user decide to retry or not.
+                //normally, button click action is performed by user
+                //and user may change mind not to click the button after sign-in
+                RedirectionInfo(RedirectionType.none)
+            )
+
+            this@SampleViewModel.status.value = Resource.Error(DeeplinkError(info), null) {
+                status.retryOnError()
+            }
+
         }
     }
 
 
-    fun isSignViewModel(): Boolean = this@SampleViewModel is SignInViewModel || this@SampleViewModel is SignUpViewModel
+    private fun isSignViewModel(): Boolean = this@SampleViewModel is SignInViewModel || this@SampleViewModel is SignUpViewModel
 
     /**
      * as [onInitialized] check if sign-in or not. [onInit] will be used for initializing

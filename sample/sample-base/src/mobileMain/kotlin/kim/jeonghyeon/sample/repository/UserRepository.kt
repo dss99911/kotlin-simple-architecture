@@ -4,7 +4,7 @@ import io.ktor.http.*
 import kim.jeonghyeon.auth.OAuthServerName
 import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.auth.SignOAuthClient
-import kim.jeonghyeon.const.Deeplink.DEEPLINK_PATH_SIGN_UP
+import kim.jeonghyeon.const.DeeplinkUrl.DEEPLINK_PATH_SIGN_UP
 import kim.jeonghyeon.coroutine.retriableResourceFlow
 import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.pergist.Preference
@@ -22,6 +22,7 @@ interface UserRepository {
     suspend fun signUp(id: String, password: String, name: String)
     suspend fun signGoogle()
     suspend fun signFacebook()
+    @Throws(Exception::class)
     fun onOAuthDeeplinkReceived(url: Url)
     suspend fun signIn(id: String, password: String)
     suspend fun signOut()
@@ -71,6 +72,7 @@ class UserRepositoryImpl(
         oauthClient.signUp(OAuthServerName.FACEBOOK, DEEPLINK_PATH_SIGN_UP)
     }
 
+    @Throws(Exception::class)
     override fun onOAuthDeeplinkReceived(url: Url) {
         oauthClient.saveToken(url)
         invalidateUser()

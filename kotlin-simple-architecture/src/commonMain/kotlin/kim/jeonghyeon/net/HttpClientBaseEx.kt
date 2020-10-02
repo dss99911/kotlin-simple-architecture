@@ -15,9 +15,7 @@ import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.extension.toJsonString
-import kim.jeonghyeon.net.error.ApiError
-import kim.jeonghyeon.net.error.ApiErrorBody
-import kim.jeonghyeon.net.error.errorApi
+import kim.jeonghyeon.net.error.*
 import kim.jeonghyeon.net.error.isApiError
 import kim.jeonghyeon.pergist.KEY_USER_TOKEN
 import kim.jeonghyeon.pergist.Preference
@@ -101,6 +99,7 @@ object SimpleApiUtil {
         }
         callInfo.queries().forEach {
             parameter(it.first, it.second)
+
         }
         callInfo.headers().forEach {
             header(it.first, it.second)
@@ -144,6 +143,11 @@ object SimpleApiUtil {
         if (response.status.isApiError()) {
             val json = Json { }
             errorApi(json.decodeFromString(ApiErrorBody.serializer(), responseText))
+        }
+
+        if (response.status.isDeeplinkError()) {
+            val json = Json { }
+            errorDeeplink(json.decodeFromString(DeeplinkInfo.serializer(), responseText))
         }
 
         if (response.status.isSuccess()) {

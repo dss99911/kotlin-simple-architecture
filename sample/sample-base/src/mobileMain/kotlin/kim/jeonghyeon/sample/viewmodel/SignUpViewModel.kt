@@ -35,8 +35,11 @@ class SignUpViewModel(val userRepo: UserRepository) : SampleViewModel() {
     }
 
     override fun onDeeplinkReceived(url: Url) {
-        userRepo.onOAuthDeeplinkReceived(url)
-        finishSuccess()
+        try {
+            userRepo.onOAuthDeeplinkReceived(url)
+            finishSuccess()
+        } catch (e: Exception) {
+        }
     }
 
     private fun finishSuccess() {
