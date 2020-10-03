@@ -19,7 +19,7 @@ object DeeplinkUrl {
     //oauth link
     //facebook w/android https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22FACEBOOK%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=ANDROID&packageName=kim.jeonghyeon.sample.compose
     //google w/android https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22GOOGLE%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=ANDROID&packageName=kim.jeonghyeon.sample.compose
-    //facebook w/ios https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22FACEBOOK%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=IOS&packageName=
-    //google w/ios https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22GOOGLE%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=IOS&packageName=
+    //facebook w/ios https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22FACEBOOK%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=IOS&packageName=null
+    //google w/ios https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22GOOGLE%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=IOS&packageName=null
 }
 

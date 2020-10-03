@@ -10,10 +10,8 @@ import SwiftUI
 import sample_base
 
 struct ViewScreen: SampleScreen {
-    @State var isSheetShown = false
     
     func content(navigator: Navigator) -> some View {
         Text("View")
-        
     }
 }

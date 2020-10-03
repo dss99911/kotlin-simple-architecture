@@ -11,8 +11,8 @@ import SwiftUI
 
 struct HomeScreen: SampleNavigationScreen {
     let PARAM_TAB = "tab"
+    
     @State var activeTab: TabIdentifier = .model
-    @State var title = "Model".localized()
     
     var isRoot: Bool = true
     
@@ -24,11 +24,6 @@ struct HomeScreen: SampleNavigationScreen {
                     Text("Model")
                 }
                 .tag(TabIdentifier.model)
-                .onAppear {
-                    if (navigator.isShown()) {
-                        title = "Model".localized()
-                    }
-                }
             
             ViewScreen()
                 .tabItem {
@@ -36,14 +31,8 @@ struct HomeScreen: SampleNavigationScreen {
                     Text("View")
                 }
                 .tag(TabIdentifier.view)
-                // FIXME: when tap on ModelScreen, title is changed to View.
-                .onAppear {
-                    if (navigator.isShown()) {
-                        title = "View".localized()
-                    }
-                }
         }
-        .navigationTitle(title)
+        .navigationTitle("Home".localized())
     }
 
     func onDeeplinkReceived(url: URL) {
