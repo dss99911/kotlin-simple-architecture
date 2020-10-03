@@ -1,15 +1,14 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import io.ktor.http.*
-import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 
-class SignUpViewModel(val userRepo: UserRepository) : BaseViewModel() {
+class SignUpViewModel(val userRepo: UserRepository) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
-    constructor(): this(serviceLocator.userRepository)
+    constructor() : this(serviceLocator.userRepository)
 
     val inputId = dataFlow("")
     val inputName = dataFlow("")
@@ -35,13 +34,16 @@ class SignUpViewModel(val userRepo: UserRepository) : BaseViewModel() {
     }
 
     override fun onDeeplinkReceived(url: Url) {
-        userRepo.onOAuthDeeplinkReceived(url)
-        finishSuccess()
+        try {
+            userRepo.onOAuthDeeplinkReceived(url)
+            finishSuccess()
+        } catch (e: Exception) {
+        }
     }
 
     private fun finishSuccess() {
         //todo toast is not supported on ios. how to show ui even while screen is changed.
 //        toast("success to sign up")
-        goBack()
+        goBackWithOk()
     }
 }

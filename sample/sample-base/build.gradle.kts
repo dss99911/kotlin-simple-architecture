@@ -11,6 +11,7 @@ plugins {
     //android
     //todo when removing sample-android. change to com.android.application
     id("com.android.library")
+
     //common
     kotlin("multiplatform")
 
@@ -19,11 +20,15 @@ plugins {
 }
 
 val serverUrl = "https://sample.jeonghyeon.kim"
+val deeplinkScheme = "kim.jeonghyeon.kotlinios"
+val deeplinkHost = "sample.jeonghyeon.kim"
 val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
-    val isProduction by simpleProperty(true/*getEnvironment() == "production"*/)
+    val isProduction by simpleProperty(false/*getEnvironment() == "production"*/)
+    val deeplinkScheme by simpleProperty(deeplinkScheme)
+    val deeplinkHost by simpleProperty(deeplinkHost)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
     simpleProperties["serverUrl"] = if (isProduction) {
         "\"$serverUrl\""
@@ -128,17 +133,19 @@ android {
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
 
+
+        //todo this is only for android, is this required?
         buildConfigField("String", "freePackageName", "\"${appId}\"")
 
+        //todo this is only for android, is this required?
         buildConfigField("boolean", "isFree", "false")
         buildConfigField("boolean", "isPro", "false")
         buildConfigField("boolean", "isDev", "false")
         buildConfigField("boolean", "isProd", "false")
         buildConfigField("boolean", "isMock", "false")
 
-        val deeplinkUri = uri(serverUrl)
-        resValue("string", "deeplink_scheme", deeplinkUri.scheme)
-        resValue("string", "deeplink_host", deeplinkUri.host)
+        resValue("string", "deeplink_scheme", deeplinkScheme)
+        resValue("string", "deeplink_host", deeplinkHost)
         resValue("string", "deeplink_pathPrefix", deeplinkPrePath)
     }
 

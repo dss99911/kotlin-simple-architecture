@@ -8,9 +8,22 @@ import kotlinx.coroutines.flow.map
 
 expect class Preference() : AbstractPreference {
     override val db: SimpleDB
+
+    companion object
+}
+
+val Preference.Companion.KEY_USER_TOKEN get() = "simple-user-token"
+
+fun Preference.getUserToken(): String? {
+    return getEncryptedString(Preference.KEY_USER_TOKEN)
+}
+fun Preference.removeUserToken() {
+    setEncryptedString(Preference.KEY_USER_TOKEN, null)
 }
 
 abstract class AbstractPreference {
+
+
     abstract val db: SimpleDB
     private val queries by lazy { db.dictionaryQueries }
 

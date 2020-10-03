@@ -40,7 +40,9 @@
     <string name="polling">polling</string>
     <string name="multiple_parallel_call">Api call in parallel</string>
     <string name="single_call">Single Api call</string>
+    <string name="deeplink_sub">Deeplink Sub</string>
     <string name="sign_in">Sign in</string>
+    <string name="user">User</string>
     <string name="sign_up">Sign up</string>
     <string name="annotation_call">Annotation Api call</string>
     <string name="external_call">External Api call</string>

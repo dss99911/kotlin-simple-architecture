@@ -4,8 +4,9 @@ import com.example.sampleandroid.view.SubScreen
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.compose.R
+import kim.jeonghyeon.sample.viewmodel.SampleViewModel
 
-abstract class ModelScreen(vararg viewModels: BaseViewModel) : SubScreen(*viewModels) {
+abstract class ModelScreen(viewModel: SampleViewModel = SampleViewModel()) : SubScreen(viewModel) {
     override val parentTitle: String = R.string.model.resourceToString()
 
     companion object {
@@ -22,8 +23,9 @@ abstract class ModelScreen(vararg viewModels: BaseViewModel) : SubScreen(*viewMo
             ApiHeaderScreen().title to { ApiHeaderScreen() },
             ApiAnnotationScreen().title to { ApiAnnotationScreen() },
             ApiExternalScreen().title to { ApiExternalScreen() },
-            SignInScreen().title to { SignInScreen() },
+            UserScreen().title to { UserScreen() },
             ApiBindingScreen().title to { ApiBindingScreen() },
+            DeeplinkScreen().title to { DeeplinkScreen() },
         )
     }
 }

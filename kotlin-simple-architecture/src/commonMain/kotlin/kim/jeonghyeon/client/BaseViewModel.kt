@@ -4,21 +4,24 @@ package kim.jeonghyeon.client
 import io.ktor.http.*
 import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.annotation.SimpleArchInternal
+import kim.jeonghyeon.extension.fromJsonString
+import kim.jeonghyeon.extension.toJsonString
+import kim.jeonghyeon.extension.toJsonStringNew
+import kim.jeonghyeon.net.DeeplinkError
+import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.AtomicReference
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.atomic
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlin.reflect.KClass
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 typealias StatusFlow = DataFlow<Status>
-@OptIn(ExperimentalCoroutinesApi::class)
 typealias ResourceFlow<T> = DataFlow<Resource<T>>
 
 /**
@@ -27,6 +30,9 @@ typealias ResourceFlow<T> = DataFlow<Resource<T>>
  * if some variable data is required. use [dataFlow] or [AtomicReference]
  */
 open class BaseViewModel {
+    companion object {
+        val PARAM_NAME_PARAM = "param"
+    }
 
     @SimpleArchInternal("used on IOS base code. don't use")
     val flows: MutableList<DataFlow<*>> = mutableListOf()
@@ -38,21 +44,94 @@ open class BaseViewModel {
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    val screenResult = dataFlow<ScreenResult?>(null)
+
     val eventGoBack = dataFlow<Unit?>(null)
-    @OptIn(ExperimentalCoroutinesApi::class)
     val eventToast = dataFlow<String?>(null)
+    val eventDeeplink = dataFlow<DeeplinkNavigation?>(null)
 
     @SimpleArchInternal
     fun onCompose() {
         if (!isInitialized.getAndSet(true)) {
+            handleDeeplink()
             onInitialized()
         }
     }
 
+    /**
+     * if need customizing handling deeplink. override this.
+     * ex) show snackbar before navigation
+     */
+    open fun handleDeeplink() {
+        initStatus.handleDeeplink()
+        status.handleDeeplink()
+    }
+
+    /**
+     * use this for custom resource to handle deeplink
+     */
+    fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel {
+        val deeplinkInfo = it.errorOrNullOf<DeeplinkError>()?.deeplinkInfo?:return@collectOnViewModel
+        navigateToDeeplink(deeplinkInfo.url) {
+            if (!it.isOk) {
+                return@navigateToDeeplink
+            }
+            when (deeplinkInfo.redirectionInfo.type) {
+                RedirectionType.retry -> {
+                    this@handleDeeplink.value.retryOnError()
+                }
+                RedirectionType.redirectionUrl -> {
+                    //todo it seems that,
+                    eventDeeplink.call(DeeplinkNavigation(deeplinkInfo.redirectionInfo.url!!))
+                }
+                RedirectionType.none -> {
+                    //do nothing(show error ui, and when user click retry button, call api again
+                }
+
+            }
+        }
+    }
+
+    fun navigateToDeeplink(url: String, onResult: (ScreenResult) -> Unit = {}) {
+        eventDeeplink.call(DeeplinkNavigation(url, object : DeeplinkResultListener {
+            override fun onDeeplinkResult(result: ScreenResult) {
+                onResult(result)
+            }
+        }))
+    }
+
+    fun navigateToDeeplink(url: String, vararg params: Any?, onResult: (ScreenResult) -> Unit = {}) {
+        val encodedUrl = URLBuilder(url).apply {
+            params.forEachIndexed { index, data ->
+                parameters.append(PARAM_NAME_PARAM + index , data.toJsonStringNew())
+            }
+        }.buildString()
+
+        eventDeeplink.call(DeeplinkNavigation(encodedUrl, object : DeeplinkResultListener {
+            override fun onDeeplinkResult(result: ScreenResult) {
+                onResult(result)
+            }
+        }))
+    }
+
+    /**
+     * when Screen is created, but not yet drawn. viewModel's init {} is invoked.
+     * It's better to initialize data when Screen is drawn.
+     */
     open fun onInitialized() {
     }
 
+    @CallSuper
+    fun onBackPressed() {
+        if (screenResult.value == null) {
+            screenResult.value = ScreenResult(ScreenResult.RESULT_CODE_CANCEL)
+        }
+        onCleared()
+    }
+
+    /**
+     * this is sometimes not called directly on ios
+     */
     @CallSuper
     open fun onCleared() {
         scope.close()
@@ -92,12 +171,19 @@ open class BaseViewModel {
 
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun goBack() {
         eventGoBack.value = Unit
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    fun goBackWithOk(data: Any? = null) {
+        goBack(ScreenResult(ScreenResult.RESULT_CODE_OK, data))
+    }
+
+    fun goBack(result: ScreenResult) {
+        this.screenResult.value = result
+        goBack()
+    }
+
     fun toast(message: String) {
         eventToast.value = message
     }
@@ -110,17 +196,14 @@ open class BaseViewModel {
         scope.loadResource(this, status, work)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T, U> DataFlow<U>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> ResourceFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (value.isLoading()) {
             return
@@ -136,17 +219,14 @@ open class BaseViewModel {
         scope.loadFlow(this, null, flow)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.load(status: StatusFlow, flow: Flow<Resource<T>>) {
         scope.loadResourceFromFlow(this, status, flow)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T, U> DataFlow<U>.load(status: StatusFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
         scope.loadResourceFromFlow(this, status, flow, transform = transform)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> DataFlow<T>.loadFlow(status: StatusFlow, flow: Flow<T>) {
         scope.loadDataFromFlow(this, status, flow)
     }
@@ -178,5 +258,38 @@ open class BaseViewModel {
         }
     }
 
+    fun <T> DataFlow<T>.collectOnViewModel(action: suspend (value: T) -> Unit): Unit {
+        scope.launch {
+            collect(action)
+        }
+    }
+
+    inline fun <reified T : Any?> Url.getParam(index: Int): T? =
+        parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
+
+    inline fun <reified T : Any> Url.getParam(index: Int, type: KClass<T>): T? =
+        parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
+
+
 }
 
+data class ScreenResult(val resultCode: Int, val data: Any? = null) {
+    companion object {
+        val RESULT_CODE_OK = 1
+        val RESULT_CODE_CANCEL = 0
+    }
+
+    val isOk get() = resultCode == RESULT_CODE_OK
+    val isCancel get() = resultCode == RESULT_CODE_CANCEL
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> dataOf(): T = data as T
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> dataOf(type: KClass<T>): T = data as T
+}
+
+data class DeeplinkNavigation(val url: String, val resultListener: DeeplinkResultListener? = null)
+
+interface DeeplinkResultListener {
+    fun onDeeplinkResult(result: ScreenResult)
+}

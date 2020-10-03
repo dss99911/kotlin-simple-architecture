@@ -2,9 +2,9 @@ package com.example.sampleandroid.view.model
 
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
@@ -22,12 +22,12 @@ class ApiSequentialScreen(private val model: ApiSequentialViewModel = ApiSequent
     @Composable
     override fun view() {
         Column {
-            OutlinedTextField(model.input1, label = { Text("Input value1")})
-            OutlinedTextField(model.input2, label = { Text("Input value2")})
-            OutlinedTextField(model.input3, label = { Text("Input value3")})
+            SampleTextField("Input value1", model.input1)
+            SampleTextField("Input value2", model.input2)
+            SampleTextField("Input value3", model.input3)
 
-            Button(model::onClick) {
-                Text(R.string.update.resourceToString())
+            Button(R.string.update.resourceToString()) {
+                model.onClick()
             }
 
             ScrollableColumn(list = +model.textList, modifier = weight(1f)) {

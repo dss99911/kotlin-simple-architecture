@@ -25,6 +25,8 @@ interface SampleApi {
 
     @Put("annotation/{id}")
     suspend fun putAnnotation(@Path("id") id: String, @Body post: Post)
+
+    suspend fun testDeeplink()
 }
 
 

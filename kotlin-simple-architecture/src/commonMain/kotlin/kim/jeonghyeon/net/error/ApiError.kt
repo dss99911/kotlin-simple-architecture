@@ -1,16 +1,21 @@
 package kim.jeonghyeon.net.error
 
 import io.ktor.http.HttpStatusCode
+import kim.jeonghyeon.net.DeeplinkError
+import kim.jeonghyeon.net.DeeplinkInfo
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.serialization.Serializable
 
+/**
+ * @param body this is delivered to client
+ */
 class ApiError(val body: ApiErrorBody, cause: Throwable? = null) :
     ResourceError("${body.code}:${body.message}", cause) {
     val code get() = body.code
     val errorMessage get() = body.message
 }
 
-fun Exception.isApiErrorOf(expectedBody: ApiErrorBody): Boolean = this is ApiError && body.code == expectedBody.code
+fun Exception.isApiErrorOf(expectedBody: ApiErrorBody): Boolean = this is ApiError && body == expectedBody
 
 fun errorApi(code: Int, message: String? = null, cause: Throwable? = null): Nothing {
     throw ApiError(ApiErrorBody(code, message), cause)
@@ -20,10 +25,15 @@ fun errorApi(body: ApiErrorBody, cause: Throwable? = null): Nothing {
     throw ApiError(body, cause)
 }
 
+fun errorDeeplink(info: DeeplinkInfo, cause: Throwable? = null): Nothing {
+    throw DeeplinkError(info, cause)
+}
+
 //response body and error body is different. sever will devliver it different way.
 //TODO HYUN [multi-platform2] : consider proguard on common module
 
 private const val HTTP_STATUS_CODE_API_ERROR = 299//if it's not in success bound, ktor client throw exception. so that can't get error body.
+private const val HTTP_STATUS_CODE_DEEPLINK_ERROR = 298//if it's not in success bound, ktor client throw exception. so that can't get error body.
 
 /**
  * 1~999 error code includes [HttpStatusCode].
@@ -35,6 +45,14 @@ data class ApiErrorBody(
     val code: Int = CODE_UNKNOWN,
     val message: String?
 ) {
+    override fun equals(other: Any?): Boolean {
+        return code == (other as? ApiErrorBody)?.code
+    }
+
+    override fun hashCode(): Int {
+        return code
+    }
+
     companion object {
         const val CODE_UNKNOWN = 9999
         val Unknown = ApiErrorBody(CODE_UNKNOWN, "Unknown Error")
@@ -106,5 +124,7 @@ data class ApiErrorBody(
 }
 
 fun HttpStatusCode.isApiError(): Boolean = value == HTTP_STATUS_CODE_API_ERROR
+fun HttpStatusCode.isDeeplinkError(): Boolean = value == HTTP_STATUS_CODE_DEEPLINK_ERROR
 
 val HttpStatusCode.Companion.ApiError: HttpStatusCode get() = HttpStatusCode(HTTP_STATUS_CODE_API_ERROR, "Api Error")
+val HttpStatusCode.Companion.DeeplinkError: HttpStatusCode get() = HttpStatusCode(HTTP_STATUS_CODE_DEEPLINK_ERROR, "Deeplink Error")

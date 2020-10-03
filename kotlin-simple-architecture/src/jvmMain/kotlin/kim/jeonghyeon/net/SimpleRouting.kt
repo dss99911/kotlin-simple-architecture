@@ -20,6 +20,7 @@ import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
+import kim.jeonghyeon.net.error.DeeplinkError
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
@@ -87,6 +88,11 @@ class SimpleRouting(val config: Configuration) {
                 call.respond(HttpStatusCode.ApiError, it.body)
             }
 
+            val deeplinkException: suspend PipelineContext<Unit, ApplicationCall>.(exception: DeeplinkError) -> Unit = {
+                log.e(it)
+                call.respond(HttpStatusCode.DeeplinkError, it.deeplinkInfo)
+            }
+
             exception<Throwable> { error ->
                 unknownException(error)
             }
@@ -95,9 +101,14 @@ class SimpleRouting(val config: Configuration) {
                 apiException(error)
             }
 
+            exception<DeeplinkError> { error ->
+                deeplinkException(error)
+            }
+
             exception<InvocationTargetException> { error ->
                 when (val targetException = error.targetException) {
                     is ApiError -> apiException(targetException)
+                    is DeeplinkError -> deeplinkException(targetException)
                     else -> unknownException(targetException)
                 }
             }

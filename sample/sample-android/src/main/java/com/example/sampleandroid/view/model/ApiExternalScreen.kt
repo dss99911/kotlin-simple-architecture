@@ -3,9 +3,9 @@ package com.example.sampleandroid.view.model
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
@@ -23,10 +23,8 @@ class ApiExternalScreen(private val model: ApiExternalViewModel = ApiExternalVie
     override fun view() {
         Column {
             Row {
-                OutlinedTextField(model.input, { Text("Input Git hub search keyword")})
-                Button(onClick = model::onClickCall) {
-                    Text(R.string.call.resourceToString())
-                }
+                SampleTextField("Input Git hub search keyword", model.input)
+                Button(R.string.call.resourceToString()) { model.onClickCall() }
             }
 
             ScrollableColumn(+model.repoList, weight(1f)) {

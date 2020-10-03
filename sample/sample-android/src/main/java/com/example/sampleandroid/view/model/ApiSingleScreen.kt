@@ -2,9 +2,9 @@ package com.example.sampleandroid.view.model
 
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
-import kim.jeonghyeon.androidlibrary.compose.widget.OutlinedTextField
+import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiSingleViewModel
@@ -21,9 +21,9 @@ class ApiSingleScreen(private val model: ApiSingleViewModel = ApiSingleViewModel
     override fun view() {
         Column {
             Text("current value : ${+model.result}")
-            OutlinedTextField(model.input, { Text("Input value") })
-            Button(model::onClick) {
-                Text("update")
+            SampleTextField("Input value", model.input)
+            Button("update") {
+                model.onClick()
             }
         }
     }

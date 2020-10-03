@@ -20,7 +20,7 @@ actual class Preference(path: String, properties: Map<String?, String?> = mapOf(
             }
     )
 
-    companion object {
+    actual companion object {
         const val IN_MEMORY = JdbcSqliteDriver.IN_MEMORY
     }
 }
