@@ -26,25 +26,6 @@
             </intent-filter>
 
         </activity>
-        <activity android:name="com.example.sampleandroid.activity.OtherDeeplinkActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="kotlinsimplearchitecture.jeonghyeon.kim"
-                    android:path="/other"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
-
-        <receiver android:name="com.example.sampleandroid.activity.DeeplinkReceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

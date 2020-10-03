@@ -14,7 +14,7 @@ class ApiPollingScreen(private val model: ApiPollingViewModel = ApiPollingViewMo
     override fun view() {
         Column {
             Text("fail count ${+model.count}")
-            if (model.status.asValue().isSuccess()) {
+            if ((+model.status).isSuccess()) {
                 Text("result ${+model.result}")
             }
         }

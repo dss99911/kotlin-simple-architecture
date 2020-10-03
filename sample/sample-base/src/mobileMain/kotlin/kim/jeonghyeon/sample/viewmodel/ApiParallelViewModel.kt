@@ -5,7 +5,7 @@ import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.async
 
-class ApiParallelViewModel(private val api: PreferenceApi) : BaseViewModel() {
+class ApiParallelViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -26,7 +26,7 @@ class ApiParallelViewModel(private val api: PreferenceApi) : BaseViewModel() {
         value = it
     }
 
-    override fun onInitialized() {
+    override fun onInit() {
         list.load(initStatus) {
             val a1 = async { api.getString(KEY1) }
             val a2 = async { api.getString(KEY2) }

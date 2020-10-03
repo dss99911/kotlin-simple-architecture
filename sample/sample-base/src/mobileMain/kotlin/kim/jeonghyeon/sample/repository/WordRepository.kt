@@ -1,6 +1,6 @@
 package kim.jeonghyeon.sample.repository
 
-import kim.jeonghyeon.coroutine.resourceFlow
+import kim.jeonghyeon.coroutine.retriableResourceFlow
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
@@ -17,7 +17,7 @@ interface WordRepository {
 var fetchedWordApi = false
 
 class WordRepositoryImpl(/*val api: SampleApi,*/ val query: WordQueries) : WordRepository {
-    override fun getWord(): Flow<Resource<List<Word>>> = resourceFlow {
+    override fun getWord(): Flow<Resource<List<Word>>> = retriableResourceFlow {
         if (!fetchedWordApi) {
             //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
             // use constructor parameter serviceLocator.userRepository

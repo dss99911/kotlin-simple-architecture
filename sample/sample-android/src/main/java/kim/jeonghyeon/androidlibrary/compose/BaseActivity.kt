@@ -6,6 +6,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.util.nativeClass
 import io.ktor.http.*
 import kotlin.reflect.KClass
 
@@ -37,30 +38,23 @@ abstract class BaseActivity : AppCompatActivity() {
         //If there is way it's working without this, this can be removable
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
+        Deeplinker.deeplinks = deeplinks
+
         setContent {
             rootScreen.push()
             content()
         }
 
-        deliverDeeplink(intent)
+        intent?.dataString?.let {
+            Deeplinker.navigateToDeeplink(it)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        deliverDeeplink(intent)
-    }
-
-    private fun deliverDeeplink(intent: Intent?) {
-        val screen = deeplinks.entries.firstOrNull {
-            intent?.dataString?.startsWith(it.key)?:false
-        }?.value ?: return
-        //single top
-        var last = ScreenStack.last()
-        if (last::class != screen.first) {
-            last = screen.second().apply { push() }
+        intent?.dataString?.let {
+            Deeplinker.navigateToDeeplink(it)
         }
-
-        last.onDeeplinkReceived(Url(intent?.dataString!!))
     }
 
     override fun onBackPressed() {

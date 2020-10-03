@@ -29,12 +29,14 @@ sealed class Resource<out T> {
 
     fun successData(): T = if (isSuccess()) data() else error("Resource is not success")
     fun errorData(): ResourceError = if (this is Error) this.error else error("Resource is not error")
+    fun errorDataOrNull(): ResourceError? = if (this is Error) this.error else null
     fun retryOnError() {
         if (this is Error) {
             this.retry()
         }
     }
-    fun <E : ResourceError> errorOf(): E = errorData() as E
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified E : ResourceError> errorOrNullOf(): E? = errorDataOrNull() as? E?
 
     fun onLoading(onResult: (last: T?, cancel: () -> Unit) -> Unit): Resource<T> {
         if (this is Loading) {

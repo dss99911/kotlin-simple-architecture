@@ -230,7 +230,7 @@ open class SignOAuthController(
             ClientPlatform.ANDROID -> {
                 val scheme = url.protocol.name
                 val defaultPort = if (scheme == "http") 80 else 443
-                val port = url.port.let { port -> if (port == defaultPort) "" else ":$port" }
+                val port = url.port.let { port -> if (port == defaultPort || port == 0) "" else ":$port" }
                 call().respondRedirect("intent://${url.host}$port${url.fullPath}$tokenParameter#Intent;scheme=$scheme;package=$packageName;end")
             }
             ClientPlatform.IOS, ClientPlatform.JS -> {

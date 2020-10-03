@@ -1,3 +1,4 @@
+"Home" = "홈";
 "Model" = "모델";
 "Api Single Call" = "단일 API 호출";
 "Api Annotation Call" = "Annotation을 통한 API 호출";
@@ -16,3 +17,5 @@
 "Sign in" = "로그인";
 "Sign up" = "회원가입";
 "Api Binding" = "API 결합";
+"User" = "유저";
+"Deeplink" = "딥링크";

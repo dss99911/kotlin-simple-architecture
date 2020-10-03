@@ -15,11 +15,12 @@ import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.extension.toJsonString
-import kim.jeonghyeon.net.error.ApiError
-import kim.jeonghyeon.net.error.ApiErrorBody
-import kim.jeonghyeon.net.error.errorApi
+import kim.jeonghyeon.net.error.*
 import kim.jeonghyeon.net.error.isApiError
+import kim.jeonghyeon.pergist.KEY_USER_TOKEN
 import kim.jeonghyeon.pergist.Preference
+import kim.jeonghyeon.pergist.getUserToken
+import kim.jeonghyeon.pergist.removeUserToken
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -98,6 +99,7 @@ object SimpleApiUtil {
         }
         callInfo.queries().forEach {
             parameter(it.first, it.second)
+
         }
         callInfo.headers().forEach {
             header(it.first, it.second)
@@ -118,6 +120,13 @@ object SimpleApiUtil {
             }
             is ClientRequestException -> {
                 val status = e.response!!.status
+                if (status == HttpStatusCode.Unauthorized) {
+                    /**
+                     * todo if it's unauthorized on response, remove token on preference.
+                     *  when remove token, check api url and realm.
+                     */
+                    Preference().removeUserToken()
+                }
                 ApiError(ApiErrorBody(status.value, status.description), e)
             }
             else -> {
@@ -136,6 +145,11 @@ object SimpleApiUtil {
             errorApi(json.decodeFromString(ApiErrorBody.serializer(), responseText))
         }
 
+        if (response.status.isDeeplinkError()) {
+            val json = Json { }
+            errorDeeplink(json.decodeFromString(DeeplinkInfo.serializer(), responseText))
+        }
+
         if (response.status.isSuccess()) {
             return
         }
@@ -149,7 +163,7 @@ object SimpleApiUtil {
             return
         }
 
-        val tokenString = Preference().getEncryptedString(HEADER_NAME_TOKEN)
+        val tokenString = Preference().getUserToken()
         if (tokenString.isNullOrEmpty()) {
             return
         }
@@ -164,7 +178,7 @@ object SimpleApiUtil {
     fun HttpResponse.saveToken() {
         //if sigh out, tokenString will be ""
         val tokenString = headers[HEADER_NAME_TOKEN]?:return
-        Preference().setEncryptedString(HEADER_NAME_TOKEN, tokenString)
+        Preference().setEncryptedString(Preference.KEY_USER_TOKEN, tokenString)
     }
 }
 

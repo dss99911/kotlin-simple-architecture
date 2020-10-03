@@ -15,6 +15,8 @@ class HomeScreen : SimpleTabsScreen() {
     )
     override val initialIndex: Int = 0
 
+    override val isRoot = true
+
     @Composable
     override fun compose() {
         super.compose()

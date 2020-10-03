@@ -1,19 +1,8 @@
-buildscript {
-    repositories {
-        google()
-    }
-
-    dependencies {
-        classpath("com.google.gms:google-services:4.3.3")
-    }
-}
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
 }
 
-apply(plugin = "com.google.gms.google-services")
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 
 val androidKeyAlias: String by project
@@ -144,7 +133,4 @@ android {
 
 dependencies {
     implementation(project(":sample:sample-base"))
-
-    implementation("com.google.firebase:firebase-analytics:17.2.2")
-    implementation("com.google.firebase:firebase-dynamic-links-ktx:19.1.0")
 }

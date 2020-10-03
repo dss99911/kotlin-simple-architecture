@@ -4,7 +4,7 @@ import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiSingleViewModel(private val api: PreferenceApi) : BaseViewModel() {
+class ApiSingleViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -16,7 +16,7 @@ class ApiSingleViewModel(private val api: PreferenceApi) : BaseViewModel() {
     val input = dataFlow("")
         .withSource(result) { value = it }
 
-    override fun onInitialized() {
+    override fun onInit() {
         result.load(initStatus) {
             api.getString(KEY) ?: ""
         }

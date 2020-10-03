@@ -10,7 +10,7 @@
 		217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */; };
 		217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */; };
 		217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */; };
-		217DE6372CB0387049C217DE /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* MainScreen.swift */; };
+		217DE6372CB0387049C217DE /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */; };
 		217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEE3B682615044BBE3A02 /* ApiSingleScreen.swift */; };
 		217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */; };
 		217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DEF1824EFAADD3B4276FE /* ModelScreen.swift */; };
@@ -25,10 +25,15 @@
 		559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FD24424C4200ADA03F /* Preview Assets.xcassets */; };
 		5591060C24424C4200ADA03F /* kotlinIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591060B24424C4200ADA03F /* kotlinIOSTests.swift */; };
 		5591061724424C4200ADA03F /* kotlinIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5591061624424C4200ADA03F /* kotlinIOSUITests.swift */; };
+		55C5D12025272B2500438969 /* DeeplinkScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D11F25272B2500438969 /* DeeplinkScreen.swift */; };
+		55C5D12225272BEC00438969 /* ComposeTypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */; };
+		55C5D1252527334000438969 /* SampleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D1242527334000438969 /* SampleTextField.swift */; };
+		55C5D1272527405B00438969 /* DeeplinkSubScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */; };
 		55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55D47FB924C3427A00BEBA59 /* Localizable.strings */; };
 		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
 		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
 		55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D55399250185270039C0A4 /* SigninScreen.swift */; };
+		55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1FAB252522D5004A8F1B /* UserScreen.swift */; };
 		55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */; };
 		55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */; };
 		55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */; };
@@ -62,7 +67,7 @@
 /* Begin PBXFileReference section */
 		18F78E4DF61B6B8F4E683A3A /* Pods-kotlinIOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOSTests.release.xcconfig"; path = "Target Support Files/Pods-kotlinIOSTests/Pods-kotlinIOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		217DE07307A8043209549F8E /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
-		217DE0F7F8C5CB9236798A97 /* MainScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
+		217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 		217DE5420D87907E024BD89B /* ViewScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewScreen.swift; sourceTree = "<group>"; };
 		217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiDbScreen.swift; sourceTree = "<group>"; };
 		217DE6EE57F23D4B217BB70D /* ApiSequentialScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiSequentialScreen.swift; sourceTree = "<group>"; };
@@ -90,11 +95,16 @@
 		5591061824424C4200ADA03F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55910625244259C200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		5591062F24425B9200ADA03F /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../common/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
+		55C5D11F25272B2500438969 /* DeeplinkScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkScreen.swift; sourceTree = "<group>"; };
+		55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTypeAlias.swift; sourceTree = "<group>"; };
+		55C5D1242527334000438969 /* SampleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleTextField.swift; sourceTree = "<group>"; };
+		55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkSubScreen.swift; sourceTree = "<group>"; };
 		55D47FBA24C3427A00BEBA59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = kotlinIOS/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D47FBC24C3429400BEBA59 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = kotlinIOS/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
 		55D55399250185270039C0A4 /* SigninScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninScreen.swift; sourceTree = "<group>"; };
+		55DE1FAB252522D5004A8F1B /* UserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserScreen.swift; sourceTree = "<group>"; };
 		55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiAnnotationScreen.swift; sourceTree = "<group>"; };
 		55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiExternalScreen.swift; sourceTree = "<group>"; };
 		55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLayout.swift; sourceTree = "<group>"; };
@@ -156,20 +166,23 @@
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
 				55D55399250185270039C0A4 /* SigninScreen.swift */,
+				55DE1FAB252522D5004A8F1B /* UserScreen.swift */,
 				55F3925225080F1B00BB3CCF /* SignUpScreen.swift */,
 				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
+				55C5D11F25272B2500438969 /* DeeplinkScreen.swift */,
+				55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
 		};
-		217DE988B40143161010BB0B /* view */ = {
+		217DE988B40143161010BB0B /* screen */ = {
 			isa = PBXGroup;
 			children = (
 				217DE10741337F1B3AEFAB19 /* model */,
 				217DEE88BF00C36CA4BB1701 /* view */,
-				217DE0F7F8C5CB9236798A97 /* MainScreen.swift */,
+				217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */,
 			);
-			path = view;
+			path = screen;
 			sourceTree = "<group>";
 		};
 		217DEC1EE1072C25820B9664 /* library */ = {
@@ -184,6 +197,7 @@
 				55F392542508219700BB3CCF /* BindingEx.swift */,
 				55F392562508248A00BB3CCF /* ViewModelEx.swift */,
 				55817E8C250AF71300DF8271 /* ThreadEx.swift */,
+				55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */,
 			);
 			path = library;
 			sourceTree = "<group>";
@@ -229,12 +243,13 @@
 		559105F024424C4100ADA03F /* kotlinIOS */ = {
 			isa = PBXGroup;
 			children = (
+				55C5D1232527333400438969 /* widget */,
 				559105FA24424C4200ADA03F /* Assets.xcassets */,
 				5591060224424C4200ADA03F /* Info.plist */,
 				559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */,
 				559105FC24424C4200ADA03F /* Preview Content */,
 				217DEE717923577513CF6F77 /* Resources */,
-				217DE988B40143161010BB0B /* view */,
+				217DE988B40143161010BB0B /* screen */,
 				217DEC1EE1072C25820B9664 /* library */,
 				551F388F25053DE7006AC496 /* SampleApp.swift */,
 			);
@@ -279,6 +294,14 @@
 				9EA8AE654AD7C8D478FFB88D /* Pods_kotlinIOSTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		55C5D1232527333400438969 /* widget */ = {
+			isa = PBXGroup;
+			children = (
+				55C5D1242527334000438969 /* SampleTextField.swift */,
+			);
+			path = widget;
 			sourceTree = "<group>";
 		};
 		E33CC9ACC2B16C84EA8A9BB2 /* Pods */ = {
@@ -524,11 +547,16 @@
 				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
 				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
+				55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */,
+				55C5D1252527334000438969 /* SampleTextField.swift in Sources */,
+				55C5D12025272B2500438969 /* DeeplinkScreen.swift in Sources */,
 				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
+				55C5D1272527405B00438969 /* DeeplinkSubScreen.swift in Sources */,
 				55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */,
-				217DE6372CB0387049C217DE /* MainScreen.swift in Sources */,
+				217DE6372CB0387049C217DE /* HomeScreen.swift in Sources */,
 				55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */,
 				551F389025053DE8006AC496 /* SampleApp.swift in Sources */,
+				55C5D12225272BEC00438969 /* ComposeTypeAlias.swift in Sources */,
 				55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */,
 				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
 				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
@@ -677,7 +705,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -868,7 +896,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -899,7 +927,7 @@
 					"\"sample_base\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

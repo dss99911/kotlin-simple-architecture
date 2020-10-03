@@ -11,9 +11,8 @@ import SwiftUI
 import sample_base
 
 public class ViewModelWrapper: ObservableObject {
-    @Published var appearCount = 0
-    
     var navigation: (() -> AnyView)? = nil
+    var navigationedViewModel: BaseViewModel? = nil
     @Published var showNavigation = false
     
     // this is used for sending deeplink to root view
@@ -25,6 +24,10 @@ public class ViewModelWrapper: ObservableObject {
     
     init(viewModel: Kotlin_simple_architectureBaseViewModel) {
         self.viewModel = viewModel
+    }
+    
+    func isInitialized() -> Bool {
+        return viewModel.initialized
     }
     
     func onAppear() {

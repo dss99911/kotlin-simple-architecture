@@ -16,6 +16,7 @@ class SignOAuthClient(private val serverUrl: String): SignOAuthApi {
         signIn(platform, oAuthServerName, redirectUrl, packageName)
     }
 
+    @Throws(Exception::class)
     fun saveToken(url: Url) {
         val token = url.parameters[QUERY_TOKEN]?: error("token not exists")
         Preference().setEncryptedString(HEADER_NAME_TOKEN, token)

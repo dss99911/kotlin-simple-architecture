@@ -83,52 +83,70 @@ interface ApiBindingApi {
     suspend fun callWithAuth(apiCallInfos: List<ApiCallInfo>): List<String>
 }
 
-class ApiBinder2<DATA1, DATA2>(val client: HttpClient, val apiCallInfo1: ApiCallInfoAndSerializer<DATA1>, val apiCallInfo2: ApiCallInfoAndSerializer<DATA2>) {
+abstract class ApiBinder {
+    abstract val apiCallInfos: List<ApiCallInfoAndSerializer<*>>
+    abstract val client: HttpClient
+
+    suspend fun call(): List<Any?> {
+        verifyCallInfos()
+
+        val api = client.createSimple<ApiBindingApi>(apiCallInfos[0].apiCallInfo.baseUrl)
+
+        val isAuthRequired = apiCallInfos.any { it.apiCallInfo.isAuthRequired }
+        val result = if (isAuthRequired) {
+            api.callWithAuth(apiCallInfos.map { it.apiCallInfo })
+        } else {
+            api.call(apiCallInfos.map { it.apiCallInfo })
+        }
+
+        val json = Json { ignoreUnknownKeys = true }
+        return result.mapIndexed { index, s ->
+            json.decodeFromString(apiCallInfos[index].serializer, s)
+        }
+    }
+
+    private fun verifyCallInfos() {
+        val baseUrls = apiCallInfos.map { it.apiCallInfo.baseUrl }.toSet()
+        if (baseUrls.size > 1) {
+            error("[Api Binding] There are multiple base urls : $baseUrls")
+        }
+    }
+}
+
+class ApiBinder2<DATA1, DATA2>(override val client: HttpClient, val apiCallInfo1: ApiCallInfoAndSerializer<DATA1>, val apiCallInfo2: ApiCallInfoAndSerializer<DATA2>) : ApiBinder() {
+    override val apiCallInfos: List<ApiCallInfoAndSerializer<*>> = listOf(apiCallInfo1, apiCallInfo2)
 
     suspend inline fun <reified DATA3> bindApi(crossinline call: suspend (data1: ResponseBinder<DATA1>, data2: ResponseBinder<DATA2>)-> DATA3): ApiBinder3<DATA1, DATA2, DATA3> =
         ApiBinder3(client, apiCallInfo1, apiCallInfo2, getApiCallInfo { call(ResponseBinder(0, apiCallInfo1.serializer), ResponseBinder(1, apiCallInfo2.serializer)) })
 
     suspend fun execute(): Pair<DATA1, DATA2> {
-        verifyCallInfos(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo)
+        val result = call()
 
-        val api = client.createSimple<ApiBindingApi>(apiCallInfo1.apiCallInfo.baseUrl)
-        val isAuthRequired = apiCallInfo1.apiCallInfo.isAuthRequired || apiCallInfo2.apiCallInfo.isAuthRequired
-
-        val params = listOf(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo)
-        val result = if (isAuthRequired) {
-            api.callWithAuth(params)
-        } else {
-            api.call(params)
-        }
-
-        val json = Json { ignoreUnknownKeys = true }
         //todo handle exception. if any call is failed return error with success data info.
-        return Pair(
-            json.decodeFromString(apiCallInfo1.serializer, result[0]),
-            json.decodeFromString(apiCallInfo2.serializer, result[1])
-        )
-
+        // currently, no success data is returned.
+        // after receive success data, call only failed api.
+        return Pair(result[0] as DATA1, result[1] as DATA2)
     }
 }
 
-class ApiBinder3<DATA1, DATA2, DATA3>(val client: HttpClient, val apiCallInfo1: ApiCallInfoAndSerializer<DATA1>, val apiCallInfo2: ApiCallInfoAndSerializer<DATA2>, val apiCallInfo3: ApiCallInfoAndSerializer<DATA3>) {
-//    todo add more binder : suspend fun <DATA3> bindApi(call: (data1: ResponseBinder<DATA1>, data2: ResponseBinder<DATA2>)-> DATA3): ApiBinder3<DATA1, DATA2, DATA3> {
+class ApiBinder3<DATA1, DATA2, DATA3>(override val client: HttpClient, val apiCallInfo1: ApiCallInfoAndSerializer<DATA1>, val apiCallInfo2: ApiCallInfoAndSerializer<DATA2>, val apiCallInfo3: ApiCallInfoAndSerializer<DATA3>): ApiBinder() {
+    override val apiCallInfos: List<ApiCallInfoAndSerializer<*>> = listOf(apiCallInfo1, apiCallInfo2, apiCallInfo3)
+
+    //    todo add more binder : suspend fun <DATA3> bindApi(call: (data1: ResponseBinder<DATA1>, data2: ResponseBinder<DATA2>)-> DATA3): ApiBinder3<DATA1, DATA2, DATA3> {
 //
 //    }
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun execute(): Triple<DATA1, DATA2, DATA3> {
-        verifyCallInfos(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo, apiCallInfo3.apiCallInfo)
-        val result = client
-            .createSimple<ApiBindingApi>(apiCallInfo1.apiCallInfo.baseUrl)
-            .call(listOf(apiCallInfo1.apiCallInfo, apiCallInfo2.apiCallInfo, apiCallInfo3.apiCallInfo))
+        val result = call()
 
-        val json = Json { ignoreUnknownKeys = true }
         //todo handle exception. if any call is failed return error with success data info.
+        // currently, no success data is returned.
+        // after receive success data, call only failed api.
         return Triple(
-            json.decodeFromString(apiCallInfo1.serializer, result[0]),
-            json.decodeFromString(apiCallInfo2.serializer, result[1]),
-            json.decodeFromString(apiCallInfo3.serializer, result[2])
+            result[0] as DATA1,
+            result[1] as DATA2,
+            result[2] as DATA3
         )
     }
 }

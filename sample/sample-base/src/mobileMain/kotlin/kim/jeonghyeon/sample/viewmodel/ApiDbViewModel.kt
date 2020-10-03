@@ -5,7 +5,7 @@ import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.WordRepository
 
-class ApiDbViewModel(private val repository: WordRepository) : BaseViewModel() {
+class ApiDbViewModel(private val repository: WordRepository) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -19,7 +19,7 @@ class ApiDbViewModel(private val repository: WordRepository) : BaseViewModel() {
         value = it
     }
 
-    override fun onInitialized() {
+    override fun onInit() {
         wordList.load(initStatus, repository.getWord())
     }
 
