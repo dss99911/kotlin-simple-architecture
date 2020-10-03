@@ -39,6 +39,8 @@ protocol Navigator {
     func dismiss()
     
     func isShown() -> Bool
+    
+    func isForeground() -> Bool
 }
 
 // MARK: Functions
@@ -140,6 +142,10 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
         }
     }
     
+    func isForeground() -> Bool {
+        UIApplication.shared.applicationState == .active
+    }
+    
     func navigateToRootView(deeplinkUrl: URL) {
         navigateToRootView()
         getRootWrapper().deeplinkUrl = deeplinkUrl
@@ -182,6 +188,13 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             .isDetailLink(false)
         }
         .onAppear {
+            if (isRootView && !isForeground()) {
+                //when move to other app from not root view
+                //root view's `onAppear` is triggered but foreground is false
+                //as root view is actually not shown, so ignore it
+                return
+            }
+            
             //TODO: if 'onAppear' is called on the same time before initialized is set true, there will be malfunction
             if (!self.wrapper.isInitialized()) {
                 watchDeeplink()
@@ -204,7 +217,9 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
             // call after delay, because if there is several screen, onOpenURL is called one by one. and first onOpenURL navigate to some screen. then isShown() status is changed on other screen. so need delay
             delayMain (delayTime: .milliseconds(200)) {
                 let data = DeeplinkData(navigator: self, url: url, resultListener: nil, currentScreen: screen)
-                screen.deeplinker.navigateToDeeplinkOrLink(data: data)
+                
+                //as it's from external. doesn't open web browser
+                screen.deeplinker.navigateToDeeplink(data: data)
             }
         }
         .onChange(of: wrapper.deeplinkUrl) { url in

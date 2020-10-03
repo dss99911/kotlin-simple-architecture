@@ -72,8 +72,10 @@ open class BaseViewModel {
      */
     fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel {
         val deeplinkInfo = it.errorOrNullOf<DeeplinkError>()?.deeplinkInfo?:return@collectOnViewModel
-
         navigateToDeeplink(deeplinkInfo.url) {
+            if (!it.isOk) {
+                return@navigateToDeeplink
+            }
             when (deeplinkInfo.redirectionInfo.type) {
                 RedirectionType.retry -> {
                     this@handleDeeplink.value.retryOnError()

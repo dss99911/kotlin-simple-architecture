@@ -1,21 +1,10 @@
 package kim.jeonghyeon.sample.viewmodel
 
-import io.ktor.client.features.json.serializer.*
-import io.ktor.http.content.*
-import kim.jeonghyeon.client.DeeplinkNavigation
-import kim.jeonghyeon.client.DeeplinkResultListener
-import kim.jeonghyeon.client.ScreenResult
 import kim.jeonghyeon.const.DeeplinkUrl
-import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
-import kim.jeonghyeon.util.log
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.builtins.nullable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
 
 /**
  * this shows how to use deeplink

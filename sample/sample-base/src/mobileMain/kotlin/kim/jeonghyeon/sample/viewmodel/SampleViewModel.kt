@@ -13,14 +13,13 @@ import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 open class SampleViewModel(private val preference: Preference) : BaseViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
-    constructor(): this(serviceLocator.preference)
+    constructor() : this(serviceLocator.preference)
+
     /**
      * if the screen need sign-in, set this true by overrides
      * then when onInitialized() is called, before initializing,
@@ -58,7 +57,7 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
         }
 
         initStatus.collectOnViewModel { status ->
-             val error = status.errorOrNullOf<ApiError>()?: return@collectOnViewModel
+            val error = status.errorOrNullOf<ApiError>() ?: return@collectOnViewModel
 
             //we already check signInRequired and navigate to sign in screen.
             //but, in case token is expired. we need api call to check signin.
@@ -71,14 +70,13 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
                 error.errorMessage,
                 RedirectionInfo(RedirectionType.retry)
             )
-
             initStatus.value = Resource.Error(DeeplinkError(info), null) {
                 status.retryOnError()
             }
         }
 
         status.collectOnViewModel { status ->
-            val error = status.errorOrNullOf<ApiError>()?: return@collectOnViewModel
+            val error = status.errorOrNullOf<ApiError>() ?: return@collectOnViewModel
             if (error.body != ApiErrorBody.Unauthorized) {
                 return@collectOnViewModel
             }
@@ -96,12 +94,12 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
             this@SampleViewModel.status.value = Resource.Error(DeeplinkError(info), null) {
                 status.retryOnError()
             }
-
         }
     }
 
 
-    private fun isSignViewModel(): Boolean = this@SampleViewModel is SignInViewModel || this@SampleViewModel is SignUpViewModel
+    private fun isSignViewModel(): Boolean =
+        this@SampleViewModel is SignInViewModel || this@SampleViewModel is SignUpViewModel
 
     /**
      * as [onInitialized] check if sign-in or not. [onInit] will be used for initializing

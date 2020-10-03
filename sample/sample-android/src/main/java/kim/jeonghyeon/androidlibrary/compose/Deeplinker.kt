@@ -18,8 +18,7 @@ internal object Deeplinker {
             }?.value
 
         if (classAndScreen == null) {
-            //if deeplink matched screen not exists, open web browser
-            startActivityUrl(url)
+            //this is from external. so, doesn't open web browser
             return
         }
 
@@ -58,9 +57,7 @@ internal object Deeplinker {
                     screen.clearAndPush()
                 } else {
                     currentScreen.push(screen) {
-                        if (it.isOk) {
-                            navigation.resultListener?.onDeeplinkResult(it)
-                        }
+                        navigation.resultListener?.onDeeplinkResult(it)
                     }
                 }
             }

@@ -11,8 +11,6 @@ import SwiftUI
 import sample_base
 
 public class ViewModelWrapper: ObservableObject {
-    @Published var appearCount = 0
-    
     var navigation: (() -> AnyView)? = nil
     var navigationedViewModel: BaseViewModel? = nil
     @Published var showNavigation = false

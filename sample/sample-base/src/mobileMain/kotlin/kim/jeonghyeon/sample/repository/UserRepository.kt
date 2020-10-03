@@ -22,6 +22,7 @@ interface UserRepository {
     suspend fun signUp(id: String, password: String, name: String)
     suspend fun signGoogle()
     suspend fun signFacebook()
+
     @Throws(Exception::class)
     fun onOAuthDeeplinkReceived(url: Url)
     suspend fun signIn(id: String, password: String)
@@ -34,7 +35,7 @@ class UserRepositoryImpl(
     private val oauthClient: SignOAuthClient = serviceLocator.oauthClient,
     private val preference: Preference = serviceLocator.preference
 ) : UserRepository {
-    private var retry: ()-> Unit = {}
+    private var retry: () -> Unit = {}
 
     //as it's singleton, it keeps data in memory until processor terminated
     override val userDetail: Flow<Resource<SerializableUserDetail>> = retriableResourceFlow {
@@ -64,7 +65,7 @@ class UserRepositoryImpl(
         invalidateUser()
     }
 
-    override suspend fun signGoogle(){
+    override suspend fun signGoogle() {
         oauthClient.signUp(OAuthServerName.GOOGLE, DEEPLINK_PATH_SIGN_UP)
     }
 
