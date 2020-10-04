@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.api.GithubApi
 import kim.jeonghyeon.sample.api.Repo
 import kim.jeonghyeon.sample.di.serviceLocator
@@ -11,8 +12,8 @@ class ApiExternalViewModel(private val api: GithubApi) : SampleViewModel() {
     // if it's supported, remove this
     constructor(): this(serviceLocator.githubApi)
 
-    val repoList = dataFlow<List<Repo>>(listOf())
-    val input = dataFlow("kotlin simple architecture")
+    val repoList by add { DataFlow<List<Repo>>() }
+    val input by add { DataFlow("kotlin simple architecture") }
 
     override fun onInit() {
         repoList.load(initStatus) {
@@ -26,5 +27,5 @@ class ApiExternalViewModel(private val api: GithubApi) : SampleViewModel() {
         }
     }
 
-    private suspend fun callApi() = api.searchRepos(input.value, 1, 10).items
+    private suspend fun callApi() = api.searchRepos(input.value?:"", 1, 10).items
 }

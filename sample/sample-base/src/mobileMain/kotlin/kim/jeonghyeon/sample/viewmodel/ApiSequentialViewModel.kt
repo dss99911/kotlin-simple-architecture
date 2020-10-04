@@ -1,7 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.api.PreferenceApi
-import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 
 class ApiSequentialViewModel(private val api: PreferenceApi) : SampleViewModel() {
@@ -14,21 +14,23 @@ class ApiSequentialViewModel(private val api: PreferenceApi) : SampleViewModel()
     val KEY2 = "key2"
     val KEY3 = "key3"
 
-    val list = dataFlow(listOf<Pair<String, String?>>())
-    val input1 = dataFlow("")
-    val input2 = dataFlow("")
-    val input3 = dataFlow("")
+    val list by add { DataFlow(listOf<Pair<String, String?>>()) }
+    val input1 by add { DataFlow("") }
+    val input2 by add { DataFlow("") }
+    val input3 by add { DataFlow("") }
 
-    val textList = dataFlow(listOf<String>()).withSource(list) {
-        value = it.map { "key : ${it.first}, value : ${it.second}" }
+    val textList by add {
+        DataFlow(listOf<String>()).withSource(list) {
+            setValue(it.map { "key : ${it.first}, value : ${it.second}" })
+        }
     }
 
     override fun onInit() {
         list.load(initStatus) {
             listOf(
-                Pair(KEY1, api.getString(KEY1)).also { input1.value = it.second ?: "" },
-                Pair(KEY2, api.getString(KEY2)).also { input2.value = it.second ?: "" },
-                Pair(KEY3, api.getString(KEY3)).also { input3.value = it.second ?: "" }
+                Pair(KEY1, api.getString(KEY1)).also { input1.setValue(it.second ?: "") },
+                Pair(KEY2, api.getString(KEY2)).also { input2.setValue(it.second ?: "") },
+                Pair(KEY3, api.getString(KEY3)).also { input3.setValue(it.second ?: "") }
             )
         }
     }

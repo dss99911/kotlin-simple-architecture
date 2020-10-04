@@ -1,27 +1,28 @@
 package kim.jeonghyeon.sample.repository
 
-import kim.jeonghyeon.coroutine.retriableResourceFlow
+import kim.jeonghyeon.client.ResourceFlow
+import kim.jeonghyeon.client.resourceFlow
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
-import kim.jeonghyeon.sample.di.serviceLocator
-import kim.jeonghyeon.type.Resource
-import kotlinx.coroutines.flow.Flow
+import kim.jeonghyeon.sample.api.SampleApi
+import kim.jeonghyeon.util.log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 
 interface WordRepository {
-    fun getWord(): Flow<Resource<List<Word>>>
+    fun getWord(): ResourceFlow<List<Word>>
     suspend fun insertWord(word: String)
 }
 
 var fetchedWordApi = false
 
-class WordRepositoryImpl(/*val api: SampleApi,*/ val query: WordQueries) : WordRepository {
-    override fun getWord(): Flow<Resource<List<Word>>> = retriableResourceFlow {
+class WordRepositoryImpl(val api: SampleApi, val query: WordQueries) : WordRepository {
+    override fun getWord(): ResourceFlow<List<Word>> = resourceFlow(CoroutineScope(Dispatchers.Main)) {
         if (!fetchedWordApi) {
-            //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
-            // use constructor parameter serviceLocator.userRepository
-            val response = serviceLocator.sampleApi.getWords()
+            val response = api.getWords()
             query.deleteAll()
             response.forEach { query.insert(it) }
             fetchedWordApi = true
@@ -33,9 +34,7 @@ class WordRepositoryImpl(/*val api: SampleApi,*/ val query: WordQueries) : WordR
     }
 
     override suspend fun insertWord(word: String) {
-        //todo after this fixed https://youtrack.jetbrains.com/issue/KTOR-973
-        // use constructor parameter serviceLocator.userRepository
-        serviceLocator.sampleApi.addWord(word)
+        api.addWord(word)
         query.insert(word)
     }
 }

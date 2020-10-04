@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.api.Post
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
@@ -12,8 +13,8 @@ class ApiAnnotationViewModel(private val api: SampleApi) : SampleViewModel() {
     // if it's supported, remove this
     constructor() : this(serviceLocator.sampleApi)
 
-    val result = dataFlow("")
-    val input = dataFlow("")
+    val result by add { DataFlow<String>() }
+    val input by add { DataFlow<String>() }
 
     override fun onInit() {
         result.load(initStatus) {
@@ -23,7 +24,7 @@ class ApiAnnotationViewModel(private val api: SampleApi) : SampleViewModel() {
 
     fun onClick() {
         result.load(status) {
-            api.putAnnotation("idvalue", Post(0,input.value))
+            api.putAnnotation("idvalue", Post(0,input.value?:""))
             "success"
         }
     }

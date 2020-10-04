@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.ScreenResult
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.DeeplinkInfo
@@ -41,11 +40,11 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
                 RedirectionInfo(RedirectionType.retry)
             )
 
-            initStatus.value = Resource.Error(DeeplinkError(info), null) {
+            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
                 //this is called when deeplink screen result is ok or click retry button on error ui.
-                initStatus.value = Resource.Start//reset status.
+                initStatus.setValue(Resource.Success(null))//reset status.
                 navigateToSignInOnInitialTimeIfNotSignedIn()
-            }
+            })
         } else {
             onInit()
         }
@@ -70,9 +69,9 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
                 error.errorMessage,
                 RedirectionInfo(RedirectionType.retry)
             )
-            initStatus.value = Resource.Error(DeeplinkError(info), null) {
+            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
                 status.retryOnError()
-            }
+            })
         }
 
         status.collectOnViewModel { status ->
@@ -91,12 +90,11 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
                 RedirectionInfo(RedirectionType.none)
             )
 
-            this@SampleViewModel.status.value = Resource.Error(DeeplinkError(info), null) {
+            this@SampleViewModel.status.setValue(Resource.Error(DeeplinkError(info), null) {
                 status.retryOnError()
-            }
+            })
         }
     }
-
 
     private fun isSignViewModel(): Boolean =
         this@SampleViewModel is SignInViewModel || this@SampleViewModel is SignUpViewModel
@@ -107,8 +105,4 @@ open class SampleViewModel(private val preference: Preference) : BaseViewModel()
     open fun onInit() {
 
     }
-}
-
-interface SignInResultListener {
-    fun onSignInResult(result: ScreenResult)
 }

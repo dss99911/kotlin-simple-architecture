@@ -25,6 +25,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 import kim.jeonghyeon.client.*
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * statusStateOf() shouldn't be lazy. if lazy, it's not working while setValue()
@@ -71,17 +72,17 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
         //Fragment way was difficult to handle dialog, toast, navigation, so, it couldn't apply MVVM perfectly but event had to use MVP or event implementation on MVVM
         //now complete MVVM is reflected on the architecture, thanks to Jetpack Compose
         launch {
-            viewModel.eventGoBack.collectNotNull {
+            viewModel.eventGoBack.collect {
                 goBack()
             }
         }
         launch {
-            viewModel.eventToast.collectNotNull {
+            viewModel.eventToast.collect {
                 toast(it)
             }
         }
         launch {
-            viewModel.eventDeeplink.collectNotNull {
+            viewModel.eventDeeplink.collect {
                 Deeplinker.navigateToDeeplink(this@Screen, it)
             }
         }
@@ -172,9 +173,9 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
     }
 
     @Composable
-    protected open fun StackScope.composeError(error: Resource.Error<*>) {
+    protected open fun StackScope.composeError(error: Resource.Error) {
         ErrorSnackbar(
-            text = error.error.message ?: defaultErrorMessage,
+            text = error.error().message ?: defaultErrorMessage,
             modifier = Modifier.gravity(Alignment.BottomCenter)
         ) {
             error.retry()
@@ -182,9 +183,9 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
     }
 
     @Composable
-    protected open fun StackScope.composeInitError(error: Resource.Error<*>) {
+    protected open fun StackScope.composeInitError(error: Resource.Error) {
         ErrorSnackbar(
-            text = error.error.message ?: defaultErrorMessage,
+            text = error.error().message ?: defaultErrorMessage,
             modifier = Modifier.gravity(Alignment.BottomCenter)
         ) {
             error.retry()
@@ -197,16 +198,16 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
     }
 
     @Composable
-    operator fun <T> DataFlow<T>.unaryPlus(): T = asState().value
+    operator fun <T> DataFlow<T>.unaryPlus(): T? = asState().value
 
     @Composable
-    fun <T> DataFlow<T>.asValue(): T = asState().value
+    fun <T> DataFlow<T>.asValue(): T? = asState().value
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Composable
     inline fun <T> DataFlow<T>.asState(
         context: CoroutineContext = Dispatchers.Main
-    ): State<T> = collectDistinctAsState(context)
+    ): State<T?> = collectDistinctAsState(context)
 
     fun goBack() {
         popUpTo(true)
@@ -223,8 +224,7 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
      */
     fun push(screen: Screen, onResult: (ScreenResult) -> Unit) {
         launch {
-            //there is multiple viewModel. so used distinct
-            screen.viewModel.screenResult.collectDistinctNotNull {
+            screen.viewModel.screenResult.collect {
                 onResult(it)
             }
         }
@@ -268,27 +268,27 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 @Composable
 inline fun <T> DataFlow<T>.asState(
     context: CoroutineContext = Dispatchers.Main
-): State<T> = collectDistinctAsState(context)
+): State<T?> = collectDistinctAsState(context)
 
 @Composable
-fun <T> DataFlow<T>.asValue(): T = asState().value
+fun <T> DataFlow<T>.asValue(): T? = asState().value
 
 @Composable
-operator fun <T> DataFlow<T>.unaryPlus(): T = asValue()
+operator fun <T> DataFlow<T>.unaryPlus(): T? = asValue()
 
 
 @Composable
 fun <T> DataFlow<T>.collectDistinctAsState(
     context: CoroutineContext = EmptyCoroutineContext
-): State<T> {
+): State<T?> {
     val state = remember { mutableStateOf(value) }
     launchInComposition(this, context) {
         if (context == EmptyCoroutineContext) {
-            collectDistinct {
+            distinctUntilChanged().collect {
                 state.value = it
             }
         } else withContext(context) {
-            collectDistinct {
+            distinctUntilChanged().collect {
                 state.value = it
             }
         }

@@ -30,7 +30,7 @@ public class ViewModelWrapper: ObservableObject {
         return viewModel.initialized
     }
     
-    func onAppear() {
+    func onViewDrawn() {
         if (!viewModel.initialized) {
             viewModel.watchChanges {
                 self.reloadView()
@@ -40,12 +40,18 @@ public class ViewModelWrapper: ObservableObject {
                     self.dismiss = true
                 }
             }
-        } else {
+        }
+        viewModel.onCompose()
+    }
+    
+    func onAppear() {
+        //TODO: is this required?
+        if (viewModel.initialized) {
             //when this is changed, view is redrawn.
             //on initialized, it's drawn, so, no need to draw again.
             reloadView()
         }
-        viewModel.onCompose()
+        
     }
     
     func reloadView() {

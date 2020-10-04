@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(InternalLayoutApi::class)
 @Composable
 fun <T> ScrollableColumn(
-    list: List<T>,
+    list: List<T>?,
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(0f),
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
@@ -25,6 +25,6 @@ fun <T> ScrollableColumn(
     contentPadding: InnerPadding = InnerPadding(0.dp),
     children: @Composable() ColumnScope.(T) -> Unit) {
     ScrollableColumn(modifier, scrollState, verticalArrangement, horizontalGravity, reverseScrollDirection, isScrollEnabled, contentPadding) {
-        list.forEach { children(it) }
+        list?.forEach { children(it) }
     }
 }

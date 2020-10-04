@@ -2,6 +2,7 @@ package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 
 class ApiSingleViewModel(private val api: PreferenceApi) : SampleViewModel() {
@@ -12,9 +13,9 @@ class ApiSingleViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     private val KEY = "someKey"
 
-    val result = dataFlow("")
-    val input = dataFlow("")
-        .withSource(result) { value = it }
+    val result by add { DataFlow<String>() }
+    val input by add { DataFlow<String>().withSource(result) }
+
 
     override fun onInit() {
         result.load(initStatus) {
@@ -24,7 +25,7 @@ class ApiSingleViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     fun onClick() {
         result.load(status) {
-            val text = input.value
+            val text = input.value?: error("please input")
             api.setString(KEY, text)
             text
         }

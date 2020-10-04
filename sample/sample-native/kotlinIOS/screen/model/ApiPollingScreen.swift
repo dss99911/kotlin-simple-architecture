@@ -16,9 +16,9 @@ struct ApiPollingScreen: SampleScreen {
 
     func content(navigator: Navigator) -> some View {
         Column {
-            Text("fail count \(+model.count)")
-            if ((+model.status).isSuccess()) {
-                Text("result \(+model.result)")
+            Text("fail count \(+model.count ?? 0)")
+            if ((+model.status)?.isSuccess() == true) {
+                Text("result \(+model.result ?? "")")
             }
         }
         .navigationTitle("Api Polling".localized())

@@ -14,7 +14,7 @@ struct ApiDbScreen: SampleScreen {
 
     func content(navigator: Navigator) -> some View {
         Column {
-            List(model.wordList.value as! [Word], id: \.self.id) { item in
+            List(model.wordList.value as? [Word] ?? [Word](), id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.text)")
             }
             Row {

@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import io.ktor.http.*
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 
@@ -10,9 +11,9 @@ class SignUpViewModel(val userRepo: UserRepository) : SampleViewModel() {
     // if it's supported, remove this
     constructor() : this(serviceLocator.userRepository)
 
-    val inputId = dataFlow("")
-    val inputName = dataFlow("")
-    val inputPassword = dataFlow("")
+    val inputId by add { DataFlow<String>() }
+    val inputName by add { DataFlow<String>() }
+    val inputPassword by add { DataFlow<String>() }
 
     fun onClickSignUp() {
         status.load {

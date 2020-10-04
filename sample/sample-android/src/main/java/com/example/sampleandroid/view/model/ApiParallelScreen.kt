@@ -10,7 +10,7 @@ import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiParallelViewModel
 
-class ApiParallelScreen(private val model: ApiParallelViewModel = ApiParallelViewModel()) : ModelScreen() {
+class ApiParallelScreen(private val model: ApiParallelViewModel = ApiParallelViewModel()) : ModelScreen(model) {
     override val title: String = R.string.multiple_parallel_call.resourceToString()
 
     @Composable

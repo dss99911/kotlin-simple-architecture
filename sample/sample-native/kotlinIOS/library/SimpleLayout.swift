@@ -160,12 +160,19 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
     }
     
     var body: some View {
-        ZStack {
+        //TODO: if this is called on the same time before initialized is set true, there will be malfunction
+        if (!self.wrapper.isInitialized()) {
+            watchDeeplink()
+            screen.onInitialized(navigator: self)
+        }
+        self.wrapper.onViewDrawn()
+        
+        return ZStack {
             if (wrapper.isInitLoading()) {
                 screen.initLoadingView
             } else if (wrapper.isInitError()) {
                 //TODO: errorData can throw error if initStatus is changed to not error
-                screen.initErrorView(error: self.wrapper.viewModel.initStatus.value!.errorData()) {
+                screen.initErrorView(error: self.wrapper.viewModel.initStatus.value!.error()) {
                     self.wrapper.viewModel.initStatus.value!.retryOnError()
                 }
             } else {
@@ -175,7 +182,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
                     screen.loadingView
                 } else if (wrapper.isError()) {
                     //TODO: errorData can throw error if initStatus is changed to not error
-                    screen.errorView(error: self.wrapper.viewModel.status.value!.errorData()) {
+                    screen.errorView(error: self.wrapper.viewModel.status.value!.error()) {
                         self.wrapper.viewModel.status.value!.retryOnError()
                     }
                 }
@@ -195,12 +202,7 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
                 return
             }
             
-            //TODO: if 'onAppear' is called on the same time before initialized is set true, there will be malfunction
-            if (!self.wrapper.isInitialized()) {
-                watchDeeplink()
-                screen.onInitialized(navigator: self)
-            }
-            self.wrapper.onAppear()
+            wrapper.onAppear()
             
             //TODO: check if onAppear always called after next Screen is closed.
             let baseWrapper = isRootShown() ? getRootWrapper() : wrapper
