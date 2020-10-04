@@ -14,7 +14,7 @@ struct ApiSingleScreen: SampleScreen {
     
     func content(navigator: Navigator) -> some View {
         Column(alignment: .center) {
-            Text("current value : \(+model.result)")
+            Text("current value : \(+model.result ?? "")")
             SampleTextField("Enter value", model.input).frame(width: 100, alignment: .center)
             Button("Update") {
                 model.onClick()

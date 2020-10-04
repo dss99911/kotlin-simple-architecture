@@ -35,7 +35,7 @@ struct DeeplinkScreen: SampleScreen {
             }
             
             SampleTextField("Input parameter", model.deeplinkSubRequest)
-            Text("result value : \(+model.deeplinkSubResult)")
+            Text("result value : \(+model.deeplinkSubResult ?? "")")
             
             Button("navigate to screen by deeplink only") {
                 model.onClickNavigateByDeeplinkOnly()

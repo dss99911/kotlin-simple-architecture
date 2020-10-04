@@ -45,8 +45,8 @@ fun TextField(
         MaterialTheme.shapes.small.copy(bottomLeft = ZeroCornerSize, bottomRight = ZeroCornerSize)
 ) {
     androidx.compose.material.TextField(
-        +text,
-        { text.value = it },
+        +text?:"",
+        { text.setValue(it) },
         label,
         modifier,
         textStyle,
@@ -70,7 +70,7 @@ fun TextField(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun BaseTextField(
-    text: MutableStateFlow<String>,
+    text: DataFlow<String>,
     modifier: Modifier = Modifier,
     textColor: Color = Color.Unset,
     textStyle: TextStyle = currentTextStyle(),
@@ -82,7 +82,7 @@ fun BaseTextField(
     onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
     cursorColor: Color = contentColor()
 ) {
-    val (textValue, updateText) = remember { mutableStateOf(TextFieldValue(text.value)) }
+    val (textValue, updateText) = remember { mutableStateOf(TextFieldValue(text.value?:"")) }
     androidx.compose.foundation.BaseTextField(
         textValue,
         updateText,

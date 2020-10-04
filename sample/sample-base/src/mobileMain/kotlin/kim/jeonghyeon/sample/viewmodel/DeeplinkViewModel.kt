@@ -1,5 +1,6 @@
 package kim.jeonghyeon.sample.viewmodel
 
+import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.sample.api.SampleApi
@@ -32,8 +33,8 @@ import kotlinx.serialization.InternalSerializationApi
 class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
     override val signInRequired: Boolean = true
 
-    val deeplinkSubResult = dataFlow("")
-    val deeplinkSubRequest = dataFlow("")
+    val deeplinkSubResult by add { DataFlow<String>() }
+    val deeplinkSubRequest by add { DataFlow<String>() }
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
     // if it's supported, remove this
@@ -114,7 +115,7 @@ class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
     fun onClickNavigateByDeeplinkOnly() {
         navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB, deeplinkSubRequest.value) {
             if (it.isOk) {
-                deeplinkSubResult.value = it.dataOf(DeeplinkSubViewModel.RESPONSE_TYPE)
+                deeplinkSubResult.setValue(it.dataOf(DeeplinkSubViewModel.RESPONSE_TYPE))
             }
         }
     }

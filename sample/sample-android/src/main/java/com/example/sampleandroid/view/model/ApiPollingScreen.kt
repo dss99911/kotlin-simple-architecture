@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiPollingViewModel
+import kim.jeonghyeon.type.isSuccess
 
 class ApiPollingScreen(private val model: ApiPollingViewModel = ApiPollingViewModel()) : ModelScreen(model) {
     override val title: String = R.string.polling.resourceToString()

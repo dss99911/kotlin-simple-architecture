@@ -34,8 +34,8 @@ fun SampleTextField(
     errorColor: Color = MaterialTheme.colors.error
 ) {
     androidx.compose.material.OutlinedTextField(
-        +text,
-        { text.value = it },
+        +text?:"",
+        { text.setValue(it) },
         { Text(label) },
         modifier,
         textStyle,

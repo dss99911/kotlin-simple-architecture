@@ -1,26 +1,20 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import io.ktor.http.*
-import kim.jeonghyeon.client.DeeplinkNavigation
-import kim.jeonghyeon.client.DeeplinkResultListener
-import kim.jeonghyeon.client.ScreenResult
-import kim.jeonghyeon.const.DeeplinkUrl
-import kim.jeonghyeon.net.RedirectionType
-import kim.jeonghyeon.sample.api.SampleApi
-import kim.jeonghyeon.sample.di.serviceLocator
+import kim.jeonghyeon.client.DataFlow
 
 /**
  * this shows how to receive data and return result
  */
 class DeeplinkSubViewModel : SampleViewModel() {
 
-    val result = dataFlow("")
+    val result by add { DataFlow<String>() }
 
     /**
      * receive data
      */
     override fun onDeeplinkReceived(url: Url) {
-        result.value = url.getParam(0, REQUEST_TYPE)?: ""
+        result.setValue(url.getParam(0, REQUEST_TYPE) ?: "")
     }
 
     fun onClickOk() {
