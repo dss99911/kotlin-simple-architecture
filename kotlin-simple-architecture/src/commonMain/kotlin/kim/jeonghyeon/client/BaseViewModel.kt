@@ -5,24 +5,21 @@ import io.ktor.http.*
 import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.extension.fromJsonString
-import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.extension.toJsonStringNew
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.AtomicReference
 import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.atomic
+import kim.jeonghyeon.type.isLoading
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
-
-typealias StatusFlow = DataFlow<Status>
-typealias ResourceFlow<T> = DataFlow<Resource<T>>
 
 /**
  * don't use var property.
@@ -35,20 +32,20 @@ open class BaseViewModel {
     }
 
     @SimpleArchInternal("used on IOS base code. don't use")
-    val flows: MutableList<DataFlow<*>> = mutableListOf()
+    val flows: MutableList<Lazy<DataFlow<*>>> = mutableListOf()
 
-    val initStatus: StatusFlow = statusFlow()
-    val status: StatusFlow = statusFlow()
+    val initStatus: StatusFlow by add { StatusFlow() }
+    val status: StatusFlow by add { StatusFlow() }
 
     val isInitialized: AtomicReference<Boolean> = atomic(false)
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    val screenResult = dataFlow<ScreenResult?>(null)
+    val screenResult: DataFlow<ScreenResult> by add { DataFlow() }
 
-    val eventGoBack = dataFlow<Unit?>(null)
-    val eventToast = dataFlow<String?>(null)
-    val eventDeeplink = dataFlow<DeeplinkNavigation?>(null)
+    val eventGoBack: DataFlow<Unit> by add { DataFlow() }
+    val eventToast: DataFlow<String> by add { DataFlow() }
+    val eventDeeplink: DataFlow<DeeplinkNavigation> by add { DataFlow() }
 
     @SimpleArchInternal
     fun onCompose() {
@@ -70,15 +67,16 @@ open class BaseViewModel {
     /**
      * use this for custom resource to handle deeplink
      */
-    fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel {
-        val deeplinkInfo = it.errorOrNullOf<DeeplinkError>()?.deeplinkInfo?:return@collectOnViewModel
+    fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel { resource ->
+        val deeplinkInfo =
+            resource.errorOrNullOf<DeeplinkError>()?.deeplinkInfo ?: return@collectOnViewModel
         navigateToDeeplink(deeplinkInfo.url) {
             if (!it.isOk) {
                 return@navigateToDeeplink
             }
             when (deeplinkInfo.redirectionInfo.type) {
                 RedirectionType.retry -> {
-                    this@handleDeeplink.value.retryOnError()
+                    resource.retry()
                 }
                 RedirectionType.redirectionUrl -> {
                     //todo it seems that,
@@ -87,7 +85,6 @@ open class BaseViewModel {
                 RedirectionType.none -> {
                     //do nothing(show error ui, and when user click retry button, call api again
                 }
-
             }
         }
     }
@@ -100,10 +97,14 @@ open class BaseViewModel {
         }))
     }
 
-    fun navigateToDeeplink(url: String, vararg params: Any?, onResult: (ScreenResult) -> Unit = {}) {
+    fun navigateToDeeplink(
+        url: String,
+        vararg params: Any?,
+        onResult: (ScreenResult) -> Unit = {}
+    ) {
         val encodedUrl = URLBuilder(url).apply {
             params.forEachIndexed { index, data ->
-                parameters.append(PARAM_NAME_PARAM + index , data.toJsonStringNew())
+                parameters.append(PARAM_NAME_PARAM + index, data.toJsonStringNew())
             }
         }.buildString()
 
@@ -124,7 +125,7 @@ open class BaseViewModel {
     @CallSuper
     fun onBackPressed() {
         if (screenResult.value == null) {
-            screenResult.value = ScreenResult(ScreenResult.RESULT_CODE_CANCEL)
+            screenResult.setValue(ScreenResult(ScreenResult.RESULT_CODE_CANCEL))
         }
         onCleared()
     }
@@ -137,42 +138,25 @@ open class BaseViewModel {
         scope.close()
     }
 
-    /**
-     * this is used because ios should keep flows to watch changes.
-     * when create flow, use only this
-     */
-    fun <T> dataFlow(value: T): DataFlow<T> {
-        return DataFlow(value).also {
-            flows.add(it)
-        }
-    }
+    fun <T> Flow<T>.toDataFlow(): DataFlow<T> =
+        toDataFlow(scope)
 
-    /**
-     * this is used because ios should keep flows to watch changes.
-     * when create flow, use only this
-     */
-    fun <T> resourceFlow(resource: Resource<T> = Resource.Start): ResourceFlow<T> {
-        return ResourceFlow(resource).also {
-            flows.add(it)
-        }
-    }
+    fun <T> Flow<Resource<T>>.toDataFlow(statusFlow: StatusFlow): DataFlow<T> =
+        toDataFlow(scope, statusFlow)
 
-    /**
-     * this is used because ios should keep flows to watch changes.
-     * when create flow, use only this
-     */
-    fun statusFlow(resource: Status = Resource.Start): StatusFlow {
-        return StatusFlow(resource).also {
-            flows.add(it)
-        }
-    }
+    fun <T> dataFlow(block: suspend DataFlow<T>.() -> Unit): DataFlow<T> =
+        dataFlow(scope, block)
+
+    fun <T> resourceFlow(block: suspend FlowCollector<T>.() -> Unit): ResourceFlow<T> =
+        resourceFlow(scope, block)
+
 
     open fun onDeeplinkReceived(url: Url) {
 
     }
 
     fun goBack() {
-        eventGoBack.value = Unit
+        eventGoBack.call()
     }
 
     fun goBackWithOk(data: Any? = null) {
@@ -180,19 +164,22 @@ open class BaseViewModel {
     }
 
     fun goBack(result: ScreenResult) {
-        this.screenResult.value = result
+        this.screenResult.setValue(result)
         goBack()
     }
 
     fun toast(message: String) {
-        eventToast.value = message
+        eventToast.call(message)
     }
 
     fun <T> ResourceFlow<T>.load(work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, work)
     }
 
-    fun <T> ResourceFlow<T>.loadWithStatus(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
+    fun <T> ResourceFlow<T>.loadWithStatus(
+        status: StatusFlow,
+        work: suspend CoroutineScope.() -> T
+    ) {
         scope.loadResource(this, status, work)
     }
 
@@ -200,7 +187,11 @@ open class BaseViewModel {
         scope.loadDataAndStatus(this, status, work)
     }
 
-    fun <T, U> DataFlow<U>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
+    fun <T, U> DataFlow<U>.load(
+        status: StatusFlow,
+        work: suspend CoroutineScope.() -> T,
+        transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
+    ) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
@@ -215,50 +206,41 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    fun <T> ResourceFlow<T>.load(flow: Flow<Resource<T>>) {
-        scope.loadFlow(this, null, flow)
-    }
-
-    fun <T> DataFlow<T>.load(status: StatusFlow, flow: Flow<Resource<T>>) {
-        scope.loadResourceFromFlow(this, status, flow)
-    }
-
-    fun <T, U> DataFlow<U>.load(status: StatusFlow, flow: Flow<Resource<T>>, transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>) {
-        scope.loadResourceFromFlow(this, status, flow, transform = transform)
-    }
-
-    fun <T> DataFlow<T>.loadFlow(status: StatusFlow, flow: Flow<T>) {
-        scope.loadDataFromFlow(this, status, flow)
-    }
-
+    //todo even if source is cold stream, the source get active directly, even if DataFlow is not active
     fun <T, U> DataFlow<T>.withSource(
-        source: MutableStateFlow<U>,
-        onCollect: MutableStateFlow<T>.(U) -> Unit
+        source: Flow<U>,
+        onCollect: DataFlow<T>.(U) -> Unit
     ): DataFlow<T> {
-        scope.launch {
-            source.collect {
-                onCollect(this@withSource, it)
-            }
+        source.collectOnViewModel {
+            onCollect(this@withSource, it)
+        }
+        return this
+    }
+
+    fun <T> DataFlow<T>.withSource(
+        source: Flow<T>
+    ): DataFlow<T> {
+        source.collectOnViewModel {
+            setValue(it)
         }
         return this
     }
 
 
     @SimpleArchInternal("used on IOS base code. don't use these code")
-    val initialized: Boolean get() = isInitialized.value
+    val initialized: Boolean
+        get() = isInitialized.value
 
     @SimpleArchInternal("used on IOS base code. don't use these code")
     fun watchChanges(action: () -> Unit) {
         flows.forEach {
-            scope.launch {
-                it.collect {
-                   action()
-                }
+            it.value.collectOnViewModel {
+                action()
             }
         }
     }
 
-    fun <T> DataFlow<T>.collectOnViewModel(action: suspend (value: T) -> Unit): Unit {
+    fun <T> Flow<T>.collectOnViewModel(action: suspend (value: T) -> Unit) {
         scope.launch {
             collect(action)
         }
@@ -270,6 +252,19 @@ open class BaseViewModel {
     inline fun <reified T : Any> Url.getParam(index: Int, type: KClass<T>): T? =
         parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
 
+    /**
+     * this is used because ios should keep flows to watch changes.
+     * when create flow, use only this.
+     *
+     * the reason to add additional function instead helper function like dataFlow()
+     * is that, DataFlow can be transformed. and can't be sure which DataFlow will be collected by View side.
+     * so, use this function to the flow which is used by View side
+     *
+     */
+    fun <T> add(initializer: () -> DataFlow<T>): Lazy<DataFlow<T>> =
+        lazy(initializer).also {
+            flows.add(it)
+        }
 
 }
 
@@ -284,6 +279,7 @@ data class ScreenResult(val resultCode: Int, val data: Any? = null) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T> dataOf(): T = data as T
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> dataOf(type: KClass<T>): T = data as T
 }

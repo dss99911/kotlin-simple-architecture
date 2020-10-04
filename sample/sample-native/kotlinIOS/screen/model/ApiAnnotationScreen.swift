@@ -18,7 +18,7 @@ struct ApiAnnotationScreen: SampleScreen {
     func content(navigator: Navigator) -> some View {
         
         Column(alignment: .center) {
-            Text("current value : \(+model.result)")
+            Text("current value : \(+model.result ?? "")")
             SampleTextField("update", model.input).frame(width: 100, alignment: .center)
             Button("Update") {
                 model.onClick()

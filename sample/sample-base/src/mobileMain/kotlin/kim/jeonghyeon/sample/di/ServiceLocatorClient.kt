@@ -56,5 +56,5 @@ class ServiceLocatorClientImpl : ServiceLocatorClient {
     //in order that A page change data and B page refresh when data changed, you have to use single instance of Queries.
     //but also if it's not used. need to be cleared.
     override val wordQueries: WordQueries by weak { db<SampleDb>().wordQueries }
-    override val wordRepository: WordRepository get() = WordRepositoryImpl(/*sampleApi,*/ wordQueries)
+    override val wordRepository: WordRepository get() = WordRepositoryImpl(sampleApi, wordQueries)
 }

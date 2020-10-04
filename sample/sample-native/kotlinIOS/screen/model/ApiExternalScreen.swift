@@ -17,7 +17,7 @@ struct ApiExternalScreen: SampleScreen {
 
     func content(navigator: Navigator) -> some View {
         Column {
-            List(model.repoList.value as! [Repo], id: \.self.id) { item in
+            List(model.repoList.value as? [Repo] ?? [Repo](), id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.name)")
             }
             Row {
