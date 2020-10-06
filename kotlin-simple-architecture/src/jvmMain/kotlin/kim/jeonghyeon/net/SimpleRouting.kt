@@ -15,6 +15,7 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import kim.jeonghyeon.annotation.*
 import kim.jeonghyeon.api.ApiBindingController
+import kim.jeonghyeon.auth.SignFeature
 import kim.jeonghyeon.extension.fromJsonString
 import kim.jeonghyeon.jvm.extension.toJsonObject
 import kim.jeonghyeon.jvm.extension.toJsonString
@@ -149,6 +150,10 @@ class SimpleRouting(val config: Configuration) {
     }
 
     private fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
+        if (application.featureOrNull(SignFeature) == null) {
+            //ApiBindingController is added as default
+            return build()
+        }
         val authenticateAnnotation = annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
         if (authenticateAnnotation.name.isBlank()) {
             authenticate(build = build)

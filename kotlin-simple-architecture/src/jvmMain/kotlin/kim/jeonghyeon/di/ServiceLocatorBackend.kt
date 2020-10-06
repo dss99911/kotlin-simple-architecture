@@ -1,7 +1,6 @@
 package kim.jeonghyeon.di
 
-import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.application.Application
+import io.ktor.application.*
 import kim.jeonghyeon.db.UserQueries
 
 /**
@@ -11,7 +10,12 @@ import kim.jeonghyeon.db.UserQueries
 lateinit var application: Application
 val logger get() = application.environment.log
 
-internal lateinit var serviceLocator: ServiceLocator
+private var _serviceLocator: ServiceLocator? = null
+internal var serviceLocator: ServiceLocator
+    get() = _serviceLocator ?: error("serviceLocator should be initialized on SimpleFeature")
+    set(value) {
+        _serviceLocator = value
+    }
 
 interface ServiceLocator {
     val userQueries: UserQueries

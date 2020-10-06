@@ -35,7 +35,7 @@ class SimpleFeature {
         ): SimpleFeature {
             val config = Configuration().apply(configure)
 
-            pipeline.onApplicationCreate(config.serviceLocator!!)
+            pipeline.onApplicationCreate(config.serviceLocator)
 
             config.signConfig?.let {
                 pipeline.install(SignFeature, it)
@@ -51,7 +51,9 @@ class SimpleFeature {
 }
 
 
-fun Application.onApplicationCreate(_serviceLocator: ServiceLocator) {
-    serviceLocator = _serviceLocator
+fun Application.onApplicationCreate(_serviceLocator: ServiceLocator?) {
+    _serviceLocator?.let {
+        serviceLocator = it
+    }
     application = this
 }

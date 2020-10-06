@@ -60,7 +60,7 @@ fun Project.getGenerateSimpleConfigTask(
 private fun getIpAddress(): String {
     val socket = Socket()
     socket.connect(InetSocketAddress("google.com", 80))
-    return socket.localAddress.toString()
+    return socket.localAddress.toString().replace("/", "")
 }
 
 fun Project.getEnvironment(): String =
