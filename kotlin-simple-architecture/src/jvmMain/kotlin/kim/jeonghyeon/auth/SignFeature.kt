@@ -5,6 +5,7 @@ import io.ktor.application.ApplicationFeature
 import io.ktor.sessions.Sessions
 import io.ktor.util.*
 import io.ktor.utils.io.core.toByteArray
+import kim.jeonghyeon.di.serviceLocator
 import kim.jeonghyeon.net.addControllerBeforeInstallSimpleRouting
 
 class SignFeature {
@@ -39,6 +40,9 @@ class SignFeature {
             pipeline: Application,
             configure: Configuration.() -> Unit
         ): SignFeature {
+            //serviceLocator contains userQueries and it's required for sign feature
+            checkNotNull (serviceLocator)
+
             val config = Configuration().apply(configure)
 
             val serviceAuthConfig = config.serviceAuthConfig?:error("${Configuration::serviceAuthConfig.name} is not configured on ${SignFeature::class.simpleName}")

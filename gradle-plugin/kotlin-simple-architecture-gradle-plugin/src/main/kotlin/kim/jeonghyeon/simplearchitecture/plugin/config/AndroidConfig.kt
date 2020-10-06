@@ -1,7 +1,9 @@
 package kim.jeonghyeon.simplearchitecture.plugin.config
 
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import kim.jeonghyeon.simplearchitecture.plugin.VERSION_KOTLIN
 import kim.jeonghyeon.simplearchitecture.plugin.extension.simpleArchExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.hasAndroid
@@ -16,14 +18,12 @@ fun Project.applyAndroidConfig() {
 
     if (!hasAndroid) return
 
-    apply(plugin = "kotlin-android-extensions")//for @Parcelize
     apply(plugin = "org.jetbrains.kotlin.kapt")
 
     androidExtension!!.initDefault()
 }
 
 fun BaseExtension.initDefault() {
-
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -44,15 +44,37 @@ fun BaseExtension.initDefault() {
         }
     }
 
-
-    sourceSets {
-        val sharedTestDir = "src/sharedTest/java"
-
-        getByName("test") {
-            java.srcDir(sharedTestDir)
+    (this as? BaseAppModuleExtension)?.apply {
+        buildFeatures {
+            compose = true
         }
-        getByName("androidTest") {
-            java.srcDir(sharedTestDir)
+
+        composeOptions {
+            kotlinCompilerVersion = VERSION_KOTLIN
+            kotlinCompilerExtensionVersion = "1.0.0-alpha01"
+        }
+
+        kotlinOptions {
+            jvmTarget = "1.8"
+            useIR = true
         }
     }
+
+
+
+
+    //todo support test code as well
+//    sourceSets {
+//        val sharedTestDir = "src/sharedTest/java"
+//
+//        getByName("test") {
+//            java.srcDir(sharedTestDir)
+//        }
+//        getByName("androidTest") {
+//            java.srcDir(sharedTestDir)
+//        }
+//    }
 }
+
+fun BaseAppModuleExtension.`kotlinOptions`(configure: org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions.() -> Unit): Unit =
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlinOptions", configure)
