@@ -26,7 +26,7 @@ val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
-    val isProduction by simpleProperty(false/*getEnvironment() == "production"*/)
+    val isProduction by simpleProperty(true/*getEnvironment() == "production"*/)
     val deeplinkScheme by simpleProperty(deeplinkScheme)
     val deeplinkHost by simpleProperty(deeplinkHost)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
@@ -69,6 +69,7 @@ kotlin {
         summary = "Sample"
         homepage = "https://github.com/dss99911/kotlin-simple-architecture"
         podfile = project.file("../sample-native/Podfile")
+
     }
 
     sourceSets {
@@ -98,14 +99,6 @@ kotlin {
             dependsOn(mobileMain)
         }
 
-        val androidDebug by getting {
-            dependencies {
-                if (config.useLeakCanary) {
-                    implementation("com.squareup.leakcanary:leakcanary-android:2.0")
-                }
-            }
-        }
-
         val iosMain by getting {
             dependsOn(mobileMain)
 
@@ -122,7 +115,6 @@ kotlin {
 
 
 android {
-
     val appId = "kim.jeonghyeon.sample"
 
     compileSdkVersion(config.compileSdkVersion)
@@ -234,6 +226,15 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
+    }
+
+    //https://github.com/cashapp/sqldelight/issues/1442
+    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach{
+        it.binaries.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
+            .forEach { lib ->
+                lib.isStatic = false
+                lib.linkerOpts.add("-lsqlite3")
+            }
     }
 }
 
