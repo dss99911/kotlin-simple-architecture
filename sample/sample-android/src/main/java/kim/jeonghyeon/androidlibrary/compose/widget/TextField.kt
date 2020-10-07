@@ -47,9 +47,9 @@ fun TextField(
     androidx.compose.material.TextField(
         +text?:"",
         { text.setValue(it) },
-        label,
         modifier,
         textStyle,
+        label,
         placeholder,
         leadingIcon,
         trailingIcon,

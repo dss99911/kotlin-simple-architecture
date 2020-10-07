@@ -36,9 +36,9 @@ fun SampleTextField(
     androidx.compose.material.OutlinedTextField(
         +text?:"",
         { text.setValue(it) },
-        { Text(label) },
         modifier,
         textStyle,
+        { Text(label) },
         placeholder,
         leadingIcon,
         trailingIcon,

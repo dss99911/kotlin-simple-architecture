@@ -36,7 +36,7 @@ abstract class BaseActivity : AppCompatActivity() {
         //snackbar is shown above keyboard without setting this.
         //but, it's not working in this project, so, added here, as I think this should be default behavior
         //If there is way it's working without this, this can be removable
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         Deeplinker.deeplinks = deeplinks
 

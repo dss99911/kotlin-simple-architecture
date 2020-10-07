@@ -22,9 +22,7 @@ class DeeplinkInfo(
  * //todo need to handle cancel result as well?
  */
 @Serializable
-class RedirectionInfo(val type: RedirectionType, val url: String? = null) {
-
-}
+class RedirectionInfo(val type: RedirectionType, val url: String? = null)
 
 enum class RedirectionType {
     retry,//retry of the error
