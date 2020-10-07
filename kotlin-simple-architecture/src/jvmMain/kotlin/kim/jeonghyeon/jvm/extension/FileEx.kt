@@ -18,7 +18,7 @@ fun File.readLines(action: (String) -> Unit) {
     }
 }
 
-fun File.write(append: Boolean = false, action: FileWriter.() -> Unit) {
+fun File.write(action: FileWriter.() -> Unit) {
     if (!exists()) {
         parentFile.mkdirs()
         createNewFile()

@@ -21,12 +21,8 @@ dependencies {
     compileOnly(deps.plugin.compilerEmbeddable)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
+    // todo this is not working as it's multiplatform. check the reason and solve
 //    api(deps.simpleArch.annotationJvm)
-}
-
-//todo what is this for?
-kapt {
-    includeCompileClasspath = true
 }
 
 publishJvm()

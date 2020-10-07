@@ -7,6 +7,7 @@ import kotlinsimplearchitecture.generated.net.createSimple
 
 const val HEADER_NAME_TOKEN = "simple-user-token"
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 interface SignApi {
 
     @Get

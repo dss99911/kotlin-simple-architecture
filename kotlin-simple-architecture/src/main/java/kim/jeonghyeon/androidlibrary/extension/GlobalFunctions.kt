@@ -21,7 +21,7 @@ import org.jetbrains.anko.telephonyManager
 val isTesting = noThrow { Class.forName("androidx.test.espresso.Espresso") } != null
         || noThrow { Class.forName("org.robolectric.RobolectricTestRunner") } != null
 
-val isDebug = BuildConfig.DEBUG
+inline val isDebug get() = BuildConfig.DEBUG
 
 val ctx: Context inline get() = SimpleInitProvider.instance
 
@@ -80,5 +80,5 @@ inline fun <T> noThrow(action: () -> T): T? {
 @Retention(AnnotationRetention.SOURCE)
 annotation class VersionParam
 
-inline fun isFromVersion(@VersionParam version: Int): Boolean = Build.VERSION.SDK_INT >= version
+fun isFromVersion(@VersionParam version: Int): Boolean = Build.VERSION.SDK_INT >= version
 

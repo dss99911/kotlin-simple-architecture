@@ -249,7 +249,7 @@ open class BaseViewModel {
     inline fun <reified T : Any?> Url.getParam(index: Int): T? =
         parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
 
-    inline fun <reified T : Any> Url.getParam(index: Int, type: KClass<T>): T? =
+    inline fun <reified T : Any> Url.getParam(index: Int, @Suppress("UNUSED_PARAMETER") type: KClass<T>): T? =
         parameters[PARAM_NAME_PARAM + index]?.fromJsonString<T>()
 
     /**
@@ -281,7 +281,7 @@ data class ScreenResult(val resultCode: Int, val data: Any? = null) {
     fun <T> dataOf(): T = data as T
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> dataOf(type: KClass<T>): T = data as T
+    fun <T : Any> dataOf(@Suppress("UNUSED_PARAMETER") type: KClass<T>): T = data as T
 }
 
 data class DeeplinkNavigation(val url: String, val resultListener: DeeplinkResultListener? = null)

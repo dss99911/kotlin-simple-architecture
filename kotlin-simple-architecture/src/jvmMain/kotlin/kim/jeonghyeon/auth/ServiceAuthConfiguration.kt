@@ -44,6 +44,7 @@ class SessionServiceAuthConfiguration(var sessions: (Sessions.Configuration.() -
                 directorySessionStorage(File(".sessions"), cached = true)
             )
 
+            @Suppress("UNCHECKED_CAST")
             sessionIdProvider = providers.first { it.name == HEADER_NAME_TOKEN } as SessionProvider<UserSession>
 
             sessions?.invoke(this)

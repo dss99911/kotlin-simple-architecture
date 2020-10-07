@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
 
 fun Project.simpleArch(dsl: SimpleArchExtension.() -> Unit) {
-    dsl(simpleArchExtension ?: return)
+    dsl(simpleArchExtension)
 }
 
 //default function is not working when using apply. if use plugins { id() }, then it's working.

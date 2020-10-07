@@ -54,7 +54,7 @@ fun PackageManager.getDefaultLauncherPackageName(): String? {
         addCategory(Intent.CATEGORY_HOME)
     }.let {
         resolveActivity(it, 0)
-    }.activityInfo
+    }?.activityInfo
 
     return when {
         activityInfo == null -> null // should not happen. A home is always installed, isn't it?

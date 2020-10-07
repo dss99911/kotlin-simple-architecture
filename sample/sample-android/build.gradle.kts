@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -20,7 +22,9 @@ android {
         versionName = "1.00.02"
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
+        applicationId = appId
 
+        //todo manage configField by SimpleConfig. as it support multiplatform.
         buildConfigField("String", "freePackageName", "\"${appId}\"")
 
         buildConfigField("boolean", "isFree", "false")
@@ -37,19 +41,21 @@ android {
     productFlavors {
         val free by creating {
             dimension = "mode"
-            applicationId = appId
+            // if applicationId is diffirent on different flavor, oauth url of each applicationid should be added to oauth provider
+            // as this is sample. commented out.
+//            applicationId = appId
             buildConfigField("boolean", "isFree", "true")
         }
 
         val pro by creating {
             dimension = "mode"
-            applicationId = appId + ".pro"
+//            applicationId = appId + ".pro"
             buildConfigField("boolean", "isPro", "true")
         }
 
         val dev by creating {
             dimension = "stage"
-            applicationIdSuffix = ".dev"
+//            applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
 
             buildConfigField("boolean", "isDev", "true")
@@ -66,7 +72,7 @@ android {
         create(FLAVOR_NAME_MOCK) {
             dimension = "stage"
 
-            applicationIdSuffix = ".mock"
+//            applicationIdSuffix = ".mock"
             versionNameSuffix = "-mock"
 
             buildConfigField("boolean", "isMock", "true")
@@ -109,6 +115,10 @@ android {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
     }
+}
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 dependencies {

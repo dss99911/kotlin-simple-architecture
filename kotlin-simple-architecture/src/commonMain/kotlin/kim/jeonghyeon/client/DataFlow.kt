@@ -109,10 +109,10 @@ constructor() : Flow<T> {
             onActive()
         }
 
-        version.collect {
+        version.collect collect2@{
             //as MutableStateFlow empty-less, ignore value if [setValue] is not invoked
             if (it == 0) {
-                return@collect
+                return@collect2
             }
 
             @Suppress("UNCHECKED_CAST")

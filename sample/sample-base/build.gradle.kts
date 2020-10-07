@@ -77,17 +77,18 @@ kotlin {
             dependencies {
                 api(deps.simpleArch.common)
 
-                //todo START there is error on android studio sync. after it's fixed, remove this
-                // https://kotlinlang.slack.com/archives/C3PQML5NU/p1598833788027800
-                api(deps.kotlin.coroutineCore)
-                api(deps.kotlin.serializationCore)
-                api(deps.ktor.clientCore)
-                api(deps.ktor.clientSerialization)
-                api(deps.ktor.clientLogging)
-                api(deps.sqldelight.runtime)
-                api(deps.simpleArch.annotation)
-                api(deps.ktor.clientAuth)
-                //todo END there is error on android studio sync. after it's fixed, remove this
+                  //todo START there is error on android studio sync. after it's fixed, remove this
+                  // it's working fine on template project. check the difference
+//                // https://kotlinlang.slack.com/archives/C3PQML5NU/p1598833788027800
+//                api(deps.kotlin.coroutineCore)
+//                api(deps.kotlin.serializationCore)
+//                api(deps.ktor.clientCore)
+//                api(deps.ktor.clientSerialization)
+//                api(deps.ktor.clientLogging)
+//                api(deps.sqldelight.runtime)
+//                api(deps.simpleArch.annotation)
+//                api(deps.ktor.clientAuth)
+//                //todo END there is error on android studio sync. after it's fixed, remove this
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -111,6 +112,17 @@ kotlin {
             }
         }
     }
+
+//    //https://github.com/cashapp/sqldelight/issues/1442
+//    todo error when use the code below
+//     but working with template project. check the difference
+//    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach{
+//        it.binaries.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
+//            .forEach { lib ->
+//                lib.isStatic = false
+//                lib.linkerOpts.add("-lsqlite3")
+//            }
+//    }
 }
 
 
@@ -228,14 +240,6 @@ android {
         animationsDisabled = true
     }
 
-    //https://github.com/cashapp/sqldelight/issues/1442
-    targets.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().forEach{
-        it.binaries.filterIsInstance<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>()
-            .forEach { lib ->
-                lib.isStatic = false
-                lib.linkerOpts.add("-lsqlite3")
-            }
-    }
 }
 
 

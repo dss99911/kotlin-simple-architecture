@@ -76,6 +76,7 @@ class ApiBinder1<DATA1>(val apiCallInfo: ApiCallInfoAndSerializer<DATA1>) {
         })
 }
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @Api
 interface ApiBindingApi {
     suspend fun call(apiCallInfos: List<ApiCallInfo>): List<String>
@@ -125,6 +126,7 @@ class ApiBinder2<DATA1, DATA2>(override val client: HttpClient, val apiCallInfo1
         //todo handle exception. if any call is failed return error with success data info.
         // currently, no success data is returned.
         // after receive success data, call only failed api.
+        @Suppress("UNCHECKED_CAST")
         return Pair(result[0] as DATA1, result[1] as DATA2)
     }
 }
@@ -143,6 +145,7 @@ class ApiBinder3<DATA1, DATA2, DATA3>(override val client: HttpClient, val apiCa
         //todo handle exception. if any call is failed return error with success data info.
         // currently, no success data is returned.
         // after receive success data, call only failed api.
+        @Suppress("UNCHECKED_CAST")
         return Triple(
             result[0] as DATA1,
             result[1] as DATA2,
@@ -193,6 +196,7 @@ class PropertyBinder(val parameterIndex: Int) {
 fun <T> DeserializationStrategy<T>.createEmpty(): T =
     deserialize(EmptyDecoder())
 
+@OptIn(ExperimentalSerializationApi::class)
 private class EmptyDecoder : AbstractDecoder() {
     override val serializersModule: SerializersModule = EmptySerializersModule
     var indexMap = mutableMapOf<SerialDescriptor, Int>()

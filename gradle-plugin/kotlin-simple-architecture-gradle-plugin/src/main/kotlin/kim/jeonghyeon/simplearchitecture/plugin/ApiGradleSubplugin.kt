@@ -12,6 +12,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCommonOptions
 import org.jetbrains.kotlin.gradle.plugin.*
 import java.util.*
 
+//todo https://hyun.myjetbrains.com/youtrack/issue/KSA-136
+// use KotlinCompilerPluginSupportPlugin
+// refer to https://github.com/square/anvil/issues/30, https://github.com/square/anvil/commit/6d2ba041bbd50534633918ce9620a3f38b93887b
+// androidProjectHandler, javaCompile, kotlinCompile parameter on apply disappeared. need to check how to use.
 @AutoService(KotlinGradleSubplugin::class)
 class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
 

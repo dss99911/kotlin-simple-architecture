@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.map
 
 fun <T : Any> Query<T>.asListFlow(): Flow<List<T>> = asFlow().map { it.executeAsList() }
 
-inline fun <reified T : Any> Query<T>.asOneFlow(hasInit: Boolean = true): Flow<T> = asFlow().map { it.executeAsOne() }
-inline fun <reified T : Any> Query<T>.asOneOrNullFlow(hasInit: Boolean): Flow<T?> = asFlow().map { it.executeAsOneOrNull() }
+inline fun <reified T : Any> Query<T>.asOneFlow(): Flow<T> = asFlow().map { it.executeAsOne() }
+inline fun <reified T : Any> Query<T>.asOneOrNullFlow(): Flow<T?> = asFlow().map { it.executeAsOneOrNull() }
 
 fun <T : Any> Query<T>.asFlow(): Flow<Query<T>> = flow {
     emit(this@asFlow)

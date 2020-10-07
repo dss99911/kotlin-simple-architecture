@@ -14,7 +14,7 @@ internal object Deeplinker {
     fun navigateToDeeplink(url: String) {
         val classAndScreen = deeplinks.entries
             .firstOrNull {
-                url.startsWith(it.key)?:false
+                url.startsWith(it.key)
             }?.value
 
         if (classAndScreen == null) {

@@ -17,6 +17,7 @@ import org.jetbrains.anko.downloadManager
 object NetworkUtil {
     @SuppressLint("MissingPermission")
     fun isConnected(): Boolean {
+        //todo activeNetworkInfo is deprecated
         return ctx.connectivityManager.activeNetworkInfo?.isConnected ?: false
     }
 
@@ -55,6 +56,7 @@ object NetworkUtil {
 
         request.addRequestHeader("User-Agent", WebSettings.getDefaultUserAgent(ctx))
         request.setTitle(fileName)
+        //todo deprecated on Q
         request.allowScanningByMediaScanner()
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
