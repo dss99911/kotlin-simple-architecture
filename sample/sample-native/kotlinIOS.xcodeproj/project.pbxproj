@@ -703,6 +703,7 @@
 					"-l\"c++\"",
 					"-framework",
 					"\"sample_base\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -893,6 +894,7 @@
 					"-l\"c++\"",
 					"-framework",
 					"\"sample_base\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -923,6 +925,7 @@
 					"-l\"c++\"",
 					"-framework",
 					"\"sample_base\"",
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kim.jeonghyeon.kotlinios;
 				PRODUCT_NAME = "$(TARGET_NAME)";

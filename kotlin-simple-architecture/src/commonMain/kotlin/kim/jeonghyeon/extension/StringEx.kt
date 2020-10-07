@@ -18,7 +18,7 @@ fun String.equalsAny(vararg string: String): Boolean = string.any { it == this@e
 
 fun String.equalsAll(vararg string: String): Boolean = string.all { it == this@equalsAll }
 
-inline fun CharSequence?.isNotEmpty(): Boolean = this != null && !isEmpty()
+fun CharSequence?.isNotEmpty(): Boolean = this != null && !isEmpty()
 
 fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean = false): String {
     val index = lastIndexOf(oldValue, ignoreCase = ignoreCase)
@@ -31,7 +31,7 @@ inline fun <reified T : Any> T.toJsonString(): String {
 }
 
 //todo change to this function and change name
-inline fun Any?.toJsonStringNew(): String {
+fun Any?.toJsonStringNew(): String {
     return (KotlinxSerializer().write(this?: return "null") as TextContent).text
 }
 

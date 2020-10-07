@@ -5,8 +5,10 @@ import kim.jeonghyeon.androidlibrary.extension.isDebug
 import kim.jeonghyeon.androidlibrary.extension.isTesting
 import timber.log.Timber
 
+@Suppress("NOTHING_TO_INLINE")
 actual class Logger actual constructor() {
     actual inline fun i(message: String) {
+        //used inline to remove code on release
         //todo print on product as well?
         if (isDebug) {
             if (isTesting) {

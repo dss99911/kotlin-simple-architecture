@@ -205,7 +205,7 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Composable
-    inline fun <T> DataFlow<T>.asState(
+    fun <T> DataFlow<T>.asState(
         context: CoroutineContext = Dispatchers.Main
     ): State<T?> = collectDistinctAsState(context)
 
@@ -266,7 +266,7 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 
 
 @Composable
-inline fun <T> DataFlow<T>.asState(
+fun <T> DataFlow<T>.asState(
     context: CoroutineContext = Dispatchers.Main
 ): State<T?> = collectDistinctAsState(context)
 

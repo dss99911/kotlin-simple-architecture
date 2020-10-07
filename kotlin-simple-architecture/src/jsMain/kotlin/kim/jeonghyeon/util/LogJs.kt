@@ -1,5 +1,6 @@
 package kim.jeonghyeon.util
 
+@Suppress("NOTHING_TO_INLINE")
 actual class Logger actual constructor() {
     actual inline fun i(message: String) {
         println("[INFO] $message")

@@ -130,6 +130,10 @@ kotlin {
 
             }
         }
+
+        all {
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+        }
     }
 }
 

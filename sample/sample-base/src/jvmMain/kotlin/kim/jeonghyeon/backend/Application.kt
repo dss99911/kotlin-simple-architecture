@@ -24,7 +24,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
 @kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
+fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
 
     install(SimpleFeature) {
         serviceLocator = ServiceLocatorBackendImpl(this@module).also { serviceLocatorBackend = it }
@@ -43,6 +43,7 @@ fun Application.module(testing: Boolean = false) {
                         controller = SampleSignDigestController()
                     }
                 }
+                else -> { }
             }
 
             //I added all authentication example
@@ -83,11 +84,19 @@ fun Application.module(testing: Boolean = false) {
 
 //todo code generator from application.conf
 // consider value can be changed on production.
+@OptIn(KtorExperimentalAPI::class)
 val Application.googleClient get() = environment.config.config("oauth.google")
+@OptIn(KtorExperimentalAPI::class)
 val Application.googleClientId get() = googleClient.property("clientId").getString()
+@OptIn(KtorExperimentalAPI::class)
 val Application.googleClientSecret get() = googleClient.property("clientSecret").getString()
+@OptIn(KtorExperimentalAPI::class)
 val Application.facebookClient get() = environment.config.config("oauth.facebook")
+@OptIn(KtorExperimentalAPI::class)
 val Application.facebookClientId get() = facebookClient.property("clientId").getString()
+@OptIn(KtorExperimentalAPI::class)
 val Application.facebookClientSecret get() = facebookClient.property("clientSecret").getString()
+@OptIn(KtorExperimentalAPI::class)
 val Application.dbPath get() = environment.config.property("dbPath").getString()
+@OptIn(KtorExperimentalAPI::class)
 val Application.jwtSecret get() = environment.config.property("jwtSecret").getString()

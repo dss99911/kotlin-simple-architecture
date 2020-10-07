@@ -17,5 +17,5 @@ object versions {
 
     const val shadow = "5.1.0"
     const val sqldelight = "1.4.2"
-    const val simpleArch = "0.5.8"
+    const val simpleArch = "0.6.0"
 }

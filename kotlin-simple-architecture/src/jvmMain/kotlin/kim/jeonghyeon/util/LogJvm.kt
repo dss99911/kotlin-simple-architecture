@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import io.ktor.util.*
 import kim.jeonghyeon.di.logger
 
+@Suppress("NOTHING_TO_INLINE")
 actual class Logger actual constructor() {
     actual inline fun i(message: String) {
         logger.info(message)

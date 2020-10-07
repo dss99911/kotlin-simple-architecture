@@ -119,7 +119,7 @@ object SimpleApiUtil {
                 ApiError(ApiErrorBody.NoNetwork, e)
             }
             is ClientRequestException -> {
-                val status = e.response!!.status
+                val status = e.response.status
                 if (status == HttpStatusCode.Unauthorized) {
                     /**
                      * todo if it's unauthorized on response, remove token on preference.
@@ -268,6 +268,7 @@ data class ApiParameterInfo(
 )
 
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializer(forClass = HttpMethod::class)
 internal object HttpMethodSerializer : KSerializer<HttpMethod> {
     override val descriptor: SerialDescriptor =

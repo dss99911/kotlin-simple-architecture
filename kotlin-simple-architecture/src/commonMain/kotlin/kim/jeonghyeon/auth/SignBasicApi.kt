@@ -8,6 +8,7 @@ import kim.jeonghyeon.annotation.Header
 
 const val HEADER_AUTHORIZATION = "Authorization"
 const val AUTH_NAME_BASIC = "BASIC"
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @Api
 interface SignBasicApi : SignApi {
     /**

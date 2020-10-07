@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     application
     kotlin("jvm")
@@ -16,6 +18,10 @@ tasks.withType<Jar> {
             )
         )
     }
+}
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 dependencies {

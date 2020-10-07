@@ -10,7 +10,7 @@ import io.ktor.client.request.*
 import io.ktor.features.origin
 import io.ktor.http.*
 import io.ktor.request.*
-import io.ktor.util.hex
+import io.ktor.util.*
 import kim.jeonghyeon.db.User
 import kim.jeonghyeon.di.serviceLocator
 import kim.jeonghyeon.jvm.extension.toJsonObject
@@ -51,6 +51,8 @@ class SignBasicConfiguration(var controller: SignBasicController? = null) : Sign
 
 class SignDigestConfiguration(var controller: SignDigestController? = null) :
     SignInAuthConfiguration(SignInAuthType.DIGEST) {
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
+    @OptIn(KtorExperimentalAPI::class)
     override fun initialize(pipeline: Application): Unit = with(pipeline) {
         authentication {
             digest(signInAuthType.authName) {

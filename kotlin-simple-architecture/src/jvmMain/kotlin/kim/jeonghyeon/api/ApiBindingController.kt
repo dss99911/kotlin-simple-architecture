@@ -93,6 +93,7 @@ class ApiBindingController : ApiBindingApi {
         if (fieldNames.isEmpty()) {
             return this
         }
+        @Suppress("UNCHECKED_CAST")
         val map = this as Map<String, Any?>
         val field = map[fieldNames[0]]
         return field?.getDataByFieldNames(fieldNames.subList(1, fieldNames.size))
