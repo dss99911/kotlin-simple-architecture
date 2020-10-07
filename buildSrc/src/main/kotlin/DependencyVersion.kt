@@ -12,10 +12,10 @@ object versions {
         const val xTest = "1.2.0"
         const val xEspresso = "3.2.0"
         const val material = "1.1.0"
-        const val compose = "1.0.0-alpha01"
+        const val compose = "1.0.0-alpha03"
     }
 
     const val shadow = "5.1.0"
     const val sqldelight = "1.4.2"
-    const val simpleArch = "0.6.0"
+    const val simpleArch = "0.6.1"
 }

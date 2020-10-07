@@ -104,8 +104,7 @@ android {
         getByName(BUILD_TYPE_NAME_RELEASE) {
             isMinifyEnabled = true
             isShrinkResources = true
-            isZipAlignEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME_RELEASE)
         }
     }

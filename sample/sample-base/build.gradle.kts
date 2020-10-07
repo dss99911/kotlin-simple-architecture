@@ -228,8 +228,7 @@ android {
             isMinifyEnabled = true
             //todo when removing sampleandroid. uncomment this
 //            isShrinkResources = true
-            isZipAlignEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME_RELEASE)
         }
     }

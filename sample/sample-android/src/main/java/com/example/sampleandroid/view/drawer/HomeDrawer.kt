@@ -94,7 +94,6 @@ private fun DrawerButton(
         ) {
             Row(
                 horizontalArrangement = Arrangement.Start,
-                verticalGravity = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 icon?.let {

@@ -3,6 +3,7 @@ package kim.jeonghyeon.simplearchitecture.plugin.config
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import kim.jeonghyeon.simplearchitecture.plugin.VERSION_COMPOSE
 import kim.jeonghyeon.simplearchitecture.plugin.VERSION_KOTLIN
 import kim.jeonghyeon.simplearchitecture.plugin.extension.simpleArchExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
@@ -51,7 +52,7 @@ fun BaseExtension.initDefault() {
 
         composeOptions {
             kotlinCompilerVersion = VERSION_KOTLIN
-            kotlinCompilerExtensionVersion = "1.0.0-alpha01"
+            kotlinCompilerExtensionVersion = VERSION_COMPOSE
         }
 
         kotlinOptions {
