@@ -17,6 +17,7 @@ const val QUERY_TOKEN = "token"
 
 const val AUTH_NAME_OAUTH = "OAUTH"
 
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @Api
 interface SignOAuthApi {
 

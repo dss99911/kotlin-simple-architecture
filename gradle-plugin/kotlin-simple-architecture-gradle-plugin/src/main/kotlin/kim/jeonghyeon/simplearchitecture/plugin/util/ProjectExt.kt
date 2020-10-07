@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.sources.DefaultKotlinSourceSet
 val Project.androidExtension get() = project.extensions.findByType(BaseExtension::class.java)
 val Project.hasAndroid get() = androidExtension != null
 val Project.isMultiplatform get() = plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")
-val Project.multiplatformExtension get() = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
+val Project.multiplatformExtension: KotlinMultiplatformExtension? get() = project.extensions.findByType(KotlinMultiplatformExtension::class.java)
 
 
 fun Project.addDependency(dependency: String) {

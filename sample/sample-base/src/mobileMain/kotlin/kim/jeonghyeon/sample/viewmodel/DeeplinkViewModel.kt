@@ -111,7 +111,6 @@ class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
      *  - generate code for all the screen. so, no need to connect deeplink with screen.
      *  research on swift as well if it's possible or not.
      */
-    @OptIn(InternalSerializationApi::class)
     fun onClickNavigateByDeeplinkOnly() {
         navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB, deeplinkSubRequest.value) {
             if (it.isOk) {

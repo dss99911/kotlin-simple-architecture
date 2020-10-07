@@ -2,6 +2,7 @@ package kim.jeonghyeon.net
 
 import io.ktor.client.*
 import io.ktor.client.engine.ios.*
+import io.ktor.util.*
 
 @HttpClientDsl
 actual fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit): HttpClient =
@@ -17,4 +18,5 @@ actual fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit): HttpClient 
 
 
 //todo check exception type
+@OptIn(KtorExperimentalAPI::class)
 actual fun Throwable.isConnectException(): Boolean = this is IosHttpRequestException

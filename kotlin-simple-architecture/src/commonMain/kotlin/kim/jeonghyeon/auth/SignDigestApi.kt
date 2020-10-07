@@ -24,6 +24,7 @@ import kotlin.coroutines.coroutineContext
 const val REALM_SIMPLE_API = "simpleRealm"
 private const val HASH_ALGORITHM = "MD5"
 const val AUTH_NAME_DIGEST = "DIGEST"
+@Suppress("RUNTIME_ANNOTATION_NOT_SUPPORTED")
 @Api
 interface SignDigestApi : SignApi {
 
@@ -32,6 +33,7 @@ interface SignDigestApi : SignApi {
     @Authenticate(AUTH_NAME_DIGEST)
     suspend fun getNonce()
 
+    @OptIn(KtorExperimentalAPI::class)
     override suspend fun signUp(signId: String, password: String, extra: String?) {
         signUpHashed(signId, hex(makeDigest("$signId:$REALM_SIMPLE_API:$password")), extra)
     }
@@ -124,6 +126,7 @@ class DigestAuthProviderTemp(
         return true
     }
 
+    @OptIn(KtorExperimentalAPI::class)
     override suspend fun addRequestHeaders(request: HttpRequestBuilder) {
         val value = requestCounter.value
         requestCounter.value = value + 1
@@ -164,6 +167,7 @@ class DigestAuthProviderTemp(
         return data.toByteArray(Charsets.UTF_8).md5().bytes
     }
 
+    @OptIn(KtorExperimentalAPI::class)
     fun makeNonce(): String {
         val byteArray = ByteArray(32)
         return hex(secureRandom.nextBytes(byteArray))

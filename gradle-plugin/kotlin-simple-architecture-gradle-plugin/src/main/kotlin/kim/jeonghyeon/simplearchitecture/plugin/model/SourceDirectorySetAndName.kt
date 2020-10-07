@@ -1,7 +1,7 @@
 package kim.jeonghyeon.simplearchitecture.plugin.model
 
 
-import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.api.dsl.AndroidSourceSet
 import kim.jeonghyeon.simplearchitecture.plugin.util.androidExtension
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
 import kim.jeonghyeon.simplearchitecture.plugin.util.multiplatformExtension

@@ -40,7 +40,7 @@ class ApiGenerator(
                 )
             }
 
-    private fun SharedKtClass.isApiInterface(): Boolean = name != null && isInterface() && hasAnnotation(Api::class)
+    private fun SharedKtClass.isApiInterface(): Boolean = isInterface() && hasAnnotation(Api::class)
 
     private fun SharedKtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT

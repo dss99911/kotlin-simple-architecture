@@ -233,7 +233,7 @@ class SimpleRouting(val config: Configuration) {
     ) {
         val controllerFunction = controller.findFunction(apiFunction)
 
-        val body: JsonObject? = getBody(apiFunction)
+        val body: JsonObject? = getBody()
         val args = apiFunction.parameters
             .subList(1, apiFunction.parameters.size)//first parameter is for suspend function
             .map { param ->
@@ -288,7 +288,7 @@ class SimpleRouting(val config: Configuration) {
 
     private fun Annotation.isParameterAnnotation(): Boolean = this is Header || this is Path || this is Query || this is Body
 
-    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(function: KFunction<*>): JsonObject? {
+    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(): JsonObject? {
         //todo if body not exists, ignore it with better approach.
         return try {
             call.receive()

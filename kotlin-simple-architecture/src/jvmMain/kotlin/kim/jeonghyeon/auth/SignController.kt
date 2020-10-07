@@ -167,6 +167,7 @@ open class SignOAuthController(
             HttpClient(Apache).getProfile(principal.accessToken)
         }.also { attributes().put(ATTRIBUTE_KEY_ID_JSON, it) }
 
+        @Suppress("UNUSED_VARIABLE")
         val signId = idJson.toJsonObject()[oAuthSettings.idKey].asString.also {
             attributes().put(ATTRIBUTE_KEY_SIGN_ID, it)
         }
@@ -249,7 +250,7 @@ open class SignOAuthController(
 
 abstract class SignController(val userQueries: UserQueries, val authType: SignInAuthType) {
 
-    suspend fun signIn(authorization: String) {
+    suspend fun signIn(@Suppress("UNUSED_PARAMETER") authorization: String) {
         check(authType != SignInAuthType.OAUTH) {
             error("this function is not designed for OAuth")
         }

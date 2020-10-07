@@ -15,10 +15,4 @@ dependencies {
     kapt(deps.plugin.auto)
 }
 
-
-//todo what is this for?
-kapt {
-    includeCompileClasspath = true
-}
-
 publishShadowJar()

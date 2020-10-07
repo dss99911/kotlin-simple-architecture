@@ -63,7 +63,7 @@ class SignFeature {
     }
 }
 
-@OptIn(InternalAPI::class)
+@OptIn(InternalAPI::class, KtorExperimentalAPI::class)
 internal suspend fun digest(text: String): String {
     val digest = Digest("SHA-256")
     return hex(digest.build(text.toByteArray(Charsets.UTF_8)))
