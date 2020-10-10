@@ -61,21 +61,21 @@ extension Screen {
     }
     
     var loadingView: some View {
-        Text("Loading")
+        ProgressView("Loading…")
     }
     
     var initLoadingView: some View {
-        Text("Init Loading")
+        ProgressView("Init Loading…")
     }
     
     func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Button("Error \(error.message ?? "nil")") {
+        Snackbar(message: "Error \(error.message ?? "nil")", buttonText: "Retry") {
             retry()
         }
     }
     
     func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Button("Init Error \(error.message ?? "nil")") {
+        Snackbar(message: "Init Error \(error.message ?? "nil")", buttonText: "Retry") {
             retry()
         }
     }

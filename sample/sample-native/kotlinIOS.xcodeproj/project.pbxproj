@@ -17,6 +17,7 @@
 		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
 		551F389025053DE8006AC496 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F388F25053DE7006AC496 /* SampleApp.swift */; };
+		552C23142532090400947BE3 /* Snackbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C23132532090400947BE3 /* Snackbar.swift */; };
 		55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55595BBB2504029C00BD00AB /* Deelinker.swift */; };
 		5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172D2531BBC500A56449 /* ReactiveScreen.swift */; };
 		556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172F2531DD5400A56449 /* NoReactiveScreen.swift */; };
@@ -79,6 +80,7 @@
 		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
 		499EA68D1EC6F9F6484A4705 /* Pods-kotlinIOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug.xcconfig"; sourceTree = "<group>"; };
 		551F388F25053DE7006AC496 /* SampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleApp.swift; sourceTree = "<group>"; };
+		552C23132532090400947BE3 /* Snackbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snackbar.swift; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		55595BBB2504029C00BD00AB /* Deelinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deelinker.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				55F392562508248A00BB3CCF /* ViewModelEx.swift */,
 				55817E8C250AF71300DF8271 /* ThreadEx.swift */,
 				55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */,
+				552C23132532090400947BE3 /* Snackbar.swift */,
 			);
 			path = library;
 			sourceTree = "<group>";
@@ -570,6 +573,7 @@
 				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
 				55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */,
+				552C23142532090400947BE3 /* Snackbar.swift in Sources */,
 				55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */,
 				55F392552508219700BB3CCF /* BindingEx.swift in Sources */,
 				55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */,
