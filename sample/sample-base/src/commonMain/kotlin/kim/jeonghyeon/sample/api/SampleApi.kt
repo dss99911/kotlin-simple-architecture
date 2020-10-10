@@ -5,30 +5,56 @@ import kotlinx.serialization.Serializable
 
 @Api
 interface SampleApi {
-    suspend fun getToken(id: String, password: String): String
-
-    suspend fun submitPost(token: String, post: Post)
-
-
+    @Authenticate
     suspend fun getWords(): List<String>
 
+    /**
+     * get words contains [keyword]
+     */
+    @Authenticate
+    suspend fun getWordsOfKeyword(keyword: String): List<String>
+
+    @Authenticate
     suspend fun addWord(word: String)
 
+    @Authenticate
     suspend fun addWords(words: List<String>)
 
+    @Authenticate
     suspend fun removeWords()
 
     suspend fun getHeader(): String
 
-    @Get("annotation/{id}")
-    suspend fun getAnnotation(@Path("id") id: String, @Query("action") action: String, @Header("auth") auth: String): Pair<Post, String>
+    suspend fun getIncreasedNumber(): Int
 
-    @Put("annotation/{id}")
-    suspend fun putAnnotation(@Path("id") id: String, @Body post: Post)
+    suspend fun getSuccess()
+
+    suspend fun getError()
+
+    suspend fun getRandomError(per: Int)
+
+    suspend fun repeat(text: String, times: Int): String
+
+    suspend fun minus(firstNumber: Int, secondNumber: Int): Int
+
+    @Get("annotation/{key}")
+    suspend fun getAnnotation(@Path("key") key: String, @Query("action") action: AnnotationAction, @Header("someHeader") someHeader: String): AnnotationObject
+
+    @Put("annotation/{key}")
+    suspend fun putAnnotation(@Path("key") key: String, @Body body: AnnotationObject): AnnotationObject
 
     suspend fun testDeeplink()
 }
 
+@Serializable
+data class AnnotationObject(val key: String, val data: Pair2<AnnotationAction, String>)
 
 @Serializable
-data class Post(val id: Int, val name: String)
+data class Pair2<T,U>(val first: T, val second: U)//when use Pair. there is error when use response::data.bind()::second
+
+enum class AnnotationAction {
+    QUERY,
+    INSERT,
+    UPDATE,
+    DELETE
+}

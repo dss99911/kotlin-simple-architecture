@@ -26,6 +26,7 @@ abstract class ModelScreen(viewModel: SampleViewModel = SampleViewModel()) : Sub
             UserScreen().title to { UserScreen() },
             ApiBindingScreen().title to { ApiBindingScreen() },
             DeeplinkScreen().title to { DeeplinkScreen() },
+            ReactiveScreen().title to { ReactiveScreen() },
         )
     }
 }

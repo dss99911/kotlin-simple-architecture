@@ -13,9 +13,8 @@ import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.atomic
 import kim.jeonghyeon.type.isLoading
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -34,10 +33,14 @@ open class BaseViewModel {
     @SimpleArchInternal("used on IOS base code. don't use")
     val flows: MutableList<Lazy<DataFlow<*>>> = mutableListOf()
 
-    val initStatus: StatusFlow by add { StatusFlow() }
-    val status: StatusFlow by add { StatusFlow() }
+    open val initStatus: StatusFlow by add { StatusFlow() }
+    open val status: StatusFlow by add { StatusFlow() }
 
+    /**
+     * todo consider to merge [isInitialized], [initFlow]
+     */
     val isInitialized: AtomicReference<Boolean> = atomic(false)
+    val initFlow by add { DataFlow<Unit>() }
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
@@ -51,6 +54,7 @@ open class BaseViewModel {
     fun onCompose() {
         if (!isInitialized.getAndSet(true)) {
             handleDeeplink()
+            initFlow.call()
             onInitialized()
         }
     }
@@ -141,6 +145,9 @@ open class BaseViewModel {
     fun <T> Flow<T>.toDataFlow(): DataFlow<T> =
         toDataFlow(scope)
 
+    fun <T> Flow<Resource<T>>.toResourceFlow(): ResourceFlow<T> =
+        toResourceFlow(scope)
+
     fun <T> Flow<Resource<T>>.toDataFlow(statusFlow: StatusFlow): DataFlow<T> =
         toDataFlow(scope, statusFlow)
 
@@ -150,9 +157,11 @@ open class BaseViewModel {
     fun <T> resourceFlow(block: suspend FlowCollector<T>.() -> Unit): ResourceFlow<T> =
         resourceFlow(scope, block)
 
+    fun <T, R> Flow<T>.mapToResource(transformData: suspend (value: T) -> R): Flow<Resource<R>> = mapToResource(scope, transformData)
+
+    fun <T, R> Flow<T>.mapToResourceIfIdle(transformData: suspend (value: T) -> R): Flow<Resource<R>> = mapToResourceIfIdle(scope, transformData)
 
     open fun onDeeplinkReceived(url: Url) {
-
     }
 
     fun goBack() {
@@ -202,8 +211,35 @@ open class BaseViewModel {
         scope.loadResource(this, status, work)
     }
 
+    fun <T> DataFlow<T>.loadInIdle(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
+        if (status.value.isLoading()) {
+            return
+        }
+        scope.loadDataAndStatus(this, status, work)
+    }
+
     fun <T> loadInIdle(work: suspend CoroutineScope.() -> T) {
         status.loadInIdle(work)
+    }
+
+    fun <T> ResourceFlow<T>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+        value?.onLoading { last, cancel ->
+            cancel()
+        }
+        load {
+            delay(delayMillis)
+            work()
+        }
+    }
+
+    fun <T> DataFlow<T>.loadDebounce(statusFlow: StatusFlow, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+        statusFlow.value?.onLoading { last, cancel ->
+            cancel()
+        }
+        load(statusFlow) {
+            delay(delayMillis)
+            work()
+        }
     }
 
     //todo even if source is cold stream, the source get active directly, even if DataFlow is not active
@@ -260,6 +296,7 @@ open class BaseViewModel {
      * is that, DataFlow can be transformed. and can't be sure which DataFlow will be collected by View side.
      * so, use this function to the flow which is used by View side
      *
+     * todo is there simpler way?
      */
     fun <T> add(initializer: () -> DataFlow<T>): Lazy<DataFlow<T>> =
         lazy(initializer).also {

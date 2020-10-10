@@ -6,6 +6,8 @@ import kim.jeonghyeon.extension.toJsonString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+val preference: Preference by lazy { Preference() }
+
 expect class Preference() : AbstractPreference {
     override val db: SimpleDB
 
@@ -23,9 +25,8 @@ fun Preference.removeUserToken() {
 
 abstract class AbstractPreference {
 
-
     abstract val db: SimpleDB
-    private val queries by lazy { db.dictionaryQueries }
+    private val queries by lazy { db.preferenceForAllQueries }
 
     fun has(key: String): Boolean {
         return getString(key) != null
@@ -59,12 +60,12 @@ abstract class AbstractPreference {
 
     //TODO HYUN [KSA-95] : add encyption logic
     fun getEncryptedString(key: String): String? {
-        return queries.get(key).executeAsOneOrNull()?.value
+        return getString(key)
     }
 
     //TODO HYUN [KSA-95] : add encyption logic
     fun setEncryptedString(key: String, value: String?) {
-        queries.set(key, value)
+        setString(key, value)
     }
 }
 

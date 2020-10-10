@@ -1,0 +1,17 @@
+CREATE TABLE preferenceForAll (
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
+
+get:
+SELECT *
+FROM preferenceForAll
+WHERE key = ?;
+
+set:
+REPLACE INTO preferenceForAll(key, value)
+VALUES (?, ?);
+
+delete:
+DELETE FROM preferenceForAll
+WHERE key = ?;

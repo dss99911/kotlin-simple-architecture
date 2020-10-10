@@ -1,0 +1,23 @@
+CREATE TABLE preferencePerUser (
+  key TEXT NOT NULL,
+  id INTEGER NOT NULL,
+  value TEXT,
+  PRIMARY KEY (key, id)
+);
+
+get:
+SELECT *
+FROM preferencePerUser
+WHERE key = ? AND id = ?;
+
+set:
+REPLACE INTO preferencePerUser(key, id, value)
+VALUES (?, ?, ?);
+
+delete:
+DELETE FROM preferencePerUser
+WHERE key = ? AND id = ?;
+
+deleteAll:
+DELETE FROM preferencePerUser
+WHERE id = ?;
