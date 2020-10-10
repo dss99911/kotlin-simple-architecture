@@ -24,11 +24,14 @@ import kotlinx.coroutines.flow.*
  *   (I created custom operator, it may get simpler in the future. but currently it looks complicated without knowledge)
  *
  * I suggest to compare the [NoReactiveViewModel] which is not reactive but same business logic
+ * also recommend to compare with [ApiDbViewModel] which use Repository
  *
  * Opinion
- * - currently supporting various use case, complicated custom operator is required.
- * - if operator can be get simpler, it's good to use fully reactive way
- * - but, as it's not simple for now, it seems better to mix both as both has merit.
+ * - to support various use case, requires complicated custom flow operator.
+ * - so, use Flow operator only on the case below, otherwise, use coroutine suspend for singe call like calling api
+ *      - changeable data like database
+ *      - transforming data by map {}
+ *      - combine multiple flow
  */
 class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
 
@@ -61,7 +64,7 @@ class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
      *  2. clicking 'add' button after inputting newWord
      *  3. init
      *
-     *  [toDataFlow] is not reactive. I feel that status is subsidiary so, need to focus on data
+     *  [toDataFlow] is not reactive. I think that status is subsidiary so, need to focus on data
      *   if you want fully reactive,
      *   make 3 field of ResourceFlow<List<String>> for (init, keyword, click).
      *   and let each status(initStatus, fail, status) to observe each list.
@@ -72,6 +75,10 @@ class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
      *   in order not to show ui before list is loaded, initFlow's api call should be active before list active.
      *   so, this should be handled by different approach.
      *   but, this viewModel's purpose is just showing reactive way. so keep this way.
+     *
+     *   this sample shows complicated Flow use case.
+     *   the reason not to use Repository, is that if use repository, it's very simple, so can't use much operators.
+     *   you can refer [ApiDbViewModel] for repository use case
      *
      */
     @OptIn(FlowPreview::class)
