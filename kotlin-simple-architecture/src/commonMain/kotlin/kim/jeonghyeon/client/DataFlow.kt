@@ -7,9 +7,15 @@ import kotlinx.coroutines.flow.*
 
 
 /**
- * Flow on ViewModel
+ * Flow on ViewModel !!Experimental!!
+ * This is similar to LiveData. but difference is that setValue type is T instead of T?
  *
- * Reason to use [DataFlow] instead of [MutableStateFlow]
+ * TODO
+ *  - There are various operator because there is conversion among Flow, DataFlow, ResourceFlow.
+ *  - this should get simpler.
+ *  - Focus on the frequently used use case
+ *
+ * Reason to use [DataFlow] instead of [MutableStateFlow] (no. 4 is the biggest reason)
  * 1. Initial time value can not be empty. if the data should be fetched asynchronously, there can not be the data
  * 2. StateFlow is distinct.
  *   - There are two cases on view side.
@@ -24,7 +30,7 @@ import kotlinx.coroutines.flow.*
  * 4. it's difficult to use [map] operator from [StateFlow] to [StateFlow]. as [StateFlow] contains initial value, whenever use map, we have to add code to ignore empty value by developer as only developer knows that it's empty data or not.
  *
  * Characteristics
- * 1. Initial time value can be empty(easy to handle empty case when use the data)
+ * 1. on initial time, value can be empty(easy to handle empty case when use the data)
  * 2. getValue always nullable. as initial value is able to be empty(handle empty value on UI side)
  * 3. if value is not possible to be empty in context. use !!
  * 4. not distinct
