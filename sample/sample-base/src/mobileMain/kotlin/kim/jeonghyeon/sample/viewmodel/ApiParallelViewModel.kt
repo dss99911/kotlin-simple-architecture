@@ -5,6 +5,9 @@ import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 import kotlinx.coroutines.async
 
+/**
+ * shows how to call multiple apis in parallel
+ */
 class ApiParallelViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
@@ -23,9 +26,9 @@ class ApiParallelViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     override fun onInit() {
         list.load(initStatus) {
-            val a1 = async { api.getString(KEY1) }
-            val a2 = async { api.getString(KEY2) }
-            val a3 = async { api.getString(KEY3) }
+            val a1 = async { api.getStringPerUser(KEY1) }
+            val a2 = async { api.getStringPerUser(KEY2) }
+            val a3 = async { api.getStringPerUser(KEY3) }
             listOf(
                 Pair(KEY1, a1.await()).also { input1.setValue(it.second?: "")  },
                 Pair(KEY2, a2.await()).also { input2.setValue(it.second?: "")  },
@@ -36,9 +39,9 @@ class ApiParallelViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     fun onClick() {
         list.load(status) {
-            val a1 = async { api.setString(KEY1, input1.value) }
-            val a2 = async { api.setString(KEY2, input2.value) }
-            val a3 = async { api.setString(KEY3, input3.value) }
+            val a1 = async { api.setStringPerUser(KEY1, input1.value) }
+            val a2 = async { api.setStringPerUser(KEY2, input2.value) }
+            val a3 = async { api.setStringPerUser(KEY3, input3.value) }
             a1.await()
             a2.await()
             a3.await()

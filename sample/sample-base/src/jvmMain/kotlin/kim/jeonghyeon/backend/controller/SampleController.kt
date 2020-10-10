@@ -3,7 +3,7 @@ package kim.jeonghyeon.backend.controller
 import kim.jeonghyeon.backend.const.KEY_WORDS
 import kim.jeonghyeon.backend.di.serviceLocatorBackend
 import kim.jeonghyeon.const.DeeplinkUrl
-import kim.jeonghyeon.const.post
+import kim.jeonghyeon.const.forTest
 import kim.jeonghyeon.net.DeeplinkInfo
 import kim.jeonghyeon.net.HEADER_KEY
 import kim.jeonghyeon.net.error.ApiErrorBody
@@ -11,25 +11,25 @@ import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.net.error.errorDeeplink
 import kim.jeonghyeon.net.headers
 import kim.jeonghyeon.pergist.Preference
-import kim.jeonghyeon.sample.api.Post
+import kim.jeonghyeon.sample.api.AnnotationAction
+import kim.jeonghyeon.sample.api.AnnotationObject
+import kim.jeonghyeon.sample.api.Pair2
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.util.log
 import kotlin.random.Random
 
 class SampleController(val pref: Preference = serviceLocatorBackend.preference) : SampleApi {
-    override suspend fun getToken(id: String, password: String): String {
-        return "token"
-    }
-
-    override suspend fun submitPost(token: String, post: Post) {
-        if (Random.nextBoolean()) {
-            errorApi(ApiErrorBody.post)
-        }
-    }
+    var number = 0
 
     override suspend fun getWords(): List<String> {
-        log.i("getWords")
         return pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
+    }
+
+    override suspend fun getWordsOfKeyword(keyword: String): List<String> {
+        val list = pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
+        return list.filter {
+            it.contains(keyword)
+        }
     }
 
     override suspend fun addWord(word: String) {
@@ -57,19 +57,44 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
     }
 
     override suspend fun getAnnotation(
-        id: String,
-        action: String,
-        auth: String
-    ): Pair<Post, String> {
-        return Pair(Post(1, "postValue"), "received $id, $action, $auth")
+        key: String,
+        action: AnnotationAction,
+        someHeader: String
+    ): AnnotationObject = AnnotationObject(key, Pair2(action, someHeader))
+
+    override suspend fun putAnnotation(key: String, body: AnnotationObject): AnnotationObject {
+        println("key = $key")
+        return body.copy(key = key)
     }
 
-    override suspend fun putAnnotation(id: String, post: Post) {
-        log.i("id=$id, post=$post")
-    }
 
     override suspend fun testDeeplink() {
         errorDeeplink(DeeplinkInfo(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP, "Please Sign up for testing deeplink"))
     }
+
+    override suspend fun getIncreasedNumber(): Int {
+        return ++number
+    }
+
+    override suspend fun getSuccess() {
+        //do nothing
+    }
+
+    override suspend fun getError() {
+        errorApi(ApiErrorBody.forTest)
+    }
+
+    override suspend fun getRandomError(per: Int) {
+        if (Random.nextInt() % per == 0) {
+            errorApi(ApiErrorBody.forTest)
+        }
+    }
+
+    override suspend fun repeat(text: String, times: Int): String {
+        return text.repeat(times)
+    }
+
+    override suspend fun minus(firstNumber: Int, secondNumber: Int): Int =
+        firstNumber - secondNumber
 }
 

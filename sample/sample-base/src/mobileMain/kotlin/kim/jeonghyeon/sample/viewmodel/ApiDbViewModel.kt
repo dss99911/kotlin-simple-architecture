@@ -6,6 +6,9 @@ import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.WordRepository
 
+/**
+ * shows how to use repository which has flow using api and database.
+ */
 class ApiDbViewModel(private val repository: WordRepository) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter

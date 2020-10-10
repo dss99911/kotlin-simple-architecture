@@ -4,6 +4,9 @@ import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 
+/**
+ * call multiple apis sequentially
+ */
 class ApiSequentialViewModel(private val api: PreferenceApi) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
@@ -28,18 +31,18 @@ class ApiSequentialViewModel(private val api: PreferenceApi) : SampleViewModel()
     override fun onInit() {
         list.load(initStatus) {
             listOf(
-                Pair(KEY1, api.getString(KEY1)).also { input1.setValue(it.second ?: "") },
-                Pair(KEY2, api.getString(KEY2)).also { input2.setValue(it.second ?: "") },
-                Pair(KEY3, api.getString(KEY3)).also { input3.setValue(it.second ?: "") }
+                Pair(KEY1, api.getStringPerUser(KEY1)).also { input1.setValue(it.second ?: "") },
+                Pair(KEY2, api.getStringPerUser(KEY2)).also { input2.setValue(it.second ?: "") },
+                Pair(KEY3, api.getStringPerUser(KEY3)).also { input3.setValue(it.second ?: "") }
             )
         }
     }
 
     fun onClick() {
         list.load(status) {
-            api.setString(KEY1, input1.value)
-            api.setString(KEY2, input2.value)
-            api.setString(KEY3, input3.value)
+            api.setStringPerUser(KEY1, input1.value)
+            api.setStringPerUser(KEY2, input2.value)
+            api.setStringPerUser(KEY3, input3.value)
             listOf(
                 Pair(KEY1, input1.value),
                 Pair(KEY2, input2.value),
