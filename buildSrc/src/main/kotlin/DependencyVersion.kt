@@ -1,4 +1,6 @@
 object versions {
+    const val simpleArch = "0.7.0"
+
     object kotlin {
         const val version = "1.4.0"
         const val coroutine = "1.3.9-native-mt-2"
@@ -17,5 +19,5 @@ object versions {
 
     const val shadow = "5.1.0"
     const val sqldelight = "1.4.2"
-    const val simpleArch = "0.6.1"
+
 }
