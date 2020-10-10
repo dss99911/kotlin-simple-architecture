@@ -15,10 +15,17 @@ class SampleSignBasicController :
     SignBasicController() {
 
     override suspend fun onUserCreated(user: User, extra: String?) {
+        //if call this, when user is created, automatically signed-in as well.
+        //if doesn't call this, user have to sign-in after sign-up
         generateToken(user.signId)
     }
 
+    /**
+     * set name, and sign id on token(in case of jwt token), or in-memory(in case of session)
+     * in order not to load from db whenever service api is called
+     */
     override fun MutableMap<String, String>.makeServiceAuthExtraOnSignIn(user: User) {
+        //client send user's name by extra
         val userDetail = user.extra!!.fromJsonString<SerializableUserDetail>()
         put(USER_EXTRA_KEY_NAME, userDetail.name)
         put(USER_EXTRA_KEY_SIGN_ID, user.signId)
@@ -57,6 +64,9 @@ class SampleSignOAuthController : SignOAuthController() {
         idMap: Map<String, String?>
     ): String? {
         log.i("user information : $idMap")
+        //idMap is from each oauth provider.
+        //so, key is defined by each provider
+        //google, and facebook has 'name' key for user's name.
         return SerializableUserDetail(null, idMap["name"]?:"null").toJsonString()
     }
 

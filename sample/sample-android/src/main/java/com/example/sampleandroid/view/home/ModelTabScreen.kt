@@ -17,15 +17,6 @@ import kim.jeonghyeon.sample.compose.R
 class ModelTabScreen : SampleScreen() {
     override val title: String = R.string.model.resourceToString()
 
-    //todo loadInIdle
-    // loadDebounce
-    // paging
-    // api cache in memory or pergist
-    // socket communication. chatting, auto update by flow
-    // how to support switchMap?
-    // add error handle on ui.
-    // FCM push
-    // viewModel for complicated case
     @Composable
     override fun compose() {
         super.compose()

@@ -7,6 +7,10 @@ import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SampleViewModel
 
+/**
+ * TODD add Design related example
+ *  https://hyun.myjetbrains.com/youtrack/issue/KSA-139
+ */
 abstract class ViewScreen(viewModel: SampleViewModel = SampleViewModel()) : SubScreen(viewModel) {
     override val parentTitle: String = R.string.view.resourceToString()
 
