@@ -31,6 +31,8 @@ inline fun <reified T : Any> T.toJsonString(): String {
 }
 
 //todo change to this function and change name
+// difference is that, if data is null, then with toJsonString, it's null
+// but with this, if data is null, then it return "null"
 fun Any?.toJsonStringNew(): String {
     return (KotlinxSerializer().write(this?: return "null") as TextContent).text
 }

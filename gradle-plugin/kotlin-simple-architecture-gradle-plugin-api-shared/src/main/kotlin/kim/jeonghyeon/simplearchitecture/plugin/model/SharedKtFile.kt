@@ -79,7 +79,11 @@ fun String.getParameterString(name: String, index: Int): String? {
 
     val indexNameExists = params
         //has other parameter name. todo need to improve logic to detect name exists
-        .indexOfFirst { it.contains("=") }
+        .indexOfFirst {
+            val indexOfEqual = it.indexOf("=")
+            //check if '=' exists before ""
+            indexOfEqual != -1  && indexOfEqual < it.indexOf("\"")
+        }
         .let { if (it == -1) params.size else it }
     return if (index < indexNameExists) {
         if (params[index].isBlank()) {

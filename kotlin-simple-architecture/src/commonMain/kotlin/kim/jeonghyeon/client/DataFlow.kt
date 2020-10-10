@@ -201,6 +201,35 @@ fun <T, R> DataFlow<T>.mapToResource(transformData: suspend (value: T) -> R): Fl
         })
     }
 
+/**
+ * ignore collected value if it's busy
+ *
+ * todo how about using busy(), idle() operator with coroutineScope. is coroutineScope is delivered throw multiple flow?
+ *  if busy(), ignore new value.
+ *  if idle(), allow new value.
+ */
+fun <T, R> Flow<T>.mapToResourceIfIdle(scope: CoroutineScope, transformData: suspend (value: T) -> R): Flow<Resource<R>> {
+    var processing = false
+    val middleStream = dataFlow<T>(scope) {
+        this@mapToResourceIfIdle.collect {
+            if (!processing) {
+                setValue(it)
+            }
+        }
+    }
+
+    return middleStream.mapToResource {
+        processing = true
+        transformData(it).also {
+            processing = false
+        }
+    }
+}
+
+@OptIn(InternalCoroutinesApi::class)
+fun <T, R> Flow<T>.mapToResource(scope: CoroutineScope, transformData: suspend (value: T) -> R): Flow<Resource<R>> = toDataFlow(scope)
+        .mapToResource(transformData)
+
 fun <T, R> Flow<Resource<T>>.mapResource(transformData: suspend (value: T) -> R): Flow<Resource<R>> =
     transform<Resource<T>, Resource<R>> { resource ->
         when (resource) {
@@ -260,7 +289,8 @@ private suspend fun <T> FlowCollector<Resource<T>>.emitResource(block: suspend F
 }
 
 /**
- * if previously there was data on ResourceFlow<T>, then even when error occur, data is kept on Resource.
+ * if previously there was data on ResourceFlow<T>, then even when error occur, data should be kept on Resource.
+ * so, set newValue but set previous data
  */
 private fun <T> ResourceFlow<T>.setNewValue(newValue: Resource<T>) {
     @Suppress("NullableBooleanElvis")
@@ -279,5 +309,22 @@ private fun <T> ResourceFlow<T>.setNewValue(newValue: Resource<T>) {
     })
 }
 
+/**
+ * if a flow's value is affected by multiple other flow.
+ * merge other flows
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+inline fun <T> flowsToSingle(
+    vararg flows: Flow<T>,
+): Flow<T> = channelFlow {
+    flows.forEach {
+        launch {
+            it.collect {
+                send(it)
+            }
+        }
+    }
+
+}
 typealias StatusFlow = DataFlow<Status>
 typealias ResourceFlow<T> = DataFlow<Resource<T>>

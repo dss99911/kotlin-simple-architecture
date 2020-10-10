@@ -7,6 +7,9 @@ import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.di.serviceLocator
 
+/**
+ * get data from database
+ */
 class DbSimpleViewModel(private val wordQueries: WordQueries) : SampleViewModel() {
 
     //todo required for ios to create instance, currently kotlin doesn't support predefined parameter

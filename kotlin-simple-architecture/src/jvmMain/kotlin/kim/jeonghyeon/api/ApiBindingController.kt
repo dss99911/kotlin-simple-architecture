@@ -8,15 +8,20 @@ import kim.jeonghyeon.jvm.extension.toJsonString
 import kim.jeonghyeon.net.ApiBindingApi
 import kim.jeonghyeon.net.ApiCallInfo
 import kim.jeonghyeon.net.SimpleRouting
+import kim.jeonghyeon.net.error.ApiError
+import kim.jeonghyeon.net.error.ApiErrorBody
+import kim.jeonghyeon.net.error.errorApi
 import kim.jeonghyeon.util.log
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.functions
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
 
 /**
@@ -26,8 +31,19 @@ class ApiBindingController : ApiBindingApi {
     override suspend fun call(apiCallInfos: List<ApiCallInfo>): List<String> {
 
         val responseList = mutableListOf<Any?>()
-        apiCallInfos.forEach { apiCallInfo ->
-            responseList.add(apiCallInfo.callApi(responseList))
+        try {
+            apiCallInfos.forEach { apiCallInfo ->
+                responseList.add(apiCallInfo.callApi(responseList))
+            }
+        } catch (e: InvocationTargetException) {
+            //todo deliver success data as well.
+            val targetException = e.targetException
+            if (targetException is ApiError) {
+                errorApi(targetException.body)
+            } else {
+                errorApi(ApiErrorBody.Unknown.code, targetException.message)
+            }
+
         }
 
         return responseList.map {
@@ -93,9 +109,15 @@ class ApiBindingController : ApiBindingApi {
         if (fieldNames.isEmpty()) {
             return this
         }
+
+
         @Suppress("UNCHECKED_CAST")
-        val map = this as Map<String, Any?>
-        val field = map[fieldNames[0]]
+        val field = this::class.java
+            .getDeclaredField(fieldNames[0])
+            .apply {
+                isAccessible = true
+            }
+            .get(this)
         return field?.getDataByFieldNames(fieldNames.subList(1, fieldNames.size))
     }
 }
