@@ -36,17 +36,16 @@ class MainActivity : BaseActivity() {
             // if it's fixed. move this code to sample-base module. instead of sampleandroid module
 
             AndroidLibraryTheme {
-                MainContent()
+                MainContent(ScreenStack.last())
             }
         }
 }
 
 @Composable
-fun MainContent() {
+fun MainContent(screen: Screen) {
     MainScaffold {
-        val currentScreen = ScreenStack.last()
         Surface(color = MaterialTheme.colors.background) {
-            currentScreen.compose()
+            screen.compose()
         }
         //todo is CrossFade make sub composable to compose several times?
 
@@ -57,6 +56,6 @@ fun MainContent() {
 @Composable
 fun DefaultPreview() {
     AndroidLibraryTheme {
-        MainContent()
+        MainContent(HomeScreen())
     }
 }

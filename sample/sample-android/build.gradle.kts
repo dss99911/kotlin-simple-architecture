@@ -4,7 +4,6 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
 }
-
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 
 val androidKeyAlias: String by project
