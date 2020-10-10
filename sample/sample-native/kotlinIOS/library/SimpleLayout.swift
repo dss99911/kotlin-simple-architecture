@@ -162,6 +162,9 @@ struct SimpleLayout<Content, SCREEN> : View, Navigator where Content : View, SCR
     var body: some View {
         //TODO: if this is called on the same time before initialized is set true, there will be malfunction
         if (!self.wrapper.isInitialized()) {
+            if (isRootView) {
+                ApplicationKt.initialize(app: UIApplication.shared)
+            }
             watchDeeplink()
             screen.onInitialized(navigator: self)
         }

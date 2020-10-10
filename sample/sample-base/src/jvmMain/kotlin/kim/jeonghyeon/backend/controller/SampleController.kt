@@ -24,7 +24,7 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
         return pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
     }
 
-    override suspend fun getWords(keyword: String): List<String> {
+    override suspend fun getWordsOfKeyword(keyword: String): List<String> {
         val list = pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
         return list.filter {
             it.contains(keyword)

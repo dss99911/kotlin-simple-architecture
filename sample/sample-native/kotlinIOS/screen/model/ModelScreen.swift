@@ -9,7 +9,6 @@
 import SwiftUI
 import sample_base
 struct ModelScreen: SampleScreen {
-    
     func content(navigator: Navigator) -> some View {
         ScrollableColumn {
             //in a VStack, limited children is available.
@@ -56,5 +55,11 @@ struct ModelScreen: SampleScreen {
             }
             
         }
+    }
+}
+
+struct ModelScreen_Previews: PreviewProvider {
+    static var previews: some View {
+        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
     }
 }

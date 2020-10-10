@@ -8,6 +8,9 @@ import ch.qos.logback.core.spi.ContextAwareBase
 import ch.qos.logback.core.spi.LifeCycle
 import samplebase.generated.SimpleConfig
 
+/**
+ * set different log path, log level by different environment
+ */
 class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCycle {
     private var started = false
     override fun start() {
@@ -21,6 +24,7 @@ class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCyc
     private fun configure() {
         /**
          * todo Environment is created after Logger is initialized, so, can't bring this from application.conf
+         *  after this is fixed, consider to move to library to provide custom log path and level.
          */
         val logPath = if (SimpleConfig.isProduction) "/home/ec2-user/app/sample-backend" else "."
         val logLevel = "TRACE"
@@ -30,12 +34,6 @@ class LoggerStartupListener : ContextAwareBase(), LoggerContextListener, LifeCyc
             context.putProperty("LOG_LEVEL", logLevel)
         }
     }
-
-    data class Environment(
-        val logPath: String,
-        val logLevel: String,
-        val dbPath: String
-    )
 
     override fun stop() {}
     override fun isStarted(): Boolean {

@@ -18,7 +18,7 @@ interface GithubApi {
 @Serializable
 data class RepoSearchResponse(
     val total_count: Int,
-    val incomplete_results: Boolean,//todo if there is more result, it should be true. but this always false.
+    val incomplete_results: Boolean,//if there is more result, it should be true. but this always false.
     val items: List<Repo> = emptyList()
 )
 

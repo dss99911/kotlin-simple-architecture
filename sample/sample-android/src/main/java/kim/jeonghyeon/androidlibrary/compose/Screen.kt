@@ -30,26 +30,9 @@ import kim.jeonghyeon.util.log
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
- * statusStateOf() shouldn't be lazy. if lazy, it's not working while setValue()
- * WRONG : val a by lazy { stateOf() }
- * CORRECT : val a = stateOf()
- * Todo check if GC is working fine.
- * Todo how to get saved state and viewModel?
- * Todo when screen is changed. even if screen exists on history stack. all coroutine scope job cancelled. it seems not proper.
- *
- *
- * todo when composable is inactive, should the viewModel side process also cancelled? in MVVM. viewModel still alive and also processed. just it's reflected when it's active.
- * todo so, I think that the coroutine scope shouldn't be cancelled.
- * todo so.. use viewModel. and use viewModelScope.
- * todo use savedState also. and viewModel should keep current screen.
- * todo make ScreenScope which survive if it's not in history stack.
- * todo communication between screen.
- * todo multiple first root screen by logic.
- * todo add menu and different navigation icon
- *
  * multiple viewModel is not supported
  * - it makes code complicated on several functions(go back with result, etc)
- * - only one viewModel is enough(for multiple feature, let viewModel contains sub viewModel)
+ * - only one viewModel is enough(for multiple feature, let viewModel contains sub viewModels)
  */
 abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 
@@ -72,7 +55,7 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
         //just set data. then it'll be reflected
         //and Screen also keep in memory even if activity destroyed. so, no need to handle recreate case.
         //Fragment way was difficult to handle dialog, toast, navigation, so, it couldn't apply MVVM perfectly but event had to use MVP or event implementation on MVVM
-        //now complete MVVM is reflected on the architecture, thanks to Jetpack Compose
+        //now complete MVVM is reflected on the architecture with compose
         launch {
             viewModel.eventGoBack.collect {
                 goBack()
