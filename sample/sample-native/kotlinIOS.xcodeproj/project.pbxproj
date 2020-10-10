@@ -18,6 +18,8 @@
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
 		551F389025053DE8006AC496 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F388F25053DE7006AC496 /* SampleApp.swift */; };
 		55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55595BBB2504029C00BD00AB /* Deelinker.swift */; };
+		5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172D2531BBC500A56449 /* ReactiveScreen.swift */; };
+		556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172F2531DD5400A56449 /* NoReactiveScreen.swift */; };
 		55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8C250AF71300DF8271 /* ThreadEx.swift */; };
 		55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
@@ -80,6 +82,8 @@
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		55595BBB2504029C00BD00AB /* Deelinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deelinker.swift; sourceTree = "<group>"; };
+		5565172D2531BBC500A56449 /* ReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveScreen.swift; sourceTree = "<group>"; };
+		5565172F2531DD5400A56449 /* NoReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoReactiveScreen.swift; sourceTree = "<group>"; };
 		55817E8C250AF71300DF8271 /* ThreadEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEx.swift; sourceTree = "<group>"; };
 		55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,6 +175,8 @@
 				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
 				55C5D11F25272B2500438969 /* DeeplinkScreen.swift */,
 				55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */,
+				5565172D2531BBC500A56449 /* ReactiveScreen.swift */,
+				5565172F2531DD5400A56449 /* NoReactiveScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -544,9 +550,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */,
+				556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */,
 				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
 				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
+				5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */,
 				55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */,
 				55C5D1252527334000438969 /* SampleTextField.swift in Sources */,
 				55C5D12025272B2500438969 /* DeeplinkScreen.swift in Sources */,

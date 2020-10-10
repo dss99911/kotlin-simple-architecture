@@ -203,7 +203,7 @@ data class ApiCallInfo(
         return baseUrl connectPath mainPath connectPath subPath.let {
             var replacedSubPath = it
             parameters.filter { it.type == ApiParameterType.PATH }.forEach {
-                replacedSubPath.replace("{${it.key}}", it.value.toString())
+                replacedSubPath = replacedSubPath.replace("{${it.key}}", it.value.toString())
 
             }
             replacedSubPath

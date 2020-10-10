@@ -47,10 +47,8 @@ interface SampleApi {
 }
 
 @Serializable
-data class AnnotationObject(val key: String, val data: Pair2<AnnotationAction, String>)
+data class AnnotationObject(val key: String, val data: Pair<String, String>, val action: AnnotationAction)
 
-@Serializable
-data class Pair2<T,U>(val first: T, val second: U)//when use Pair. there is error when use response::data.bind()::second
 
 enum class AnnotationAction {
     QUERY,

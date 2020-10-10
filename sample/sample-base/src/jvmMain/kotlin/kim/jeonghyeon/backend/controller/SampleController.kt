@@ -13,7 +13,6 @@ import kim.jeonghyeon.net.headers
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.AnnotationAction
 import kim.jeonghyeon.sample.api.AnnotationObject
-import kim.jeonghyeon.sample.api.Pair2
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.util.log
 import kotlin.random.Random
@@ -25,7 +24,7 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
         return pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
     }
 
-    override suspend fun getWordsOfKeyword(keyword: String): List<String> {
+    override suspend fun getWords(keyword: String): List<String> {
         val list = pref.getString(Preference.KEY_WORDS)?.split(",") ?: emptyList()
         return list.filter {
             it.contains(keyword)
@@ -60,12 +59,13 @@ class SampleController(val pref: Preference = serviceLocatorBackend.preference) 
         key: String,
         action: AnnotationAction,
         someHeader: String
-    ): AnnotationObject = AnnotationObject(key, Pair2(action, someHeader))
-
-    override suspend fun putAnnotation(key: String, body: AnnotationObject): AnnotationObject {
-        println("key = $key")
-        return body.copy(key = key)
+    ): AnnotationObject {
+        log.i("key = $key")
+        return AnnotationObject(key, Pair("aa", someHeader), action)
     }
+
+    override suspend fun putAnnotation(key: String, body: AnnotationObject): AnnotationObject =
+        body.copy(key = key)
 
 
     override suspend fun testDeeplink() {

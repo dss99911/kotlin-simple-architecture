@@ -44,11 +44,14 @@ struct ModelScreen: SampleScreen {
                 Button("User".localized()) {
                     navigator.navigate { UserScreen() }
                 }
-                Button("Api Biding".localized()) {
+                Button("Api Binding".localized()) {
                     navigator.navigate { ApiBindingScreen() }
                 }
                 Button("Deeplink".localized()) {
                     navigator.navigate { DeeplinkScreen() }
+                }
+                Button("Reactive".localized()) {
+                    navigator.navigate { ReactiveScreen() }
                 }
             }
             
