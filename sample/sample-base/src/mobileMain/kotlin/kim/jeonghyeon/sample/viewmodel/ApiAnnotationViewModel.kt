@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.DataFlow
-import kim.jeonghyeon.sample.api.Pair2
 import kim.jeonghyeon.sample.api.AnnotationAction
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
@@ -33,7 +32,7 @@ class ApiAnnotationViewModel(private val api: SampleApi) : SampleViewModel() {
 
     fun onClick() {
         obj.load(status) {
-            api.putAnnotation("key2", AnnotationObject("key2", Pair2(AnnotationAction.INSERT, input.value?: error("input value"))))
+            api.putAnnotation(input.value?: error("input key"), obj.value!!)
         }
     }
 }
