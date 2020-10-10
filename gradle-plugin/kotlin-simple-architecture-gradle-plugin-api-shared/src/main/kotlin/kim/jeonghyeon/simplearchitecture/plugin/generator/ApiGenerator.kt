@@ -85,11 +85,19 @@ class ApiGenerator(
             ?.getParameterString(Api::path.name, 0)
     }
 
-    private fun SharedKtClass.makeFunctions(): String = functions
-        .filter { !it.hasBody() }
-        .also { check(it.all { it.isSuspend() }) { "$name has abstract function which is not suspend" } }
-        .map { it.makeFunction() }
-        .joinToString("\n\n") { it }
+    private fun SharedKtClass.makeFunctions(): String {
+        val functions = functions
+            .filter { !it.hasBody() }
+            .also { check(it.all { it.isSuspend() }) { "$name has abstract function which is not suspend" } }
+
+        if (functions.map { it.name }.toSet().size < functions.size) {
+            error("doesn't support same name on ${this.name}")
+        }
+
+        return functions
+            .map { it.makeFunction() }
+            .joinToString("\n\n") { it }
+    }
 
     private fun SharedKtNamedFunction.makeFunction(): String = """
     |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ": Unit"} = SimpleApiUtil.run {

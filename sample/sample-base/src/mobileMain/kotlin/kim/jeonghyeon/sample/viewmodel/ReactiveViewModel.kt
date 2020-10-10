@@ -4,9 +4,6 @@ import kim.jeonghyeon.client.*
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.ResourceError
-import kim.jeonghyeon.type.UnknownResourceError
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -26,7 +23,12 @@ import kotlinx.coroutines.flow.*
  * - various operator is required to implement stream
  *   (I created custom operator, it may get simpler in the future. but currently it looks complicated without knowledge)
  *
- * I suggest to compare the [ReactiveViewModel2] which is not reactive but same business logic
+ * I suggest to compare the [NoReactiveViewModel] which is not reactive but same business logic
+ *
+ * Opinion
+ * - currently supporting various use case, complicated custom operator is required.
+ * - if operator can be get simpler, it's good to use fully reactive way
+ * - but, as it's not simple for now, it seems better to mix both as both has merit.
  */
 class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
 
@@ -63,12 +65,20 @@ class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
      *   if you want fully reactive,
      *   make 3 field of ResourceFlow<List<String>> for (init, keyword, click).
      *   and let each status(initStatus, fail, status) to observe each list.
+     *
+     *   before list is loaded, ui is shown with empty data
+     *   because, [initStatus] is null at first time.
+     *   and then [list] get active by [collect] after that, initFlow's api call working.
+     *   in order not to show ui before list is loaded, initFlow's api call should be active before list active.
+     *   so, this should be handled by different approach.
+     *   but, this viewModel's purpose is just showing reactive way. so keep this way.
+     *
      */
     @OptIn(FlowPreview::class)
     val list: DataFlow<List<String>> by add {
         flowsToSingle (
             initFlow
-                .mapToResource { api.getWordsOfKeyword("") }
+                .mapToResource { api.getWords() }
                 .toDataFlow(initStatus),
             keyword
                 .debounce(1000)
@@ -81,63 +91,5 @@ class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
                 }
                 .toDataFlow(status)
         ).toDataFlow()
-    }
-}
-
-
-/**
- * If A is changed by B, the code to change A is located on B's definition.
- * it's not reactive.
- *
- * Merit
- * - it's simple
- * - no need to know complicated flows custom operators
- *
- * Demerit
- * - difficult to know what change the data(but as it's simple, I feel it's not that difficult if business logic is not too much complicated)
- */
-class ReactiveViewModel2(private val api: SampleApi) : SampleViewModel() {
-
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.sampleApi)
-
-    val list: DataFlow<List<String>> by add { DataFlow() }
-    val newWord by add { DataFlow<String>() }
-
-    /**
-     * emit status when error only. so, when type keyword, loading ui doesn't block user typing.
-     */
-    val fail by add {
-        StatusFlow().apply {
-            collectOnViewModel {
-                if (it.isError()) {
-                    status.setValue(it)
-                }
-            }
-        }
-    }
-
-    val keyword by add {
-        DataFlow<String>().apply {
-            collectOnViewModel {
-                list.loadDebounce(fail, 2000) {
-                    api.getWordsOfKeyword(it)
-                }
-            }
-        }
-    }
-
-    override fun onInit() {
-        list.load(initStatus) {
-            api.getWords()
-        }
-    }
-
-    fun onClick() {
-        list.loadInIdle(status) {
-            api.addWord(newWord.value?: error("input word"))
-            api.getWordsOfKeyword(keyword.value?:"")
-        }
     }
 }

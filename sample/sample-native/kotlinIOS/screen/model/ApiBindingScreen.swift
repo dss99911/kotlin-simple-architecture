@@ -13,7 +13,7 @@ struct ApiBindingScreen: SampleScreen {
 
     func content(navigator: Navigator) -> some View {
         ScrollableColumn {
-            Text("Result : \(+model.result)")
+            Text("Result : \(+model.result ?? "")")
             Button("Bind 2 Api") {
                 model.onClickBind2Api()
             }

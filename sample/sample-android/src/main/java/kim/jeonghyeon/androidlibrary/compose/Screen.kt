@@ -2,6 +2,7 @@ package kim.jeonghyeon.androidlibrary.compose
 
 import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
+import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.ColumnScope.gravity
 import androidx.compose.foundation.layout.RowScope.gravity
@@ -25,6 +26,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kim.jeonghyeon.androidlibrary.compose.ScreenStack
 import kim.jeonghyeon.client.*
+import kim.jeonghyeon.util.log
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
@@ -154,10 +156,13 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
 
     @Composable
     private fun StackScope.composeStatus() {
-        when (val resource = +viewModel.status) {
-            is Resource.Loading -> composeLoading()
-            is Resource.Error -> composeError(resource)
-            else -> {
+        Stack {//without Stack. after loading, if view() is empty, then shows loading continuously
+            when (val resource = +viewModel.status) {
+                is Resource.Loading -> composeLoading()
+                is Resource.Error -> composeError(resource)
+                else -> {
+
+                }
             }
         }
     }
