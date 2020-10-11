@@ -44,8 +44,7 @@ scope.launch {
 
 backend
 
-```
-class SampleController : SampleApi {
+```class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
 }
 
@@ -53,8 +52,7 @@ install(SimpleFeature) {
     routing {
         +SampleController()
     }
-}
-```
+}```
 
 ## API Binding
 
