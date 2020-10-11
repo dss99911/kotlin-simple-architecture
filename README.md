@@ -51,6 +51,7 @@ install(SimpleFeature) {
         +SampleController()
     }
 }
+```
 
 ## API Binding
 This supports to call multiple api at once.
