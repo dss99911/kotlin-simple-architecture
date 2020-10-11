@@ -1,12 +1,12 @@
-# Simple Android Architecture
+# Kotlin Simple Architecture
 
-Simple Android Architecture is a simple framework to develop easily reducing learning curve of various architecture and libraries
+Kotlin Simple Architecture is a simple framework to develop easily reducing learning curve of various architecture and libraries
 it provides latest architecture and common libraries with easy use.
 
 # Features
 
-- Api Interface
-- Api Binding
+- API Interface
+- API Binding
 - MVVM on Multiplatform
 
 # Dependency
@@ -17,13 +17,13 @@ it provides latest architecture and common libraries with easy use.
 
 # Intro
 
-## Api Interface
-- you can call api like suspend function
-- no rest client definition like get, post, query, body(if required, you can set though)
-- use same api interface by client, server both
+## API Interface
+- You can call api like suspend function
+- No REST client definition like GET, POST, Query, Body(if required, you can set it as well)
+- Use same api interface by client, server both
 
 common
-```
+```kotlin
 @Api
 interface SampleApi {
     suspend fun getGreeting(name: String, job: String): String
