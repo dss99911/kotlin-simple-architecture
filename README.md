@@ -41,7 +41,7 @@ scope.launch {
 ```
 
 backend
-```kotlin
+``` kotlin
 class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
 }
@@ -55,12 +55,13 @@ install(SimpleFeature) {
 ```
 
 ## API Binding
+
 This supports to call multiple api at once.
 - no need to make new API for specific client requirements.
 - support to use response of previous API as a request parameter. (check here)
 
 common
-```kotlin
+``` kotlin
 @Api
 interface SampleApi {
     suspend fun getGreeting(name: String, job: String): String
@@ -178,7 +179,7 @@ buildscript {
 
     dependencies {
         classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.0")
-        
+
         //required as Kotlin Simple Architecture depends on these libraries.
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0")
         classpath("com.squareup.sqldelight:gradle-plugin:1.4.2")
@@ -186,7 +187,7 @@ buildscript {
 
         //for android only
         classpath("com.android.tools.build:gradle:4.2.0-alpha12")
-        
+
 		//for backend only (creating jar of backend)
         classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")
     }
