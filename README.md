@@ -31,7 +31,7 @@ interface SampleApi {
 ```
 
 client (for how to handle error, check here)
-```
+```kotlin
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 
 scope.launch {
@@ -41,7 +41,7 @@ scope.launch {
 ```
 
 backend
-```
+```kotlin
 class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
 }
@@ -52,19 +52,13 @@ install(SimpleFeature) {
     }
 }
 
-## Api Binding
+## API Binding
 This supports to call multiple api at once.
-- no need to make new api for specific client requirements.
-- able to use response of previous api. (check here)
-
-Use case
-- after a transaction, we may need multiple api
-- a page need multiple api to show data
-
-
+- no need to make new API for specific client requirements.
+- support to use response of previous API as a request parameter. (check here)
 
 common
-```
+```kotlin
 @Api
 interface SampleApi {
     suspend fun getGreeting(name: String, job: String): String
@@ -90,10 +84,10 @@ scope.launch {
 - provides common functions on ViewModel and Screen
 
 common
-```
+```kotlin
 class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
 
-    //add is for ios to watch each Flow
+    //[add] is for ios to watch each Flow
     //DataFlow is similar with MutableStateFlow or LiveData(android)
     val greeting by add { DataFlow<String>() }
     val replyResult by add { DataFlow<String>() }
@@ -116,7 +110,7 @@ class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewM
 ```
 
 android
-```
+```kotlin
 class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(model) {
 
     @Composable
@@ -140,7 +134,7 @@ class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(mode
 
 ios
 - you can see Swift UI is similar with Android Jetpack Compose
-```
+```kotlin
 struct SampleScreen: Screen {
 
     var model: SampleViewModel = SampleViewModel()
@@ -163,6 +157,44 @@ struct SampleScreen: Screen {
         - Xcode 12 (for SwiftUI 2.0)
     - Android
         - Android Studio 4.2 Canary 12
+- Template
+    - no need to configure kotlin multiplatform. libraries. just download template project
+        - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
+        - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
+        = [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
+- Use on existing project
+
+project's build.gradle.kts
+```gradle
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+
+    dependencies {
+        classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.0")
+        
+        //required as Kotlin Simple Architecture depends on these libraries.
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0")
+        classpath("com.squareup.sqldelight:gradle-plugin:1.4.2")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.4.2")
+
+        //for android only
+        classpath("com.android.tools.build:gradle:4.2.0-alpha12")
+        
+		//for backend only (creating jar of backend)
+        classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")
+    }
+}
+```
+
+module's build.gradle.kts
+```gradle
+apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+```
 
 # Usage
 
