@@ -14,7 +14,7 @@ struct ApiParallelScreen: SampleScreen {
     func content(navigator: Navigator) -> some View {
         Column {
             List(model.list.value as! [KotlinPair<NSString, NSString>], id: \.self.first) { item in
-                Text("key : \(item.first!), value : \(item.second!)")
+                Text("key : \(item.first ?? ""), value : \(item.second ?? "")")
             }
             
             Row {
