@@ -54,7 +54,6 @@ install(SimpleFeature) {
         +SampleController()
     }
 }
-
 ```
 
 ## API Binding
@@ -64,7 +63,8 @@ This supports to call multiple api at once.
 - support to use response of previous API as a request parameter. (check here)
 
 common
-``` kotlin
+
+```
 @Api
 interface SampleApi {
     suspend fun getGreeting(name: String, job: String): String
