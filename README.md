@@ -2,7 +2,7 @@
 
 Kotlin Simple Architecture is a simple framework to pursue the below
 - To develop easily reducing learning curve of various architecture and libraries
-- Low code development. so, Library provide all common logic like sign-in, oauth, etc
+- Low code development. so, Library provide all common logic like authentication, oauth, etc
 
 # Features
 
@@ -168,7 +168,7 @@ struct SampleScreen: Screen {
 - you can choose authentication method (basic, digest)
 - you can choose session method (Session, JWT Token)
 - This OAuth feature doesn't use android or ios library(it may be supported in the future). but it use web browser. so, you can add any custom OAuth provider.
-- we generally implement sign-in, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
+- we generally implement authentication, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
 backend
 ```kotlin
@@ -328,7 +328,7 @@ TODO : I'll explain the purpose of this functions on article
     - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
 
 ### Use on existing project
-project's build.gradle.kts
+1. project's build.gradle.kts
 ```kotlin
 buildscript {
     repositories {
@@ -355,21 +355,37 @@ buildscript {
 }
 ```
 
-module's build.gradle.kts
+2. module's build.gradle.kts
 ```kotlin
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 ```
 
-# Articles
-TODO, 1. What we can do with Kotlin Multiplatform
+3. copy Jetpack Compose, SwiftUi related files
+- as Jetpack Compose on library is not yet supported
+- not yet support library of SwiftUi code.
+- so, copy the files from template project.
+- To use this library without copying will be supported soon.
 
+# Articles
+TODO: 1. What we can do with Kotlin Multiplatform
+TODO: 2. Api call on Kotlin Multiplatform
+TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
+TODO: 4. Authentication, OAuth on Kotlin Multiplatform
+TODO: 5. Deeplink on Multiplatform
+TODO: 6. Kotlin Simple Architecture Advanced use cases.
+    - why template project.(different version. stable version. etc)
+    - local ip adress
+    - preference controller, preference
+    - log
+    - plugin configuration
+    - reactive
+    - for future
 
 # Planning & Contributions
 All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)
 Anyone can create ticket and contribute.
 
 # License
-
 
 ```
 Copyright 2020 Jeonghyun Kim
