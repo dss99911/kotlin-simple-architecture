@@ -261,6 +261,7 @@ MainActivity : BaseActivity() {
 #### Configure Deeplink on IOS
 - Universal Link is not yet supported.
 
+```swift
 class SampleDeeplinker : Deeplinker {
 
     override func navigateToDeeplink<SCREEN>(
@@ -282,6 +283,7 @@ class SampleDeeplinker : Deeplinker {
         return true
     }
 }
+```
 
 #### Navigate to the deeplink from Client / Server
 Just with configuration above, deeplink will navigate to the app
