@@ -1,13 +1,16 @@
 # Kotlin Simple Architecture
 
-Kotlin Simple Architecture is a simple framework to develop easily reducing learning curve of various architecture and libraries
-it provides latest architecture and common libraries with easy use.
+Kotlin Simple Architecture is a simple framework to pursue the below
+- To develop easily reducing learning curve of various architecture and libraries
+- Low code development. so, Library provide all common logic like sign-in, oauth, etc
 
 # Features
 
 - API Interface
 - API Binding
 - MVVM on Multiplatform
+- Sign-in/Sign-up, OAuth(google, facebook, etc)
+- Deeplink
 
 # Dependency
 - Ktor
@@ -160,6 +163,153 @@ struct SampleScreen: Screen {
 }
 ```
 
+### Sign-in/Sign-up, OAuth(google, facebook, etc)
+- Experimental, Security check is required.
+- you can choose authentication method (basic, digest)
+- you can choose session method (Session, JWT Token)
+- OAuth doesn't use android or ios library. but use web browser. so, you can add any custom OAuth provider.
+- we implement sign-in, oauth for each product. but, I think we can seperate common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
+
+backend
+```kotlin
+install(SimpleFeature) {
+    sign {
+
+        //sign-in with basic authentication
+        basic {
+            //you can set controller to customize to add addtional user information.
+        }
+
+        //or sign-in with digest authentication
+        digest {
+            //you can set controller to customize to add addtional user information.
+        }
+
+
+        //use Session
+        serviceAuthConfig = SessionServiceAuthConfiguration()
+
+        //or use JWT token
+        //serviceAuthConfig = JwtServiceAuthConfiguration(jwtAlgorithm)
+
+        //OAuth (you can add custom OAuth provider as well)
+        oauth {
+            //you can set controller to customize to add addtional user information.
+
+            google(
+                googleClientId,
+                googleClientSecret
+            )
+            facebook(
+                facebookClientId,
+                facebookClientSecret
+            )
+        }
+    }
+}
+
+client
+```
+val signApi = client.createSignApi(serverUrl, SignInAuthType.DIGEST)
+signApi.signUp(id, password, extra)
+signApi.signIn(id, password)
+signApi.signOut()
+
+//for OAuth
+val oAuthClient = SignOAuthClient(serverUrl)
+oAuthClient.signUp(OAuthServerName.GOOGLE, DEEPLINK_PATH_SIGN_UP)
+
+//when OAuth signUp, client move to web browser and web browser redirect to deeplink with token
+oAuthClient.saveToken(deepUrl)
+
+```
+
+
+### Deeplink
+- configure Deeplink on Android, Ios easily
+- Server can respond with deeplink for client to navigate to the deeplink
+- Client can navigate to the deeplink with ViewModel fuction
+
+#### Define Deeplink on common
+
+```kotlin
+object DeeplinkUrl {
+    val DEEPLINK_PATH_HOME: String = "$prefix/home"
+    val DEEPLINK_PATH_SIGN_UP: String = "$prefix/signUp"
+    val DEEPLINK_PATH_SIGN_IN: String = "$prefix/signIn"
+    val DEEPLINK_PATH_DEEPLINK_SUB: String = "$prefix/deeplink-sub"
+}
+```
+
+#### Configure Deeplink on Android
+1. configure deeplink path on AndroidManifest.xml
+2. add deeplink and screen matching
+
+```kotlin
+MainActivity : BaseActivity() {
+    override val deeplinks = mapOf(
+            DeeplinkUrl.DEEPLINK_PATH_HOME to (HomeScreen::class to { HomeScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_SIGN_IN to (SignInScreen::class to { SignInScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB to (DeeplinkSubScreen::class to { DeeplinkSubScreen() }),
+    )
+}
+```
+
+#### Configure Deeplink on IOS
+- Universal Link is not yet supported.
+
+class SampleDeeplinker : Deeplinker {
+
+    override func navigateToDeeplink<SCREEN>(
+        data: DeeplinkData<SCREEN>
+    ) -> Bool where SCREEN : Screen {
+        let deeplink = DeeplinkUrl()
+        let url = data.url.absoluteString
+        if (url.starts(with: deeplink.DEEPLINK_PATH_HOME)) {
+            navigate(to: HomeScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_IN)) {
+            navigate(to: SigninScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_UP)) {
+            navigate(to: SignUpScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_DEEPLINK_SUB)) {
+            navigate(to: DeeplinkSubScreen(), data: data)
+        } else {
+            return false
+        }
+        return true
+    }
+}
+
+#### Navigate to the deeplink from Client / Server
+Just with configuration above, deeplink will navigate to the app
+but, This provide further functions.
+
+navigate to the deeplink by BaseViewModel.navigateToDeeplink()
+```kotlin
+class DeeplinkViewModel() : BaseViewModel() {
+
+    fun onClick() {
+        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP)
+    }
+}
+
+```
+
+navigate to the deeplink by server controller
+```kotlin
+class SampleController : SampleApi {
+
+    override suspend fun doSomething() {
+        errorDeeplink(DeeplinkInfo(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP, "Please Sign up for testing deeplink"))
+    }
+}
+
+```
+
+TODO : I'll explain the purpose of this functions on article
+
+
 # Setup
 
 ### Environment (tested on macOS Big Sur with the below)
@@ -168,7 +318,7 @@ struct SampleScreen: Screen {
 - Android
     - Android Studio 4.2 Canary 12
 ### Template
-- no need to configure kotlin multiplatform. libraries. just download template project
+- no need to configure kotlin multiplatform, libraries. just download template project
     - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
     - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
     - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
@@ -206,28 +356,13 @@ module's build.gradle.kts
 apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 ```
 
-# Goals
-1. Simplest
-2. Intuitive & Least learning curve
-3. No extra knowledge required
-4. Support all platform
-5. Just add your business logic without technical code
-
-# Merits by the Goals
-1. Simple to read : even non-developer can understand
-2. Simple to write : no boilerplate code, 1 line of code means 1 business logic. able to focus on business logic only
-3. Simple learning curve : easy to remember usage. even it's easy, if you forget?, you can find where to see. and also it provides the sample as well.
-4. Simple to use latest architecture : you don't need to spend a lot of time for what is latest architecture, how to make good code. just follow sample, then you'll write code at least not bad.
-5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
-
 # Articles
+TODO, 1. What we can do with Kotlin Multiplatform
 
-Todo : Multiplatform architecture for android, ios, frontend, backend
 
 # Planning & Contributions
-All issues and plan is described here.
+All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)
 Anyone can create ticket and contribute.
-https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0
 
 # License
 
