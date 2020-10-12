@@ -164,11 +164,11 @@ struct SampleScreen: Screen {
 ```
 
 ### Sign-in/Sign-up, OAuth(google, facebook, etc)
-- Experimental, Security check is required.
+- Experimental, Security review is required.
 - you can choose authentication method (basic, digest)
 - you can choose session method (Session, JWT Token)
 - OAuth doesn't use android or ios library. but use web browser. so, you can add any custom OAuth provider.
-- we implement sign-in, oauth for each product. but, I think we can seperate common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
+- we generally implement sign-in, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
 backend
 ```kotlin
@@ -181,9 +181,9 @@ install(SimpleFeature) {
         }
 
         //or sign-in with digest authentication
-        digest {
-            //you can set controller to customize to add addtional user information.
-        }
+        //digest {
+        //    //you can set controller to customize to add addtional user information.
+        //}
 
 
         //use Session
@@ -207,8 +207,10 @@ install(SimpleFeature) {
         }
     }
 }
+```
 
 client
+
 ```
 val signApi = client.createSignApi(serverUrl, SignInAuthType.DIGEST)
 signApi.signUp(id, password, extra)
