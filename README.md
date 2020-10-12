@@ -367,7 +367,7 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - To use this library without copying will be supported soon.
 
 # Articles
-- TODO: 1. What we can do with Kotlin Multiplatform(Kotlinm Simple Architecture overview)
+- TODO: 1. What we can do with Kotlin Multiplatform(Kotlinm Simple Architecture overview, single project on client, backend(for speed?, remove module on settings.))
 - TODO: 2. Api call on Kotlin Multiplatform
 - TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
 - TODO: 4. Authentication, OAuth on Kotlin Multiplatform
