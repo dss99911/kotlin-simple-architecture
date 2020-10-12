@@ -367,12 +367,12 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - To use this library without copying will be supported soon.
 
 # Articles
-TODO: 1. What we can do with Kotlin Multiplatform
-TODO: 2. Api call on Kotlin Multiplatform
-TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
-TODO: 4. Authentication, OAuth on Kotlin Multiplatform
-TODO: 5. Deeplink on Multiplatform
-TODO: 6. Kotlin Simple Architecture Advanced use cases.
+- TODO: 1. What we can do with Kotlin Multiplatform
+- TODO: 2. Api call on Kotlin Multiplatform
+- TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
+- TODO: 4. Authentication, OAuth on Kotlin Multiplatform
+- TODO: 5. Deeplink on Multiplatform
+- TODO: 6. Kotlin Simple Architecture Advanced use cases.
     - why template project.(different version. stable version. etc)
     - local ip adress
     - preference controller, preference
