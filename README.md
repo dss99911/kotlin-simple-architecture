@@ -33,7 +33,7 @@ interface SampleApi {
 
 client (for how to handle error, check here)
 
-```
+```kotlin
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 
 scope.launch {
@@ -42,9 +42,9 @@ scope.launch {
 
 ```
 
-backend1
+backend
 
-```
+```kotlin
 
 class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
