@@ -167,7 +167,7 @@ struct SampleScreen: Screen {
 - Experimental, Security review is required.
 - you can choose authentication method (basic, digest)
 - you can choose session method (Session, JWT Token)
-- OAuth doesn't use android or ios library. but use web browser. so, you can add any custom OAuth provider.
+- This OAuth feature doesn't use android or ios library(it may be supported in the future). but it use web browser. so, you can add any custom OAuth provider.
 - we generally implement sign-in, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
 backend
