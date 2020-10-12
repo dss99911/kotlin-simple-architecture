@@ -373,7 +373,7 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - TODO: 4. Authentication, OAuth on Kotlin Multiplatform
 - TODO: 5. Deeplink on Multiplatform
 - TODO: 6. Kotlin Simple Architecture Advanced use cases.
-    - why template project.(different version. stable version. etc)
+    - why template project.(different version. stable version. a lot of configuration on android, ios, server, etc)
     - local ip adress
     - preference controller, preference
     - log
