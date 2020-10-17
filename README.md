@@ -428,16 +428,16 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - run the test code with local ip address
     - for runing real code with local ip address
     - you don't need to configure local ip address to connect local server
-    - just use `SimpleConfig.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS` it's automatically generateed.
+    - just use `SimpleConfig.buildTimeLocalIpAddress` it's automatically generateed.
     - but the device and server should be in same network like same wifi
 - after server's fake code is changed to real code, run the test code again.
 - when we test, client code integrity depends on server code
-- if server code has no bug, we don't need to do unit test and just use server api
-- but sometimes, it's difficult to make situatiom to test some case.
+- if server code has no bug, we don't need to make mock code of the api, just use the api
+- but sometimes, it's difficult to make situation to test some case.
 - in that case, make api which configure server data on dev environment.
 - code integrity dependencies like below
     - screen -> viewModel -> repository -> api -> backend controller -> backend service
-    - if A depends on B, if B code has no bug. we can use B as mock data.
+    - if A depends on B, if B code has no bug. we can use B without mock data of B.
     - so, this approach doesn't need any mock data. but use real code
     - if the code is not yet implemented, add fake code on that module.
     - you can check the concept [here](https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20), it's for android testing. but concept is same
@@ -445,8 +445,8 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 
 # Planning & Contributions
 All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)
-If there are anyone who like the idea of this project, feel free to contributes, It'll be so much appreciated.
-Currently as a single developer. It's not easy to maintain all of this.
+- If there are anyone who like the idea of this project, feel free to contributes, It'll be so much appreciated.
+- Currently as a single developer. It's not easy to maintain all of this.
 
 
 # License
