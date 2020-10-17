@@ -1,13 +1,18 @@
 # Kotlin Simple Architecture
 
-Kotlin Simple Architecture is a simple framework to develop easily reducing learning curve of various architecture and libraries
-it provides latest architecture and common libraries with easy use.
+Kotlin Simple Architecture is an example of unified framework for general purpose for all platform
+
+# Goal
+- Simplest
+- Reduce leanring curve of development
 
 # Features
 
 - API Interface
 - API Binding
 - MVVM on Multiplatform
+- Sign-in/Sign-up, OAuth(google, facebook, etc)
+- Deeplink
 
 # Dependency
 - Ktor
@@ -15,14 +20,15 @@ it provides latest architecture and common libraries with easy use.
 - Jetpack Compose(for Android)
 - SwiftUI 2.0(for Ios)
 
-# Intro
-
+# Introduction of Usage
+- the detail is explained on [Article](https://github.com/dss99911/kotlin-simple-architecture/tree/KSA-27#articles)
 ## API Interface
+- Share api interface by client, server both
 - You can call api like suspend function
-- No REST client definition like GET, POST, Query, Body(if required, you can set it as well)
-- Use same api interface by client, server both
+- No Http definition like GET, POST, Query, Body(if required, you can set it as well)
 
 common
+
 ```kotlin
 @Api
 interface SampleApi {
@@ -31,7 +37,8 @@ interface SampleApi {
 ```
 
 client (for how to handle error, check here)
-```
+
+```kotlin
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 
 scope.launch {
@@ -41,7 +48,9 @@ scope.launch {
 ```
 
 backend
-```
+
+```kotlin
+
 class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
 }
@@ -52,19 +61,18 @@ install(SimpleFeature) {
     }
 }
 
-## Api Binding
+
+```
+
+## API Binding
+
 This supports to call multiple api at once.
-- no need to make new api for specific client requirements.
-- able to use response of previous api. (check here)
-
-Use case
-- after a transaction, we may need multiple api
-- a page need multiple api to show data
-
-
+- no need to make new API for specific client requirements.
+- support to use response of previous API as a request parameter.
 
 common
-```
+
+```kotlin
 @Api
 interface SampleApi {
     suspend fun getGreeting(name: String, job: String): String
@@ -73,7 +81,7 @@ interface SampleApi {
 ```
 
 client
-```
+```kotlin
 scope.launch {
     //this is group of response.
     val result: Pair<String, String> = bindApi {
@@ -86,14 +94,14 @@ scope.launch {
 ```
 
 ## MVVM on Multiplatform
-- ios, android use common ViewModel
+- ios, android share ViewModel
 - provides common functions on ViewModel and Screen
 
 common
-```
+```kotlin
 class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
 
-    //add is for ios to watch each Flow
+    //[add] is for ios to watch each Flow
     //DataFlow is similar with MutableStateFlow or LiveData(android)
     val greeting by add { DataFlow<String>() }
     val replyResult by add { DataFlow<String>() }
@@ -116,7 +124,7 @@ class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewM
 ```
 
 android
-```
+```kotlin
 class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(model) {
 
     @Composable
@@ -139,8 +147,9 @@ class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(mode
 ```
 
 ios
-- you can see Swift UI is similar with Android Jetpack Compose
-```
+- you can see Swift UI's code is similar with Android Jetpack Compose
+- so, It won't take much time to study.
+```kotlin
 struct SampleScreen: Screen {
 
     var model: SampleViewModel = SampleViewModel()
@@ -157,83 +166,231 @@ struct SampleScreen: Screen {
 }
 ```
 
-# Setup
-- Environment (tested on macOS Big Sur with the below)
-    - IOS
-        - Xcode 12 (for SwiftUI 2.0)
-    - Android
-        - Android Studio 4.2 Canary 12
+### Sign-in/Sign-up, OAuth(google, facebook, etc)
+- Experimental, Security review is required.
+- you can choose authentication method (basic, digest)
+- you can choose session method (Session, JWT Token)
+- This OAuth feature doesn't use android or ios library(it may be supported in the future). but it use web browser. so, you can add any custom OAuth provider.
+- we generally implement authentication, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
-# Usage
+backend
+```kotlin
+install(SimpleFeature) {
+    sign {
 
-Todo : apply plugin, add classpath of othe plugins
+        //sign-in with basic authentication
+        basic {
+            //you can set controller to customize to add addtional user information.
+        }
 
-todo : is there way to remove pluginManagement below?
-settings.gradle.kts
-```
-pluginManagement {
-    resolutionStrategy {
-        eachPlugin {
-            val plugin = requested.id.id
-            when (plugin) {
-                "kotlinx-serialization" -> useModule("org.jetbrains.kotlin:kotlin-serialization:${requested.version}")
-            }
+        //or sign-in with digest authentication
+        //digest {
+        //    //you can set controller to customize to add addtional user information.
+        //}
+
+
+        //use Session
+        serviceAuthConfig = SessionServiceAuthConfiguration()
+
+        //or use JWT token
+        //serviceAuthConfig = JwtServiceAuthConfiguration(jwtAlgorithm)
+
+        //OAuth (you can add custom OAuth provider as well)
+        oauth {
+            //you can set controller to customize to add addtional user information.
+
+            google(
+                googleClientId,
+                googleClientSecret
+            )
+            facebook(
+                facebookClientId,
+                facebookClientSecret
+            )
         }
     }
 }
-
-enableFeaturePreview("GRADLE_METADATA")
 ```
 
-# Goals
-1. Simplest
-2. Intuitive & Least learning curve
-3. No extra knowledge required
-4. Support all platform
-5. Just add your business logic without technical code
+client
 
-# Merits by the Goals
-1. Simple to read : even non-developer can understand
-2. Simple to write : no boilerplate code, 1 line of code means 1 business logic. able to focus on business logic only
-3. Simple learning curve : easy to remember usage. even it's easy, if you forget?, you can find where to see. and also it provides the sample as well.
-4. Simple to use latest architecture : you don't need to spend a lot of time for what is latest architecture, how to make good code. just follow sample, then you'll write code at least not bad.
-5. Simple to test : it provides base test classes and sample. just follow sample, then you can test.
+```
+val signApi = client.createSignApi(serverUrl, SignInAuthType.DIGEST)
+signApi.signUp(id, password, extra)
+signApi.signIn(id, password)
+signApi.signOut()
 
-# Prerequisite
-Todo : add prerequisite for ios, js, backend
-## Client
-- MVVM
-- Kotlin, Coroutine
+//for OAuth
+val oAuthClient = SignOAuthClient(serverUrl)
+oAuthClient.signUp(OAuthServerName.GOOGLE, DEEPLINK_PATH_SIGN_UP)
 
-### Android
-- Koin
-- Jetpack : Navigation, Data Binding, LiveData, Paging, Room, ViewModel
-- [Resource](https://developer.android.com/jetpack/docs/guide#addendum)
-- AndroidX testing
+//when OAuth signUp, client move to web browser and web browser redirect to deeplink with token
+oAuthClient.saveToken(deepUrl)
+
+```
+
+
+### Deeplink
+- share deeplink android, ios, backend
+- configure Deeplink on Android, Ios easily
+- Server can respond with deeplink for client to navigate to the deeplink
+- Client can navigate to the deeplink with ViewModel fuction
+
+#### Define Deeplink on common
+
+```kotlin
+object DeeplinkUrl {
+    val DEEPLINK_PATH_HOME: String = "$prefix/home"
+    val DEEPLINK_PATH_SIGN_UP: String = "$prefix/signUp"
+    val DEEPLINK_PATH_SIGN_IN: String = "$prefix/signIn"
+    val DEEPLINK_PATH_DEEPLINK_SUB: String = "$prefix/deeplink-sub"
+}
+```
+
+#### Configure Deeplink on Android
+1. configure deeplink path on AndroidManifest.xml
+2. add deeplink and screen matching
+
+```kotlin
+MainActivity : BaseActivity() {
+    override val deeplinks = mapOf(
+            DeeplinkUrl.DEEPLINK_PATH_HOME to (HomeScreen::class to { HomeScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_SIGN_IN to (SignInScreen::class to { SignInScreen() }),
+            DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB to (DeeplinkSubScreen::class to { DeeplinkSubScreen() }),
+    )
+}
+```
+
+#### Configure Deeplink on IOS
+- Universal Link will be supported soon.
+
+```swift
+class SampleDeeplinker : Deeplinker {
+
+    override func navigateToDeeplink<SCREEN>(
+        data: DeeplinkData<SCREEN>
+    ) -> Bool where SCREEN : Screen {
+        let deeplink = DeeplinkUrl()
+        let url = data.url.absoluteString
+        if (url.starts(with: deeplink.DEEPLINK_PATH_HOME)) {
+            navigate(to: HomeScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_IN)) {
+            navigate(to: SigninScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_UP)) {
+            navigate(to: SignUpScreen(), data: data)
+        } else if (url.starts(with: deeplink.DEEPLINK_PATH_DEEPLINK_SUB)) {
+            navigate(to: DeeplinkSubScreen(), data: data)
+        } else {
+            return false
+        }
+        return true
+    }
+}
+```
+
+#### Navigate to the deeplink from Client / Server
+Just with configuration above, deeplink will navigate to the app
+but, This provide further functions.
+
+navigate to the deeplink by BaseViewModel.navigateToDeeplink()
+```kotlin
+class DeeplinkViewModel() : BaseViewModel() {
+
+    fun onClick() {
+        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP)
+    }
+}
+
+```
+
+navigate to the deeplink by server controller
+```kotlin
+class SampleController : SampleApi {
+
+    override suspend fun doSomething() {
+        errorDeeplink(DeeplinkInfo(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP, "Please Sign up for testing deeplink"))
+    }
+}
+
+```
+
+TODO : I'll explain the purpose of this functions on article
+
+
+# Setup
+
+### Environment (tested on macOS Big Sur with the below)
+- IOS
+    - Xcode 12 (for SwiftUI 2.0)
+- Android
+    - Android Studio 4.2 Canary 12
+### Template
+- no need to configure kotlin multiplatform, libraries. just download template project
+    - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
+    - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
+    - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
+
+### Use on existing project
+1. project's build.gradle.kts
+```kotlin
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+
+    dependencies {
+        classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.0")
+
+        //required as Kotlin Simple Architecture depends on these libraries.
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0")
+        classpath("com.squareup.sqldelight:gradle-plugin:1.4.2")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.4.2")
+
+        //for android only
+        classpath("com.android.tools.build:gradle:4.2.0-alpha12")
+
+		//for backend only (creating jar of backend)
+        classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")
+    }
+}
+```
+
+2. module's build.gradle.kts
+```kotlin
+apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+```
+
+3. copy Jetpack Compose, SwiftUi related files
+- as Jetpack Compose on library is not yet supported
+- not yet support library of SwiftUi code.
+- so, copy the files from template project.
+- To use this library without copying will be supported soon.
 
 # Articles
+- TODO: 1. Why use and What can do with Kotlin Multiplatform
+- TODO: 2. Api call on Kotlin Multiplatform
+- TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
+- TODO: 4. Authentication, OAuth on Kotlin Multiplatform
+- TODO: 5. Deeplink on Multiplatform
+- TODO: 6. Kotlin Simple Architecture Advanced use cases.
+    - why template project.(different version. stable version. a lot of configuration on android, ios, server, etc)
+    - generating local ip adress
+    - preference controller, preference
+    - log
+    - plugin configuration
+    - reactive
 
-Todo : Multiplatform architecture for android, ios, frontend, backend
+# Planning & Contributions
+All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)
+If there are anyone who like the idea of this project, feel free to contributes, It'll be so much appreciated.
+Currently as a single developer. It's not easy to maintain all of this.
 
-## Android Articles
-- [Remove boilerplate code of RecyclerView][recyclerview]
-- [Coroutine Api call and error handling in Retrofit2][coroutine]
-- [LiveData and event][livedata]
-- [MVVM concept and reduce boilerplate code on Activity/Fragment/ViewModel][mvvm]
-- [Testing efficiently with Android X][testing]
-- [Refactoring to new architecture][refactoring]
-
-# Samples
-- [Sample][sample] : shows usage of Simple Android Architecture one by one
-- [Sunflower Sample][sample-sunflower] : this is converted version of [Android Sunflower sample][android-sunflower]
-- [Testing Sample][sample-testing] : this is converted version of [Android Testing Codelab][android-testing]
-
-# Planning
-Currently this is focusing on only android development.
-but with Kotlin multiplatform, will support spring, ktor, ios, frontend.
 
 # License
-
 
 ```
 Copyright 2020 Jeonghyun Kim
@@ -249,15 +406,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-```
-[livedata]: https://medium.com/@dss99911/simple-android-architecture-livedata-and-event-92f5f4b04af7
-[recyclerview]: https://medium.com/@dss99911/simple-android-architecture-recyclerview-ef5fdd7dac0a
-[sample]: https://github.com/dss99911/simple-android-architecture/tree/master/sample
-[sample-sunflower]: https://github.com/dss99911/simple-android-architecture/tree/master/sample-sunflower
-[sample-testing]: https://github.com/dss99911/simple-android-architecture/tree/master/sample-testing-codelab
-[android-sunflower]: https://github.com/android/sunflower
-[android-testing]: https://github.com/googlecodelabs/android-testing
-[coroutine]: https://medium.com/@dss99911/simple-android-architecture-coroutine-api-call-and-error-handling-in-retrofit2-1677d0f84f56
-[mvvm]: https://medium.com/@dss99911/simple-android-architecture-mvvm-concept-and-reduce-boilerplate-code-on-8ff1912286a8
-[testing]: https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20
-[refactoring]: https://medium.com/@dss99911/simple-android-architecture-refactoring-to-new-architecture-c0a786caddf7
