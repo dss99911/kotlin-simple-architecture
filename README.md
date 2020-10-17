@@ -3,22 +3,22 @@
 Kotlin Simple Architecture is an example of unified framework for general purpose for all platform
 
 # Goal
-- Simplest
+- Simplest/Low-code development
 - Reduce leanring curve of development
 
 # Features
 
-- API Interface
-- API Binding
-- MVVM on Multiplatform
-- Sign-in/Sign-up, OAuth(google, facebook, etc)
-- Deeplink
+- [API Interface](https://github.com/dss99911/kotlin-simple-architecture#api-interface)
+- [API Binding](https://github.com/dss99911/kotlin-simple-architecture#api-binding)
+- [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
+- [Sign-in/Sign-up, OAuth(google, facebook, etc)](https://github.com/dss99911/kotlin-simple-architecture#sign-insign-up-oauthgoogle-facebook-etc)
+- [Deeplink](https://github.com/dss99911/kotlin-simple-architecture#deeplink)
 
 # Dependency
-- Ktor
-- Sqldelight
-- Jetpack Compose(for Android)
-- SwiftUI 2.0(for Ios)
+- [Ktor](https://github.com/ktorio/ktor)
+- [Sqldelight](https://github.com/cashapp/sqldelight)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)(for Android)
+- [SwiftUI 2.0](https://developer.apple.com/xcode/swiftui/)(for Ios)
 
 # Introduction
 - the sample code is [here](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
@@ -29,6 +29,10 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
     - so, simply make function. and client use the function and server implement the function. that's it.
 - If you have to define Http request(like external api), it's also available
     - check this [sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/commonMain/kotlin/kim/jeonghyeon/sample/api/GithubApi.kt)
+- How to handle error?
+    - let's think about calling function, what function return when it's error?
+    - it just throw exception instead of returning data which contains error data.
+    - so, calling api also doesn't require to return response which contains error data. just throw exception
 
 common
 
@@ -74,11 +78,11 @@ This supports to call multiple api at once.
     - when a screen have to show some data from server. we can consider to add the data on existing api, or make new api.
     - to add data on existing api is not good in case of the data is not related to the existing api.
     - to make new api is not good as the screen have to call multiple api.
-        - if one of the api is failed and one of other api is success difficult to hanle error.
+        - if one of the api is failed and one of other api is success, we have to decide to retry all again or just failed api.
         - it needs much of network communication
         - if those apis should be called sequentially like requesting order and get order history, in this case, as it's sequential, it takes a lot of time.
 - support to use response of previous API as a request parameter.
-    - for example, order api with api of order detail. order detail api requires orderId.
+    - for example, call order api, then call order detail api. order detail api requires orderId.
 - sample code [here](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/ApiBindingViewModel.kt)
 
 common
@@ -113,12 +117,12 @@ scope.launch {
         - status is like loading, error, success. `state` may be proper name. but it's already used on JetCompose or StateFlow. so used status
         - [Resource](https://github.com/dss99911/kotlin-simple-architecture/blob/master/kotlin-simple-architecture/src/commonMain/kotlin/kim/jeonghyeon/type/Resource.kt) contains data and status both
     - initStatus, status
-        - this is status without data which is used in common.
+        - this is status without data.
         - this is to handle error or loading in common UI.
-        - you can change commom loading, error UI on Screen by overriding
-        - you can use other Resource or Status to show different UI. but you have to define how to show the status on the screen
+        - you can change common loading, error UI on Screen by overriding
+        - you can use other Resource or Status to show different UI for status. but you have to define how to show the status on the screen
 - provides common functions on ViewModel and Screen
-    - goBack() : you can return response, it's explained on [Deeplink](https://github.com/dss99911/kotlin-simple-architecture#deeplink)
+    - goBack() : you can return response, it's explained on [Navigate to the deeplink from Client / Server](https://github.com/dss99911/kotlin-simple-architecture#navigate-to-the-deeplink-from-client--server)
     - navigateToDeeplink()
     - loadInIdle() : for example, in case click button two times quickly. 2nd time click is ignored.
     - loadBounce() : for example, search with keyword. and if searching takes time(like api call is required), in that case, delay the api call and if next input comes, cancel previous call
@@ -205,7 +209,7 @@ struct SampleScreen: Screen {
 - we generally implement authentication, oauth for each product.
     - It's not easy to implement them as we have to consider security, and also implementation is not simple.
     - and it's used various product. so, it's better to support by framework side
-    - but the implementation is varioud on different product.
+    - but the implementation is various on different product.
     - so, I seperated it to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
 backend
@@ -325,10 +329,10 @@ class SampleDeeplinker : Deeplinker {
 ```
 
 ### Navigate to the deeplink from Client / Server
-Just with configuration above, deeplink will navigate to the app
-but, This provide further functions.
+- Just with configuration above, deeplink will navigate to the app
+- but, This provide further functions.
 
-navigate to the deeplink by BaseViewModel.navigateToDeeplink()
+- navigate to the deeplink by BaseViewModel.navigateToDeeplink()
     - able to navigate to specific screen by viewModel. so no need set logic on android, ios both to navigate to the screen
     - able to set parameter and response also. check sample [here](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/DeeplinkSubViewModel.kt)
 
@@ -342,7 +346,7 @@ class DeeplinkViewModel() : BaseViewModel() {
 
 ```
 
-navigate to the deeplink by server controller
+- navigate to the deeplink by server controller
     - when some error occurred, we may let user to navigate to some Screen.
     - in that case, we don't need for client to add logic to navigate there.
     - just configure deeplink and server set deeplink on resposne
