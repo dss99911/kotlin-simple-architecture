@@ -329,8 +329,7 @@ class SampleDeeplinker : Deeplinker {
 ```
 
 ### Navigate to the deeplink from Client / Server
-- Just with configuration above, deeplink will navigate to the app
-- but, This provide further functions.
+Just with configuration above, deeplink will navigate to the app. but, This provide further functions.
 
 - navigate to the deeplink by BaseViewModel.navigateToDeeplink()
     - able to navigate to specific screen by viewModel. so no need set logic on android, ios both to navigate to the screen
@@ -369,7 +368,7 @@ class SampleController : SampleApi {
 - Android
     - Android Studio 4.2 Canary 12
 ### Template
-- no need to configure kotlin multiplatform, libraries. just download template project
+- no need to configure kotlin multiplatform, libraries. just download template project to start with this framework
     - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
     - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
     - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
@@ -396,7 +395,7 @@ buildscript {
         //for android only
         classpath("com.android.tools.build:gradle:4.2.0-alpha12")
 
-		//for backend only (creating jar of backend)
+        //for backend only (creating jar of backend)
         classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")
     }
 }
@@ -419,29 +418,29 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. need to fix)
 
 
-# Test on local easily
-    - sometimes we need mock server or fake api for client testing
-    - but it's not required anymore.
-    - when develop new api
-    - just add fake code on the backend controller. and make test code of the controller
-    - then run the server in local
-    - implement test code in client.
-    - run the test code with local ip address
-        - for runing real code with local ip address
-        - you don't need to configure local ip address to connect local server
-        - just use `SimpleConfig.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS` it's automatically generateed.
-        - but the device and server should be in same network like same wifi
-    - after server's fake code is changed to real code, run the test code again.
-    - when we test, client code integrity depends on server code
-    - if server code has no bug, we don't need to do unit test and just use server api
-    - but sometimes, it's difficult to make situatiom to test some case.
-    - in that case, make api which configure server data on dev environment.
-    - code integrity dependencies like below
-        - screen -> viewModel -> repository -> api -> backend controller -> backend service
-        - if A depends on B, if B code has no bug. we can use B as mock data.
-        - so, this approach doesn't need any mock data. but use real code
-        - if the code is not yet implemented, add fake code on that module.
-        - you can check the concept [here](https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20), it's for android testing. but concept is same
+# Test on local
+- sometimes we need mock server or fake api for client testing
+- but it's not required anymore.
+- when develop new api
+- just add fake code on the backend controller. and make test code of the controller
+- then run the server in local
+- implement test code in client.
+- run the test code with local ip address
+    - for runing real code with local ip address
+    - you don't need to configure local ip address to connect local server
+    - just use `SimpleConfig.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS` it's automatically generateed.
+    - but the device and server should be in same network like same wifi
+- after server's fake code is changed to real code, run the test code again.
+- when we test, client code integrity depends on server code
+- if server code has no bug, we don't need to do unit test and just use server api
+- but sometimes, it's difficult to make situatiom to test some case.
+- in that case, make api which configure server data on dev environment.
+- code integrity dependencies like below
+    - screen -> viewModel -> repository -> api -> backend controller -> backend service
+    - if A depends on B, if B code has no bug. we can use B as mock data.
+    - so, this approach doesn't need any mock data. but use real code
+    - if the code is not yet implemented, add fake code on that module.
+    - you can check the concept [here](https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20), it's for android testing. but concept is same
 
 
 # Planning & Contributions
