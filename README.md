@@ -1,8 +1,10 @@
 # Kotlin Simple Architecture
 
-Kotlin Simple Architecture is a simple framework to pursue the below
-- To develop easily reducing learning curve of various architecture and libraries
-- Low code development. so, Library provide all common logic like authentication, oauth, etc
+Kotlin Simple Architecture is an example of unified framework for general purpose for all platform
+
+# Goal
+- Simplest
+- Reduce leanring curve of development
 
 # Features
 
@@ -18,12 +20,12 @@ Kotlin Simple Architecture is a simple framework to pursue the below
 - Jetpack Compose(for Android)
 - SwiftUI 2.0(for Ios)
 
-# Intro
-
+# Introduction of Usage
+- the detail is explained on [Article](https://github.com/dss99911/kotlin-simple-architecture/tree/KSA-27#articles)
 ## API Interface
+- Share api interface by client, server both
 - You can call api like suspend function
-- No REST client definition like GET, POST, Query, Body(if required, you can set it as well)
-- Use same api interface by client, server both
+- No Http definition like GET, POST, Query, Body(if required, you can set it as well)
 
 common
 
@@ -66,7 +68,7 @@ install(SimpleFeature) {
 
 This supports to call multiple api at once.
 - no need to make new API for specific client requirements.
-- support to use response of previous API as a request parameter. (check here)
+- support to use response of previous API as a request parameter.
 
 common
 
@@ -92,7 +94,7 @@ scope.launch {
 ```
 
 ## MVVM on Multiplatform
-- ios, android use common ViewModel
+- ios, android share ViewModel
 - provides common functions on ViewModel and Screen
 
 common
@@ -145,7 +147,8 @@ class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(mode
 ```
 
 ios
-- you can see Swift UI is similar with Android Jetpack Compose
+- you can see Swift UI's code is similar with Android Jetpack Compose
+- so, It won't take much time to study.
 ```kotlin
 struct SampleScreen: Screen {
 
@@ -228,6 +231,7 @@ oAuthClient.saveToken(deepUrl)
 
 
 ### Deeplink
+- share deeplink android, ios, backend
 - configure Deeplink on Android, Ios easily
 - Server can respond with deeplink for client to navigate to the deeplink
 - Client can navigate to the deeplink with ViewModel fuction
@@ -259,7 +263,7 @@ MainActivity : BaseActivity() {
 ```
 
 #### Configure Deeplink on IOS
-- Universal Link is not yet supported.
+- Universal Link will be supported soon.
 
 ```swift
 class SampleDeeplinker : Deeplinker {
@@ -367,23 +371,24 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - To use this library without copying will be supported soon.
 
 # Articles
-- TODO: 1. What we can do with Kotlin Multiplatform(Kotlinm Simple Architecture overview, single project on client, backend(for speed?, remove module on settings.))
+- TODO: 1. Why use and What can do with Kotlin Multiplatform
 - TODO: 2. Api call on Kotlin Multiplatform
 - TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
 - TODO: 4. Authentication, OAuth on Kotlin Multiplatform
 - TODO: 5. Deeplink on Multiplatform
 - TODO: 6. Kotlin Simple Architecture Advanced use cases.
     - why template project.(different version. stable version. a lot of configuration on android, ios, server, etc)
-    - local ip adress
+    - generating local ip adress
     - preference controller, preference
     - log
     - plugin configuration
     - reactive
-    - for future
 
 # Planning & Contributions
 All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)
-Anyone can create ticket and contribute.
+If there are anyone who like the idea of this project, feel free to contributes, It'll be so much appreciated.
+Currently as a single developer. It's not easy to maintain all of this.
+
 
 # License
 
