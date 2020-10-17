@@ -1,3 +1,5 @@
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package kim.jeonghyeon.client
 
 
@@ -17,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 
 /**
@@ -27,7 +28,7 @@ import kotlin.reflect.KProperty
  */
 open class BaseViewModel {
     companion object {
-        val PARAM_NAME_PARAM = "param"
+        const val PARAM_NAME_PARAM = "param"
     }
 
     @SimpleArchInternal("used on IOS base code. don't use")
@@ -223,7 +224,7 @@ open class BaseViewModel {
     }
 
     fun <T> ResourceFlow<T>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        value?.onLoading { last, cancel ->
+        value?.onLoading { _, cancel ->
             cancel()
         }
         load {
@@ -233,7 +234,7 @@ open class BaseViewModel {
     }
 
     fun <T> DataFlow<T>.loadDebounce(statusFlow: StatusFlow, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        statusFlow.value?.onLoading { last, cancel ->
+        statusFlow.value?.onLoading { _, cancel ->
             cancel()
         }
         load(statusFlow) {
@@ -307,8 +308,8 @@ open class BaseViewModel {
 
 data class ScreenResult(val resultCode: Int, val data: Any? = null) {
     companion object {
-        val RESULT_CODE_OK = 1
-        val RESULT_CODE_CANCEL = 0
+        const val RESULT_CODE_OK = 1
+        const val RESULT_CODE_CANCEL = 0
     }
 
     val isOk get() = resultCode == RESULT_CODE_OK

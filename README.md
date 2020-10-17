@@ -22,6 +22,7 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
 
 # Introduction
 - the sample code is [here](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
+- sample android application to install [here](https://play.google.com/store/apps/details?id=kim.jeonghyeon.sample.compose)
 ## API Interface
 - Share api interface by client, server both
 - You can call api like suspend function
