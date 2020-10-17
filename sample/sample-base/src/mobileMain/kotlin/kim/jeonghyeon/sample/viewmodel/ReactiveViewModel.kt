@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.*
  * also recommend to compare with [ApiDbViewModel] which use Repository
  *
  * Opinion
- * - to support various use case, requires complicated custom flow operator.
+ * - to support various use case requires complicated custom flow operator.
  * - so, use Flow operator only on the case below, otherwise, use coroutine suspend for singe call like calling api
  *      - changeable data like database
  *      - transforming data by map {}

@@ -20,12 +20,15 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
 - Jetpack Compose(for Android)
 - SwiftUI 2.0(for Ios)
 
-# Introduction of Usage
-- the detail is explained on [Article](https://github.com/dss99911/kotlin-simple-architecture/tree/KSA-27#articles)
+# Introduction
+- the sample code is [here](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
 ## API Interface
 - Share api interface by client, server both
 - You can call api like suspend function
-- No Http definition like GET, POST, Query, Body(if required, you can set it as well)
+    - No Http definition like GET, POST, Query, Body(if required, you can set it as well)
+    - so, simply make function. and client use the function and server implement the function. that's it.
+- If you have to define Http request(like external api), it's also available
+    - check this [sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/commonMain/kotlin/kim/jeonghyeon/sample/api/GithubApi.kt)
 
 common
 
@@ -68,7 +71,15 @@ install(SimpleFeature) {
 
 This supports to call multiple api at once.
 - no need to make new API for specific client requirements.
+    - when a screen have to show some data from server. we can consider to add the data on existing api, or make new api.
+    - to add data on existing api is not good in case of the data is not related to the existing api.
+    - to make new api is not good as the screen have to call multiple api.
+        - if one of the api is failed and one of other api is success difficult to hanle error.
+        - it needs much of network communication
+        - if those apis should be called sequentially like requesting order and get order history, in this case, as it's sequential, it takes a lot of time.
 - support to use response of previous API as a request parameter.
+    - for example, order api with api of order detail. order detail api requires orderId.
+- sample code [here](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/ApiBindingViewModel.kt)
 
 common
 
@@ -95,7 +106,25 @@ scope.launch {
 
 ## MVVM on Multiplatform
 - ios, android share ViewModel
+- handle error on UI in simple way
+    - load() : when call api or call function which takes time or can be error
+    - data consist of data and status
+        - data is just data
+        - status is like loading, error, success. `state` may be proper name. but it's already used on JetCompose or StateFlow. so used status
+        - [Resource](https://github.com/dss99911/kotlin-simple-architecture/blob/master/kotlin-simple-architecture/src/commonMain/kotlin/kim/jeonghyeon/type/Resource.kt) contains data and status both
+    - initStatus, status
+        - this is status without data which is used in common.
+        - this is to handle error or loading in common UI.
+        - you can change commom loading, error UI on Screen by overriding
+        - you can use other Resource or Status to show different UI. but you have to define how to show the status on the screen
 - provides common functions on ViewModel and Screen
+    - goBack() : you can return response, it's explained on [Deeplink](https://github.com/dss99911/kotlin-simple-architecture#deeplink)
+    - navigateToDeeplink()
+    - loadInIdle() : for example, in case click button two times quickly. 2nd time click is ignored.
+    - loadBounce() : for example, search with keyword. and if searching takes time(like api call is required), in that case, delay the api call and if next input comes, cancel previous call
+- reactive way : you can compare the difference of reactive way and no reactive way below
+    - [ReactiveViewModel](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/ReactiveViewModel.kt)
+    - [NoReactiveViewModel](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/NoReactiveViewModel.kt)
 
 common
 ```kotlin
@@ -148,7 +177,7 @@ class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(mode
 
 ios
 - you can see Swift UI's code is similar with Android Jetpack Compose
-- so, It won't take much time to study.
+- so, this frameworks purpose is for developers not to study swift, IOS's architecture, IOS SDK deeply. just learn SwiftUI to draw UI
 ```kotlin
 struct SampleScreen: Screen {
 
@@ -166,12 +195,18 @@ struct SampleScreen: Screen {
 }
 ```
 
-### Sign-in/Sign-up, OAuth(google, facebook, etc)
+## Sign-in/Sign-up, OAuth(google, facebook, etc)
 - Experimental, Security review is required.
 - you can choose authentication method (basic, digest)
 - you can choose session method (Session, JWT Token)
-- This OAuth feature doesn't use android or ios library(it may be supported in the future). but it use web browser. so, you can add any custom OAuth provider.
-- we generally implement authentication, oauth for each product. but, I feel it's duplicated work. so, seperated to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
+- This OAuth feature doesn't use android or ios library
+    - each OAuth provider's library is better on user's navigation perspective. so, it may be supported in the future
+    - but this approach also has merit that you can add any custom OAuth provider like [this](https://github.com/dss99911/kotlin-simple-architecture/blob/ff58afa111b1fbbd4cf67f572d26a46ce5449692/kotlin-simple-architecture/src/jvmMain/kotlin/kim/jeonghyeon/auth/SignInAuthConfiguration.kt#L126)
+- we generally implement authentication, oauth for each product.
+    - It's not easy to implement them as we have to consider security, and also implementation is not simple.
+    - and it's used various product. so, it's better to support by framework side
+    - but the implementation is varioud on different product.
+    - so, I seperated it to common part and customization part. This library provides common part. so, developer just configure it, then customize it for their product requirement.
 
 backend
 ```kotlin
@@ -230,13 +265,13 @@ oAuthClient.saveToken(deepUrl)
 ```
 
 
-### Deeplink
-- share deeplink android, ios, backend
-- configure Deeplink on Android, Ios easily
+## Deeplink
+- share deeplink on android, ios, backend
+- configure deeplink on Android, Ios easily
 - Server can respond with deeplink for client to navigate to the deeplink
 - Client can navigate to the deeplink with ViewModel fuction
 
-#### Define Deeplink on common
+### Define Deeplink on common
 
 ```kotlin
 object DeeplinkUrl {
@@ -247,7 +282,7 @@ object DeeplinkUrl {
 }
 ```
 
-#### Configure Deeplink on Android
+### Configure Deeplink on Android
 1. configure deeplink path on AndroidManifest.xml
 2. add deeplink and screen matching
 
@@ -262,7 +297,7 @@ MainActivity : BaseActivity() {
 }
 ```
 
-#### Configure Deeplink on IOS
+### Configure Deeplink on IOS
 - Universal Link will be supported soon.
 
 ```swift
@@ -289,11 +324,14 @@ class SampleDeeplinker : Deeplinker {
 }
 ```
 
-#### Navigate to the deeplink from Client / Server
+### Navigate to the deeplink from Client / Server
 Just with configuration above, deeplink will navigate to the app
 but, This provide further functions.
 
 navigate to the deeplink by BaseViewModel.navigateToDeeplink()
+    - able to navigate to specific screen by viewModel. so no need set logic on android, ios both to navigate to the screen
+    - able to set parameter and response also. check sample [here](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/DeeplinkSubViewModel.kt)
+
 ```kotlin
 class DeeplinkViewModel() : BaseViewModel() {
 
@@ -305,6 +343,10 @@ class DeeplinkViewModel() : BaseViewModel() {
 ```
 
 navigate to the deeplink by server controller
+    - when some error occurred, we may let user to navigate to some Screen.
+    - in that case, we don't need for client to add logic to navigate there.
+    - just configure deeplink and server set deeplink on resposne
+    - If the deeplink shouldn't be publicly open. make two type of deeplink(public, private)
 ```kotlin
 class SampleController : SampleApi {
 
@@ -315,14 +357,11 @@ class SampleController : SampleApi {
 
 ```
 
-TODO : I'll explain the purpose of this functions on article
-
-
 # Setup
 
 ### Environment (tested on macOS Big Sur with the below)
 - IOS
-    - Xcode 12 (for SwiftUI 2.0)
+    - Xcode 12 (for SwiftUI 2.0, Big Sur is required)
 - Android
     - Android Studio 4.2 Canary 12
 ### Template
@@ -370,19 +409,36 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - so, copy the files from template project.
 - To use this library without copying will be supported soon.
 
-# Articles
-- TODO: 1. Why use and What can do with Kotlin Multiplatform
-- TODO: 2. Api call on Kotlin Multiplatform
-- TODO: 3. MVVM on Kotlin Multiplatform(explain DataFlow)
-- TODO: 4. Authentication, OAuth on Kotlin Multiplatform
-- TODO: 5. Deeplink on Multiplatform
-- TODO: 6. Kotlin Simple Architecture Advanced use cases.
-    - why template project.(different version. stable version. a lot of configuration on android, ios, server, etc)
-    - generating local ip adress
-    - preference controller, preference
-    - log
-    - plugin configuration
-    - reactive
+### Running Sample in Local
+- run backend `sh sh/runBackendLocal.sh`
+- run android `sh sh/installAndroid.sh` (you can run with android Studio configuration)
+- run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. need to fix)
+
+
+# Test on local easily
+    - sometimes we need mock server or fake api for client testing
+    - but it's not required anymore.
+    - when develop new api
+    - just add fake code on the backend controller. and make test code of the controller
+    - then run the server in local
+    - implement test code in client.
+    - run the test code with local ip address
+        - for runing real code with local ip address
+        - you don't need to configure local ip address to connect local server
+        - just use `SimpleConfig.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS` it's automatically generateed.
+        - but the device and server should be in same network like same wifi
+    - after server's fake code is changed to real code, run the test code again.
+    - when we test, client code integrity depends on server code
+    - if server code has no bug, we don't need to do unit test and just use server api
+    - but sometimes, it's difficult to make situatiom to test some case.
+    - in that case, make api which configure server data on dev environment.
+    - code integrity dependencies like below
+        - screen -> viewModel -> repository -> api -> backend controller -> backend service
+        - if A depends on B, if B code has no bug. we can use B as mock data.
+        - so, this approach doesn't need any mock data. but use real code
+        - if the code is not yet implemented, add fake code on that module.
+        - you can check the concept [here](https://medium.com/@dss99911/simple-android-architecture-testing-efficiently-with-android-x-c1b9c6c81a20), it's for android testing. but concept is same
+
 
 # Planning & Contributions
 All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/agiles/108-0/109-0)

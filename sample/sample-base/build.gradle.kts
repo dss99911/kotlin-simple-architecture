@@ -19,7 +19,11 @@ plugins {
     kotlin("native.cocoapods")
 }
 
+//server url can be changed for different environment, so defined here
 val serverUrl = "https://sample.jeonghyeon.kim"
+
+//we have to define deeplink path on AndroidManifest.xml
+//so, defined deeplink here
 val deeplinkScheme = "kim.jeonghyeon.kotlinios"
 val deeplinkHost = "sample.jeonghyeon.kim"
 val deeplinkPrePath = "/deeplink"
