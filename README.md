@@ -396,7 +396,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.0")
+        classpath("kim.jeonghyeon:kotlin-simple-architecture-gradle-plugin:1.0.1")
 
         //required as Kotlin Simple Architecture depends on these libraries.
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0")
