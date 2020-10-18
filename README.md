@@ -122,6 +122,9 @@ scope.launch {
         - this is to handle error or loading in common UI.
         - you can change common loading, error UI on Screen by overriding
         - you can use other Resource or Status to show different UI for status. but you have to define how to show the status on the screen
+    - retry on Error
+        - Resource contains retry().
+        - Default error ui(snackbar) shows retry button and user can retry without additional code
 - provides common functions on ViewModel and Screen
     - goBack() : you can return response, it's explained on [Navigate to the deeplink from Client / Server](https://github.com/dss99911/kotlin-simple-architecture#navigate-to-the-deeplink-from-client--server)
     - navigateToDeeplink()

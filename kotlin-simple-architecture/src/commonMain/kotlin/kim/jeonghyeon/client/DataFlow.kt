@@ -7,6 +7,27 @@ import kotlinx.coroutines.flow.*
 
 
 /**
+ * TODO: migrate to SharedFlow when 1.4.0-M1-native-mt is released
+ *  - All is covered by SharedFlow so, [DataFlow] is not required anymore
+ *  - seems to add extension `val value: T?` and returns null if data not yet emitted
+ *      - Reason
+ *          - UI requires data at initial time to draw UI
+ *          - but data not exists. so have to define initialValue
+ *          - but need to decide which side set initialValue. viewModel side? or view side?
+ *          - before decision, we have to consider event data.
+ *              - event should be handled only when data is received.
+ *              - if there is initialValue, we always have to ignore initialValue. and initialValue is not always null. but can be different value. so, view side always should know what is initialValue.
+ *          - so, initialValue should be decided on View side.
+ *          - we can say that Event and just Data is different. and make different field on ViewModel
+ *              - but, same data can be used for event and data both. so the flow on ViewModel should support both
+ *  - map to Resource with try catch is required
+ *      - There is mention 'SharedFlow never completes'. but it doesn't means collect still working. when exception occurs, collect is not working.
+ *      - seems to have to use MutableSharedFlow for retry on Error feature.
+ *
+ *
+ * =================== As it'll be migrated to SharedFlow, no need to read below. but explained why DataFlow was required===================
+ * If I knew that SharedFlow support all. I wouldn't make DataFlow. 😢
+ *
  * Flow on ViewModel !!Experimental!!
  * This is similar to LiveData. but difference is that setValue type is T instead of T?
  *
@@ -32,7 +53,7 @@ import kotlinx.coroutines.flow.*
  * Characteristics
  * 1. on initial time, value can be empty(easy to handle empty case when use the data)
  * 2. getValue always nullable. as initial value is able to be empty(handle empty value on UI side)
- * 3. if value is not possible to be empty in context. use !!
+ * 3. if value is not possible to be empty in context. use !! or set initialValue on UI side
  * 4. not distinct
  * 5. [mapData] operator to transform data and return value is [DataFlow]
  *    - as [DataFlow] can be collected by multiple collector, transforming between [Flow] to [DataFlow] should be independent from Collector's coroutine context.
