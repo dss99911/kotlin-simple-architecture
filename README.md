@@ -335,6 +335,7 @@ Just with configuration above, deeplink will navigate to the app. but, This prov
 - navigate to the deeplink by BaseViewModel.navigateToDeeplink()
     - able to navigate to specific screen by viewModel. so no need set logic on android, ios both to navigate to the screen
     - able to set parameter and response also. check sample [here](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/DeeplinkSubViewModel.kt)
+    - for example, you can navigate to sign-in screen by deeplink and after complete signin, reinitialize automatically. refer to [UserViewModel](https://github.com/dss99911/kotlin-simple-architecture/blob/e60221a3886bfb7d10f641187b359614a6b2ccaa/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/UserViewModel.kt)
 
 ```kotlin
 class DeeplinkViewModel() : BaseViewModel() {
@@ -351,6 +352,12 @@ class DeeplinkViewModel() : BaseViewModel() {
     - in that case, we don't need for client to add logic to navigate there.
     - just configure deeplink and server set deeplink on resposne
     - If the deeplink shouldn't be publicly open. make two type of deeplink(public, private)
+    - also available to retry the errored api automatically after completing deeplink screen
+        - for example, If there are some features which should be completed before navigate to the screen
+        - like Sign in -> KYC -> create mpin -> navigated screen
+        - how will you cover this? will you check all of these every time on each screen?
+        - you can do it. but also cover it from server, server response with the required feature's deeplink. and after complete it, retry again.
+        - we can retry the api by `RedirectionType.retry` on server side.
 ```kotlin
 class SampleController : SampleApi {
 
