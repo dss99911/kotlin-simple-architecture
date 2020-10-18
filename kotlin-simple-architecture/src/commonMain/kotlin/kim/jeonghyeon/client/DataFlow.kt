@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.*
  *  - map to Resource with try catch is required
  *      - There is mention 'SharedFlow never completes'. but it doesn't means collect still working. when exception occurs, collect is not working.
  *      - seems to have to use MutableSharedFlow for retry on Error feature.
+ *      - resourceFlow { } also required
  *
  *
  * =================== As it'll be migrated to SharedFlow, no need to read below. but explained why DataFlow was required===================
