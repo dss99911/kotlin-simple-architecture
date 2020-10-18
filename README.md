@@ -139,7 +139,7 @@ common
 class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
 
     //[add] is for ios to watch each Flow
-    //Todo DataFlow is similar with MutableSharedFlow or LiveData(android). after coroutine-1.4.0-M1-native-mt is replease. DataFlow will be migrated to SharedFlow
+    //Todo DataFlow is similar with MutableSharedFlow or LiveData(android). after coroutine-1.4.0-M1-native-mt is released. DataFlow will be migrated to SharedFlow
     val greeting by add { DataFlow<String>() }
     val replyResult by add { DataFlow<String>() }
 
