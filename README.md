@@ -4,7 +4,7 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
 
 # Goal
 - Simplest/Low-code development
-- Reduce leanring curve of development
+- Reduce leanring curve of development of each platform
 
 # Features
 
