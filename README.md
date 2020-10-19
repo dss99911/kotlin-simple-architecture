@@ -5,8 +5,7 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
 [![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture/_latestVersion)
 
 # Goal
-- Simplest/Low-code development
-- Reduce leanring curve of development of each platform
+- Simple and Easy
 
 # Features
 
@@ -428,7 +427,7 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 ### Running Sample in Local
 - run backend `sh sh/runBackendLocal.sh`
 - run android `sh sh/installAndroid.sh` (you can run with android Studio configuration)
-- run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. need to fix)
+- run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. may be related to Xcode 12 for swiftUI 2.0. let's check again when it's publicly released)
 
 
 # Test on local
