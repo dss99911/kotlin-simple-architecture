@@ -5,7 +5,7 @@ Kotlin Simple Architecture is an example of unified framework for general purpos
 [![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture/_latestVersion)
 
 # Goal
-- Simple and Easy
+- Simple and Easy for general-use
 
 # Features
 
