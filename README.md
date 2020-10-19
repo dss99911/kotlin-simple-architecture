@@ -460,6 +460,15 @@ All issues and plan is described [here](https://hyun.myjetbrains.com/youtrack/ag
 - If there are anyone who like the idea of this project, feel free to contributes, It'll be so much appreciated.
 - Currently as a single developer. It's not easy to maintain all of this.
 
+# Future Plan
+- Microservice
+- Support JS (maybe with Web assembly)
+- Testing
+- Web Socket
+- Scheduler
+- Cache
+- Paging
+
 
 # License
 
