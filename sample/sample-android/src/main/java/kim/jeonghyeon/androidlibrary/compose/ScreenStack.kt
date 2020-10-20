@@ -9,9 +9,8 @@ import org.jetbrains.anko.collections.forEachReversedByIndex
  * 1. this only support single stack.
  * 2. also, doesn't support multiple activity(how to figure out which activity called a composable function
  * 3. is it possible tree structure? previously, activity contains fragments. so, fragment is changed several times but. after all the process is finished. we can finish activity. simply.
- * todo let's find the way to solve the issue.
- *  search that how to manage view history.
- *  is ambient related to this?
+ * TODO Navigation Stack per Activity
+ *  https://hyun.myjetbrains.com/youtrack/issue/KSA-44
  */
 object ScreenStack {
 
