@@ -4,8 +4,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.ColumnScope.gravity
-import androidx.compose.foundation.layout.RowScope.gravity
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.*
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -180,9 +179,13 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
         }
     }
 
-    @CallSuper
+    open fun onCleared() {
+
+    }
+
     fun clear() {
         viewModel.onBackPressed()
+        onCleared()
     }
 
     @Composable
@@ -225,8 +228,10 @@ abstract class Screen(private val viewModel: BaseViewModel = BaseViewModel()) {
      * is that we have to add Modifier keyword always and also need to import. importing also takes time.
      */
     protected companion object {
-        fun gravity(align: Alignment.Vertical): Modifier = Modifier.gravity(align)
-        fun gravity(align: Alignment.Horizontal): Modifier = Modifier.gravity(align)
+        fun gravity(align: Alignment.Vertical): Modifier = with(ColumnScope) {
+            gravity(align)
+        }
+        fun gravity(align: Alignment.Horizontal): Modifier = with(RowScope) { gravity(align) }
 
         fun ColumnScope.weight(
             @FloatRange(from = 0.0, fromInclusive = false) weight: Float,

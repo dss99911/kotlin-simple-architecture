@@ -5,8 +5,6 @@ import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 
 //todo if set loading inside launch, when same api is called two times at the same time, late call doesn't know if it's already started. but when I use Lazy, there was some issue on IOS. after version up. let's try again
 fun <T> CoroutineScope.loadResource(

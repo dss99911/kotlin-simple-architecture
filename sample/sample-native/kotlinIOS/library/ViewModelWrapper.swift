@@ -88,6 +88,6 @@ public class ViewModelWrapper: ObservableObject {
     }
     
     deinit {
-        viewModel.onCleared()
+        viewModel.clear()
     }
 }

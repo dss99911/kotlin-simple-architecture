@@ -4,7 +4,7 @@ object deps {
         val serializationGradle = depKotlin("serialization", versions.kotlin.version)
         val coroutineCore = depKotlinx("coroutines-core", versions.kotlin.coroutine)
         val coroutineTest = depKotlinx("coroutines-test", versions.kotlin.coroutine)
-        val serializationCore = depKotlinx("serialization-core", versions.kotlin.serialization)
+        val serializationCore = depKotlinx("serialization-json", versions.kotlin.serialization)
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)
