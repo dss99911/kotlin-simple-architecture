@@ -18,38 +18,12 @@ import kim.jeonghyeon.client.DataFlow
 fun SampleTextField(
     label: String,
     text: DataFlow<String>,
-    modifier: Modifier = Modifier,
-    textStyle: TextStyle = currentTextStyle(),
-    placeholder: @Composable (() -> Unit)? = null,
-    leadingIcon: @Composable (() -> Unit)? = null,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    isErrorValue: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Unspecified,
-    onImeActionPerformed: (ImeAction, SoftwareKeyboardController?) -> Unit = { _, _ -> },
-    onTextInputStarted: (SoftwareKeyboardController) -> Unit = {},
-    activeColor: Color = MaterialTheme.colors.primary,
-    inactiveColor: Color = MaterialTheme.colors.onSurface,
-    errorColor: Color = MaterialTheme.colors.error
+    modifier: Modifier = Modifier
 ) {
     androidx.compose.material.OutlinedTextField(
-        +text?:"",
+        +text ?: "",
         { text.setValue(it) },
         modifier,
-        textStyle,
-        { Text(label) },
-        placeholder,
-        leadingIcon,
-        trailingIcon,
-        isErrorValue,
-        visualTransformation,
-        keyboardType,
-        imeAction,
-        onImeActionPerformed,
-        onTextInputStarted,
-        activeColor,
-        inactiveColor,
-        errorColor
+        label = { Text(label) }
     )
 }

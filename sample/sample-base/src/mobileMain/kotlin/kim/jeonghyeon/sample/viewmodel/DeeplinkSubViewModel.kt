@@ -6,26 +6,14 @@ import kim.jeonghyeon.client.DataFlow
 /**
  * this shows how to receive data and return result
  */
-class DeeplinkSubViewModel : SampleViewModel() {
+class DeeplinkSubViewModel(val request: String) : ModelViewModel() {
 
-    val result by add { DataFlow<String>() }
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Deeplink Sub"
 
-    /**
-     * receive data
-     */
-    override fun onDeeplinkReceived(url: Url) {
-        result.setValue(url.getParam(0, REQUEST_TYPE) ?: "")
-    }
+    val result by add { DataFlow(request) }
 
     fun onClickOk() {
         goBackWithOk(result.value)
-    }
-
-    companion object {
-        // if nullable is required, use code like the below
-        // url.getParam<String?>
-        // result.dataOf<String?>()
-        val REQUEST_TYPE = String::class
-        val RESPONSE_TYPE = String::class
     }
 }

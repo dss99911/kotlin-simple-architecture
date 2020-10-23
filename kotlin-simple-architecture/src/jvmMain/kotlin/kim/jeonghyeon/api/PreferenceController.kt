@@ -1,6 +1,6 @@
 package kim.jeonghyeon.api
 
-import kim.jeonghyeon.net.userId
+import kim.jeonghyeon.net.ControllerUtil.userId
 import kim.jeonghyeon.pergist.Preference
 
 class PreferenceController(val preference: Preference) : PreferenceApi {

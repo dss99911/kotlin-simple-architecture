@@ -1,22 +1,38 @@
 package kim.jeonghyeon.androidlibrary.compose.screen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Surface
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.VectorAsset
-import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
+import kim.jeonghyeon.client.DataFlow
 
-abstract class TabsScreen : Screen() {
-    /**
-     * Icon, Screen
-     * todo make readable structure.
-     */
-    abstract val tabs: List<Pair<VectorAsset?, Screen>>
-    abstract val initialIndex: Int
-    var tabIndex by mutableStateOf(initialIndex)
-    var currentTab
-        get() = tabs[tabIndex].second
-        set(tab: Screen) {
-            tabIndex = tabs.indexOfFirst { it.second === tab }
+data class TabData(val icon: VectorAsset?, val title: String, val view: @Composable () -> Unit)
+
+@Composable
+fun SimpleTabsScreen(tabIndexFlow: DataFlow<Int>, tabs: List<TabData>) {
+    val tabIndex = +tabIndexFlow ?: 0
+
+    Column {
+        TabRow(tabIndex) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = tabIndex == index,
+                    onClick = {
+                        tabIndexFlow.setValue(index)
+                    },
+                    icon = { tab.icon?.let { Icon(it) } },
+                    text = { Text(tab.title) },
+                )
+            }
         }
+
+        Surface {
+            tabs[tabIndex].view()
+        }
+    }
 }

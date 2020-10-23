@@ -44,6 +44,7 @@ class ApiGenerator(
 
     private fun SharedKtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT
+    |@file:Suppress("EXPERIMENTAL_API_USAGE")
     |${packageName?.takeIf { it.isNotEmpty() }?.let { "package $it" } ?: ""}
     |${makeImport()}
     |

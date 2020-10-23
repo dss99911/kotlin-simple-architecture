@@ -8,46 +8,46 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import com.example.sampleandroid.view.home.HomeScreen
-import kim.jeonghyeon.androidlibrary.compose.Screen
-import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.androidlibrary.compose.popUpTo
-import kim.jeonghyeon.androidlibrary.compose.push
+import com.example.sampleandroid.view.home.homeTabList
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
+import kim.jeonghyeon.client.Navigator
 import kim.jeonghyeon.sample.compose.R
+import kim.jeonghyeon.sample.viewmodel.HomeViewModel
 
 @Composable
 fun HomeDrawer(closeDrawer: () -> Unit) {
-    val homeScreen = ScreenStack.find() ?: HomeScreen()
+    val homeViewModel = Navigator.backStack.lastOrNull {
+        it is HomeViewModel
+    } as? HomeViewModel ?: HomeViewModel()
 
-    val closeAndNavigateTo: (tab: Screen) -> Unit = { tab ->
+    val closeAndNavigateTo: (index: Int) -> Unit = { tabIndex ->
         closeDrawer()
 
-        if (!homeScreen.popUpTo(false)) {
-            homeScreen.push()
+        if (!Navigator.backUpTo(homeViewModel)) {
+            Navigator.navigate(homeViewModel)
         }
-        homeScreen.currentTab = tab
+        homeViewModel.currentTabIndex.setValue(tabIndex)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
-        Logo(homeScreen.title, Modifier.padding(16.dp))
+        Logo(homeViewModel.title, Modifier.padding(16.dp))
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = .2f))
 
-        homeScreen.tabs.forEach { tab ->
+        homeTabList.forEachIndexed { index, tab ->
             DrawerButton(
-                icon = tab.first,
-                label = tab.second.title,
-                isSelected = homeScreen.currentTab === tab,
-                action = { closeAndNavigateTo(tab.second) }
+                icon = tab.icon,
+                label = tab.title,
+                isSelected = +homeViewModel.currentTabIndex == index,
+                action = { closeAndNavigateTo(index) }
             )
         }
     }
@@ -62,9 +62,7 @@ private fun Logo(title: String, modifier: Modifier = Modifier) {
         )
         SpacerW(16.dp)
         Text(title)
-
     }
-
 }
 
 @Composable
@@ -115,7 +113,6 @@ private fun DrawerButton(
         }
     }
 }
-
 
 @Preview
 @Composable

@@ -9,11 +9,10 @@ import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.flow.map
 
-class ApiBindingViewModel(val api: SampleApi, val userApi: UserApi) : SampleViewModel() {
+class ApiBindingViewModel(val api: SampleApi = serviceLocator.sampleApi, val userApi: UserApi = serviceLocator.userApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.sampleApi, serviceLocator.userApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Api Binding"
 
     val result by add { DataFlow<String>() }
 
@@ -22,7 +21,6 @@ class ApiBindingViewModel(val api: SampleApi, val userApi: UserApi) : SampleView
             api.getIncreasedNumber().toString()
         }
     }
-
 
     fun onClickBind2Api() {
         result.load(status) {

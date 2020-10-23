@@ -3,6 +3,7 @@
     package="kim.jeonghyeon.sample.compose">
 
     <application>
+        <!-- TODO HYUN [feature/KSA-44] : how to set singleInstance in library? -->  
         <activity
             android:name="com.example.sampleandroid.MainActivity"
             android:label="@string/app_name"

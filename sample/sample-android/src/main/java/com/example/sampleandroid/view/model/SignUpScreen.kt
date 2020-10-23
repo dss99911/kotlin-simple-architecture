@@ -9,30 +9,14 @@ import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
 
-class SignUpScreen(private val model: SignUpViewModel = SignUpViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.sign_up.resourceToString()
-
-    @Composable
-    override fun compose() {
-        super.compose()
-    }
-
-    @Composable
-    override fun view() {
-        Column {
-            SampleTextField("Id", model.inputId)
-            SampleTextField("Name", model.inputName)
-            SampleTextField("Password", model.inputPassword)
-            Button("Sign up") {
-                model.onClickSignUp()
-            }
-
-            Button("Google") {
-                model.onClickGoogle()
-            }
-            Button("Facebook") {
-                model.onClickFacebook()
-            }
-        }
+@Composable
+fun SignUpScreen(model: SignUpViewModel) {
+    Column {
+        SampleTextField("Id", model.inputId)
+        SampleTextField("Name", model.inputName)
+        SampleTextField("Password", model.inputPassword)
+        Button("Sign up", onClick = model::onClickSignUp)
+        Button("Google", onClick = model::onClickGoogle)
+        Button("Facebook", onClick = model::onClickFacebook)
     }
 }

@@ -13,12 +13,51 @@ import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 
-open class SampleViewModel(private val preference: Preference) : BaseViewModel() {
+/**
+ * used for model page viewModels.
+ * the reason to use this is to show different drawer for view page and model page
+ */
+open class ModelViewModel(preference: Preference = serviceLocator.preference) : SampleViewModel(preference) {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.preference)
+    companion object {
+        /**
+         * used to show on UI and create on click
+         */
+        val items = listOf<() -> SampleViewModel>(
+            { ApiSingleViewModel() },
+            { ApiSequentialViewModel() },
+            { ApiParallelViewModel() },
+            { ApiPollingViewModel() },
+            { DbSimpleViewModel() },
+            { ApiDbViewModel() },
+            { ApiHeaderViewModel() },
+            { ApiAnnotationViewModel() },
+            { ApiExternalViewModel() },
+            { UserViewModel() },
+            { ApiBindingViewModel() },
+            { DeeplinkViewModel() },
+            { ReactiveViewModel() },
+        )
+    }
 
+}
+
+/**
+ * used for view page viewModels
+ * the reason to use this is to show different drawer for view page and model page
+ */
+open class ViewViewModel(preference: Preference = serviceLocator.preference) : SampleViewModel(preference) {
+    companion object {
+        /**
+         * used to show on UI and create on click
+         */
+        val items = listOf<() -> SampleViewModel>()
+    }
+
+}
+
+open class SampleViewModel(private val preference: Preference = serviceLocator.preference) : BaseViewModel() {
+    open val title: String = ""
     /**
      * if the screen need sign-in, set this true by overrides
      * then when onInitialized() is called, before initializing,

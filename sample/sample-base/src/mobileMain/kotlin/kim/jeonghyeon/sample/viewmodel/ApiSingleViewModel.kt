@@ -5,12 +5,12 @@ import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 
-class ApiSingleViewModel(private val api: PreferenceApi) : SampleViewModel() {
-    override val signInRequired: Boolean = true
+class ApiSingleViewModel(private val api: PreferenceApi = serviceLocator.preferenceApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.preferenceApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Single Api call"
+
+    override val signInRequired: Boolean = true
 
     private val KEY = "someKey"
 

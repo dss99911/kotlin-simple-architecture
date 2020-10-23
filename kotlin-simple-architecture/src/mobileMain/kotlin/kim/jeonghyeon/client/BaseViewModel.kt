@@ -1,13 +1,10 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "EXPERIMENTAL_API_USAGE")
 
 package kim.jeonghyeon.client
 
 
 import io.ktor.http.*
-import kim.jeonghyeon.annotation.CallSuper
 import kim.jeonghyeon.annotation.SimpleArchInternal
-import kim.jeonghyeon.extension.fromJsonString
-import kim.jeonghyeon.extension.toJsonStringNew
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.AtomicReference
@@ -49,6 +46,7 @@ open class BaseViewModel {
     val initFlow by add { DataFlow<Unit>() }
 
     /**
+     * todo delete?
      * This is used only for deeplink function
      * If deeplink is mapped with root ViewModel. app doesn't [navigate] new viewModel. but [Navigator.backUpToRoot]
      * If you want to add the root viewModel on top of current viewModel. then set this false
@@ -59,9 +57,10 @@ open class BaseViewModel {
 
     val screenResult: DataFlow<ScreenResult> by add { DataFlow() }
 
-    val eventGoBack: DataFlow<Unit> by add { DataFlow() }
-    //todo support this on ios as well.
-    val eventToast: DataFlow<String> by add { DataFlow() }
+    /**
+     * if it's shown, the value is changed to null
+     */
+    val toastText: DataFlow<String?> by add { DataFlow() }
 
     //todo collect this, and root screen ignore back button event.
     val canGoBack: DataFlow<Boolean> by add { DataFlow(true) }
@@ -92,7 +91,7 @@ open class BaseViewModel {
             resource.errorOrNullOf<DeeplinkError>()?.deeplinkInfo ?: return@collectOnViewModel
 
         launch {
-            val result = navigateToDeeplinkResult(deeplinkInfo.url)
+            val result = navigateToDeeplinkForResult(deeplinkInfo.url)
             if (!result.isOk) {
                 return@launch
             }
@@ -115,7 +114,7 @@ open class BaseViewModel {
     //todo this doesn't support savedState.
     // for navigation with supporting savedState, add different mechanism.
     // but, as this is simple than the mechanism. if the savedState is not required, just use this.
-    suspend fun navigateResult(viewModel: BaseViewModel): ScreenResult = suspendCoroutine { continuation ->
+    suspend fun navigateForResult(viewModel: BaseViewModel): ScreenResult = suspendCoroutine { continuation ->
         viewModel.screenResult.collectOnViewModel {
             continuation.resume(it)
         }
@@ -130,7 +129,7 @@ open class BaseViewModel {
         }
     }
 
-    suspend fun navigateToDeeplinkResult(url: String): ScreenResult = suspendCoroutine { continuation ->
+    suspend fun navigateToDeeplinkForResult(url: String): ScreenResult = suspendCoroutine { continuation ->
         with(DeeplinkNavigator) {
             navigateToDeeplinkFromInternal(DeeplinkNavigation(url, object : DeeplinkResultListener {
                 override fun onDeeplinkResult(result: ScreenResult) {
@@ -188,7 +187,7 @@ open class BaseViewModel {
     }
 
     fun goBack() {
-        eventGoBack.call()
+        Navigator.backUpTo(this, true)
     }
 
     fun goBackWithOk(data: Any? = null) {
@@ -201,7 +200,7 @@ open class BaseViewModel {
     }
 
     fun toast(message: String) {
-        eventToast.call(message)
+        toastText.call(message)
     }
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)

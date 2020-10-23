@@ -1,61 +1,98 @@
 //todo change package name
 package com.example.sampleandroid
 
+import android.os.Bundle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.setContent
 import androidx.ui.tooling.preview.Preview
 import com.example.sampleandroid.ui.AndroidLibraryTheme
 import com.example.sampleandroid.view.MainScaffold
 import com.example.sampleandroid.view.home.HomeScreen
-import com.example.sampleandroid.view.model.DeeplinkSubScreen
-import com.example.sampleandroid.view.model.SignInScreen
-import com.example.sampleandroid.view.model.SignUpScreen
-import kim.jeonghyeon.androidlibrary.compose.BaseActivity
+import com.example.sampleandroid.view.model.*
 import kim.jeonghyeon.androidlibrary.compose.Screen
-import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.const.DeeplinkUrl
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
+import kim.jeonghyeon.client.BaseActivity
+import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.Deeplink
+import kim.jeonghyeon.sample.deeplinkList
+import kim.jeonghyeon.sample.viewmodel.*
 
 class MainActivity : BaseActivity() {
-    override val rootScreen: Screen = HomeScreen()
+    override val rootViewModel: BaseViewModel = HomeViewModel()
 
-    //todo think about what is the best approach of deeplink
-    // SignUpScreen::class, { SignUpScreen() } looks duplication
-    override val deeplinks = mapOf(
-        DeeplinkUrl.DEEPLINK_PATH_HOME to (HomeScreen::class to { HomeScreen() }),
-        DeeplinkUrl.DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() }),
-        DeeplinkUrl.DEEPLINK_PATH_SIGN_IN to (SignInScreen::class to { SignInScreen() }),
-        DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB to (DeeplinkSubScreen::class to { DeeplinkSubScreen() }),
-    )
+    override val deeplinks: List<Deeplink> = deeplinkList
 
-    override val content: @Composable() () -> Unit
-        get() = {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-            //TODO crash https://youtrack.jetbrains.com/issue/KT-38694
-            // java.lang.NoSuchMethodError: No static method setContent$default(Landroidx/activity/ComponentActivity;Landroidx/compose/Recomposer;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Landroidx/compose/Composition; in class Landroidx/ui/core/WrapperKt; or its super classes (declaration of 'androidx.ui.core.WrapperKt' appears in /data/app/kim.jeonghyeon.sample.dev-Jwx4yvF_qgle9EcNXesy5Q==/base.apk)
-            // if it's fixed. move this code to sample-base module. instead of sampleandroid module
-
+        setContent {
             AndroidLibraryTheme {
-                MainContent(ScreenStack.last())
+                MainContent {
+                    CurrentViewModel {
+                        ScreenContent(it)
+                    }
+                }
             }
         }
+    }
+
+    @Composable
+    fun CurrentViewModel(screen: @Composable (model: BaseViewModel) -> Unit) {
+        val viewModel = +currentViewModel?:return
+
+        //todo is onCompose required?
+        @Suppress("EXPERIMENTAL_API_USAGE")
+        viewModel.onCompose()
+
+        screen(viewModel)
+    }
+
 }
 
 @Composable
-fun MainContent(screen: Screen) {
+fun MainContent(children: @Composable () -> Unit) {
     MainScaffold {
         Surface(color = MaterialTheme.colors.background) {
-            screen.compose()
+            children()
         }
         //todo is CrossFade make sub composable to compose several times?
 
     }
 }
 
+//todo Screen can't be used one time. but should be used on each screen.
+// it seems because initStatus, status is remembered inside of Screen Composable. so, initStatus, and status remembering should be cancelled to achieve this. not sure for now.
+@Composable
+fun ScreenContent(viewModel: BaseViewModel) = when (viewModel) {
+    is HomeViewModel -> Screen(viewModel) { HomeScreen(viewModel) }
+    is ApiSingleViewModel -> Screen(viewModel) { ApiSingleScreen(viewModel)}
+    is ApiAnnotationViewModel -> Screen(viewModel) { ApiAnnotationScreen(viewModel)}
+    is ApiBindingViewModel -> Screen(viewModel) { ApiBindingScreen(viewModel)}
+    is ApiDbViewModel -> Screen(viewModel) { ApiDbScreen(viewModel)}
+    is ApiExternalViewModel -> Screen(viewModel) { ApiExternalScreen(viewModel)}
+    is ApiHeaderViewModel -> Screen(viewModel) { ApiHeaderScreen(viewModel)}
+    is ApiParallelViewModel -> Screen(viewModel) { ApiParallelScreen(viewModel)}
+    is ApiPollingViewModel -> Screen(viewModel) { ApiPollingScreen(viewModel)}
+    is ApiSequentialViewModel -> Screen(viewModel) { ApiSequentialScreen(viewModel)}
+    is DbSimpleViewModel -> Screen(viewModel) { DbSimpleScreen(viewModel)}
+    is DeeplinkViewModel -> Screen(viewModel) { DeeplinkScreen(viewModel)}
+    is DeeplinkSubViewModel -> Screen(viewModel) { DeeplinkSubScreen(viewModel)}
+    is ReactiveViewModel -> Screen(viewModel) { ReactiveScreen(viewModel)}
+    is NoReactiveViewModel -> Screen(viewModel) { NoReactiveScreen(viewModel)}
+    is SignInViewModel -> Screen(viewModel) { SignInScreen(viewModel)}
+    is SignUpViewModel -> Screen(viewModel) { SignUpScreen(viewModel)}
+    is UserViewModel -> Screen(viewModel) { UserScreen(viewModel) }
+    else -> error("Screen is not defined for $viewModel ")
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     AndroidLibraryTheme {
-        MainContent(HomeScreen())
+        MainContent {
+            HomeScreen(HomeViewModel())
+        }
     }
 }

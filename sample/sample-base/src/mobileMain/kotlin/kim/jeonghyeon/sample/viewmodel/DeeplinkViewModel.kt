@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.ScreenResult
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.sample.api.SampleApi
@@ -30,15 +31,15 @@ import kotlinx.serialization.InternalSerializationApi
  *
  *
  */
-class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
+class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Deeplink"
+
     override val signInRequired: Boolean = true
 
     val deeplinkSubResult by add { DataFlow<String>() }
     val deeplinkSubRequest by add { DataFlow<String>() }
-
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.sampleApi)
 
 
     fun onClickClientDeeplink() {
@@ -63,8 +64,9 @@ class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
      * same function can be handled on server side as well by [RedirectionType.redirectionUrl]
      */
     fun onClickGoToSignInThenGoHome() {
-        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN) {
-            if (it.isOk) {
+        status.load {
+            val result = navigateToDeeplinkForResult(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN)
+            if (result.isOk) {
                 navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
             }
         }
@@ -78,44 +80,17 @@ class DeeplinkViewModel(private val api: SampleApi) : SampleViewModel() {
     }
 
     /**
-     * It's boilerplate code below just for navigating to a screen.
+     * as [ScreenResult.data] is any? and should convert the type,
+     * If you want type-safe. define data on [DeeplinkSubViewModel] and collect it directly instead using [navigateForResult]
      *
-     * //viweModel
-     * val goToSignIn = dataFlow<Unit?>(null)
-     *
-     * fun process() {
-     *     goToSignIn.value = Unit
-     * }
-     *
-     * //for android
-     * viewModel.goToSignIn.collect {
-     *     push(SignInScreen())
-     * }
-     * //for ios
-     * viewModel.goToSignIn.watch { data in
-     *     guard let data = data else { return }
-     *     navigator.navigate {
-     *         SignInScreen()
-     *     }
-     * }
-     *
-     * so, this function shows without the code above.
-     * this navigates to screen by deeplink only.
-     *
-     * send parameter by deeplink query param
-     * receive data by result listener
-     *
-     * todo Automatic deeplink https://hyun.myjetbrains.com/youtrack/issue/KSA-133
-     *  - need to restrict some screen from external deeplink
-     *  for this, add a field on viewModel. if this is allowed from external deeplink
-     *  - generate code for all the screen. so, no need to connect deeplink with screen.
-     *  research on swift as well if it's possible or not.
      */
     fun onClickNavigateByDeeplinkOnly() {
-        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB, deeplinkSubRequest.value) {
-            if (it.isOk) {
-                deeplinkSubResult.setValue(it.dataOf(DeeplinkSubViewModel.RESPONSE_TYPE))
+        status.load {
+            val result: ScreenResult = navigateForResult(DeeplinkSubViewModel(deeplinkSubRequest.value?:""))
+            if (result.isOk) {
+                deeplinkSubResult.setValue(result.data as? String ?: "")
             }
         }
+
     }
 }

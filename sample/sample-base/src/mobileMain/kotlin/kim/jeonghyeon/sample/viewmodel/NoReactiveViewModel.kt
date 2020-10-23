@@ -16,11 +16,10 @@ import kim.jeonghyeon.sample.di.serviceLocator
  * Demerit
  * - difficult to know what change the data(but as it's simple, I feel it's not that difficult if business logic is not too much complicated)
  */
-class NoReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
+class NoReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.sampleApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "No Reactive"
 
     val list: DataFlow<List<String>> by add { DataFlow() }
     val newWord by add { DataFlow<String>() }
