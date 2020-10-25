@@ -366,7 +366,7 @@ class SampleController : SampleApi {
 - IOS
     - Xcode 12 (for SwiftUI 2.0, Big Sur is required)
 - Android
-    - Android Studio 4.2 Canary 12
+    - Android Studio 4.2 Canary 13
 ### Template
 - No need to configure kotlin multiplatform, libraries. just download template project to start with this framework
     - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
