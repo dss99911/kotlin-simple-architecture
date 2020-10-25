@@ -162,42 +162,28 @@ class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewM
 
 android
 ```kotlin
-class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(model) {
-
-    @Composable
-    override fun view() {
+fun SampleScreen(val model: SampleViewModel) {
+    Screen(model) {
         Column {
             Text("greeting : ${+model.greeting}")
             Text("reply result : ${+model.replyResult}")
-            Button("Reply") {
-                model.onClick()
-            }
+            Button("Reply") { model.onClick() }
         }
     }
-
-    //for composer to recognize SampleScreen as Composable
-    @Composable
-        override fun compose() {
-            super.compose()
-        }
 }
 ```
 
 ios
 - you can see Swift UI's code is similar with Android Jetpack Compose
-- so, this frameworks purpose is for developers not to study swift, IOS's architecture, IOS SDK deeply. just learn SwiftUI to draw UI
-```kotlin
-struct SampleScreen: Screen {
-
-    var model: SampleViewModel = SampleViewModel()
-
-    func content(navigator: Navigator) -> some View {
+- so, this framework's purpose is for developers not to study deeply of swift, IOS's architecture, IOS SDK. just learn SwiftUI to draw UI
+- SwiftUi's View is normally with struct. but also use function base. this shows functions base. but you can use struct as well.
+```swift
+func SampleScreen(_ model: ApiSingleViewModel) -> some View {
+    Screen(model) {
         Column {
             Text("current value : \(+model.greeting ?? "")")
             Text("reply result : \(+model.replyResult ?? "")")
-            Button("Reply") {
-                model.onClick()
-            }
+            Button("Reply") { model.onClick() }
         }
     }
 }

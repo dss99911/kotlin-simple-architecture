@@ -13,9 +13,7 @@ func ApiSingleScreen(_ model: ApiSingleViewModel) -> some View {
         Column(alignment: .center) {
             Text("current value : \(+model.result ?? "")")
             SampleTextField("Enter value", model.input).frame(width: 100, alignment: .center)
-            Button("Update") {
-                model.onClick()
-            }
+            Button("Update") { model.onClick() }
         }
     }
 }
