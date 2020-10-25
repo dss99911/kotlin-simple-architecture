@@ -5,11 +5,10 @@ import kim.jeonghyeon.client.ScreenResult
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 
-class SignInViewModel(val userRepo: UserRepository) : SampleViewModel() {
+class SignInViewModel(val userRepo: UserRepository = serviceLocator.userRepository) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.userRepository)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Sign in"
 
     val inputId by add { DataFlow<String>() }
     val inputPassword by add { DataFlow<String>() }
@@ -19,9 +18,12 @@ class SignInViewModel(val userRepo: UserRepository) : SampleViewModel() {
         goBackWithOk()
     }
 
-    fun onSignUpResult(result: ScreenResult) {
-        if (result.isOk) {
-            goBackWithOk()
+    fun onClickSignUp() {
+        status.load {
+            val result = navigateForResult(SignUpViewModel())
+            if (result.isOk) {
+                goBackWithOk()
+            }
         }
     }
 }

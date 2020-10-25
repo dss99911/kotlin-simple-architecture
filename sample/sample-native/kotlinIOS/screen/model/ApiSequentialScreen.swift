@@ -8,11 +8,8 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiSequentialScreen: SampleScreen {
-    
-    var model = ApiSequentialViewModel()
-    
-    func content(navigator: Navigator) -> some View {
+func ApiSequentialScreen(_ model: ApiSequentialViewModel) -> some View {
+    Screen(model) {
         Column {
             List(model.textList.value as! [String], id: \.self) { item in
                 Text(item)
@@ -37,9 +34,5 @@ struct ApiSequentialScreen: SampleScreen {
                 model.onClick()
             }
         }
-        .navigationTitle("Api Sequential Call".localized())
-    }
-    
-
+    } 
 }
-

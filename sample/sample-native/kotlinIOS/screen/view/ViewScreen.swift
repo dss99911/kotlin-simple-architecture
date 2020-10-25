@@ -9,9 +9,6 @@
 import SwiftUI
 import sample_base
 
-struct ViewScreen: SampleScreen {
-    
-    func content(navigator: Navigator) -> some View {
-        Text("View")
-    }
+func ViewScreen() -> some View {
+    Text("View")
 }

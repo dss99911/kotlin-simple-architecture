@@ -7,121 +7,80 @@ import Foundation
 import SwiftUI
 import sample_base
 
-protocol Screen : View {
-    associatedtype Content : View
-    associatedtype LoadingView : View
-    associatedtype InitLoadingView : View
-    associatedtype ErrorView : View
-    associatedtype InitErrorView : View
-    associatedtype ViewModel : Kotlin_simple_architectureBaseViewModel
+// able to customize load and error view
+struct Screen<Content> : View where Content : View {
     
-    // Set ViewModel
-    var model: ViewModel { get }
+    let initLoading: () -> AnyView
+    let initError: (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView
+    let loading: () -> AnyView
+    let error: (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView
+    let model: BaseViewModel
     
-    // Required for `Navigator` feature
-    var isRoot: Bool { get }
+    let children: () -> Content
     
-    func onInitialized(navigator: Navigator)
     
-    // Add View here instead of `body`
-    func content(navigator: Navigator) -> Content
+    @State
+    var changeCount = 0
     
-    // Handle deeplink by override this function. if it's not overridden then, it automatically deliver to ViewModel.
-    func onDeeplinkReceived(url: URL)
-    
-    // override this and define deeplink logic
-    var deeplinker: Deeplinker { get }
-    
-    // Customize loading view by override this function
-    var loadingView: Self.LoadingView { get }
-    
-    // Customize loading view by override this function
-    var initLoadingView: Self.InitLoadingView { get }
-    
-    // Customize error view view by override this function
-    func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> Self.ErrorView
-    
-    // Customize error view view by override this function
-    func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> Self.InitErrorView
-}
-
-extension Screen {
-    var isRoot: Bool {
-        false
+    init(
+        _ model: BaseViewModel,
+        initLoading: @escaping () -> AnyView = { AnyView(ProgressView("Init Loading…")) },
+        initError: @escaping (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
+            AnyView(Snackbar(message: "Init Error \(error.message ?? "nil")", buttonText: "Retry") {
+                retry()
+            })
+        },
+        error: @escaping (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
+            AnyView(Snackbar(message: "Error \(error.message ?? "nil")", buttonText: "Retry") {
+                retry()
+            })
+        },
+        loading: @escaping () -> AnyView = { AnyView(ProgressView("Loading…")) },
+        children: @escaping () -> Content) {
+        self.model = model
+        self.children = children
+        self.initLoading = initLoading
+        self.initError = initError
+        self.loading = loading
+        self.error = error
     }
+    
+    
+    @State
+    var scope: Kotlin_simple_architectureViewModelScope? = nil
     
     var body: some View {
-        SimpleLayout(viewModel: model, isRootView: isRoot, screen: self) { navigator in
-            self.content(navigator: navigator)
-        }
-    }
-    
-    func onInitialized(navigator: Navigator) {
-        
-    }
-    
-    var loadingView: some View {
-        ProgressView("Loading…")
-    }
-    
-    var initLoadingView: some View {
-        ProgressView("Init Loading…")
-    }
-    
-    func errorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Snackbar(message: "Error \(error.message ?? "nil")", buttonText: "Retry") {
-            retry()
-        }
-    }
-    
-    func initErrorView(error: Kotlin_simple_architectureResourceError, retry: @escaping () -> Void) -> some View {
-        Snackbar(message: "Init Error \(error.message ?? "nil")", buttonText: "Retry") {
-            retry()
-        }
-    }
-    
-    var deeplinker: Deeplinker {
-        Deeplinker()
-    }
-
-    func onDeeplinkReceived(url: URL) {
-        model.onDeeplinkReceived(url: IosUtil().convertUrl(url: url))
-    }
-    
-    var model: Kotlin_simple_architectureBaseViewModel {
-        BaseViewModel()
-    }
-
-}
-
-// NavigationScreen include NavigationView on Screen.
-// because Screen doesn't contains NavigationView, so, if want to add NavigationView. it should be inside of `SimpleLayout`
-// but, if NavigationView is inside of `SimpleLayout`, `SimpleLayout`'s onAppear is not working(onAppear() should be inside of NavigationView), then Screen is not drawn and NavigationLink's View is not created again. so, sub view's initialization is not working properly
-// so, If need NavigationView, use this
-protocol NavigationScreen : Screen {
-    
-}
-
-extension NavigationScreen {
-    var body: some View {
-        NavigationView {
-            SimpleLayout(viewModel: model, isRootView: isRoot, screen: self) { navigator in
-                self.content(navigator: navigator)
+        Box {
+            if (changeCount < 0) {//used for refresh view
+                EmptyView()
+            }
+            
+            if (model.initStatus.value?.isLoading() ?? false) {
+                initLoading()
+            } else if (model.initStatus.value?.isError() ?? false) {
+                initError(model.initStatus.value!.error()) {
+                    model.initStatus.value!.retryOnError()
+                }
+            } else {
+                children()
+                
+                if (model.status.value?.isLoading() ?? false) {
+                    loading()
+                } else if (model.status.value?.isError() ?? false) {
+                    error(model.status.value!.error()) {
+                        model.status.value!.retryOnError()
+                    }
+                }
             }
         }
-        
-    }
-}
-
-struct NavigationLazyView<Content: View>: View {
-    let build: () -> Content
-    init(_ build: @autoclosure @escaping () -> Content) {
-        self.build = build
-    }
-    init(_ build: @escaping () -> Content) {
-        self.build = build
-    }
-    var body: Content {
-        build()
+        .onAppear {
+            model.onCompose()
+            scope = model.watchChanges { (data) in
+                self.changeCount += 1
+            }
+        }
+        .onDisappear {
+            scope?.close()
+        }
     }
 }

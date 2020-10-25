@@ -11,12 +11,8 @@ import SwiftUI
 import sample_base
 
 
-struct ApiAnnotationScreen: SampleScreen {
-    
-    var model = ApiAnnotationViewModel()
-    
-    func content(navigator: Navigator) -> some View {
-        
+func ApiAnnotationScreen(_ model: ApiAnnotationViewModel) -> some View {
+    Screen(model) {
         Column(alignment: .center) {
             Text("current value : \(+model.result ?? "")")
             SampleTextField("update", model.input).frame(width: 100, alignment: .center)
@@ -24,13 +20,5 @@ struct ApiAnnotationScreen: SampleScreen {
                 model.onClick()
             }
         }
-        .navigationTitle("Api Annotation Call".localized())
     }
-}
-
-class ApiAnnotationScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ApiSingleScreen()
-    }
-
 }

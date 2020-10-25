@@ -14,12 +14,9 @@ import kotlinx.coroutines.flow.map
  *
  * If you want to know how to call external api. refer [ApiExternalViewModel]
  */
-class ApiAnnotationViewModel(private val api: SampleApi) : SampleViewModel() {
-
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.sampleApi)
-
+class ApiAnnotationViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Annotation Api call"
     private val obj by add { DataFlow<AnnotationObject>() }
     val result by add { obj.map { it.toString() }.toDataFlow() }
     val input by add { DataFlow<String>() }

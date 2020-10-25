@@ -9,46 +9,17 @@
 import SwiftUI
 import sample_base
 
-struct DeeplinkScreen: SampleScreen {
-    
-    var model: DeeplinkViewModel = DeeplinkViewModel()
-    func content(navigator: Navigator) -> some View {
+func DeeplinkScreen(_ model: DeeplinkViewModel) -> some View {
+    Screen(model) {
         ScrollableColumn {
-            Button("Deeplink on client") {
-                model.onClickClientDeeplink()
-            }
-            
-            Button("Deeplink from server") {
-                model.onClickServerDeeplink()
-            }
-            
-            Button("Deeplink to home") {
-                model.onClickGoToHome()
-            }
-            
-            Button("Deeplink to signIn then home") {
-                model.onClickGoToSignInThenGoHome()
-            }
-            
-            Button("link to google") {
-                model.onClickGoogleUrl()
-            }
-            
+            Button("Deeplink on client") { model.onClickClientDeeplink() }
+            Button("Deeplink from server") { model.onClickServerDeeplink() }
+            Button("Deeplink to home") { model.onClickGoToHome() }
+            Button("Deeplink to signIn then home") { model.onClickGoToSignInThenGoHome() }
+            Button("link to google") { model.onClickGoogleUrl() }
             SampleTextField("Input parameter", model.deeplinkSubRequest)
             Text("result value : \(+model.deeplinkSubResult ?? "")")
-            
-            Button("navigate to screen by deeplink only") {
-                model.onClickNavigateByDeeplinkOnly()
-            }
+            Button("navigate to screen by deeplink only") { model.onClickNavigateByDeeplinkOnly() }
         }
-        .navigationTitle("Deeplink".localized())
     }
-}
-
-
-class DeeplinkScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        DeeplinkScreen()
-    }
-    
 }

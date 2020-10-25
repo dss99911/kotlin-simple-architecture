@@ -7,11 +7,8 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiDbScreen: SampleScreen {
-
-    var model = ApiDbViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func ApiDbScreen(_ model: ApiDbViewModel) -> some View {
+    Screen(model) {
         Column {
             List(model.wordList.value as? [Word] ?? [Word](), id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.text)")
@@ -23,7 +20,5 @@ struct ApiDbScreen: SampleScreen {
                 }
             }
         }
-        .navigationTitle("DB Api Together".localized())
     }
-
 }

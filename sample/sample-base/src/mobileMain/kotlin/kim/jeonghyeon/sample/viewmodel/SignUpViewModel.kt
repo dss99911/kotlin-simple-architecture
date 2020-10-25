@@ -5,11 +5,10 @@ import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.sample.repository.UserRepository
 
-class SignUpViewModel(val userRepo: UserRepository) : SampleViewModel() {
+class SignUpViewModel(val userRepo: UserRepository = serviceLocator.userRepository) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor() : this(serviceLocator.userRepository)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Sign Up"
 
     val inputId by add { DataFlow<String>() }
     val inputName by add { DataFlow<String>() }

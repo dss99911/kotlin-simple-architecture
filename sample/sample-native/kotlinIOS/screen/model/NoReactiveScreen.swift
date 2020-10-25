@@ -7,11 +7,8 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct NoReactiveScreen: SampleScreen {
-
-    var model = NoReactiveViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func NoReactiveScreen(_ model: NoReactiveViewModel) -> some View {
+    Screen(model) {
         Column {
             Row {
                 SampleTextField("Input new row", model.newWord)
@@ -25,7 +22,5 @@ struct NoReactiveScreen: SampleScreen {
                 Text("\(item)")
             }
         }
-        .navigationTitle("Reactive".localized())
     }
-
 }

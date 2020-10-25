@@ -11,11 +11,8 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiExternalScreen: SampleScreen {
-   
-    var model = ApiExternalViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func ApiExternalScreen(_ model: ApiExternalViewModel) -> some View {
+    Screen(model) {
         Column {
             List(model.repoList.value as? [String] ?? [String](), id: \.self) { item in
                 Text(item)
@@ -27,7 +24,5 @@ struct ApiExternalScreen: SampleScreen {
                 }
             }
         }
-        .navigationTitle("Api External Call".localized())
     }
-
 }

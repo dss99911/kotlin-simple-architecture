@@ -1,7 +1,7 @@
 package kim.jeonghyeon.client
 
+import com.squareup.sqldelight.internal.Atomic
 import kim.jeonghyeon.type.*
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -237,19 +237,19 @@ fun <T, R> DataFlow<T>.mapToResource(transformData: suspend (value: T) -> R): Fl
  *  if idle(), allow new value.
  */
 fun <T, R> Flow<T>.mapToResourceIfIdle(scope: CoroutineScope, transformData: suspend (value: T) -> R): Flow<Resource<R>> {
-    var processing = false
+    val processing = AtomicReference(false)//ios InvalidMutabilityException with just var
     val middleStream = dataFlow<T>(scope) {
         this@mapToResourceIfIdle.collect {
-            if (!processing) {
+            if (!processing.value) {
                 setValue(it)
             }
         }
     }
 
     return middleStream.mapToResource {
-        processing = true
+        processing.value = true
         transformData(it).also {
-            processing = false
+            processing.value = false
         }
     }
 }

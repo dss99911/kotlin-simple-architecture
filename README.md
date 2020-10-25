@@ -165,42 +165,28 @@ class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewM
 
 android
 ```kotlin
-class SampleScreen(val model: SampleViewModel = SampleViewModel()) : Screen(model) {
-
-    @Composable
-    override fun view() {
+fun SampleScreen(val model: SampleViewModel) {
+    Screen(model) {
         Column {
             Text("greeting : ${+model.greeting}")
             Text("reply result : ${+model.replyResult}")
-            Button("Reply") {
-                model.onClick()
-            }
+            Button("Reply") { model.onClick() }
         }
     }
-
-    //for composer to recognize SampleScreen as Composable
-    @Composable
-        override fun compose() {
-            super.compose()
-        }
 }
 ```
 
 ios
-- You can see Swift UI's code is similar with Android Jetpack Compose
-- So, this frameworks purpose is for developers not to study swift, IOS's architecture, IOS SDK deeply. just learn SwiftUI to draw UI
-```kotlin
-struct SampleScreen: Screen {
-
-    var model: SampleViewModel = SampleViewModel()
-
-    func content(navigator: Navigator) -> some View {
+- you can see Swift UI's code is similar with Android Jetpack Compose
+- so, this framework's purpose is for developers not to study deeply of swift, IOS's architecture, IOS SDK. just learn SwiftUI to draw UI
+- SwiftUi's View is normally with struct. but also use function base. this shows functions base. but you can use struct as well.
+```swift
+func SampleScreen(_ model: ApiSingleViewModel) -> some View {
+    Screen(model) {
         Column {
             Text("current value : \(+model.greeting ?? "")")
             Text("reply result : \(+model.replyResult ?? "")")
-            Button("Reply") {
-                model.onClick()
-            }
+            Button("Reply") { model.onClick() }
         }
     }
 }
@@ -380,7 +366,7 @@ class SampleController : SampleApi {
 - IOS
     - Xcode 12 (for SwiftUI 2.0, Big Sur is required)
 - Android
-    - Android Studio 4.2 Canary 12
+    - Android Studio 4.2 Canary 13
 ### Template
 - No need to configure kotlin multiplatform, libraries. just download template project to start with this framework
     - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)

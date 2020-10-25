@@ -13,6 +13,11 @@ inline fun <T> T?.notNull(action: () -> T): T {
     return action()
 }
 
+/**
+ * if the data is among datas
+ */
+fun <T> T.among(vararg datas: T): Boolean = datas.any { it == this }
+
 inline fun <T> T.alsoIf(predicate: Boolean, action: (T) -> Unit): T =
     also { if (predicate) action(this) }
 

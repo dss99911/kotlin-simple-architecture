@@ -5,7 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.dp
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.gravity
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.padding
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.weight
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
@@ -14,16 +21,9 @@ import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel
 import kim.jeonghyeon.sample.viewmodel.NoReactiveViewModel
 import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
 
-class NoReactiveScreen(private val model: NoReactiveViewModel = NoReactiveViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.noreactive.resourceToString()
-
-    @Composable
-    override fun compose() {
-        super.compose()
-    }
-
-    @Composable
-    override fun view() {
+@Composable
+fun NoReactiveScreen(model: NoReactiveViewModel) {
+    Screen(model) {
         Column {
             Row(modifier = padding(4.dp)) {
                 SampleTextField(
@@ -31,9 +31,7 @@ class NoReactiveScreen(private val model: NoReactiveViewModel = NoReactiveViewMo
                     model.newWord,
                     modifier = weight(1f)
                 )
-                Button(R.string.add.resourceToString(), gravity(CenterVertically)) {
-                    model.onClick()
-                }
+                Button(R.string.add.resourceToString(), gravity(CenterVertically)) { model.onClick() }
             }
 
             SampleTextField("Search", model.keyword)

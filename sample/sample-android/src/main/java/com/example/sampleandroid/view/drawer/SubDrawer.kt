@@ -14,28 +14,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
-import com.example.sampleandroid.view.SubScreen
-import com.example.sampleandroid.view.model.ModelScreen
-import kim.jeonghyeon.androidlibrary.compose.ScreenStack
-import kim.jeonghyeon.androidlibrary.compose.replace
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
+import kim.jeonghyeon.androidlibrary.extension.resourceToString
+import kim.jeonghyeon.client.Navigator
+import kim.jeonghyeon.sample.compose.R
+import kim.jeonghyeon.sample.viewmodel.ModelViewModel
+import kim.jeonghyeon.sample.viewmodel.SampleViewModel
 
 @Composable
-fun SubDrawer(screens: List<Pair<String, () -> SubScreen>>, closeDrawer: () -> Unit) {
+fun SubDrawer(viewModels: List<ModelViewModel.ViewModelItem>, closeDrawer: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
         Logo(closeDrawer)
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = .2f))
 
 
-        screens.forEach {
+        viewModels.forEach { vm ->
+            val viewModel = vm.generate()
+
             DrawerButton(
-                label = it.first,
-                isSelected = ScreenStack.last().title == it.first,
+                label = viewModel.title,
+                isSelected = (Navigator.current as? SampleViewModel)?.title == viewModel.title,
                 action = {
                     closeDrawer()
-                    it.second().replace()
+                    Navigator.replace(viewModel)
                 }
             )
         }
@@ -47,7 +50,7 @@ private fun Logo(closeDrawer: () -> Unit) {
     TextButton(
         onClick = {
             closeDrawer()
-            ScreenStack.pop()
+            Navigator.back()
         },
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -57,7 +60,13 @@ private fun Logo(closeDrawer: () -> Unit) {
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
             )
             SpacerW(24.dp)
-            Text((ScreenStack.last() as SubScreen).parentTitle)
+            Text(
+                if (Navigator.current is ModelViewModel) {
+                    R.string.model.resourceToString()
+                } else {
+                    R.string.view.resourceToString()
+                }
+            )
         }
     }
 
@@ -71,8 +80,10 @@ private fun DrawerButton(
     action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val textIconColor = if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-    val backgroundColor = if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
+    val textIconColor =
+        if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+    val backgroundColor =
+        if (isSelected) MaterialTheme.colors.primary.copy(alpha = 0.12f) else MaterialTheme.colors.surface
 
     Surface(
         modifier = modifier
@@ -99,5 +110,5 @@ private fun DrawerButton(
 @Preview
 @Composable
 fun PreviewModelDrawer() {
-    SubDrawer(ModelScreen.screens, {})
+    SubDrawer(listOf()) {}
 }

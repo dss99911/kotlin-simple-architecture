@@ -33,16 +33,13 @@ import kotlinx.coroutines.flow.*
  *      - transforming data by map {}
  *      - combine multiple flow
  */
-class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
+class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.sampleApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Reactive"
 
     val newWord by add { DataFlow<String>() }
-
     val click by add { DataFlow<Unit>() }
-
     val keyword by add { DataFlow<String>() }
 
     /**
@@ -98,5 +95,9 @@ class ReactiveViewModel(private val api: SampleApi) : SampleViewModel() {
                 }
                 .toDataFlow(status)
         ).toDataFlow()
+    }
+
+    fun onClickNoReactiveSample() {
+        navigate(NoReactiveViewModel())
     }
 }

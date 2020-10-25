@@ -9,11 +9,10 @@ import kim.jeonghyeon.sample.di.serviceLocator
 /**
  * shows how backend get header and how common header is working.
  */
-class ApiHeaderViewModel(private val api: SampleApi) : SampleViewModel() {
+class ApiHeaderViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.sampleApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Header Api call"
 
     val result by add { DataFlow<String>() }
     val input by add {

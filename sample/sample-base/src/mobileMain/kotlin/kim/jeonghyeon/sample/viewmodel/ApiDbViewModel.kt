@@ -9,11 +9,10 @@ import kim.jeonghyeon.sample.repository.WordRepository
 /**
  * shows how to use repository which has flow using api and database.
  */
-class ApiDbViewModel(private val repository: WordRepository) : SampleViewModel() {
+class ApiDbViewModel(private val repository: WordRepository = serviceLocator.wordRepository) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.wordRepository)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "DB Api together"
 
     val wordList by add {
         repository.getWord().toDataFlow(initStatus)

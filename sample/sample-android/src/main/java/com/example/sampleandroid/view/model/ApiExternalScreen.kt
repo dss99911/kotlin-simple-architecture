@@ -5,22 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.weight
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiExternalViewModel
 
-class ApiExternalScreen(private val model: ApiExternalViewModel = ApiExternalViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.external_call.resourceToString()
-
-    @Composable
-    override fun compose() {
-        super.compose()
-    }
-
-    @Composable
-    override fun view() {
+@Composable
+fun ApiExternalScreen(model: ApiExternalViewModel) {
+    Screen(model) {
         Column {
             Row {
                 SampleTextField("Input Git hub search keyword", model.input)

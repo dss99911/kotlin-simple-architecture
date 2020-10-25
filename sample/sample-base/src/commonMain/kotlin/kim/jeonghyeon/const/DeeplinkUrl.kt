@@ -14,7 +14,6 @@ object DeeplinkUrl {
     val DEEPLINK_PATH_HOME: String = "$prefix/home"
     val DEEPLINK_PATH_SIGN_UP: String = "$prefix/signUp"
     val DEEPLINK_PATH_SIGN_IN: String = "$prefix/signIn"
-    val DEEPLINK_PATH_DEEPLINK_SUB: String = "$prefix/deeplink-sub"
 
     //oauth link
     //facebook w/android https://sample.jeonghyeon.kim/kim/jeonghyeon/auth/SignOAuthApi/signUp?serverUrl=https%3A%2F%2Fsample.jeonghyeon.kim&oAuthServer=%7B%22name%22%3A%22FACEBOOK%22%7D&redirectUrl=kim.jeonghyeon.kotlinios%3A%2F%2Fsample.jeonghyeon.kim%2Fdeeplink%2FsignUp&platform=ANDROID&packageName=kim.jeonghyeon.sample.compose

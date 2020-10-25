@@ -5,29 +5,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import com.example.sampleandroid.view.widget.SampleTextField
-import kim.jeonghyeon.androidlibrary.compose.push
+import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.dp
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.gravity
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.padding
+import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.weight
+import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel
 import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
 
-class ReactiveScreen(private val model: ReactiveViewModel = ReactiveViewModel()) : ModelScreen(model) {
-    override val title: String = R.string.reactive.resourceToString()
-
-    @Composable
-    override fun compose() {
-        super.compose()
-    }
-
-    @Composable
-    override fun view() {
+@Composable
+fun ReactiveScreen(model: ReactiveViewModel) {
+    Screen(model) {
         Column {
-            Button("No reactive example") {
-                NoReactiveScreen().push()
-            }
+            Button("No reactive example") { model.onClickNoReactiveSample() }
 
             Row(modifier = padding(4.dp)) {
                 SampleTextField(

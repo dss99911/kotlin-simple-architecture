@@ -10,11 +10,10 @@ import kim.jeonghyeon.sample.di.serviceLocator
  * after transaction finished, we check the transaction result is success or fail
  * so, call same api repeatedly.
  */
-class ApiPollingViewModel(private val api: SampleApi) : SampleViewModel() {
+class ApiPollingViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
-    //todo required for ios to create instance, currently kotlin doesn't support predefined parameter
-    // if it's supported, remove this
-    constructor(): this(serviceLocator.sampleApi)
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "polling"
 
     val result by add { DataFlow<String>() }
     val count by add { DataFlow(0) }
