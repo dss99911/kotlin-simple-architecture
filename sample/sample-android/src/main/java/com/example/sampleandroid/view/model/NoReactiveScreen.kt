@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import com.example.sampleandroid.view.widget.SampleTextField
+import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.dp
 import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.gravity
 import kim.jeonghyeon.androidlibrary.compose.ScreenUtil.padding
@@ -22,20 +23,22 @@ import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
 
 @Composable
 fun NoReactiveScreen(model: NoReactiveViewModel) {
-    Column {
-        Row(modifier = padding(4.dp)) {
-            SampleTextField(
-                "Input new row",
-                model.newWord,
-                modifier = weight(1f)
-            )
-            Button(R.string.add.resourceToString(), gravity(CenterVertically), onClick = model::onClick)
-        }
+    Screen(model) {
+        Column {
+            Row(modifier = padding(4.dp)) {
+                SampleTextField(
+                    "Input new row",
+                    model.newWord,
+                    modifier = weight(1f)
+                )
+                Button(R.string.add.resourceToString(), gravity(CenterVertically)) { model.onClick() }
+            }
 
-        SampleTextField("Search", model.keyword)
+            SampleTextField("Search", model.keyword)
 
-        ScrollableColumn(+model.list, weight(1f).fillMaxWidth()) {
-            Text(it)
+            ScrollableColumn(+model.list, weight(1f).fillMaxWidth()) {
+                Text(it)
+            }
         }
     }
 }

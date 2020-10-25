@@ -9,23 +9,11 @@
 import SwiftUI
 import sample_base
 
-struct DeeplinkSubScreen: SampleScreen {
-    
-    var model: DeeplinkSubViewModel = DeeplinkSubViewModel()
-    func content(navigator: Navigator) -> some View {
+func DeeplinkSubScreen(_ model: DeeplinkSubViewModel) -> some View {
+    Screen(model) {
         Column {
             SampleTextField("Input value", model.result)
-            Button("OK") {
-                model.onClickOk()
-            }
+            Button("OK") { model.onClickOk() }
         }
-        .navigationTitle("Deeplink Sub")
-    }
-}
-
-
-class DeeplinkSubScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        DeeplinkSubScreen()
     }
 }

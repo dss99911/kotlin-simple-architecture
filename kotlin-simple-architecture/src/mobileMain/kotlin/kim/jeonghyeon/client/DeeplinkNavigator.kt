@@ -54,7 +54,7 @@ object DeeplinkNavigator {
         var current = Navigator.current
         if (current::class != deeplink.kClass) {
             current = deeplink.viewModel().also { viewModel ->
-                if (viewModel.isRoot) {
+                if (viewModel::class == Navigator.root::class) {
                     Navigator.clearAndNavigate(viewModel)
                 } else {
                     if (navigation.resultListener == null) {

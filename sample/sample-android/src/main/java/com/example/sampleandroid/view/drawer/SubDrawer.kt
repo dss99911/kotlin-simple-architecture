@@ -23,7 +23,7 @@ import kim.jeonghyeon.sample.viewmodel.ModelViewModel
 import kim.jeonghyeon.sample.viewmodel.SampleViewModel
 
 @Composable
-fun SubDrawer(viewModels: List<() -> SampleViewModel>, closeDrawer: () -> Unit) {
+fun SubDrawer(viewModels: List<ModelViewModel.ViewModelItem>, closeDrawer: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         SpacerH(24.dp)
         Logo(closeDrawer)
@@ -31,7 +31,7 @@ fun SubDrawer(viewModels: List<() -> SampleViewModel>, closeDrawer: () -> Unit) 
 
 
         viewModels.forEach { vm ->
-            val viewModel = vm()
+            val viewModel = vm.generate()
 
             DrawerButton(
                 label = viewModel.title,

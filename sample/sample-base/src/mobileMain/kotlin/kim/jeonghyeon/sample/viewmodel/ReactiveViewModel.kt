@@ -39,9 +39,7 @@ class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
     override val title: String = "Reactive"
 
     val newWord by add { DataFlow<String>() }
-
     val click by add { DataFlow<Unit>() }
-
     val keyword by add { DataFlow<String>() }
 
     /**

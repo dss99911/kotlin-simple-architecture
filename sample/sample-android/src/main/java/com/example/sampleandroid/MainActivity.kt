@@ -27,72 +27,54 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
+        setViewModelContent { viewModel ->
             AndroidLibraryTheme {
-                MainContent {
-                    CurrentViewModel {
-                        ScreenContent(it)
+                MainScaffold {
+                    Surface(color = MaterialTheme.colors.background) {
+                        ScreenContent(viewModel)
                     }
                 }
             }
         }
     }
 
-    @Composable
-    fun CurrentViewModel(screen: @Composable (model: BaseViewModel) -> Unit) {
-        val viewModel = +currentViewModel?:return
-
-        //todo is onCompose required?
-        @Suppress("EXPERIMENTAL_API_USAGE")
-        viewModel.onCompose()
-
-        screen(viewModel)
-    }
-
-}
-
-@Composable
-fun MainContent(children: @Composable () -> Unit) {
-    MainScaffold {
-        Surface(color = MaterialTheme.colors.background) {
-            children()
+    //todo remove to library if composable on library is available
+    fun setViewModelContent(content: @Composable (model: BaseViewModel) -> Unit) {
+        setContent {
+            val viewModel = +currentViewModel?:return@setContent
+            @Suppress("EXPERIMENTAL_API_USAGE")
+            viewModel.onCompose()
+            content(viewModel)
         }
-        //todo is CrossFade make sub composable to compose several times?
-
     }
 }
 
-//todo Screen can't be used one time. but should be used on each screen.
-// it seems because initStatus, status is remembered inside of Screen Composable. so, initStatus, and status remembering should be cancelled to achieve this. not sure for now.
+
 @Composable
 fun ScreenContent(viewModel: BaseViewModel) = when (viewModel) {
-    is HomeViewModel -> Screen(viewModel) { HomeScreen(viewModel) }
-    is ApiSingleViewModel -> Screen(viewModel) { ApiSingleScreen(viewModel)}
-    is ApiAnnotationViewModel -> Screen(viewModel) { ApiAnnotationScreen(viewModel)}
-    is ApiBindingViewModel -> Screen(viewModel) { ApiBindingScreen(viewModel)}
-    is ApiDbViewModel -> Screen(viewModel) { ApiDbScreen(viewModel)}
-    is ApiExternalViewModel -> Screen(viewModel) { ApiExternalScreen(viewModel)}
-    is ApiHeaderViewModel -> Screen(viewModel) { ApiHeaderScreen(viewModel)}
-    is ApiParallelViewModel -> Screen(viewModel) { ApiParallelScreen(viewModel)}
-    is ApiPollingViewModel -> Screen(viewModel) { ApiPollingScreen(viewModel)}
-    is ApiSequentialViewModel -> Screen(viewModel) { ApiSequentialScreen(viewModel)}
-    is DbSimpleViewModel -> Screen(viewModel) { DbSimpleScreen(viewModel)}
-    is DeeplinkViewModel -> Screen(viewModel) { DeeplinkScreen(viewModel)}
-    is DeeplinkSubViewModel -> Screen(viewModel) { DeeplinkSubScreen(viewModel)}
-    is ReactiveViewModel -> Screen(viewModel) { ReactiveScreen(viewModel)}
-    is NoReactiveViewModel -> Screen(viewModel) { NoReactiveScreen(viewModel)}
-    is SignInViewModel -> Screen(viewModel) { SignInScreen(viewModel)}
-    is SignUpViewModel -> Screen(viewModel) { SignUpScreen(viewModel)}
-    is UserViewModel -> Screen(viewModel) { UserScreen(viewModel) }
+    is HomeViewModel -> HomeScreen(viewModel)
+    is ApiSingleViewModel -> ApiSingleScreen(viewModel)
+    is ApiAnnotationViewModel -> ApiAnnotationScreen(viewModel)
+    is ApiBindingViewModel -> ApiBindingScreen(viewModel)
+    is ApiDbViewModel -> ApiDbScreen(viewModel)
+    is ApiExternalViewModel -> ApiExternalScreen(viewModel)
+    is ApiHeaderViewModel -> ApiHeaderScreen(viewModel)
+    is ApiParallelViewModel -> ApiParallelScreen(viewModel)
+    is ApiPollingViewModel -> ApiPollingScreen(viewModel)
+    is ApiSequentialViewModel -> ApiSequentialScreen(viewModel)
+    is DbSimpleViewModel -> DbSimpleScreen(viewModel)
+    is DeeplinkViewModel -> DeeplinkScreen(viewModel)
+    is DeeplinkSubViewModel -> DeeplinkSubScreen(viewModel)
+    is ReactiveViewModel -> ReactiveScreen(viewModel)
+    is NoReactiveViewModel -> NoReactiveScreen(viewModel)
+    is SignInViewModel -> SignInScreen(viewModel)
+    is SignUpViewModel -> SignUpScreen(viewModel)
+    is UserViewModel -> UserScreen(viewModel)
     else -> error("Screen is not defined for $viewModel ")
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    AndroidLibraryTheme {
-        MainContent {
-            HomeScreen(HomeViewModel())
-        }
-    }
+    HomeScreen(HomeViewModel())
 }

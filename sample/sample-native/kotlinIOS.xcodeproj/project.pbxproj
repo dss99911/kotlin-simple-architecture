@@ -17,12 +17,12 @@
 		217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE5420D87907E024BD89B /* ViewScreen.swift */; };
 		217DEF03BF02EF177054BC13 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217DE07307A8043209549F8E /* Screen.swift */; };
 		551F389025053DE8006AC496 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F388F25053DE7006AC496 /* SampleApp.swift */; };
+		5520BC992544B5F00080A5E0 /* ApiHeaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5520BC982544B5F00080A5E0 /* ApiHeaderScreen.swift */; };
+		5520BC9B2544E0910080A5E0 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5520BC9A2544E0910080A5E0 /* Navigator.swift */; };
 		552C23142532090400947BE3 /* Snackbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C23132532090400947BE3 /* Snackbar.swift */; };
-		55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55595BBB2504029C00BD00AB /* Deelinker.swift */; };
 		5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172D2531BBC500A56449 /* ReactiveScreen.swift */; };
 		556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172F2531DD5400A56449 /* NoReactiveScreen.swift */; };
 		55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8C250AF71300DF8271 /* ThreadEx.swift */; };
-		55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
 		559105FB24424C4200ADA03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FA24424C4200ADA03F /* Assets.xcassets */; };
 		559105FE24424C4200ADA03F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FD24424C4200ADA03F /* Preview Assets.xcassets */; };
@@ -32,18 +32,17 @@
 		55C5D12225272BEC00438969 /* ComposeTypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */; };
 		55C5D1252527334000438969 /* SampleTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D1242527334000438969 /* SampleTextField.swift */; };
 		55C5D1272527405B00438969 /* DeeplinkSubScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */; };
+		55C78EC525436A1700A75E90 /* BaseActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C78EC425436A1700A75E90 /* BaseActivity.swift */; };
+		55D1D8922545ACFF007E0D3B /* MainActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D1D8912545ACFF007E0D3B /* MainActivity.swift */; };
 		55D47FBB24C3427A00BEBA59 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55D47FB924C3427A00BEBA59 /* Localizable.strings */; };
 		55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBD24C343D000BEBA59 /* Localizable.swift */; };
 		55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */; };
-		55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D55399250185270039C0A4 /* SigninScreen.swift */; };
+		55D5539A250185270039C0A4 /* SignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D55399250185270039C0A4 /* SignInScreen.swift */; };
 		55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE1FAB252522D5004A8F1B /* UserScreen.swift */; };
 		55E2BFCA24DE9D96009C5A85 /* ApiAnnotationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */; };
 		55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */; };
-		55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */; };
 		55EE98CD2520905900ECD534 /* ApiBindingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */; };
-		55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392502507F3CF00BB3CCF /* URLEx.swift */; };
 		55F3925325080F1B00BB3CCF /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F3925225080F1B00BB3CCF /* SignUpScreen.swift */; };
-		55F392552508219700BB3CCF /* BindingEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392542508219700BB3CCF /* BindingEx.swift */; };
 		55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F392562508248A00BB3CCF /* ViewModelEx.swift */; };
 		86E4CE01AAF7C6D3FFDD9DC8 /* Pods_kotlinIOS_kotlinIOSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCF52C36F98ECEEA5E958D04 /* Pods_kotlinIOS_kotlinIOSUITests.framework */; };
 		C5F77298B39D39A2B4703D46 /* Pods_kotlinIOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EA8AE654AD7C8D478FFB88D /* Pods_kotlinIOSTests.framework */; };
@@ -80,14 +79,14 @@
 		217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiParallelScreen.swift; sourceTree = "<group>"; };
 		499EA68D1EC6F9F6484A4705 /* Pods-kotlinIOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug.xcconfig"; sourceTree = "<group>"; };
 		551F388F25053DE7006AC496 /* SampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleApp.swift; sourceTree = "<group>"; };
+		5520BC982544B5F00080A5E0 /* ApiHeaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiHeaderScreen.swift; sourceTree = "<group>"; };
+		5520BC9A2544E0910080A5E0 /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
 		552C23132532090400947BE3 /* Snackbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snackbar.swift; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
-		55595BBB2504029C00BD00AB /* Deelinker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deelinker.swift; sourceTree = "<group>"; };
 		5565172D2531BBC500A56449 /* ReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveScreen.swift; sourceTree = "<group>"; };
 		5565172F2531DD5400A56449 /* NoReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoReactiveScreen.swift; sourceTree = "<group>"; };
 		55817E8C250AF71300DF8271 /* ThreadEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEx.swift; sourceTree = "<group>"; };
-		55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559105F624424C4100ADA03F /* kotlinIOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = kotlinIOS.xcdatamodel; sourceTree = "<group>"; };
 		559105FA24424C4200ADA03F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -105,19 +104,18 @@
 		55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTypeAlias.swift; sourceTree = "<group>"; };
 		55C5D1242527334000438969 /* SampleTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleTextField.swift; sourceTree = "<group>"; };
 		55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkSubScreen.swift; sourceTree = "<group>"; };
+		55C78EC425436A1700A75E90 /* BaseActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseActivity.swift; sourceTree = "<group>"; };
+		55D1D8912545ACFF007E0D3B /* MainActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActivity.swift; sourceTree = "<group>"; };
 		55D47FBA24C3427A00BEBA59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = kotlinIOS/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D47FBC24C3429400BEBA59 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = kotlinIOS/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D47FBD24C343D000BEBA59 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		55D47FBF24C42C9400BEBA59 /* ApiPollingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiPollingScreen.swift; sourceTree = "<group>"; };
-		55D55399250185270039C0A4 /* SigninScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninScreen.swift; sourceTree = "<group>"; };
+		55D55399250185270039C0A4 /* SignInScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInScreen.swift; sourceTree = "<group>"; };
 		55DE1FAB252522D5004A8F1B /* UserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserScreen.swift; sourceTree = "<group>"; };
 		55E2BFC924DE9D96009C5A85 /* ApiAnnotationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiAnnotationScreen.swift; sourceTree = "<group>"; };
 		55E2BFCB24DE9ED5009C5A85 /* ApiExternalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiExternalScreen.swift; sourceTree = "<group>"; };
-		55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLayout.swift; sourceTree = "<group>"; };
 		55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiBindingScreen.swift; sourceTree = "<group>"; };
-		55F392502507F3CF00BB3CCF /* URLEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLEx.swift; sourceTree = "<group>"; };
 		55F3925225080F1B00BB3CCF /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
-		55F392542508219700BB3CCF /* BindingEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingEx.swift; sourceTree = "<group>"; };
 		55F392562508248A00BB3CCF /* ViewModelEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelEx.swift; sourceTree = "<group>"; };
 		595F1D231617059587FA55AB /* Pods-kotlinIOS.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS.debug-prod.xcconfig"; path = "Target Support Files/Pods-kotlinIOS/Pods-kotlinIOS.debug-prod.xcconfig"; sourceTree = "<group>"; };
 		63EA4E5E3548AE2E63B4E66E /* Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig"; path = "Target Support Files/Pods-kotlinIOS-kotlinIOSUITests/Pods-kotlinIOS-kotlinIOSUITests.debug-prod.xcconfig"; sourceTree = "<group>"; };
@@ -171,7 +169,7 @@
 				217DEF1D1B2544A4B58C0D4C /* ApiParallelScreen.swift */,
 				217DE66EEFF7CBE8F114D34D /* ApiDbScreen.swift */,
 				217DE9EF2D4A934A46E67010 /* DbSimpleScreen.swift */,
-				55D55399250185270039C0A4 /* SigninScreen.swift */,
+				55D55399250185270039C0A4 /* SignInScreen.swift */,
 				55DE1FAB252522D5004A8F1B /* UserScreen.swift */,
 				55F3925225080F1B00BB3CCF /* SignUpScreen.swift */,
 				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
@@ -179,6 +177,7 @@
 				55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */,
 				5565172D2531BBC500A56449 /* ReactiveScreen.swift */,
 				5565172F2531DD5400A56449 /* NoReactiveScreen.swift */,
+				5520BC982544B5F00080A5E0 /* ApiHeaderScreen.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -189,6 +188,7 @@
 				217DE10741337F1B3AEFAB19 /* model */,
 				217DEE88BF00C36CA4BB1701 /* view */,
 				217DE0F7F8C5CB9236798A97 /* HomeScreen.swift */,
+				55D1D8912545ACFF007E0D3B /* MainActivity.swift */,
 			);
 			path = screen;
 			sourceTree = "<group>";
@@ -196,17 +196,14 @@
 		217DEC1EE1072C25820B9664 /* library */ = {
 			isa = PBXGroup;
 			children = (
-				55595BBB2504029C00BD00AB /* Deelinker.swift */,
-				55817E8E250C3DA200DF8271 /* ViewModelWrapper.swift */,
 				217DE07307A8043209549F8E /* Screen.swift */,
-				55EC719C24B9A5FC0012D64E /* SimpleLayout.swift */,
 				55D47FBD24C343D000BEBA59 /* Localizable.swift */,
-				55F392502507F3CF00BB3CCF /* URLEx.swift */,
-				55F392542508219700BB3CCF /* BindingEx.swift */,
 				55F392562508248A00BB3CCF /* ViewModelEx.swift */,
 				55817E8C250AF71300DF8271 /* ThreadEx.swift */,
 				55C5D12125272BEC00438969 /* ComposeTypeAlias.swift */,
 				552C23132532090400947BE3 /* Snackbar.swift */,
+				55C78EC425436A1700A75E90 /* BaseActivity.swift */,
+				5520BC9A2544E0910080A5E0 /* Navigator.swift */,
 			);
 			path = library;
 			sourceTree = "<group>";
@@ -563,7 +560,7 @@
 				55C5D12025272B2500438969 /* DeeplinkScreen.swift in Sources */,
 				217DEC0BA60581DCCBEC8D29 /* ViewScreen.swift in Sources */,
 				55C5D1272527405B00438969 /* DeeplinkSubScreen.swift in Sources */,
-				55EC719D24B9A5FC0012D64E /* SimpleLayout.swift in Sources */,
+				5520BC9B2544E0910080A5E0 /* Navigator.swift in Sources */,
 				217DE6372CB0387049C217DE /* HomeScreen.swift in Sources */,
 				55F392572508248A00BB3CCF /* ViewModelEx.swift in Sources */,
 				551F389025053DE8006AC496 /* SampleApp.swift in Sources */,
@@ -572,19 +569,18 @@
 				217DEA9B23DF153709F3A0F7 /* ApiSingleScreen.swift in Sources */,
 				217DE5254A595A0CDFE3F81A /* ApiSequentialScreen.swift in Sources */,
 				217DEF03BF02EF177054BC13 /* Screen.swift in Sources */,
-				55D5539A250185270039C0A4 /* SigninScreen.swift in Sources */,
+				55D5539A250185270039C0A4 /* SignInScreen.swift in Sources */,
 				552C23142532090400947BE3 /* Snackbar.swift in Sources */,
-				55F392512507F3CF00BB3CCF /* URLEx.swift in Sources */,
-				55F392552508219700BB3CCF /* BindingEx.swift in Sources */,
+				55C78EC525436A1700A75E90 /* BaseActivity.swift in Sources */,
 				55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */,
 				217DEB247A45EBC8D97BD27B /* ApiParallelScreen.swift in Sources */,
 				55F3925325080F1B00BB3CCF /* SignUpScreen.swift in Sources */,
 				55E2BFCC24DE9ED5009C5A85 /* ApiExternalScreen.swift in Sources */,
 				217DE01D590037B324393C8C /* ApiDbScreen.swift in Sources */,
-				55595BBC2504029C00BD00AB /* Deelinker.swift in Sources */,
 				55EE98CD2520905900ECD534 /* ApiBindingScreen.swift in Sources */,
-				55817E8F250C3DA200DF8271 /* ViewModelWrapper.swift in Sources */,
 				217DE48CD304DE236C917B51 /* DbSimpleScreen.swift in Sources */,
+				5520BC992544B5F00080A5E0 /* ApiHeaderScreen.swift in Sources */,
+				55D1D8922545ACFF007E0D3B /* MainActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

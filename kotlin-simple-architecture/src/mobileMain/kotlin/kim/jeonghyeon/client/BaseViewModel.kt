@@ -11,16 +11,12 @@ import kim.jeonghyeon.type.AtomicReference
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.atomic
 import kim.jeonghyeon.type.isLoading
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
-
 
 /**
  * don't use var property.
@@ -39,26 +35,21 @@ open class BaseViewModel {
     open val initStatus: StatusFlow by add { StatusFlow() }
     open val status: StatusFlow by add { StatusFlow() }
 
-    /**
-     * todo consider to merge [isInitialized], [initFlow]
-     */
+    open val title: String = ""
+
     val isInitialized: AtomicReference<Boolean> = atomic(false)
     val initFlow by add { DataFlow<Unit>() }
-
-    /**
-     * todo delete?
-     * This is used only for deeplink function
-     * If deeplink is mapped with root ViewModel. app doesn't [navigate] new viewModel. but [Navigator.backUpToRoot]
-     * If you want to add the root viewModel on top of current viewModel. then set this false
-     */
-    open val isRoot: Boolean = false
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
     val screenResult: DataFlow<ScreenResult> by add { DataFlow() }
 
     /**
-     * if it's shown, the value is changed to null
+     * todo Support Toast.
+     *  as it should be shown when screen is appeared.
+     *  so, change text to null on ui side.
+     *  as toast is shown on all screen instead of showing only one screen.
+     *  this seems to have to be collected by BaseActivity.
      */
     val toastText: DataFlow<String?> by add { DataFlow() }
 
@@ -292,12 +283,23 @@ open class BaseViewModel {
         get() = isInitialized.value
 
     @SimpleArchInternal("used on IOS base code. don't use these code")
-    fun watchChanges(action: () -> Unit) {
-        flows.forEach {
-            it.value.collectOnViewModel {
-                action()
+    val isWatched: AtomicReference<Boolean> = atomic(false)
+
+    @SimpleArchInternal("used on IOS base code. don't use these code")
+    fun watchChanges(action: (Any?) -> Unit): ViewModelScope {
+        //each screen is created whenever screen is changed. even viewModel already exists.
+        //so, coroutineScope should follow Screen's lifecycle
+        //so, onAppear, create scope.
+        //onDisappear, close the scope.
+        val screenScope = ViewModelScope()
+        flows.forEach { dataFlow ->
+            screenScope.launch {
+                dataFlow.value.collect {
+                    action(it)
+                }
             }
         }
+        return screenScope
     }
 
     fun <T> Flow<T>.collectOnViewModel(action: suspend (value: T) -> Unit) {

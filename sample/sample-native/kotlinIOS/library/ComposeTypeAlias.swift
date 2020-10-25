@@ -11,6 +11,7 @@ import SwiftUI
 
 typealias Column = VStack
 typealias Row = HStack
+typealias Box = ZStack
 
 func ScrollableColumn<Content>(alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil, @ViewBuilder content: () -> Content) -> some View  where Content : View {
     ScrollView {

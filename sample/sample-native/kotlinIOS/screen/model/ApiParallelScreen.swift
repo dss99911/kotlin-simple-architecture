@@ -7,11 +7,8 @@ import Foundation
 import sample_base
 import SwiftUI
 
-struct ApiParallelScreen: SampleScreen {
-
-    var model = ApiParallelViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func ApiParallelScreen(_ model: ApiParallelViewModel) -> some View {
+    Screen(model) {
         Column {
             List(model.list.value as! [KotlinPair<NSString, NSString>], id: \.self.first) { item in
                 Text("key : \(item.first ?? ""), value : \(item.second ?? "")")
@@ -36,7 +33,5 @@ struct ApiParallelScreen: SampleScreen {
                 model.onClick()
             }
         }
-        .navigationTitle("Api Parallel Call".localized())
     }
-
 }

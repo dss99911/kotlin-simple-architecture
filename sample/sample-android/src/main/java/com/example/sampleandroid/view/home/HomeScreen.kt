@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.screen.SimpleTabsScreen
 import kim.jeonghyeon.androidlibrary.compose.screen.TabData
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
@@ -27,10 +28,12 @@ val homeTabList = listOf(
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    SimpleTabsScreen(
-        viewModel.currentTabIndex,
-        tabs = homeTabList
-    )
+    Screen(viewModel) {
+        SimpleTabsScreen(
+            viewModel.currentTabIndex,
+            tabs = homeTabList
+        )
+    }
 }
 
 @Composable
@@ -38,11 +41,11 @@ fun ModelTabScreen() {
     ScrollableColumn {
         ModelViewModel.items.forEach {
             Button(
-                onClick = { Navigator.navigate(it()) },
+                onClick = { Navigator.navigate(it.generate()) },
                 modifier = Modifier.fillMaxWidth()
                     .padding(10.dp)
             ) {
-                Text(it().title)//just for simplicity, created viewModel. but recommend to show title for each button
+                Text(it.generate().title)//just for simplicity, created viewModel. but recommend to show title for each button
             }
         }
     }
@@ -53,11 +56,11 @@ fun ViewTabScreen() {
     ScrollableColumn {
         ViewViewModel.items.forEach {
             Button(
-                onClick = { Navigator.navigate(it()) },
+                onClick = { Navigator.navigate(it.generate()) },
                 modifier = Modifier.fillMaxWidth()
                     .padding(10.dp)
             ) {
-                Text(it().title)//just for simplicity, created viewModel. but recommend to show title for each button
+                Text(it.generate().title)//just for simplicity, created viewModel. but recommend to show title for each button
             }
         }
     }

@@ -7,7 +7,6 @@ class UserViewModel(val userRepo: UserRepository = serviceLocator.userRepository
 
     //todo [KSA-48] support localization on kotlin side
     override val title: String = "User"
-
     override val signInRequired: Boolean = true
 
     val user by add { userRepo.userDetail.toDataFlow(initStatus) }

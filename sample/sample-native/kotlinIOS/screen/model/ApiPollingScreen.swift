@@ -10,18 +10,13 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct ApiPollingScreen: SampleScreen {
-
-    var model = ApiPollingViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func ApiPollingScreen(_ model: ApiPollingViewModel) -> some View {
+    Screen(model) {
         Column {
             Text("fail count \(+model.count ?? 0)")
             if ((+model.status)?.isSuccess() == true) {
                 Text("result \(+model.result ?? "")")
             }
         }
-        .navigationTitle("Api Polling".localized())
     }
-
 }

@@ -15,28 +15,30 @@ import kim.jeonghyeon.type.Resource
 
 /**
  * used for model page viewModels.
- * the reason to use this is to show different drawer for view page and model page
+ * the reason to use this is to show different drawer for view page and model page on compose
  */
 open class ModelViewModel(preference: Preference = serviceLocator.preference) : SampleViewModel(preference) {
+
+    data class ViewModelItem(val generate: () -> SampleViewModel)
 
     companion object {
         /**
          * used to show on UI and create on click
          */
-        val items = listOf<() -> SampleViewModel>(
-            { ApiSingleViewModel() },
-            { ApiSequentialViewModel() },
-            { ApiParallelViewModel() },
-            { ApiPollingViewModel() },
-            { DbSimpleViewModel() },
-            { ApiDbViewModel() },
-            { ApiHeaderViewModel() },
-            { ApiAnnotationViewModel() },
-            { ApiExternalViewModel() },
-            { UserViewModel() },
-            { ApiBindingViewModel() },
-            { DeeplinkViewModel() },
-            { ReactiveViewModel() },
+        val items: List<ViewModelItem> = listOf(
+            ViewModelItem { ApiSingleViewModel() },
+            ViewModelItem { ApiSequentialViewModel() },
+            ViewModelItem { ApiParallelViewModel() },
+            ViewModelItem { ApiPollingViewModel() },
+            ViewModelItem { DbSimpleViewModel() },
+            ViewModelItem { ApiDbViewModel() },
+            ViewModelItem { ApiHeaderViewModel() },
+            ViewModelItem { ApiAnnotationViewModel() },
+            ViewModelItem { ApiExternalViewModel() },
+            ViewModelItem { UserViewModel() },
+            ViewModelItem { ApiBindingViewModel() },
+            ViewModelItem { DeeplinkViewModel() },
+            ViewModelItem { ReactiveViewModel() },
         )
     }
 
@@ -51,13 +53,12 @@ open class ViewViewModel(preference: Preference = serviceLocator.preference) : S
         /**
          * used to show on UI and create on click
          */
-        val items = listOf<() -> SampleViewModel>()
+        val items = listOf<ModelViewModel.ViewModelItem>()
     }
 
 }
 
 open class SampleViewModel(private val preference: Preference = serviceLocator.preference) : BaseViewModel() {
-    open val title: String = ""
     /**
      * if the screen need sign-in, set this true by overrides
      * then when onInitialized() is called, before initializing,
@@ -142,6 +143,5 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
      * as [onInitialized] check if sign-in or not. [onInit] will be used for initializing
      */
     open fun onInit() {
-
     }
 }

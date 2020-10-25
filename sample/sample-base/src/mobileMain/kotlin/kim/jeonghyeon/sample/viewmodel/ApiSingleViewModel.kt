@@ -19,7 +19,6 @@ class ApiSingleViewModel(private val api: PreferenceApi = serviceLocator.prefere
     //if result is changed, input also changed.
     val input by add { DataFlow<String>().withSource(result) }
 
-
     override fun onInit() {
         result.load(initStatus) {
             api.getStringPerUser(KEY) ?: ""

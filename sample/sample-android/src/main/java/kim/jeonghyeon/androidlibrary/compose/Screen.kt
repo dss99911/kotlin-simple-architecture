@@ -37,8 +37,6 @@ fun Screen(
         viewModel.toastText.setValue(null)
     }
 
-    log.i("Screen $viewModel")
-
     Box(Modifier.fillMaxSize()) {
         when (val resource = +viewModel.initStatus) {
             is Resource.Loading -> {

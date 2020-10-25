@@ -20,9 +20,10 @@ object Navigator {
 
     val currentFlow: DataFlow<BaseViewModel> = _backStack.map {
         it.last()
-    }.toDataFlow(GlobalScope) //todo GlobalScope is working on IOS?
+    }.toDataFlow(GlobalScope)
 
     val current: BaseViewModel get() = backStack.last()
+    val previous: BaseViewModel? get() = if (backStack.size > 1) backStack[backStack.lastIndex -1] else null
     val root: BaseViewModel get() = backStack.first()
 
     val terminatedFlow: DataFlow<Boolean> = DataFlow(false)

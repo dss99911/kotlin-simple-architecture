@@ -59,7 +59,6 @@ class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
         navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
     }
 
-
     /**
      * same function can be handled on server side as well by [RedirectionType.redirectionUrl]
      */

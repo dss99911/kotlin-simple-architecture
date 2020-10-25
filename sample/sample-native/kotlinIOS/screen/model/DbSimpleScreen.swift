@@ -8,11 +8,8 @@ import Foundation
 import SwiftUI
 import sample_base
 
-struct DbSimpleScreen: SampleScreen {
-
-    var model = DbSimpleViewModel()
-
-    func content(navigator: Navigator) -> some View {
+func DbSimpleScreen(_ model: DbSimpleViewModel) -> some View {
+    Screen(model) {
         Column {
             List(model.wordList.value as? [Word] ?? [Word](), id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.text)")
@@ -24,7 +21,5 @@ struct DbSimpleScreen: SampleScreen {
                 }
             }
         }
-        .navigationTitle("Simple DB Call".localized())
     }
-
 }

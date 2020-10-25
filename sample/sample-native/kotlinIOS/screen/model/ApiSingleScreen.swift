@@ -8,11 +8,8 @@ import SwiftUI
 import sample_base
 
 
-struct ApiSingleScreen: SampleScreen {
-    
-    var model: ApiSingleViewModel = ApiSingleViewModel()
-    
-    func content(navigator: Navigator) -> some View {
+func ApiSingleScreen(_ model: ApiSingleViewModel) -> some View {
+    Screen(model) {
         Column(alignment: .center) {
             Text("current value : \(+model.result ?? "")")
             SampleTextField("Enter value", model.input).frame(width: 100, alignment: .center)
@@ -20,13 +17,5 @@ struct ApiSingleScreen: SampleScreen {
                 model.onClick()
             }
         }
-        .navigationTitle("Api Single Call".localized())
     }
-}
-
-class ApiSingleScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        ApiSingleScreen()
-    }
-
 }
