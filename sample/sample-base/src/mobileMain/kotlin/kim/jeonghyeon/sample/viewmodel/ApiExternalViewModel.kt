@@ -28,15 +28,10 @@ class ApiExternalViewModel(private val api: GithubApi = serviceLocator.githubApi
     }
 
     fun onClickCall() {
-        log.i("onClickCall ${status.value}")
         repoList.load(status) {
-            log.i("callApi before")
             callApi().map {
                 it.name
-            }.also {
-                log.i("callApi")
             }
-
         }
     }
 
