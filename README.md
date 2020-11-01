@@ -275,22 +275,25 @@ object DeeplinkUrl {
     val DEEPLINK_PATH_HOME: String = "$prefix/home"
     val DEEPLINK_PATH_SIGN_UP: String = "$prefix/signUp"
     val DEEPLINK_PATH_SIGN_IN: String = "$prefix/signIn"
-    val DEEPLINK_PATH_DEEPLINK_SUB: String = "$prefix/deeplink-sub"
 }
+```
+### Configure Deeplink on Client
+```kotlin
+val deeplinkList: List<Deeplink> = listOf(
+    Deeplink(DeeplinkUrl.DEEPLINK_PATH_HOME, HomeViewModel::class) { HomeViewModel() },
+    Deeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP, SignUpViewModel::class) { SignUpViewModel() },
+    Deeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN, SignInViewModel::class) { SignInViewModel() },
+)
+
 ```
 
 ### Configure Deeplink on Android
 1. Configure deeplink path on AndroidManifest.xml
-2. Add deeplink and screen matching
+2. Configure deeplinkList on BaseActivity
 
 ```kotlin
 MainActivity : BaseActivity() {
-    override val deeplinks = mapOf(
-            DeeplinkUrl.DEEPLINK_PATH_HOME to (HomeScreen::class to { HomeScreen() }),
-            DeeplinkUrl.DEEPLINK_PATH_SIGN_UP to (SignUpScreen::class to { SignUpScreen() }),
-            DeeplinkUrl.DEEPLINK_PATH_SIGN_IN to (SignInScreen::class to { SignInScreen() }),
-            DeeplinkUrl.DEEPLINK_PATH_DEEPLINK_SUB to (DeeplinkSubScreen::class to { DeeplinkSubScreen() }),
-    )
+    override val deeplinks: List<Deeplink> = deeplinkList
 }
 ```
 
@@ -298,25 +301,17 @@ MainActivity : BaseActivity() {
 - Universal Link will be supported soon.
 
 ```swift
-class SampleDeeplinker : Deeplinker {
-
-    override func navigateToDeeplink<SCREEN>(
-        data: DeeplinkData<SCREEN>
-    ) -> Bool where SCREEN : Screen {
-        let deeplink = DeeplinkUrl()
-        let url = data.url.absoluteString
-        if (url.starts(with: deeplink.DEEPLINK_PATH_HOME)) {
-            navigate(to: HomeScreen(), data: data)
-        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_IN)) {
-            navigate(to: SigninScreen(), data: data)
-        } else if (url.starts(with: deeplink.DEEPLINK_PATH_SIGN_UP)) {
-            navigate(to: SignUpScreen(), data: data)
-        } else if (url.starts(with: deeplink.DEEPLINK_PATH_DEEPLINK_SUB)) {
-            navigate(to: DeeplinkSubScreen(), data: data)
-        } else {
-            return false
+func MainActivity() -> some View {
+    BaseActivity(rootViewModel: HomeViewModel(), deeplinks: DeeplinkKt.deeplinkList) { viewModel in
+        //you can customize to add tab view or drawer. etc..
+        Box {
+            switch (viewModel) {
+            case is HomeViewModel: HomeScreen(viewModel as! HomeViewModel)
+            .
+            .
+            .
+            }
         }
-        return true
     }
 }
 ```
