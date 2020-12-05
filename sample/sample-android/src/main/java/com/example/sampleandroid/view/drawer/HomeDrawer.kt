@@ -10,10 +10,10 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.sampleandroid.view.home.homeTabList
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
@@ -57,7 +57,7 @@ fun HomeDrawer(closeDrawer: () -> Unit) {
 private fun Logo(title: String, modifier: Modifier = Modifier) {
     Row(modifier) {
         Image(
-            asset = vectorResource(R.drawable.ic_android),
+            imageVector = vectorResource(R.drawable.ic_android),
             colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
         )
         SpacerW(16.dp)
@@ -67,7 +67,7 @@ private fun Logo(title: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DrawerButton(
-    icon: VectorAsset?,
+    icon: ImageVector?,
     label: String,
     isSelected: Boolean,
     action: () -> Unit,
@@ -96,7 +96,7 @@ private fun DrawerButton(
             ) {
                 icon?.let {
                     Image(
-                        asset = icon,
+                        imageVector = icon,
                         colorFilter = ColorFilter.tint(textIconColor),
                         alpha = imageAlpha
                     )

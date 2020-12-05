@@ -63,7 +63,7 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             else kotlinCompilation?.platformType ?: KotlinPlatformType.native
 
         return PluginOptions(
-            platformType,
+            platformType.name,
             project.isMultiplatform,
             project.buildDir.toString(),
             targetVariantsName,
@@ -71,7 +71,7 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             project.getGeneratedPackageName()
         )
             //it doesn't allow some special character. so, used Base64
-            .let { Base64.getEncoder().encodeToString(Gson().toJson(it).toByteArray()) }
+            .let { Base64.getEncoder().encodeToString(it.toString().toByteArray()) }
             .let { listOf(SubpluginOption(OPTION_PLUGIN_OPTIONS, it)) }
     }
 

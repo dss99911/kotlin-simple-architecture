@@ -1,7 +1,7 @@
 package kim.jeonghyeon.simplearchitecture.plugin.model
 
 import kim.jeonghyeon.simplearchitecture.plugin.util.generatedSourceSetPath
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.cli.common.toBooleanLenient
 
 /**
  * todo is there secure way for this?
@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 const val SOURCE_SET_NAME_COMMON = "commonMain"
 
 data class PluginOptions(
-    val platformType: KotlinPlatformType,
+    val platformType: String,
     val isMultiplatform: Boolean,
     val buildPath: String,
     val compileTargetVariantsName: String,
@@ -27,4 +27,23 @@ data class PluginOptions(
         )
 
     val packagePath: String = packageName.replace(".", "/")
+
+
+    override fun toString(): String {
+        return "$platformType|$isMultiplatform|$buildPath|$compileTargetVariantsName|$postFix|$packageName"
+    }
+
+    companion object {
+        fun parse(string: String): PluginOptions {
+            val split = string.split("|")
+            return PluginOptions(
+                split[0],
+                split[1].toBooleanLenient()?:false,
+                split[2],
+                split[3],
+                split[4],
+                split[5]
+            )
+        }
+    }
 }

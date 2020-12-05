@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
@@ -56,7 +56,7 @@ private fun Logo(closeDrawer: () -> Unit) {
     ) {
         Row(Modifier.fillMaxWidth().padding(16.dp)) {
             Image(
-                asset = Icons.Filled.ArrowBack,
+                imageVector = Icons.Filled.ArrowBack,
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.primary)
             )
             SpacerW(24.dp)

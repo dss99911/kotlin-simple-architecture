@@ -41,25 +41,20 @@ fun Screen(
         when (val resource = +viewModel.initStatus) {
             is Resource.Loading -> {
                 initLoading()
-                return@Box
             }
-
             is Resource.Error -> {
                 initErrorView(resource)
-                return@Box
             }
-
             else -> {
-            }
-        }
+                children(viewModel)
 
-        children(viewModel)
-
-        Box(Modifier.fillMaxSize()) {//without Box. after loading, if view() is empty, then shows loading continuously
-            when (val resource = +viewModel.status) {
-                is Resource.Loading -> loading()
-                is Resource.Error -> errorView(resource)
-                else -> {
+                Box(Modifier.fillMaxSize()) {//without Box. after loading, if view() is empty, then shows loading continuously
+                    when (val resource = +viewModel.status) {
+                        is Resource.Loading -> loading()
+                        is Resource.Error -> errorView(resource)
+                        else -> {
+                        }
+                    }
                 }
             }
         }
@@ -105,8 +100,8 @@ private fun LoadingView() {
 @Composable
 private fun BoxScope.ErrorView(error: Resource.Error) {
     ErrorSnackbar(
-        text = error.error().message ?: R.string.error_occurred.resourceToString(),
-        modifier = Modifier.align(Alignment.BottomCenter)
+        modifier = Modifier.align(Alignment.BottomCenter),
+        text = error.error().message ?: R.string.error_occurred.resourceToString()
     ) {
         error.retry()
     }

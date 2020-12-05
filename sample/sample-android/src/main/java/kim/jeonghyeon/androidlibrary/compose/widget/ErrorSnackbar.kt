@@ -1,9 +1,8 @@
 package kim.jeonghyeon.androidlibrary.compose.widget
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Box
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.contentColor
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,9 +18,9 @@ import kim.jeonghyeon.androidlibrary.extension.resourceToString
 
 @Composable
 fun ErrorSnackbar(
+    modifier: Modifier = Modifier,
     text: String,
     actionText: String = R.string.retry.resourceToString(),
-    modifier: Modifier = Modifier,
     onActionClick: () -> Unit = { }
 ) {
     Box(modifier = modifier.fillMaxWidth().wrapContentHeight()) {
@@ -31,8 +30,7 @@ fun ErrorSnackbar(
                 text = { Text(text, style = MaterialTheme.typography.body2) },
                 action = {
                     TextButton(
-                        onClick = onActionClick,
-                        contentColor = contentColor()
+                        onClick = onActionClick
                     ) {
                         Text(
                             text = actionText,

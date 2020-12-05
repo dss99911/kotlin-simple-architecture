@@ -33,7 +33,7 @@ class DbGenerator(
      * generate actual file on compile source set
      */
     fun generate(): Collection<File> {
-        if (pluginOptions.platformType == KotlinPlatformType.js) {
+        if (pluginOptions.platformType == KotlinPlatformType.js.name) {
             //todo sqldelight not yet support js
             return emptyList<GeneratedDbSource>().generateDbFunctionFile()
         }
@@ -95,7 +95,7 @@ class DbGenerator(
                 }
         }
 
-        if (pluginOptions.platformType == KotlinPlatformType.common) {
+        if (pluginOptions.platformType == KotlinPlatformType.common.name) {
             return listOfNotNull(expectFile)
         }
 
@@ -126,20 +126,20 @@ class DbGenerator(
 
     fun List<GeneratedDbSource>.makeImport(): String {
         return when (pluginOptions.platformType) {
-            KotlinPlatformType.androidJvm -> """
+            KotlinPlatformType.androidJvm.name -> """
                 import com.squareup.sqldelight.android.AndroidSqliteDriver
                 import kim.jeonghyeon.androidlibrary.extension.ctx
             """.trimIndent()
 
-            KotlinPlatformType.native -> """
+            KotlinPlatformType.native.name -> """
                 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
                 
             """.trimIndent()
-            KotlinPlatformType.jvm -> """
+            KotlinPlatformType.jvm.name -> """
                 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
                 import java.util.*
             """.trimIndent()
-            KotlinPlatformType.js -> ""//todo js is not yet supported
+            KotlinPlatformType.js.name -> ""//todo js is not yet supported
             else -> {
                 error("${pluginOptions.platformType} target's DB driver is not yet supported")
             }
@@ -153,13 +153,13 @@ class DbGenerator(
 
     fun GeneratedDbSource.makeDriverInstance(dbName: String): String {
         return when (pluginOptions.platformType) {
-            KotlinPlatformType.androidJvm -> {
+            KotlinPlatformType.androidJvm.name -> {
                 "AndroidSqliteDriver(${name}.Schema, ctx, path)"
             }
-            KotlinPlatformType.native -> {
+            KotlinPlatformType.native.name -> {
                 "NativeSqliteDriver(${name}.Schema, path)"
             }
-            KotlinPlatformType.jvm -> {
+            KotlinPlatformType.jvm.name -> {
                 "JdbcSqliteDriver(path, Properties().apply { properties.forEach { this.setProperty(it.key, it.value) } }).also { try { $dbName.Schema.create(it) } catch (e: Exception) { } }"
             }
             else -> {

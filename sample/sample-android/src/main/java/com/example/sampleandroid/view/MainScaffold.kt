@@ -2,7 +2,6 @@ package com.example.sampleandroid.view
 
 import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.InnerPadding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -23,6 +22,7 @@ import kim.jeonghyeon.sample.viewmodel.ViewViewModel
 
 @Composable
 fun MainScaffold(content: @Composable() (PaddingValues) -> Unit) {
+
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,

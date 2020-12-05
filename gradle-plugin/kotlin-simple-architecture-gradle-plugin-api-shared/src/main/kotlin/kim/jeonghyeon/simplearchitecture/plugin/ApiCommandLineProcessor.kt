@@ -35,7 +35,7 @@ class ApiCommandLineProcessor : CommandLineProcessor {
     ) = when (option.optionName) {
         OPTION_PLUGIN_OPTIONS -> configuration.put(
             KEY_PLUGIN_OPTIONS,
-            Gson().fromJson(String(Base64.getDecoder().decode(value)), PluginOptions::class.java)
+            PluginOptions.parse(String(Base64.getDecoder().decode(value)))
         )
         else -> error("Unexpected config option ${option.optionName}")
     }
