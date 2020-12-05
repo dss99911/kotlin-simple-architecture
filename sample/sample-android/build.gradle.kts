@@ -113,6 +113,10 @@ android {
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
     }
+
+    lintOptions {
+        isAbortOnError = false
+    }
 }
 
 tasks.withType<KotlinCompile>().all {

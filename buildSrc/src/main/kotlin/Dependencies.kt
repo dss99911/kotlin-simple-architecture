@@ -65,12 +65,28 @@ object deps {
         )
 
         val compose = listOf(
-            "androidx.compose.ui:ui:${versions.android.compose}",
-            "androidx.compose.material:material:${versions.android.compose}",
-            "androidx.ui:ui-tooling:${versions.android.compose}",
-            "androidx.compose.foundation:foundation-layout:${versions.android.compose}",
-            "androidx.compose.material:material-icons-extended:${versions.android.compose}"
+            Compose.ui,
+            Compose.material,
+            Compose.material,
+            Compose.tooling,
+            Compose.layout,
+            Compose.iconsExtended
         )
+
+        object Compose {
+            const val animation = "androidx.compose.animation:animation:${versions.android.compose}"
+            const val foundation = "androidx.compose.foundation:foundation:${versions.android.compose}"
+            const val layout = "androidx.compose.foundation:foundation-layout:${versions.android.compose}"
+            const val iconsExtended = "androidx.compose.material:material-icons-extended:${versions.android.compose}"
+            const val material = "androidx.compose.material:material:${versions.android.compose}"
+            const val runtime = "androidx.compose.runtime:runtime:${versions.android.compose}"
+            const val tooling = "androidx.compose.ui:ui-tooling:${versions.android.compose}"
+            const val ui = "androidx.compose.ui:ui:${versions.android.compose}"
+            const val uiUtil = "androidx.compose.ui:ui-util:${versions.android.compose}"
+            const val uiTest = "androidx.compose.ui:ui-test-junit4:${versions.android.compose}"
+        }
+
+
     }
 
     object simpleArch {

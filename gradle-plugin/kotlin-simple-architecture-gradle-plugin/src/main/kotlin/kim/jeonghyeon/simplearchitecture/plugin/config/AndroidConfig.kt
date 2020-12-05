@@ -25,25 +25,12 @@ fun Project.applyAndroidConfig() {
 }
 
 fun BaseExtension.initDefault() {
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    //todo is it fine?
-    // "More than one file was found with OS independent path 'META-INF/ktor-client-serialization.kotlin_module"
-    if (this is BaseAppModuleExtension) {
-        //this removes files which related kotlin feature like global property, extension functions on library build.
-        //so, not remove on library
-        packagingOptions {
-            exclude("META-INF/*.kotlin_module")
-        }
-    }
 
     (this as? BaseAppModuleExtension)?.apply {
         buildFeatures {

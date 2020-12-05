@@ -7,11 +7,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.client.DataFlow
 
-data class TabData(val icon: VectorAsset?, val title: String, val view: @Composable () -> Unit)
+data class TabData(val icon: ImageVector?, val title: String, val view: @Composable () -> Unit)
 
 @Composable
 fun SimpleTabsScreen(tabIndexFlow: DataFlow<Int>, tabs: List<TabData>) {
