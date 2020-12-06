@@ -3,7 +3,9 @@ package kim.jeonghyeon.androidlibrary.compose
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kim.jeonghyeon.androidlibrary.R
@@ -12,15 +14,10 @@ import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 
 @Composable
@@ -62,35 +59,15 @@ fun Screen(
 }
 
 @Composable
-fun <T> DataFlow<T>.asState(
+fun <T> Flow<T>.asState(
     context: CoroutineContext = Dispatchers.Main
-): State<T?> = collectDistinctAsState(context)
+): State<T?> = collectAsState(null, context)
 
 @Composable
-fun <T> DataFlow<T>.asValue(): T? = asState().value
+fun <T> Flow<T>.asValue(): T? = asState().value
 
 @Composable
-operator fun <T> DataFlow<T>.unaryPlus(): T? = asValue()
-
-
-@Composable
-fun <T> DataFlow<T>.collectDistinctAsState(
-    context: CoroutineContext = EmptyCoroutineContext
-): State<T?> {
-    val state = remember { mutableStateOf(value) }
-    LaunchedTask(this, context) {
-        if (context == EmptyCoroutineContext) {
-            distinctUntilChanged().collect {
-                state.value = it
-            }
-        } else withContext(context) {
-            distinctUntilChanged().collect {
-                state.value = it
-            }
-        }
-    }
-    return state
-}
+operator fun <T> Flow<T>.unaryPlus(): T? = asValue()
 
 @Composable
 private fun LoadingView() {

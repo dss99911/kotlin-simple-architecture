@@ -3,12 +3,14 @@ package kim.jeonghyeon.client
 import kim.jeonghyeon.net.HttpResponseStore
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
+import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 
 //todo if set loading inside launch, when same api is called two times at the same time, late call doesn't know if it's already started. but when I use Lazy, there was some issue on IOS. after version up. let's try again
 fun <T> CoroutineScope.loadResource(
-    state: ResourceFlow<T>? = null,
+    state: ViewModelFlow<Resource<T>>? = null,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -21,10 +23,9 @@ fun <T> CoroutineScope.loadResource(
 }
 
 
-
 fun <T> CoroutineScope.loadResource(
-    resourceState: ResourceFlow<T>? = null,
-    statusState: StatusFlow? = null,
+    resourceState: ViewModelFlow<Resource<T>>? = null,
+    statusState: ViewModelFlow<Status>? = null,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -36,8 +37,8 @@ fun <T> CoroutineScope.loadResource(
 }
 
 fun <T> CoroutineScope.loadDataAndStatus(
-    data: DataFlow<T>,
-    status: StatusFlow,
+    data: ViewModelFlow<T>,
+    status: ViewModelFlow<Status>,
     work: suspend CoroutineScope.() -> T
 ) {
     //if error occurs in the async() before call await(), then crash occurs. this prevent the crash. but exeption occurs, so, exception will be catched in the getResource()
@@ -50,8 +51,8 @@ fun <T> CoroutineScope.loadDataAndStatus(
 
 
 fun <T, U> CoroutineScope.loadDataAndStatus(
-    data: DataFlow<U>,
-    status: StatusFlow,
+    data: ViewModelFlow<U>,
+    status: ViewModelFlow<Status>,
     work: suspend CoroutineScope.() -> T,
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
 ) {
@@ -66,18 +67,18 @@ fun <T, U> CoroutineScope.loadDataAndStatus(
 private suspend fun <T> performAndSet(
     scope: CoroutineScope,
     work: suspend CoroutineScope.() -> T,
-    dataFlow: DataFlow<T>? = null,
-    resourceFlow: ResourceFlow<T>? = null,
-    statusFlow: StatusFlow? = null,
+    dataFlow: ViewModelFlow<T>? = null,
+    resourceFlow: ViewModelFlow<Resource<T>>? = null,
+    statusFlow: ViewModelFlow<Status>? = null,
     retry: () -> Unit
 ) {
-    resourceFlow?.setValue(Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry))
-    statusFlow?.setValue(Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry))
+    resourceFlow?.value = Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry)
+    statusFlow?.value = Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry)
     scope.getResource(work, retry)?.also {
-        resourceFlow?.setValue(it)
-        statusFlow?.setValue(it)
+        resourceFlow?.value = it
+        statusFlow?.value = it
         it.onSuccess {
-            dataFlow?.setValue(it)
+            dataFlow?.value = it
         }
     }
 }
@@ -85,20 +86,20 @@ private suspend fun <T> performAndSet(
 private suspend fun <T, U> performAndSet(
     scope: CoroutineScope,
     work: suspend CoroutineScope.() -> T,
-    dataFlow: DataFlow<U>? = null,
-    resourceFlow: ResourceFlow<U>? = null,
-    statusFlow: StatusFlow? = null,
+    dataFlow: ViewModelFlow<U>? = null,
+    resourceFlow: ViewModelFlow<Resource<U>>? = null,
+    statusFlow: ViewModelFlow<Status>? = null,
     transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>,
     retry: () -> Unit
 ) {
-    resourceFlow?.setValue(Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry))
-    statusFlow?.setValue(Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry))
+    resourceFlow?.value = Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry)
+    statusFlow?.value = Resource.Loading(cancel = { scope.coroutineContext[Job]?.cancel() }, retryData = retry)
     scope.getResource(work, retry)?.also {
         val transformed = scope.transform(it)
-        resourceFlow?.setValue(transformed)
-        statusFlow?.setValue(transformed)
+        resourceFlow?.value = transformed
+        statusFlow?.value = transformed
         transformed.onSuccess {
-            dataFlow?.setValue(it)
+            dataFlow?.value = it
         }
     }
 }

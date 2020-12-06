@@ -1,7 +1,6 @@
 package kim.jeonghyeon.client
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 /**
  *
@@ -13,20 +12,18 @@ object Navigator {
     //TODO [KSA-140] support savedState on Android
     // approach is to save configured DataFlow or data.
     //TODO consider to use MutableStateFlow
-    private val _backStack = DataFlow<List<BaseViewModel>>(emptyList())
+    private val _backStack = MutableStateFlow<List<BaseViewModel>>(emptyList())
 
-    val backStack: List<BaseViewModel> get() = _backStack.value!!
+    val backStack: List<BaseViewModel> get() = _backStack.value
     val size: Int get() = backStack.size
 
-    val currentFlow: DataFlow<BaseViewModel> = _backStack.map {
-        it.last()
-    }.toDataFlow(GlobalScope)
+    val currentFlow: Flow<BaseViewModel> = _backStack.map {
+        it.lastOrNull()?: error("viewModel doesn't exist. at least one viewmoel should exist.")
+    }
 
-    val current: BaseViewModel get() = backStack.last()
+    val current: BaseViewModel get() = backStack.lastOrNull()?: error("viewModel doesn't exist. at least one viewmoel should exist.")
     val previous: BaseViewModel? get() = if (backStack.size > 1) backStack[backStack.lastIndex -1] else null
     val root: BaseViewModel get() = backStack.first()
-
-    val terminatedFlow: DataFlow<Boolean> = DataFlow(false)
 
     //todo how to lock?
     /**
@@ -35,7 +32,6 @@ object Navigator {
      */
     fun back(): BaseViewModel? {
         if (backStack.size <= 1) {
-            terminatedFlow.setValue(true)
             return null
         }
 
@@ -44,7 +40,7 @@ object Navigator {
         return list.removeLast().apply {
             clear()
         }.also {
-            _backStack.setValue(list)
+            _backStack.value = list
         }
 
 
@@ -58,7 +54,7 @@ object Navigator {
         if (backStack.contains(viewModel)) {
             return false
         }
-        _backStack.setValue(backStack + viewModel)
+        _backStack.value = backStack + viewModel
         return true
     }
 
@@ -67,7 +63,7 @@ object Navigator {
      */
     fun clearAndNavigate(viewModel: BaseViewModel) {
         backStack.forEach { it.clear() }
-        _backStack.setValue(listOf(viewModel))
+        _backStack.value = listOf(viewModel)
     }
 
     fun replace(viewModel: BaseViewModel) {
@@ -75,7 +71,7 @@ object Navigator {
             removeLast().clear()
             add(viewModel)
         }
-        _backStack.setValue(list)
+        _backStack.value = list
     }
 
     /**
@@ -95,7 +91,7 @@ object Navigator {
                 false
             } else true
         }.let {
-            _backStack.setValue(it)
+            _backStack.value = it
         }
         return true
     }

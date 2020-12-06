@@ -1,9 +1,9 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import com.example.sampleandroid.view.widget.SampleTextField
@@ -17,9 +17,7 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel
 import kim.jeonghyeon.sample.viewmodel.NoReactiveViewModel
-import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
 
 @Composable
 fun NoReactiveScreen(model: NoReactiveViewModel) {
@@ -31,7 +29,10 @@ fun NoReactiveScreen(model: NoReactiveViewModel) {
                     model.newWord,
                     modifier = weight(1f)
                 )
-                Button(R.string.add.resourceToString(), gravity(CenterVertically)) { model.onClick() }
+                Button(
+                    R.string.add.resourceToString(),
+                    gravity(CenterVertically)
+                ) { model.onClick() }
             }
 
             SampleTextField("Search", model.keyword)

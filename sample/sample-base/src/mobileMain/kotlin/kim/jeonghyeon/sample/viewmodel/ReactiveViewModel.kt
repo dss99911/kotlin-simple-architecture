@@ -39,6 +39,7 @@ class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
     override val title: String = "Reactive"
 
     val newWord by add { DataFlow<String>() }
+    //todo use DROP_LATEST
     val click by add { DataFlow<Unit>() }
     val keyword by add { DataFlow<String>() }
 
@@ -80,7 +81,7 @@ class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
      */
     @OptIn(FlowPreview::class)
     val list: DataFlow<List<String>> by add {
-        flowsToSingle (
+        merge (
             initFlow
                 .mapToResource { api.getWords() }
                 .toDataFlow(initStatus),

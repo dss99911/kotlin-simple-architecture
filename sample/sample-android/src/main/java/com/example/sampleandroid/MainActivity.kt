@@ -5,19 +5,21 @@ import android.os.Bundle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sampleandroid.ui.AndroidLibraryTheme
 import com.example.sampleandroid.view.MainScaffold
 import com.example.sampleandroid.view.home.HomeScreen
 import com.example.sampleandroid.view.model.*
-import kim.jeonghyeon.androidlibrary.compose.Screen
+import kim.jeonghyeon.androidlibrary.compose.asValue
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.client.BaseActivity
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.client.Deeplink
 import kim.jeonghyeon.sample.deeplinkList
 import kim.jeonghyeon.sample.viewmodel.*
+import kotlinx.coroutines.flow.SharedFlow
 
 class MainActivity : BaseActivity() {
     override val rootViewModel: BaseViewModel = HomeViewModel()
@@ -41,10 +43,11 @@ class MainActivity : BaseActivity() {
     //todo remove to library if composable on library is available
     fun setViewModelContent(content: @Composable (model: BaseViewModel) -> Unit) {
         setContent {
-            val viewModel = +currentViewModel?:return@setContent
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            viewModel.onCompose()
-            content(viewModel)
+            currentViewModel.asValue()?.let {
+                @Suppress("EXPERIMENTAL_API_USAGE")
+                it.onCompose()
+                content(it)
+            }
         }
     }
 }

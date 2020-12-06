@@ -3,10 +3,63 @@ package kim.jeonghyeon.client
 import com.squareup.sqldelight.internal.Atomic
 import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 
 
+typealias ViewModelFlow<T> = MutableSharedFlow<T>
+
 /**
+ * @param emitOnIdleOnly : if true, click event is ignored if already clicked and processing.
+ */
+fun <T> ViewModelFlow(emitOnIdleOnly: Boolean = false): ViewModelFlow<T> = MutableSharedFlow(1, 0, if (emitOnIdleOnly) BufferOverflow.DROP_LATEST else BufferOverflow.DROP_OLDEST )
+fun <T> ViewModelFlow(initialValue: T, emitOnIdleOnly: Boolean = false): ViewModelFlow<T> = MutableSharedFlow<T>(1, 0, if (emitOnIdleOnly) BufferOverflow.DROP_LATEST else BufferOverflow.DROP_OLDEST)
+    .apply {
+        tryEmit(initialValue)
+    }
+
+/**
+ * for empty value.
+ */
+fun ViewModelFlow<Unit>.call() {
+    tryEmit(Unit)
+}
+
+var <T> ViewModelFlow<T>.value: T
+    get(): T = replayCache[0]
+    set(value) { tryEmit(value) }
+
+val <T> ViewModelFlow<T>.valueOrNull get(): T? = replayCache.getOrNull(0)
+
+/**
+ * Progress.
+ *
+ * - Event not anymore required. as navigation is on viewModel.
+ *  - StateFlow is enough on view side as there is no event.
+ *  - but we have to consider animation like toast. the animation can run first time only. also should be lifecycle-aware of View. consider how other animation is handled.
+ *      - this should be handled by UI side only. so, viewModel side doesn't know that.
+ * - initialValue is decided on viewModel
+ *  - but, what if the value is not nullable when it's collected? at first time, viewModel can't define the value as there is no value. so type should be nullable. but collector always have to ignore null value.
+ *  - initialValue is decided on view side
+ *      - reason
+ *          - there is 3 cases for value
+ *              - value not loaded
+ *              - value not exists
+ *              - value exists
+ *          - if it's StateFlow, we can know that value already loaded(it can be null, but null is expected value), but there are cases on which value not yet loaded
+ *          - so, to make code consistent, it's better to consider there are always 3 cases for value.
+ *          - plus, if the value is Resource, Resource can be Loading, Error, etc, so, the required success value is able not to exist.
+ *      - so, let's use Flow only.
+ * - StateFlow is for UI side only
+ * - how to retry on Repository side? retry is by Resource. Resource should contains retry methdo.
+ * - it should be able to map to different flow easily on viewModel side.
+ *
+ * - the reason to use SharedFlow instead of StateFlow
+ *      - StateFlow contains initialValue, and when map() or collect(), need to handle initialValue to ignore.
+ *      - on ViewModel, there are various mapping is required.
+ *      - as it should keep cache and shared.
+ *
+ *======================
  * TODO: migrate to SharedFlow when 1.4.0-M1-native-mt is released
  *  - All is covered by SharedFlow so, [DataFlow] is not required anymore
  *  - seems to add extension `val value: T?` and returns null if data not yet emitted
@@ -85,209 +138,22 @@ import kotlinx.coroutines.flow.*
  * 7. ResourceFlow's Error or Loading can contains data if there was previous data
  * 8. when ResourceFlow start, Resource.Loading is emitted.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
-open class DataFlow<T>
-constructor() : Flow<T> {
-    constructor(initialValue: T) : this() {
-        setValue(initialValue)
-    }
 
-    private object Empty
-
-    private val version = MutableStateFlow(0)
-    private val _state = atomic<Any?>(Empty)
-    private val initialized = atomic(false)
-
-    @Suppress("UNCHECKED_CAST")
-    val value: T?
-        get() = if (_state.value is Empty) {
-            null
-        } else _state.value as T
-
-    fun setValue(value: T) {
-        _state.value = value
-        version.value += 1
-    }
-
-    /**
-     * if it's event data, word 'call' seems better.
-     */
-    fun call(value: T) {
-        setValue(value)
-    }
-
-    /**
-     * on first [collect] invoked
-     * this is used for cold stream
-     */
-    open fun onActive() {
-
-    }
-
-    /**
-     * repeat stream.
-     */
-    fun repeat() {
-        setValue(value?: return)
-    }
-
-    @OptIn(InternalCoroutinesApi::class)
-    override suspend fun collect(collector: FlowCollector<T>) {
-        if (!initialized.getAndSet(true)) {
-            onActive()
-        }
-
-        version.collect collect2@{
-            //as MutableStateFlow empty-less, ignore value if [setValue] is not invoked
-            if (it == 0) {
-                return@collect2
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            collector.emit(value as T)
-        }
-    }
-
-    /**
-     * used in ios
-     */
-    fun watch(scope: CoroutineScope, perform: (T) -> Unit) {
-        scope.launch {
-            collect {
-                perform(it)
-            }
-        }
-    }
-}
-
-suspend fun <T : Any> DataFlow<T?>.collectNotNull(onCollect: (T) -> Unit) {
-    collect {
-        if (it != null) {
-            onCollect(it)
-        }
-    }
-}
-
-fun DataFlow<Unit>.call() {
-    setValue(Unit)
-}
-
-fun <T> Flow<T>.toDataFlow(scope: CoroutineScope): DataFlow<T> =
-    dataFlow(scope) {
-        this@toDataFlow.collect {
-            setValue(it)
-        }
-    }
-
-fun <T> Flow<Resource<T>>.toResourceFlow(scope: CoroutineScope): ResourceFlow<T> =
-    dataFlow(scope) {
-        this@toResourceFlow.collect {
-            setNewValue(it)
-        }
-    }
-
-/**
- * [block] is invoked only one time.
- * todo as toResourceFlow require DataFlow, block's receiver is DataFlow. but FlowCollector is general way to use.
- */
-fun <T> dataFlow(scope: CoroutineScope, block: suspend DataFlow<T>.() -> Unit): DataFlow<T> =
-    object : DataFlow<T>() {
-        override fun onActive() {
-            scope.launch {
-                block()
-            }
-        }
-    }
-
-
-fun <T> resourceFlow(scope: CoroutineScope, block: suspend FlowCollector<T>.() -> Unit): ResourceFlow<T> =
-    object : ResourceFlow<T>() {
-        override fun onActive() {
-            scope.launch {
-                object : FlowCollector<Resource<T>> {
-                    override suspend fun emit(value: Resource<T>) {
-                        setNewValue(value)
-                    }
-                }.emitResource(block) {
-                    onActive()
-                }
-            }
-        }
-    }
 
 /**
  * [Resource] is possible to retry,
  * for retrying, There should be DataFlow or it's first
  */
 @OptIn(InternalCoroutinesApi::class)
-fun <T, R> DataFlow<T>.mapToResource(transformData: suspend (value: T) -> R): Flow<Resource<R>> =
-    transform<T, Resource<R>> { value ->
-        emitResource(block = {
+fun <T, R> ViewModelFlow<T>.resourceMap(transformData: suspend (value: T) -> R): Flow<Resource<R>> =
+    transform { value ->
+        emitResource<R>(block = {
             emit(transformData(value))
         }, retry = {
-            this@mapToResource.repeat()
+            this@resourceMap.tryEmit(value)
         })
     }
 
-/**
- * ignore collected value if it's busy
- *
- * todo how about using busy(), idle() operator with coroutineScope. is coroutineScope is delivered throw multiple flow?
- *  if busy(), ignore new value.
- *  if idle(), allow new value.
- */
-fun <T, R> Flow<T>.mapToResourceIfIdle(scope: CoroutineScope, transformData: suspend (value: T) -> R): Flow<Resource<R>> {
-    val processing = AtomicReference(false)//ios InvalidMutabilityException with just var
-    val middleStream = dataFlow<T>(scope) {
-        this@mapToResourceIfIdle.collect {
-            if (!processing.value) {
-                setValue(it)
-            }
-        }
-    }
-
-    return middleStream.mapToResource {
-        processing.value = true
-        transformData(it).also {
-            processing.value = false
-        }
-    }
-}
-
-@OptIn(InternalCoroutinesApi::class)
-fun <T, R> Flow<T>.mapToResource(scope: CoroutineScope, transformData: suspend (value: T) -> R): Flow<Resource<R>> = toDataFlow(scope)
-        .mapToResource(transformData)
-
-fun <T, R> Flow<Resource<T>>.mapResource(transformData: suspend (value: T) -> R): Flow<Resource<R>> =
-    transform<Resource<T>, Resource<R>> { resource ->
-        when (resource) {
-            is Resource.Success -> {
-                Resource.Success(transformData(resource.data())) {
-                    resource.retry()
-                }
-            }
-            is Resource.Loading -> {
-                Resource.Loading {
-                    resource.retry()
-                }
-            }
-            is Resource.Error -> {
-                Resource.Error(resource.errorData) {
-                    resource.retry()
-                }
-            }
-        }
-    }
-
-fun <T> Flow<Resource<T>>.toDataFlow(scope: CoroutineScope, statusFlow: StatusFlow): DataFlow<T> =
-    dataFlow(scope) {
-        this@toDataFlow.collect { value ->
-            if (!value.isDataEmpty()) {
-                setValue(value.data())
-            }
-            statusFlow.setValue(value)
-        }
-    }
 
 private suspend fun <T> FlowCollector<Resource<T>>.emitResource(block: suspend FlowCollector<T>.() -> Unit, retry: () -> Unit) {
     emit(Resource.Loading {
@@ -315,44 +181,3 @@ private suspend fun <T> FlowCollector<Resource<T>>.emitResource(block: suspend F
         )
     }
 }
-
-/**
- * if previously there was data on ResourceFlow<T>, then even when error occur, data should be kept on Resource.
- * so, set newValue but set previous data
- */
-private fun <T> ResourceFlow<T>.setNewValue(newValue: Resource<T>) {
-    @Suppress("NullableBooleanElvis")
-    if (value?.isDataEmpty()?:true) {
-        setValue(newValue)
-        return
-    }
-    setValue(when (newValue) {
-        is Resource.Error -> {
-            newValue.copy(last = value!!.data())
-        }
-        is Resource.Loading -> {
-            newValue.copy(last = value!!.data())
-        }
-        else -> newValue
-    })
-}
-
-/**
- * if a flow's value is affected by multiple other flow.
- * merge other flows
- */
-@OptIn(ExperimentalCoroutinesApi::class)
-inline fun <T> flowsToSingle(
-    vararg flows: Flow<T>,
-): Flow<T> = channelFlow {
-    flows.forEach {
-        launch {
-            it.collect {
-                send(it)
-            }
-        }
-    }
-
-}
-typealias StatusFlow = DataFlow<Status>
-typealias ResourceFlow<T> = DataFlow<Resource<T>>

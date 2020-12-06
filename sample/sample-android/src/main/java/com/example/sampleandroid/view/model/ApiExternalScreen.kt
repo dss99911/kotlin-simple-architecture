@@ -1,8 +1,8 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import com.example.sampleandroid.view.widget.SampleTextField
 import kim.jeonghyeon.androidlibrary.compose.Screen

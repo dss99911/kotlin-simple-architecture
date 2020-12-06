@@ -7,21 +7,19 @@ import io.ktor.http.*
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.RedirectionType
-import kim.jeonghyeon.type.AtomicReference
-import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.atomic
-import kim.jeonghyeon.type.isLoading
+import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.experimental.ExperimentalTypeInference
 import kotlin.reflect.KClass
 
 /**
  * don't use var property.
  *  - native freeze all field when background thread is running.
- * if some variable data is required. use [dataFlow] or [AtomicReference]
+ * if some variable data is required. use [Flow] or [AtomicReference]
  *
  * Todo [KSA-140] Support SavedState on Android
  *  only configured data or flow will be saved and restored.
@@ -30,19 +28,19 @@ import kotlin.reflect.KClass
 open class BaseViewModel {
 
     @SimpleArchInternal("used on IOS base code. don't use")
-    val flows: MutableList<Lazy<DataFlow<*>>> = mutableListOf()
+    val flows: MutableList<Lazy<Flow<*>>> = mutableListOf()
 
-    open val initStatus: StatusFlow by add { StatusFlow() }
-    open val status: StatusFlow by add { StatusFlow() }
+    open val initStatus: ViewModelFlow<Status> by add { ViewModelFlow() }
+    open val status: ViewModelFlow<Status> by add { ViewModelFlow() }
 
     open val title: String = ""
 
     val isInitialized: AtomicReference<Boolean> = atomic(false)
-    val initFlow by add { DataFlow<Unit>() }
+    val initFlow by add { ViewModelFlow<Unit>() }
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    val screenResult: DataFlow<ScreenResult> by add { DataFlow() }
+    val screenResult: ViewModelFlow<ScreenResult> by add { ViewModelFlow() }
 
     /**
      * todo Support Toast.
@@ -51,10 +49,10 @@ open class BaseViewModel {
      *  as toast is shown on all screen instead of showing only one screen.
      *  this seems to have to be collected by BaseActivity.
      */
-    val toastText: DataFlow<String?> by add { DataFlow() }
+    val toastText: ViewModelFlow<String> by add { ViewModelFlow() }
 
     //todo collect this, and root screen ignore back button event.
-    val canGoBack: DataFlow<Boolean> by add { DataFlow(true) }
+    val canGoBack: ViewModelFlow<Boolean> by add { ViewModelFlow(true) }
 
     @SimpleArchInternal
     fun onCompose() {
@@ -77,7 +75,7 @@ open class BaseViewModel {
     /**
      * use this for custom resource to handle deeplink
      */
-    fun ResourceFlow<*>.handleDeeplink() = collectOnViewModel { resource ->
+    fun Flow<Resource<*>>.handleDeeplink() = collectOnViewModel { resource ->
         val deeplinkInfo =
             resource.errorOrNullOf<DeeplinkError>()?.deeplinkInfo ?: return@collectOnViewModel
 
@@ -137,8 +135,8 @@ open class BaseViewModel {
     open fun onInitialized() {}
 
     fun onBackPressed() {
-        if (screenResult.value == null) {
-            screenResult.setValue(ScreenResult(ScreenResult.RESULT_CODE_CANCEL))
+        if (screenResult.valueOrNull == null) {
+            screenResult.value = ScreenResult(ScreenResult.RESULT_CODE_CANCEL)
         }
         clear()
     }
@@ -155,25 +153,6 @@ open class BaseViewModel {
         onCleared()
     }
 
-    fun <T> Flow<T>.toDataFlow(): DataFlow<T> =
-        toDataFlow(scope)
-
-    fun <T> Flow<Resource<T>>.toResourceFlow(): ResourceFlow<T> =
-        toResourceFlow(scope)
-
-    fun <T> Flow<Resource<T>>.toDataFlow(statusFlow: StatusFlow): DataFlow<T> =
-        toDataFlow(scope, statusFlow)
-
-    fun <T> dataFlow(block: suspend DataFlow<T>.() -> Unit): DataFlow<T> =
-        dataFlow(scope, block)
-
-    fun <T> resourceFlow(block: suspend FlowCollector<T>.() -> Unit): ResourceFlow<T> =
-        resourceFlow(scope, block)
-
-    fun <T, R> Flow<T>.mapToResource(transformData: suspend (value: T) -> R): Flow<Resource<R>> = mapToResource(scope, transformData)
-
-    fun <T, R> Flow<T>.mapToResourceIfIdle(transformData: suspend (value: T) -> R): Flow<Resource<R>> = mapToResourceIfIdle(scope, transformData)
-
     open fun onDeeplinkReceived(url: Url) {
     }
 
@@ -186,47 +165,47 @@ open class BaseViewModel {
     }
 
     fun goBack(result: ScreenResult) {
-        this.screenResult.setValue(result)
+        this.screenResult.value = result
         goBack()
     }
 
     fun toast(message: String) {
-        toastText.call(message)
+        toastText.value = message
     }
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)
 
-    fun <T> ResourceFlow<T>.load(work: suspend CoroutineScope.() -> T) {
+    fun <T> ViewModelFlow<Resource<T>>.load(work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, work)
     }
 
-    fun <T> ResourceFlow<T>.loadWithStatus(
-        status: StatusFlow,
+    fun <T> ViewModelFlow<Resource<T>>.loadWithStatus(
+        status: ViewModelFlow<Status>,
         work: suspend CoroutineScope.() -> T
     ) {
         scope.loadResource(this, status, work)
     }
 
-    fun <T> DataFlow<T>.load(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
+    fun <T> ViewModelFlow<T>.load(status: ViewModelFlow<Status>, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
     }
 
-    fun <T, U> DataFlow<U>.load(
-        status: StatusFlow,
+    fun <T, U> ViewModelFlow<U>.load(
+        status: ViewModelFlow<Status>,
         work: suspend CoroutineScope.() -> T,
         transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
     ) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
-    fun <T> ResourceFlow<T>.loadInIdle(work: suspend CoroutineScope.() -> T) {
-        if (value.isLoading()) {
+    fun <T> ViewModelFlow<Resource<T>>.loadInIdle(work: suspend CoroutineScope.() -> T) {
+        if (valueOrNull.isLoading()) {
             return
         }
         scope.loadResource(this, status, work)
     }
 
-    fun <T> DataFlow<T>.loadInIdle(status: StatusFlow, work: suspend CoroutineScope.() -> T) {
+    fun <T> ViewModelFlow<T>.loadInIdle(status: ViewModelFlow<Status>, work: suspend CoroutineScope.() -> T) {
         if (status.value.isLoading()) {
             return
         }
@@ -237,8 +216,8 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    fun <T> ResourceFlow<T>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        value?.onLoading { _, cancel ->
+    fun <T> ViewModelFlow<Resource<T>>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+        valueOrNull?.onLoading { _, cancel ->
             cancel()
         }
         load {
@@ -247,8 +226,8 @@ open class BaseViewModel {
         }
     }
 
-    fun <T> DataFlow<T>.loadDebounce(statusFlow: StatusFlow, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        statusFlow.value?.onLoading { _, cancel ->
+    fun <T> ViewModelFlow<T>.loadDebounce(statusFlow: ViewModelFlow<Status>, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+        statusFlow.valueOrNull?.onLoading { _, cancel ->
             cancel()
         }
         load(statusFlow) {
@@ -258,23 +237,28 @@ open class BaseViewModel {
     }
 
     //todo even if source is cold stream, the source get active directly, even if DataFlow is not active
-    fun <T, U> DataFlow<T>.withSource(
+    @OptIn(ExperimentalTypeInference::class)
+    inline fun <T, U> ViewModelFlow<T>.withSource(
         source: Flow<U>,
-        onCollect: DataFlow<T>.(U) -> Unit
-    ): DataFlow<T> {
-        source.collectOnViewModel {
-            onCollect(this@withSource, it)
-        }
+        @BuilderInference crossinline transform: suspend FlowCollector<T>.(value: U) -> Unit
+    ): ViewModelFlow<T> {
+        subscriptionCount
+            .takeWhile { it > 0 }
+            .onEach {
+                launch {
+                    emitAll(source.transform(transform))
+                }
+
+                currentCoroutineContext().cancel()
+            }.launchIn(scope)
+
         return this
     }
 
-    fun <T> DataFlow<T>.withSource(
+    fun <T> ViewModelFlow<T>.withSource(
         source: Flow<T>
-    ): DataFlow<T> {
-        source.collectOnViewModel {
-            setValue(it)
-        }
-        return this
+    ): ViewModelFlow<T> = withSource(source) {
+        emit(it)
     }
 
 
@@ -318,7 +302,7 @@ open class BaseViewModel {
      *
      * todo is there simpler way?
      */
-    fun <T> add(initializer: () -> DataFlow<T>): Lazy<DataFlow<T>> =
+    fun <T : Flow<*>> add(initializer: () -> T): Lazy<T> =
         lazy(initializer).also {
             flows.add(it)
         }

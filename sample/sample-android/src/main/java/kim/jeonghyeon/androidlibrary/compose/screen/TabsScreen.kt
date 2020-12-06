@@ -1,11 +1,11 @@
 package kim.jeonghyeon.androidlibrary.compose.screen
 
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
