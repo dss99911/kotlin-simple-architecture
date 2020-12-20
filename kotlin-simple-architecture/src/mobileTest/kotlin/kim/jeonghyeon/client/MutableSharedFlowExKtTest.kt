@@ -1,10 +1,7 @@
 package kim.jeonghyeon.client
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlin.test.Test
 
 /**
@@ -67,7 +64,7 @@ class MutableSharedFlowExKtTest {
         GlobalScope.launch {
 
             val mapResource = flowSingle
-                .mapResource(GlobalScope, name = "name1", jobPolicy = FlowJobPolicy.ON_IDLE) {
+                .mapToResource(GlobalScope, name = "name1", jobPolicy = FlowJobPolicy.ON_IDLE) {
                     it.toString()
                 }.mapResource("name2") {
 
