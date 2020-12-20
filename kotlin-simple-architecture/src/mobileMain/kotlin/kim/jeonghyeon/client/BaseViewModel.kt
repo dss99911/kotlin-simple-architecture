@@ -30,17 +30,17 @@ open class BaseViewModel {
     @SimpleArchInternal("used on IOS base code. don't use")
     val flows: MutableList<Lazy<Flow<*>>> = mutableListOf()
 
-    open val initStatus: ViewModelFlow<Status> by add { ViewModelFlow() }
-    open val status: ViewModelFlow<Status> by add { ViewModelFlow() }
+    open val initStatus: MutableSharedFlow<Status> by add { flowSingle() }
+    open val status: MutableSharedFlow<Status> by add { flowSingle() }
 
     open val title: String = ""
 
     val isInitialized: AtomicReference<Boolean> = atomic(false)
-    val initFlow by add { ViewModelFlow<Unit>() }
+    val initFlow by add { flowSingle<Unit>() }
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    val screenResult: ViewModelFlow<ScreenResult> by add { ViewModelFlow() }
+    val screenResult: MutableSharedFlow<ScreenResult> by add { flowSingle() }
 
     /**
      * todo Support Toast.
@@ -49,10 +49,10 @@ open class BaseViewModel {
      *  as toast is shown on all screen instead of showing only one screen.
      *  this seems to have to be collected by BaseActivity.
      */
-    val toastText: ViewModelFlow<String> by add { ViewModelFlow() }
+    val toastText: MutableSharedFlow<String> by add { flowSingle() }
 
     //todo collect this, and root screen ignore back button event.
-    val canGoBack: ViewModelFlow<Boolean> by add { ViewModelFlow(true) }
+    val canGoBack: MutableSharedFlow<Boolean> by add { flowSingle(true) }
 
     @SimpleArchInternal
     fun onCompose() {
@@ -175,37 +175,37 @@ open class BaseViewModel {
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)
 
-    fun <T> ViewModelFlow<Resource<T>>.load(work: suspend CoroutineScope.() -> T) {
+    fun <T> MutableSharedFlow<Resource<T>>.load(work: suspend CoroutineScope.() -> T) {
         scope.loadResource(this, work)
     }
 
-    fun <T> ViewModelFlow<Resource<T>>.loadWithStatus(
-        status: ViewModelFlow<Status>,
+    fun <T> MutableSharedFlow<Resource<T>>.loadWithStatus(
+        status: MutableSharedFlow<Status>,
         work: suspend CoroutineScope.() -> T
     ) {
         scope.loadResource(this, status, work)
     }
 
-    fun <T> ViewModelFlow<T>.load(status: ViewModelFlow<Status>, work: suspend CoroutineScope.() -> T) {
+    fun <T> MutableSharedFlow<T>.load(status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
         scope.loadDataAndStatus(this, status, work)
     }
 
-    fun <T, U> ViewModelFlow<U>.load(
-        status: ViewModelFlow<Status>,
+    fun <T, U> MutableSharedFlow<U>.load(
+        status: MutableSharedFlow<Status>,
         work: suspend CoroutineScope.() -> T,
         transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
     ) {
         scope.loadDataAndStatus(this, status, work, transform = transform)
     }
 
-    fun <T> ViewModelFlow<Resource<T>>.loadInIdle(work: suspend CoroutineScope.() -> T) {
+    fun <T> MutableSharedFlow<Resource<T>>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (valueOrNull.isLoading()) {
             return
         }
         scope.loadResource(this, status, work)
     }
 
-    fun <T> ViewModelFlow<T>.loadInIdle(status: ViewModelFlow<Status>, work: suspend CoroutineScope.() -> T) {
+    fun <T> MutableSharedFlow<T>.loadInIdle(status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
         if (status.value.isLoading()) {
             return
         }
@@ -216,20 +216,20 @@ open class BaseViewModel {
         status.loadInIdle(work)
     }
 
-    fun <T> ViewModelFlow<Resource<T>>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        valueOrNull?.onLoading { _, cancel ->
-            cancel()
-        }
+    fun <T> MutableSharedFlow<Resource<T>>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+//        valueOrNull?.onLoading { _, cancel ->
+//            cancel()
+//        }
         load {
             delay(delayMillis)
             work()
         }
     }
 
-    fun <T> ViewModelFlow<T>.loadDebounce(statusFlow: ViewModelFlow<Status>, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-        statusFlow.valueOrNull?.onLoading { _, cancel ->
-            cancel()
-        }
+    fun <T> MutableSharedFlow<T>.loadDebounce(statusFlow: MutableSharedFlow<Status>, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+//        statusFlow.valueOrNull?.onLoading { _, cancel ->
+//            cancel()
+//        }
         load(statusFlow) {
             delay(delayMillis)
             work()
@@ -238,10 +238,10 @@ open class BaseViewModel {
 
     //todo even if source is cold stream, the source get active directly, even if DataFlow is not active
     @OptIn(ExperimentalTypeInference::class)
-    inline fun <T, U> ViewModelFlow<T>.withSource(
+    inline fun <T, U> MutableSharedFlow<T>.withSource(
         source: Flow<U>,
         @BuilderInference crossinline transform: suspend FlowCollector<T>.(value: U) -> Unit
-    ): ViewModelFlow<T> {
+    ): MutableSharedFlow<T> {
         subscriptionCount
             .takeWhile { it > 0 }
             .onEach {
@@ -255,9 +255,9 @@ open class BaseViewModel {
         return this
     }
 
-    fun <T> ViewModelFlow<T>.withSource(
+    fun <T> MutableSharedFlow<T>.withSource(
         source: Flow<T>
-    ): ViewModelFlow<T> = withSource(source) {
+    ): MutableSharedFlow<T> = withSource(source) {
         emit(it)
     }
 

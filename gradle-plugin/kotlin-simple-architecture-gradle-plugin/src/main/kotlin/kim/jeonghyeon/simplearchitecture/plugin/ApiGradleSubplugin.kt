@@ -47,6 +47,7 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
 
     /**
      * this is called before all the source set is configured.
+     * this is called per compile task
      */
     override fun apply(
         project: Project,

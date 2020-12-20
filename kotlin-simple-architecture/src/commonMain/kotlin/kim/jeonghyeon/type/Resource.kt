@@ -6,8 +6,11 @@ import kim.jeonghyeon.util.log
  * Resource = data + status
  */
 sealed class Resource<out T> {
+    /**
+     * @param name this is used to show what is currently loading.
+     */
     data class Loading(
-        val cancel: () -> Unit = { },
+        val name: String? = null,
         val retryData: () -> Unit = {}
     ) : Resource<Nothing>()
 
@@ -46,9 +49,9 @@ sealed class Resource<out T> {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified E : ResourceError> errorOrNullOf(): E? = errorOrNull() as? E?
 
-    fun onLoading(onResult: (last: T?, cancel: () -> Unit) -> Unit): Resource<T> {
+    fun onLoading(onResult: (name: String?) -> Unit): Resource<T> {
         if (this is Loading) {
-            onResult(dataOrNull(), cancel)
+            onResult(this.name)
         }
 
         return this
