@@ -6,7 +6,10 @@ import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.asValue
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
+import kim.jeonghyeon.client.valueOrNull
 import kim.jeonghyeon.sample.viewmodel.UserViewModel
+import kim.jeonghyeon.sample.viewmodel.UserViewModel2
+import kim.jeonghyeon.util.log
 
 @Composable
 fun UserScreen(model: UserViewModel) {
@@ -16,6 +19,18 @@ fun UserScreen(model: UserViewModel) {
             Text("Id : ${userDetail.id}")
             Text("Name : ${userDetail.name}")
             Button("Log Out") { model.onClickLogOut() }
+        }
+    }
+}
+
+@Composable
+fun UserScreen2(model: UserViewModel2) {
+    Screen(model) {
+        ScrollableColumn {
+            val userDetail = model.user.asValue() ?: return@ScrollableColumn
+            Text("Id : ${userDetail.id}")
+            Text("Name : ${userDetail.name}")
+            Button("Log Out", model.click)
         }
     }
 }

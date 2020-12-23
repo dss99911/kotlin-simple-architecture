@@ -3,11 +3,102 @@ package kim.jeonghyeon.sample.viewmodel
 import kim.jeonghyeon.client.*
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
-import kim.jeonghyeon.type.Resource
+import kim.jeonghyeon.type.Status
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+
 /**
+ * If A is changed by B, the code to change A is located on B's definition.
+ * it's not reactive.
+ *
+ * Merit
+ * - it's simple
+ * - no need to know complicated flows custom operators
+ *
+ * Demerit
+ * - difficult to know what change the data(but as it's simple, I feel it's not that difficult if business logic is not too much complicated)
+ */
+class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Reactive"
+
+    val list by add { flowViewModel<List<String>>() }
+    val newWord by add { flowViewModel<String>() }
+
+    /**
+     * emit status when error only. so, when type keyword, loading ui doesn't block user typing.
+     */
+    val keywordStatus by add { flowViewModel<Status>() }
+
+    override val status: MutableSharedFlow<Status> by add { flowViewModel<Status>().withSource(keywordStatus.filter { it.isError() }) }
+
+    val keyword by add { flowViewModel<String>() }
+
+    override fun onInit() {
+        list.load(initStatus) {
+            api.getWords()
+        }
+
+        keyword.collectOnViewModel {
+            list.loadDebounce(1000, keywordStatus) {
+                api.getWordsOfKeyword(it)
+            }
+        }
+    }
+
+    fun onClick() {
+        list.loadInIdle(status) {
+            api.addWord(newWord.valueOrNull?: error("input word"))
+            api.getWordsOfKeyword(keyword.valueOrNull?:"")
+        }
+    }
+}
+
+class ReactiveViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+
+    //todo [KSA-48] support localization on kotlin side
+    override val title: String = "Reactive"
+
+    val keyword by add { flowViewModel<String>() }
+    val newWord by add { flowViewModel<String>() }
+    val click by add { flowViewModel<Unit>() }
+
+    val list by add {
+        merge(
+            initFlow
+                .map {
+                    api.getWords()
+                }
+                .toData(initStatus),
+            keyword
+                .debounce(1000)
+                .mapCancelRunning {
+                    api.getWordsOfKeyword(it)
+                }
+                .toData(keywordStatus),
+            click
+                .mapInIdle {
+                    api.addWord(newWord.valueOrNull?: error("input word"))
+                    api.getWordsOfKeyword(keyword.valueOrNull?:"")
+                }
+                .toData(status)
+        )
+    }
+
+    val keywordStatus by add { flowViewModel<Status>() }
+
+    override val status: MutableSharedFlow<Status> by add {
+        //emit status when error only. so, when type keyword, loading ui doesn't block user typing.
+        keywordStatus.filter { it.isError() }.toStatus()
+    }
+
+
+}
+
+/**
+ * TODO arrange the comment
  * Everything(event, user action, data) is stream.
  *
  * one stream make other streams. and multiple streams become one stream as well. it's like circuit
@@ -33,72 +124,27 @@ import kotlinx.coroutines.flow.*
  *      - transforming data by map {}
  *      - combine multiple flow
  */
-class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
-    //todo [KSA-48] support localization on kotlin side
-    override val title: String = "Reactive"
-
-    val newWord by add { DataFlow<String>() }
-    //todo use DROP_LATEST
-    val click by add { DataFlow<Unit>() }
-    val keyword by add { DataFlow<String>() }
-
-    /**
-     * emit status when error only. so, when type keyword, loading ui doesn't block user typing.
-     */
-    val fail by add { StatusFlow() }
-
-    override val status: StatusFlow by add {
-        fail.transform {
-            if (it.isError()) {
-                emit(it)
-            }
-        }.toResourceFlow()
-    }
-
-    /**
-     * this flow observe the below
-     *  1. inputting keyword to filter
-     *  2. clicking 'add' button after inputting newWord
-     *  3. init
-     *
-     *  [toDataFlow] is not reactive. I think that status is subsidiary so, need to focus on data
-     *   if you want fully reactive,
-     *   make 3 field of ResourceFlow<List<String>> for (init, keyword, click).
-     *   and let each status(initStatus, fail, status) to observe each list.
-     *
-     *   before list is loaded, ui is shown with empty data
-     *   because, [initStatus] is null at first time.
-     *   and then [list] get active by [collect] after that, initFlow's api call working.
-     *   in order not to show ui before list is loaded, initFlow's api call should be active before list active.
-     *   so, this should be handled by different approach.
-     *   but, this viewModel's purpose is just showing reactive way. so keep this way.
-     *
-     *   this sample shows complicated Flow use case.
-     *   the reason not to use Repository, is that if use repository, it's very simple, so can't use much operators.
-     *   you can refer [ApiDbViewModel] for repository use case
-     *
-     */
-    @OptIn(FlowPreview::class)
-    val list: DataFlow<List<String>> by add {
-        merge (
-            initFlow
-                .mapToResource { api.getWords() }
-                .toDataFlow(initStatus),
-            keyword
-                .debounce(1000)
-                .mapToResource { api.getWordsOfKeyword(it) }
-                .toDataFlow(fail),
-            click
-                .mapToResourceIfIdle {
-                    api.addWord(newWord.value?: error("input word"))
-                    api.getWordsOfKeyword(keyword.value?:"")
-                }
-                .toDataFlow(status)
-        ).toDataFlow()
-    }
-
-    fun onClickNoReactiveSample() {
-        navigate(NoReactiveViewModel())
-    }
-}
+/**
+ * this flow observe the below
+ *  1. inputting keyword to filter
+ *  2. clicking 'add' button after inputting newWord
+ *  3. init
+ *
+ *  [toDataFlow] is not reactive. I think that status is subsidiary so, need to focus on data
+ *   if you want fully reactive,
+ *   make 3 field of ResourceFlow<List<String>> for (init, keyword, click).
+ *   and let each status(initStatus, fail, status) to observe each list.
+ *
+ *   before list is loaded, ui is shown with empty data
+ *   because, [initStatus] is null at first time.
+ *   and then [list] get active by [collect] after that, initFlow's api call working.
+ *   in order not to show ui before list is loaded, initFlow's api call should be active before list active.
+ *   so, this should be handled by different approach.
+ *   but, this viewModel's purpose is just showing reactive way. so keep this way.
+ *
+ *   this sample shows complicated Flow use case.
+ *   the reason not to use Repository, is that if use repository, it's very simple, so can't use much operators.
+ *   you can refer [ApiDbViewModel] for repository use case
+ *
+ */

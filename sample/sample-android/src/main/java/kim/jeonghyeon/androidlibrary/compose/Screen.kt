@@ -14,9 +14,13 @@ import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.value
+import kim.jeonghyeon.client.valueOrNull
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
 
@@ -30,8 +34,9 @@ fun Screen(
     children: @Composable (BaseViewModel) -> Unit
 ) {
     viewModel.toastText.asValue()?.let {
+        //todo save data on compose side. and don't show toast if it's already shown.
         toast(it)
-        viewModel.toastText.setValue(null)
+//        viewModel.toastText.value = null
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -61,7 +66,18 @@ fun Screen(
 @Composable
 fun <T> Flow<T>.asState(
     context: CoroutineContext = Dispatchers.Main
-): State<T?> = collectAsState(null, context)
+): State<T?> = collectAsState(
+    when (this) {
+        is SharedFlow<T> -> {
+            valueOrNull
+        }
+        is StateFlow<T> -> {
+            value
+        }
+        else -> null
+    },
+    context
+)
 
 @Composable
 fun <T> Flow<T>.asValue(): T? = asState().value

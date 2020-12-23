@@ -8,6 +8,7 @@ import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.*
+import kim.jeonghyeon.util.log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.resume
@@ -30,17 +31,18 @@ open class BaseViewModel {
     @SimpleArchInternal("used on IOS base code. don't use")
     val flows: MutableList<Lazy<Flow<*>>> = mutableListOf()
 
-    open val initStatus: MutableSharedFlow<Status> by add { flowSingle() }
-    open val status: MutableSharedFlow<Status> by add { flowSingle() }
+    open val initStatus: MutableSharedFlow<Status> by add { flowViewModel() }
+    open val status: MutableSharedFlow<Status> by add { flowViewModel() }
 
     open val title: String = ""
 
     val isInitialized: AtomicReference<Boolean> = atomic(false)
-    val initFlow by add { flowSingle<Unit>() }
+    private val _initFlow: MutableSharedFlow<Unit> = flowViewModel<Unit>()
+    val initFlow: Flow<Unit> by add { _initFlow }
 
     val scope: ViewModelScope by lazy { ViewModelScope() }
 
-    val screenResult: MutableSharedFlow<ScreenResult> by add { flowSingle() }
+    val screenResult: MutableSharedFlow<ScreenResult> by add { flowViewModel() }
 
     /**
      * todo Support Toast.
@@ -49,16 +51,16 @@ open class BaseViewModel {
      *  as toast is shown on all screen instead of showing only one screen.
      *  this seems to have to be collected by BaseActivity.
      */
-    val toastText: MutableSharedFlow<String> by add { flowSingle() }
+    val toastText: MutableSharedFlow<String> by add { flowViewModel() }
 
     //todo collect this, and root screen ignore back button event.
-    val canGoBack: MutableSharedFlow<Boolean> by add { flowSingle(true) }
+    val canGoBack: MutableSharedFlow<Boolean> by add { flowViewModel(true) }
 
     @SimpleArchInternal
     fun onCompose() {
         if (!isInitialized.getAndSet(true)) {
             handleDeeplink()
-            initFlow.call()
+            _initFlow.call()
             onInitialized()
         }
     }
@@ -76,11 +78,11 @@ open class BaseViewModel {
      * use this for custom resource to handle deeplink
      */
     fun Flow<Resource<*>>.handleDeeplink() = collectOnViewModel { resource ->
-        val deeplinkInfo =
-            resource.errorOrNullOf<DeeplinkError>()?.deeplinkInfo ?: return@collectOnViewModel
+        val deeplinkInfo = resource.errorOrNullOf<DeeplinkError>()?.deeplinkInfo ?: return@collectOnViewModel
 
         launch {
             val result = navigateToDeeplinkForResult(deeplinkInfo.url)
+            log.i("[handleDeeplink] $result, $deeplinkInfo")
             if (!result.isOk) {
                 return@launch
             }
@@ -175,41 +177,51 @@ open class BaseViewModel {
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)
 
+    fun <T> Flow<T>.assign(result: MutableSharedFlow<Resource<T>>) {
+        assign(scope, result)
+    }
+
+    fun <T> Flow<T>.assign(data: MutableSharedFlow<T>, status: MutableSharedFlow<Status>) {
+        assign(scope, data, status)
+    }
+
     fun <T> MutableSharedFlow<Resource<T>>.load(work: suspend CoroutineScope.() -> T) {
-        scope.loadResource(this, work)
+        loadResource(scope) {
+            scope.work()
+        }
+    }
+
+    fun <T> MutableSharedFlow<T>.load(status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
+        loadResource(scope, status) {
+            scope.work()
+        }
     }
 
     fun <T> MutableSharedFlow<Resource<T>>.loadWithStatus(
         status: MutableSharedFlow<Status>,
         work: suspend CoroutineScope.() -> T
     ) {
-        scope.loadResource(this, status, work)
-    }
-
-    fun <T> MutableSharedFlow<T>.load(status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
-        scope.loadDataAndStatus(this, status, work)
-    }
-
-    fun <T, U> MutableSharedFlow<U>.load(
-        status: MutableSharedFlow<Status>,
-        work: suspend CoroutineScope.() -> T,
-        transform: suspend CoroutineScope.(Resource<T>) -> Resource<U>
-    ) {
-        scope.loadDataAndStatus(this, status, work, transform = transform)
+        loadResourceWithStatus(scope, status) {
+            scope.work()
+        }
     }
 
     fun <T> MutableSharedFlow<Resource<T>>.loadInIdle(work: suspend CoroutineScope.() -> T) {
         if (valueOrNull.isLoading()) {
             return
         }
-        scope.loadResource(this, status, work)
+        load {
+            scope.work()
+        }
     }
 
     fun <T> MutableSharedFlow<T>.loadInIdle(status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
-        if (status.value.isLoading()) {
+        if (status.valueOrNull.isLoading()) {
             return
         }
-        scope.loadDataAndStatus(this, status, work)
+        load(status) {
+            scope.work()
+        }
     }
 
     fun <T> loadInIdle(work: suspend CoroutineScope.() -> T) {
@@ -217,50 +229,56 @@ open class BaseViewModel {
     }
 
     fun <T> MutableSharedFlow<Resource<T>>.loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-//        valueOrNull?.onLoading { _, cancel ->
-//            cancel()
-//        }
+        valueOrNull?.onLoading {cancel, retry ->
+            cancel()
+        }
+
         load {
             delay(delayMillis)
-            work()
+            scope.work()
         }
     }
 
-    fun <T> MutableSharedFlow<T>.loadDebounce(statusFlow: MutableSharedFlow<Status>, delayMillis: Long, work: suspend CoroutineScope.() -> T) {
-//        statusFlow.valueOrNull?.onLoading { _, cancel ->
-//            cancel()
-//        }
-        load(statusFlow) {
+    fun <T> MutableSharedFlow<T>.loadDebounce(delayMillis: Long, status: MutableSharedFlow<Status>, work: suspend CoroutineScope.() -> T) {
+        status.valueOrNull?.onLoading {cancel, retry ->
+            cancel()
+        }
+
+        load(status) {
             delay(delayMillis)
-            work()
+            scope.work()
         }
     }
 
-    //todo even if source is cold stream, the source get active directly, even if DataFlow is not active
+    fun <T> loadDebounce(delayMillis: Long, work: suspend CoroutineScope.() -> T) {
+        status.loadDebounce(delayMillis, work)
+    }
+
+    fun <T> Flow<T>.toData(status: MutableSharedFlow<Status>? = null): MutableSharedFlow<T> = toData(scope, status)
+
+    fun <T> Flow<T>.toResource(): MutableSharedFlow<Resource<T>> = toResource(scope)
+
+    fun <T> Flow<T>.toStatus(): MutableSharedFlow<Status> = toStatus(scope)
+
     @OptIn(ExperimentalTypeInference::class)
     inline fun <T, U> MutableSharedFlow<T>.withSource(
         source: Flow<U>,
         @BuilderInference crossinline transform: suspend FlowCollector<T>.(value: U) -> Unit
-    ): MutableSharedFlow<T> {
-        subscriptionCount
-            .takeWhile { it > 0 }
-            .onEach {
-                launch {
-                    emitAll(source.transform(transform))
-                }
-
-                currentCoroutineContext().cancel()
-            }.launchIn(scope)
-
-        return this
-    }
+    ): MutableSharedFlow<T> = withSource(scope, source, transform)
 
     fun <T> MutableSharedFlow<T>.withSource(
         source: Flow<T>
-    ): MutableSharedFlow<T> = withSource(source) {
-        emit(it)
-    }
+    ): MutableSharedFlow<T> = withSource(scope, source)
 
+    fun <T, R> Flow<T>.mapInIdle(transformData: suspend (value: T) -> R): Flow<R> = mapInIdle(transformData)
+
+    fun <T, R> Flow<T>.mapCancelRunning(transformData: suspend (value: T) -> R): Flow<R> = mapCancelRunning(scope, transformData)
+
+    @OptIn(ExperimentalTypeInference::class)
+    fun <T, R> Flow<T>.transformInIdle(@BuilderInference transformData: suspend FlowCollector<R>.(value: T) -> Unit): Flow<R> = transformInIdle(scope, transformData)
+
+    @OptIn(ExperimentalTypeInference::class)
+    fun <T, R> Flow<T>.transformCancelRunning(@BuilderInference transformData: suspend FlowCollector<R>.(value: T) -> Unit): Flow<R> = transformCancelRunning(scope, transformData)
 
     @SimpleArchInternal("used on IOS base code. don't use these code")
     val initialized: Boolean

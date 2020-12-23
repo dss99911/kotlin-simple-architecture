@@ -1,7 +1,6 @@
 package kim.jeonghyeon.client
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlin.test.Test
 
 /**
@@ -16,6 +15,7 @@ import kotlin.test.Test
  *      - processing time : long, short
  *  - scope
  *      - single thread, multiple thread
+ *  - exception
  *
  */
 class MutableSharedFlowExKtTest {
@@ -55,45 +55,45 @@ class MutableSharedFlowExKtTest {
 //            println("finished")
 //        }
     }
-
-    @Test
-    fun a() {
-        //error
-        //shared flow
-        val flowSingle = flowSingle<Int>()
-        GlobalScope.launch {
-
-            val mapResource = flowSingle
-                .mapToResource(GlobalScope, name = "name1", jobPolicy = FlowJobPolicy.ON_IDLE) {
-                    it.toString()
-                }.mapResource("name2") {
-
-                    it + "a"
-                }.mapResource(
-                    GlobalScope,
-                    name = "name3",
-                    jobPolicy = FlowJobPolicy.CANCEL_RUNNING
-                ) { value: String ->
-                    value + "b"
-                }
-            mapResource.collect {
-                println("result : $it")
-
-            }
-            mapResource.collect {
-                println("result2 : $it")
-
-            }
-        }
-
-        GlobalScope.launch {
-            flowSingle.tryEmit(2)
-            flowSingle.tryEmit(3)
-        }
-
-        runBlocking {
-            delay(10000)
-        }
-
-    }
+//
+//    @Test
+//    fun a() {
+//        //error
+//        //shared flow
+//        val flowSingle = flowSharedSingle<Int>()
+//        GlobalScope.launch {
+//
+//            val mapResource = flowSingle
+//                .mapToResource(GlobalScope, name = "name1", jobPolicy = FlowJobPolicy.IN_IDLE) {
+//                    it.toString()
+//                }.mapResource("name2") {
+//
+//                    it + "a"
+//                }.mapResource(
+//                    GlobalScope,
+//                    name = "name3",
+//                    jobPolicy = FlowJobPolicy.CANCEL_RUNNING
+//                ) { value: String ->
+//                    value + "b"
+//                }
+//            mapResource.collect {
+//                println("result : $it")
+//
+//            }
+//            mapResource.collect {
+//                println("result2 : $it")
+//
+//            }
+//        }
+//
+//        GlobalScope.launch {
+//            flowSingle.tryEmit(2)
+//            flowSingle.tryEmit(3)
+//        }
+//
+//        runBlocking {
+//            delay(10000)
+//        }
+//
+//    }
 }

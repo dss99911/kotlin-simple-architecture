@@ -1,6 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
+import kim.jeonghyeon.client.value
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.DeeplinkInfo
@@ -12,6 +13,7 @@ import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
+import kim.jeonghyeon.util.log
 
 /**
  * used for model page viewModels.
@@ -80,11 +82,11 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 RedirectionInfo(RedirectionType.retry)
             )
 
-            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
+            initStatus.value = Resource.Error(DeeplinkError(info)) {
                 //this is called when deeplink screen result is ok or click retry button on error ui.
-                initStatus.setValue(Resource.Success(null))//reset status.
+                initStatus.value = Resource.Success(null)//reset status.
                 navigateToSignInOnInitialTimeIfNotSignedIn()
-            })
+            }
         } else {
             onInit()
         }
@@ -109,9 +111,10 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 error.errorMessage,
                 RedirectionInfo(RedirectionType.retry)
             )
-            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
+            initStatus.value = Resource.Error(DeeplinkError(info)) {
+                initStatus.value = Resource.Success(null)//reset status.
                 status.retryOnError()
-            })
+            }
         }
 
         status.collectOnViewModel { status ->
@@ -130,9 +133,9 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 RedirectionInfo(RedirectionType.none)
             )
 
-            this@SampleViewModel.status.setValue(Resource.Error(DeeplinkError(info), null) {
+            this@SampleViewModel.status.value = Resource.Error(DeeplinkError(info)) {
                 status.retryOnError()
-            })
+            }
         }
     }
 

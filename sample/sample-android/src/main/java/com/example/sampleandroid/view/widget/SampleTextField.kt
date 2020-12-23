@@ -4,17 +4,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
-import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.value
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 @Composable
 fun SampleTextField(
     label: String,
-    text: DataFlow<String>,
+    text: MutableSharedFlow<String>,
     modifier: Modifier = Modifier
 ) {
     androidx.compose.material.OutlinedTextField(
         +text ?: "",
-        { text.setValue(it) },
+        { text.value = it },
         modifier,
         label = { Text(label) }
     )

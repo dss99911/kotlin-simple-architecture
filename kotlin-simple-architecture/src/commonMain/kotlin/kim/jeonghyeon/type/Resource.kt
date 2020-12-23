@@ -10,7 +10,7 @@ sealed class Resource<out T> {
      * @param name this is used to show what is currently loading.
      */
     data class Loading(
-        val name: String? = null,
+        val cancel: () -> Unit = {},
         val retryData: () -> Unit = {}
     ) : Resource<Nothing>()
 
@@ -49,9 +49,9 @@ sealed class Resource<out T> {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified E : ResourceError> errorOrNullOf(): E? = errorOrNull() as? E?
 
-    fun onLoading(onResult: (name: String?) -> Unit): Resource<T> {
+    fun onLoading(onResult: (cancel: () -> Unit, retry: () -> Unit) -> Unit): Resource<T> {
         if (this is Loading) {
-            onResult(this.name)
+            onResult(cancel, retryData)
         }
 
         return this

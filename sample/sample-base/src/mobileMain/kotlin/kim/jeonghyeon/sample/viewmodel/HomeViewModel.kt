@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.viewmodel
 
-import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.flowViewModel
 
 /**
  * this just used for navigation stack
@@ -11,6 +10,6 @@ class HomeViewModel : SampleViewModel() {
     //todo [KSA-48] support localization on kotlin side
     override val title: String = "Home"
 
-    val currentTabIndex by add { DataFlow(0) }
+    val currentTabIndex by add { flowViewModel(0) }
 
 }

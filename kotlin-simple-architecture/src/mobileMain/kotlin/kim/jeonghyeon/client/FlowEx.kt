@@ -1,65 +1,87 @@
 package kim.jeonghyeon.client
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kim.jeonghyeon.type.Resource
+import kim.jeonghyeon.type.ResourceError
+import kim.jeonghyeon.type.Status
+import kim.jeonghyeon.type.UnknownResourceError
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlin.experimental.ExperimentalTypeInference
 
-enum class FlowJobPolicy {
-    /**
-     * if transforming is busy. then upstream is ignored
-     * if transforming is not busy but downstream is busy. upstream is accepted.
-     */
-    ON_IDLE,
-    /**
-     * if transforming is busy when upstream comes, then previous transforming get cancelled.
-     * if transforming is not busy but downstream is busy, then downstream is not cancelled.
-     */
-    CANCEL_RUNNING
+
+fun <T> flowSingle(action: suspend () -> T): Flow<T> = flow {
+    emit(action())
 }
 
-
 /**
- *
- * transform with [FlowJobPolicy]
- *
- * @param scope transformData is processed on this scope.
- *
+ * - sharedFlow doesn't throw exception to downstream
+ * - if exception occurs, all subscriber is disconnected. at that time, reset cache, so that, when retry by collecting again. upstream will be collected again.
  */
-@OptIn(ExperimentalTypeInference::class)
-inline fun <T, R> Flow<T>.transformWithJob(scope: CoroutineScope, jobPolicy: FlowJobPolicy,  @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit): Flow<R> = flow {
-    val channel = Channel<R>(Channel.RENDEZVOUS)
+fun <T> Flow<T>.toShare(scope: CoroutineScope): Flow<T> {
     var job: Job? = null
-    scope.launch {
-        collect {
-            if (jobPolicy == FlowJobPolicy.CANCEL_RUNNING) {
-                job?.cancel()
+    val flow = MutableSharedFlow<Resource<T>>(1, 0, BufferOverflow.DROP_OLDEST)
+    flow.onActive(scope) {
+        if (it) {
+            job = scope.launch {
+                this@toShare
+                    .map<T, Resource<T>> { Resource.Success(it) }
+                    .catch { emit(Resource.Error(if (it is ResourceError) it else UnknownResourceError(it))) }
+                    .collect { flow.emit(it) }
             }
-
-            if (jobPolicy != FlowJobPolicy.ON_IDLE || job?.isActive != true) {
-                job = scope.launch {
-                    object : FlowCollector<R> {
-                        override suspend fun emit(value: R) {
-                            channel.send(value)
-                        }
-                    }.transformData(it)
-                }
+        } else {
+            job?.cancel()
+            if (flow.replayCache.getOrNull(0)?.isError() == true) {
+                flow.resetReplayCache()
             }
         }
     }
 
-    for (item in channel) {
-        emit(item)
+    return flow.map {
+        if (it is Resource.Success) {
+            it.value
+        } else {
+            throw it.error()
+        }
     }
-}.shareIn(scope, SharingStarted.WhileSubscribed())
+}
 
-/**
- * refer to the doc [transformWithJob]
- */
-inline fun <T, R> Flow<T>.mapWithJob(scope: CoroutineScope, jobPolicy: FlowJobPolicy, crossinline transformData: suspend (value: T) -> R): Flow<R> {
-    return transformWithJob(scope, jobPolicy) {
-        emit(transformData(it))
+
+@OptIn(ExperimentalTypeInference::class)
+fun <T> shareFlow(
+    scope: CoroutineScope,
+    @BuilderInference block: suspend FlowCollector<T>.() -> Unit
+): Flow<T> = flow(block).toShare(scope)
+
+
+fun <T> MutableSharedFlow<T>.onActive(scope: CoroutineScope, action: suspend (active: Boolean) -> Unit): MutableSharedFlow<T> {
+    subscriptionCount
+        .map { count -> count > 0 }
+        .distinctUntilChanged()
+        .onEach {
+            action(it)
+        }.launchIn(scope)
+    return this
+}
+
+@OptIn(ExperimentalTypeInference::class)
+inline fun <T, U> MutableSharedFlow<T>.withSource(
+    scope: CoroutineScope,
+    source: Flow<U>,
+    @BuilderInference crossinline transform: suspend FlowCollector<T>.(value: U) -> Unit
+): MutableSharedFlow<T> = onActive(scope) {
+    if (it) {
+        scope.launch {
+            emitAll(source.transform(transform))
+        }
+        currentCoroutineContext().cancel()
     }
+
+}
+
+fun <T> MutableSharedFlow<T>.withSource(
+    scope: CoroutineScope,
+    source: Flow<T>
+): MutableSharedFlow<T> = withSource(scope, source) {
+    emit(it)
 }

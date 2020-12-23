@@ -38,7 +38,7 @@ object Navigator {
         val list = backStack.toMutableList()
 
         return list.removeLast().apply {
-            clear()
+            onBackPressed()
         }.also {
             _backStack.value = list
         }
@@ -62,13 +62,13 @@ object Navigator {
      * different with [backUpToRoot]. this reset existing root viewModel and replace with [viewModel]
      */
     fun clearAndNavigate(viewModel: BaseViewModel) {
-        backStack.forEach { it.clear() }
+        backStack.forEach { it.onBackPressed() }
         _backStack.value = listOf(viewModel)
     }
 
     fun replace(viewModel: BaseViewModel) {
         val list = backStack.toMutableList().apply {
-            removeLast().clear()
+            removeLast().onBackPressed()
             add(viewModel)
         }
         _backStack.value = list
@@ -87,7 +87,7 @@ object Navigator {
 
         backStack.filterIndexed { index, viewModel ->
             if (index >= inclusivePopIndex) {
-                viewModel.clear()
+                viewModel.onBackPressed()
                 false
             } else true
         }.let {

@@ -4,8 +4,7 @@ import io.ktor.http.*
 import kim.jeonghyeon.auth.OAuthServerName
 import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.auth.SignOAuthClient
-import kim.jeonghyeon.client.ResourceFlow
-import kim.jeonghyeon.client.resourceFlow
+import kim.jeonghyeon.client.*
 import kim.jeonghyeon.const.DeeplinkUrl.DEEPLINK_PATH_SIGN_UP
 import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.pergist.Preference
@@ -16,10 +15,10 @@ import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
 
 interface UserRepository {
-    val userDetail: ResourceFlow<SerializableUserDetail>
+    val userDetail: Flow<SerializableUserDetail>
 
     suspend fun signUp(id: String?, password: String?, name: String?)
     suspend fun signGoogle()
@@ -39,9 +38,12 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     //as it's singleton, it keeps data in memory until processor terminated
-    override val userDetail: ResourceFlow<SerializableUserDetail> = resourceFlow(MainScope()) {
-        emit(userApi.getUser())
-    }
+    val retryFlow = MutableStateFlow(0)
+
+    override val userDetail: Flow<SerializableUserDetail> =
+        retryFlow.map {
+            userApi.getUser()
+        }.toShare(MainScope())
 
     override suspend fun signUp(id: String?, password: String?, name: String?) {
         if (id.isNullOrBlank()) {
@@ -109,6 +111,6 @@ class UserRepositoryImpl(
     // and also consider use ApiBinding as this approach need to call api one more time causing user to wait longer time
     //  - ApiBiding currently not support sign api.
     private fun invalidateUser() {
-        userDetail.value?.retry()
+        retryFlow.value++
     }
 }

@@ -1,6 +1,6 @@
 package kim.jeonghyeon.androidlibrary.compose.screen
 
-import androidx.compose.foundation.Icon
+import androidx.compose.material.Icon
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Surface
 import androidx.compose.material.Tab
@@ -9,12 +9,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
-import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.value
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class TabData(val icon: ImageVector?, val title: String, val view: @Composable () -> Unit)
 
 @Composable
-fun SimpleTabsScreen(tabIndexFlow: DataFlow<Int>, tabs: List<TabData>) {
+fun SimpleTabsScreen(tabIndexFlow: MutableSharedFlow<Int>, tabs: List<TabData>) {
     val tabIndex = +tabIndexFlow ?: 0
 
     Column {
@@ -23,7 +24,7 @@ fun SimpleTabsScreen(tabIndexFlow: DataFlow<Int>, tabs: List<TabData>) {
                 Tab(
                     selected = tabIndex == index,
                     onClick = {
-                        tabIndexFlow.setValue(index)
+                        tabIndexFlow.value = index
                     },
                     icon = { tab.icon?.let { Icon(it) } },
                     text = { Text(tab.title) },

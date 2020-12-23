@@ -2,6 +2,7 @@ package kim.jeonghyeon.client
 
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.ResourceError
+import kim.jeonghyeon.type.Status
 import kim.jeonghyeon.type.UnknownResourceError
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -9,214 +10,162 @@ import kotlinx.coroutines.flow.*
 import kotlin.experimental.ExperimentalTypeInference
 
 
-/**
- *
- * Characteristics
- * - call only one time, even if multiple subscribers exist
- * - while retrying, if retry is called again. previous retrying will be cancelled
- * - if there is no subscribers, then 'block' is not invoked
- */
-@OptIn(ExperimentalTypeInference::class)
-fun <T> resourceFlow(scope: CoroutineScope, @BuilderInference block: suspend FlowCollector<T>.() -> Unit): Flow<Resource<T>> =
-    flowSingle(Unit)//set initial value to get started when any subscriber exist.
-        .transformToResource(scope, FlowJobPolicy.CANCEL_RUNNING) {
-            //block() is not invoked when there is no subscriber.
-            // because, transformResourceDropRunning returns SharedFlow
-            block()
-        }
 
-@OptIn(InternalCoroutinesApi::class)
-fun <T, R> MutableSharedFlow<T>.mapToResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    transformData: suspend (value: T) -> R
-): Flow<Resource<R>> =
-    transformToResource(scope, jobPolicy, name) {
-        emit(transformData(it))
-    }
-
-
-@OptIn(InternalCoroutinesApi::class)
-inline fun <T, R> Flow<T>.mapToResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    crossinline transformData: suspend (value: T) -> R
-): Flow<Resource<R>> = transformToResource(scope, jobPolicy, name) {
-    emit(transformData(it))
-}
-
-
-@OptIn(ExperimentalTypeInference::class)
-inline fun <T, R> MutableSharedFlow<T>.transformToResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
-): Flow<Resource<R>> =
-    if (jobPolicy == null) {
-        transform { value ->
-            emitResource<R>(name, successBlock = {
-                transformData(value)
-            }, retry = {
-                scope.launch {
-                    this@transformToResource.emit(value)
-                }
-            })
-        }
-    } else {
-        transformWithJob(scope, jobPolicy) { value ->
-            emitResource<R>(name, successBlock = {
-                transformData(value)
-            }, retry = {
-                scope.launch {
-                    this@transformToResource.emit(value)
-                }
-            })
-        }
-    }
-
-/**
- * [Resource] is possible to retry,
- */
-@OptIn(ExperimentalTypeInference::class)
-inline fun <T, R> Flow<T>.transformToResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
-): Flow<Resource<R>> = flow {
-    val channelToRetry = Channel<T>(Channel.RENDEZVOUS)
-    val channelToEmit = Channel<Resource<R>>(Channel.RENDEZVOUS)
-    var job: Job? = null
-
-    scope.launch {
-        collect {
-            channelToRetry.send(it)
-        }
-    }
-
-    scope.launch {
-        for (item in channelToRetry) {
-            if (jobPolicy == FlowJobPolicy.CANCEL_RUNNING) {
-                job?.cancel()
-            }
-
-            val process: suspend CoroutineScope.() -> Unit = {
-                object : FlowCollector<Resource<R>> {
-                    override suspend fun emit(value: Resource<R>) {
-                        channelToEmit.send(value)
-                    }
-                }.emitResource(name, successBlock = {
-                    transformData(item)
-                }, retry = {
-                    scope.launch {
-                        channelToRetry.send(item)
-                    }
-                })
-            }
-
-            if (jobPolicy == null) {
-                process()
-            } else {
-                if (jobPolicy != FlowJobPolicy.ON_IDLE || job?.isActive != true) {
-                    job = scope.launch(block = process)
-                }
-            }
-        }
-    }
-
-    for (item in channelToEmit) {
-        emit(item)
-    }
-}.shareIn(scope, SharingStarted.WhileSubscribed())
-
-@ExperimentalCoroutinesApi
-@OptIn(ExperimentalTypeInference::class)
-inline fun <T, R> Flow<Resource<T>>.transformResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
-): Flow<Resource<R>> = merge(
-    transform {
-        if (!it.isSuccess()) {
-            @Suppress("UNCHECKED_CAST")
-            emit(it as Resource<R>)
-        }
-    },
-    transform {
-        if (it is Resource.Success) {
-            emit(it.value)
-        }
-    }.transformToResource(scope, jobPolicy, name, transformData)
-)
-
-@OptIn(InternalCoroutinesApi::class)
-inline fun <T, R> Flow<Resource<T>>.mapResource(
-    scope: CoroutineScope,
-    jobPolicy: FlowJobPolicy? = null,
-    name: String? = null,
-    crossinline transformData: suspend (value: T) -> R
-): Flow<Resource<R>> = transformResource(scope, jobPolicy, name) {
-    emit(transformData(it))
-}
-
-
-/**
- * not able to retry.
- * just delivering loading, error. and transforming success data.
- */
-@OptIn(ExperimentalTypeInference::class)
-inline fun <T, R> Flow<Resource<T>>.transformResource(
-    name: String? = null,
-    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
-): Flow<Resource<R>> = transform {
-    if (it is Resource.Success) {
-        emitResource<R>(name, successBlock = {
-            transformData(it.value)
-        }, retry = it.retryData)
-    } else {
-        @Suppress("UNCHECKED_CAST")
-        emit(it as Resource<R>)
-    }
-}
-
-@OptIn(InternalCoroutinesApi::class)
-inline fun <T, R> Flow<Resource<T>>.mapResource(
-    name: String? = null,
-    crossinline transformData: suspend (value: T) -> R
-): Flow<Resource<R>> = transformResource(name) {
-    emit(transformData(it))
-}
-
-suspend fun <T> FlowCollector<Resource<T>>.emitResource(name: String? = null, successBlock: suspend FlowCollector<T>.() -> Unit, retry: () -> Unit) {
-    emit(Resource.Loading(name) {
-        retry()
-    })
-    try {
-        successBlock(object : FlowCollector<T> {
-            override suspend fun emit(value: T) {
-                this@emitResource.emit(Resource.Success(value, retry))
-            }
-        })
-    } catch (e: CancellationException) {
-        //if cancel. then ignore it
-    } catch (e: ResourceError) {
-        emit(
-            Resource.Error(e) {
-                retry()
-            }
-        )
-    } catch (e: Throwable) {
-        emit(
-            Resource.Error(UnknownResourceError(e)) {
-                retry()
-            }
-        )
-    }
-}
+//
+//
+//@OptIn(InternalCoroutinesApi::class)
+//inline fun <T, R> Flow<T>.mapToResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    crossinline transformData: suspend (value: T) -> R
+//): ResourceFlow<R> = transformToResource(scope, jobPolicy, name) {
+//    emit(transformData(it))
+//}
+//
+//@OptIn(ExperimentalTypeInference::class)
+//fun <T, R> Flow<T>.transformToResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    @BuilderInference transformData: suspend FlowCollector<R>.(value: T) -> Unit
+//): ResourceFlow<R> = (if (jobPolicy == null) transform(transformData) else transformWithJob(scope, jobPolicy, transformData))
+//    .shareResourceIn(scope)
+//
+//@ExperimentalCoroutinesApi
+//@OptIn(ExperimentalTypeInference::class)
+//fun <T, R> ResourceFlow<T>.transformResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    @BuilderInference transformData: suspend FlowCollector<R>.(value: T) -> Unit
+//): ResourceFlow<R> = merge(
+//    transform {
+//        if (!it.isSuccess()) {
+//            @Suppress("UNCHECKED_CAST")
+//            emit(it as Resource<R>)
+//        }
+//    },
+//    transform {
+//        if (it is Resource.Success) {
+//            emit(it.value)
+//        }
+//    }.transformToResource(scope, jobPolicy, name, transformData)
+//)
+//
+//@OptIn(InternalCoroutinesApi::class)
+//inline fun <T, R> ResourceFlow<T>.mapResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    crossinline transformData: suspend (value: T) -> R
+//): ResourceFlow<R> = transformResource(scope, jobPolicy, name) {
+//    emit(transformData(it))
+//}
+//
+//
+///**
+// * not able to retry.
+// * just delivering loading, error. and transforming success data.
+// */
+//@OptIn(ExperimentalTypeInference::class)
+//inline fun <T, R> ResourceFlow<T>.transformResource(
+//    name: String? = null,
+//    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
+//): ResourceFlow<R> = transform {
+//    if (it is Resource.Success) {
+//        emitResource<R>(name, successBlock = {
+//            transformData(it.value)
+//        }, retry = it.retryData)
+//    } else {
+//        @Suppress("UNCHECKED_CAST")
+//        emit(it as Resource<R>)
+//    }
+//}
+//
+//@OptIn(InternalCoroutinesApi::class)
+//inline fun <T, R> ResourceFlow<T>.mapResource(
+//    name: String? = null,
+//    crossinline transformData: suspend (value: T) -> R
+//): ResourceFlow<R> = transformResource(name) {
+//    emit(transformData(it))
+//}
+//
+//@OptIn(InternalCoroutinesApi::class)
+//fun <T, R> MutableSharedFlow<T>.mapToResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    transformData: suspend (value: T) -> R
+//): ResourceFlow<R> =
+//    transformToResource(scope, jobPolicy, name) {
+//        emit(transformData(it))
+//    }
+//
+//
+///**
+// * each emit affect on other emit.
+// * retry only last emit instead of flow
+// */
+//@OptIn(ExperimentalTypeInference::class)
+//inline fun <T, R> MutableSharedFlow<T>.transformToResource(
+//    scope: CoroutineScope,
+//    jobPolicy: FlowJobPolicy? = null,
+//    name: String? = null,
+//    @BuilderInference crossinline transformData: suspend FlowCollector<R>.(value: T) -> Unit
+//): ResourceFlow<R> =
+//    if (jobPolicy == null) {
+//        transform { value ->
+//            emitResource<R>(name, successBlock = {
+//                transformData(value)
+//            }, retry = {
+//                scope.launch {
+//                    this@transformToResource.emit(value)
+//                }
+//            })
+//        }
+//    } else {
+//        transformWithJob(scope, jobPolicy) { value ->
+//            emitResource<R>(name, successBlock = {
+//                transformData(value)
+//            }, retry = {
+//                scope.launch {
+//                    this@transformToResource.emit(value)
+//                }
+//            })
+//        }
+//    }
+//
+//suspend fun <T> FlowCollector<Resource<T>>.emitResource(name: String? = null, successBlock: suspend FlowCollector<T>.() -> Unit, retry: () -> Unit) {
+//    emit(Resource.Loading(name) {
+//        retry()
+//    })
+//    try {
+//        successBlock(object : FlowCollector<T> {
+//            override suspend fun emit(value: T) {
+//                this@emitResource.emit(Resource.Success(value, retry))
+//            }
+//        })
+//    } catch (e: CancellationException) {
+//        //if cancel. then ignore it
+//    } catch (e: ResourceError) {
+//        emit(
+//            Resource.Error(e) {
+//                retry()
+//            }
+//        )
+//    } catch (e: Throwable) {
+//        emit(
+//            Resource.Error(UnknownResourceError(e)) {
+//                retry()
+//            }
+//        )
+//    }
+//}
+//
+//fun <T> ResourceFlow<T>.toData(status: MutableSharedFlow<Status>? = null): Flow<T> = onEach {
+//    status?.value = it
+//}.filterIsInstance<Resource.Success<T>>().map { it.value }
 
 
 /**

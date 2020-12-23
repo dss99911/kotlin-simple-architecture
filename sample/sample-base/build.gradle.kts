@@ -79,6 +79,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+//                api(project(":${deps.simpleArch.common.getArtifactId()}"))
                 api(deps.simpleArch.common)
 
                   //todo START there is error on android studio sync. after it's fixed, remove this
