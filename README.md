@@ -111,7 +111,8 @@ scope.launch {
 ```
 
 ## MVVM on Multiplatform
-- Android, IOS share ViewModel
+### Android, IOS share ViewModel
+- use MutableSharedFlow for communicating UI and ViewModel
 - This shows loading, error UI on each state in simple way
     - `load()` is used when calling api or calling function which takes time or can be error
     - Data consists of data and status
@@ -186,6 +187,44 @@ func SampleScreen(_ model: SampleViewModel) -> some View {
     }
 }
 ```
+
+### Navigation
+- Navigation is processed on ViewModel side instead of UI
+- 1 Screen is matched with 1 ViewModel. so navigate by creating ViewModel.
+```kotlin
+class SampleViewModel() : BaseViewModel() {
+    fun onClickSIgnUp() {
+        navigate(SignUpViewModel())
+    }
+}
+```
+
+
+- Navigate for result
+```kotlin
+class SampleViewModel() : BaseViewModel() {
+    fun onClickSIgnUp() {
+        status.loadInIdle {
+            val result = navigateForResult(SignUpViewModel())
+            if (result.isOk) {
+                //success
+            }
+        }
+    }
+}
+```
+
+- Return result
+```kotlin
+class SampleViewModel() : BaseViewModel() {
+    fun onClickOk() {
+        goBackWithOk()//return success
+        goBackWithOk(someData)// return success with data
+    }
+}
+
+```
+
 
 ## Sign-in/Sign-up, OAuth(google, facebook, etc)
 - Experimental, Security review is required.
