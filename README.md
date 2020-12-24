@@ -116,7 +116,7 @@ scope.launch {
     - `load()` is used when calling api or calling function which takes time or can be error
     - Data consists of data and status
         - Data is just data
-        - `Status` is like loading, error, success. `state` may be proper name. but it's already used on JetCompose or StateFlow. so `status` is used
+        - `Status` is like loading, error, success. `state` may be proper name. but it's already used on Jetpack Compose or StateFlow. so `status` is used
         - [Resource](https://github.com/dss99911/kotlin-simple-architecture/blob/master/kotlin-simple-architecture/src/commonMain/kotlin/kim/jeonghyeon/type/Resource.kt) contains data and status both
     - `initStatus`, `status`
         - This is `Status` without data.
@@ -132,19 +132,14 @@ scope.launch {
     - `navigateToDeeplink()`
     - `loadInIdle()` : For example, in case of clicking button two times quickly. 2nd time click is ignored.
     - `loadBounce()` : For example, searching with keyword. and if searching takes time(like api call is required), in that case, delay the api call and if next input comes, cancel previous call
-- Reactive way : You can compare the difference of reactive way and no reactive way below
-    - `DataFlow` is similar to MutableStateFlow or LiveData. but changed some function. explained [here](https://github.com/dss99911/kotlin-simple-architecture/blob/f3e173759315147ea3466bb497d6fc97bb41977f/kotlin-simple-architecture/src/commonMain/kotlin/kim/jeonghyeon/client/DataFlow.kt)
-        - TODO: `DataFlow` should be migrated to SharedFlow when coroutine-1.4.0-M1-native-mt is released
-    - [ReactiveViewModel](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/ReactiveViewModel.kt)
-    - [NoReactiveViewModel](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/mobileMain/kotlin/kim/jeonghyeon/sample/viewmodel/NoReactiveViewModel.kt)
 
 common
 ```kotlin
 class SampleViewModel(val api: SampleApi = serviceLocator.sampleApi) : BaseViewModel() {
 
-    //[add] is for ios to watch each Flow
-    val greeting by add { DataFlow<String>() }
-    val replyResult by add { DataFlow<String>() }
+    //ViewModelFlow is MutableSharedFlow. as Swift doesn't recognize generic of interface. just wrapped the flow with ViewModelFlow class.
+    val greeting = viewModelFlow<String>()
+    val replyResult = viewModelFlow<String>()
 
     override fun onInitialized() {
         //initStatus handle error and loading ui, also retry on error
@@ -181,11 +176,11 @@ ios
 - so, this framework's purpose is for developers not to study deeply of swift, IOS's architecture, IOS SDK. just learn SwiftUI to draw UI
 - SwiftUi's View is normally with struct. but also use function base. this shows functions base. but you can use struct as well.
 ```swift
-func SampleScreen(_ model: ApiSingleViewModel) -> some View {
+func SampleScreen(_ model: SampleViewModel) -> some View {
     Screen(model) {
         Column {
-            Text("current value : \(+model.greeting ?? "")")
-            Text("reply result : \(+model.replyResult ?? "")")
+            Text("current value : \(+model.greeting)")
+            Text("reply result : \(+model.replyResult)")
             Button("Reply") { model.onClick() }
         }
     }

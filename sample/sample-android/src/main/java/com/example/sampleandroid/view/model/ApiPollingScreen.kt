@@ -1,7 +1,7 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
@@ -21,3 +21,16 @@ fun ApiPollingScreen(model: ApiPollingViewModel) {
         }
     }
 }
+
+// TODO reactive way.
+//@Composable
+//fun ApiPollingScreen2(model: ApiPollingViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Text("fail count ${+model.count}")
+//            if ((+model.status).isSuccess()) {
+//                Text("result ${+model.result}")
+//            }
+//        }
+//    }
+//}

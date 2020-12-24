@@ -1,7 +1,7 @@
 package com.example.sampleandroid.view.model
 
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import com.example.sampleandroid.view.widget.SampleTextField
 import kim.jeonghyeon.androidlibrary.compose.Screen
@@ -21,3 +21,15 @@ fun ApiSingleScreen(model: ApiSingleViewModel) {
         }
     }
 }
+
+// TODO reactive way.
+//@Composable
+//fun ApiSingleScreen2(model: ApiSingleViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Text("current value : ${+model.result}")
+//            SampleTextField("Input value", model.input)
+//            Button("update", model.click)
+//        }
+//    }
+//}

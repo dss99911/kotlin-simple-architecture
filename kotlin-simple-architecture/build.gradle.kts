@@ -62,9 +62,19 @@ kotlin {
                 api(deps.krypto)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(deps.kotlin.testCommon)
+                implementation(deps.kotlin.testAnnotationCommon)
+            }
+        }
+
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
         val mobileMain by creating {
             dependsOn(commonMain)
+        }
+        val mobileTest by creating {
+            dependsOn(commonTest)
         }
 
         val jvmShareMain by creating {
@@ -74,6 +84,14 @@ kotlin {
                 api(deps.gson)
             }
         }
+
+        val jvmShareTest by creating {
+            dependencies {
+                implementation(deps.kotlin.testJunit)
+                implementation(deps.junit)
+            }
+        }
+
 
         val jvmMain by getting {
             dependsOn(jvmShareMain)
@@ -89,6 +107,10 @@ kotlin {
                 api(deps.ktor.serverSessions)
                 api(deps.ktor.clientEngineApache)
             }
+        }
+
+        val jvmTest by getting {
+            dependsOn(jvmShareTest)
         }
 
         //todo add frontend js and backend Js
@@ -120,6 +142,10 @@ kotlin {
                 api(deps.ktor.clientAndroid)
             }
         }
+        val androidTest by getting {
+            dependsOn(mobileTest)
+            dependsOn(jvmShareTest)
+        }
 
         val iosMain by getting {
             dependsOn(mobileMain)
@@ -129,6 +155,10 @@ kotlin {
                 api(deps.ktor.clientIos)
 
             }
+        }
+
+        val iosTest by getting {
+            dependsOn(mobileTest)
         }
 
         all {

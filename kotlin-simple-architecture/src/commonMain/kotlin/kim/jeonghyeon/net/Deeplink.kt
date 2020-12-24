@@ -10,7 +10,7 @@ class DeeplinkError(val deeplinkInfo: DeeplinkInfo, cause: Throwable? = null) :
     ResourceError(deeplinkInfo.message, cause)
 
 @Serializable
-class DeeplinkInfo(
+data class DeeplinkInfo(
     val url: String,
     val message: String? = null,
     val redirectionInfo: RedirectionInfo = RedirectionInfo(RedirectionType.none)
@@ -22,7 +22,7 @@ class DeeplinkInfo(
  * //todo need to handle cancel result as well?
  */
 @Serializable
-class RedirectionInfo(val type: RedirectionType, val url: String? = null)
+data class RedirectionInfo(val type: RedirectionType, val url: String? = null)
 
 enum class RedirectionType {
     retry,//retry of the error

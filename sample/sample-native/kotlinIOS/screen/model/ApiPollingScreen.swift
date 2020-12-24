@@ -14,8 +14,8 @@ func ApiPollingScreen(_ model: ApiPollingViewModel) -> some View {
     Screen(model) {
         Column {
             Text("fail count \(+model.count ?? 0)")
-            if ((+model.status)?.isSuccess() == true) {
-                Text("result \(+model.result ?? "")")
+            if (model.status.asValue()?.isSuccess() == true) {
+                Text("result \(+model.result)")
             }
         }
     }

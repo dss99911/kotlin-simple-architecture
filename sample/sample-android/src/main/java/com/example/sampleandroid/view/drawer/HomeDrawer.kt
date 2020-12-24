@@ -1,12 +1,8 @@
 package com.example.sampleandroid.view.drawer
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -34,7 +30,7 @@ fun HomeDrawer(closeDrawer: () -> Unit) {
         if (!Navigator.backUpTo(homeViewModel)) {
             Navigator.navigate(homeViewModel)
         }
-        homeViewModel.currentTabIndex.setValue(tabIndex)
+        homeViewModel.currentTabIndex.value = tabIndex
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -105,9 +101,9 @@ private fun DrawerButton(
 
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.fillMaxWidth(),
                     color = textIconColor,
-                    modifier = Modifier.fillMaxWidth()
+                    style = MaterialTheme.typography.body2
                 )
             }
         }

@@ -34,7 +34,6 @@
     <string name="paging_list">paging list</string>
     <string name="radio_box_list">radio box list</string>
     <string name="keyword">keyword</string>
-    <string name="search">Search</string>
     <string name="comparable_list">comparable list</string>
     <string name="multiple_sequential_call">Api call sequentially </string>
     <string name="polling">polling</string>
@@ -51,8 +50,7 @@
     <string name="threading">Threading</string>
     <string name="callback">Callback</string>
     <string name="chaining">Chaining</string>
-    <string name="reactive">Reactive</string>
-    <string name="noreactive">No Reactive</string>
+    <string name="search">Search</string>
     <string name="coroutine">coroutine</string>
     <string name="start_activity">Start Activity For Result</string>
     <string name="success">success</string>

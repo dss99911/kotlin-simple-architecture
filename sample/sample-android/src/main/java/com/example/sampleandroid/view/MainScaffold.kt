@@ -1,14 +1,10 @@
 package com.example.sampleandroid.view
 
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import com.example.sampleandroid.view.drawer.HomeDrawer
 import com.example.sampleandroid.view.drawer.SubDrawer
@@ -27,7 +23,7 @@ fun MainScaffold(content: @Composable() (PaddingValues) -> Unit) {
     Scaffold(
         scaffoldState = scaffoldState,
         drawerContent = {
-            when (val viewModel = +Navigator.currentFlow) {
+            when (+Navigator.currentFlow) {
                 is HomeViewModel -> HomeDrawer(closeDrawer = { scaffoldState.drawerState.close() })
                 is ModelViewModel -> SubDrawer(ModelViewModel.items, closeDrawer = { scaffoldState.drawerState.close() })
                 is ViewViewModel -> SubDrawer(ViewViewModel.items, closeDrawer = { scaffoldState.drawerState.close() })

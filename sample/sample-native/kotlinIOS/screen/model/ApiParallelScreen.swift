@@ -10,7 +10,7 @@ import SwiftUI
 func ApiParallelScreen(_ model: ApiParallelViewModel) -> some View {
     Screen(model) {
         Column {
-            List(model.list.value as! [KotlinPair<NSString, NSString>], id: \.self.first) { item in
+            List(+model.list as? [KotlinPair<NSString, NSString>] ?? [KotlinPair<NSString, NSString>](), id: \.self.first) { item in
                 Text("key : \(item.first ?? ""), value : \(item.second ?? "")")
             }
             

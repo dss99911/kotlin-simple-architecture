@@ -1,11 +1,14 @@
 package kim.jeonghyeon.sample.viewmodel
 
-import kim.jeonghyeon.client.DataFlow
 import kim.jeonghyeon.client.ScreenResult
+import kim.jeonghyeon.client.viewModelFlow
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.sample.api.SampleApi
 import kim.jeonghyeon.sample.di.serviceLocator
+import kim.jeonghyeon.type.Status
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.merge
 import kotlinx.serialization.InternalSerializationApi
 
 /**
@@ -38,8 +41,8 @@ class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
 
     override val signInRequired: Boolean = true
 
-    val deeplinkSubResult by add { DataFlow<String>() }
-    val deeplinkSubRequest by add { DataFlow<String>() }
+    val deeplinkSubResult = viewModelFlow<String>()
+    val deeplinkSubRequest = viewModelFlow<String>()
 
 
     fun onClickClientDeeplink() {
@@ -87,9 +90,61 @@ class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
         status.load {
             val result: ScreenResult = navigateForResult(DeeplinkSubViewModel(deeplinkSubRequest.value?:""))
             if (result.isOk) {
-                deeplinkSubResult.setValue(result.data as? String ?: "")
+                deeplinkSubResult.value = result.data as? String ?: ""
             }
         }
 
     }
 }
+
+// TODO reactive way.
+//class DeeplinkViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+//
+//    //todo [KSA-48] support localization on kotlin side
+//    override val title: String = "Deeplink"
+//
+//    override val signInRequired: Boolean = true
+//
+//    val deeplinkSubResult by add { viewModelFlow<String>() }
+//    val deeplinkSubRequest by add { viewModelFlow<String>() }
+//
+//    val clickServerDeeplink = viewModelFlow<Unit>()
+//    val clickGoToSignInThenGoHome = viewModelFlow<Unit>()
+//    val clickNavigateByDeeplinkOnly = viewModelFlow<Unit>()
+//    val clickClientDeeplink = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP)
+//        }
+//    }
+//    val clickGoToHome = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
+//        }
+//    }
+//    val clickGoogleUrl = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink("https://google.com")
+//        }
+//    }
+//
+//    override val status: MutableSharedFlow<Status> by add {
+//        merge(
+//            clickServerDeeplink
+//                .mapInIdle { api.testDeeplink() },
+//            clickGoToSignInThenGoHome
+//                .mapInIdle {
+//                    val result = navigateToDeeplinkForResult(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN)
+//                    if (result.isOk) {
+//                        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
+//                    }
+//                },
+//            clickNavigateByDeeplinkOnly
+//                .mapInIdle {
+//                    val result: ScreenResult = navigateForResult(DeeplinkSubViewModel(deeplinkSubRequest.value?:""))
+//                    if (result.isOk) {
+//                        deeplinkSubResult.value = result.data as? String ?: ""
+//                    }
+//                }
+//        ).toStatus()
+//    }
+//}

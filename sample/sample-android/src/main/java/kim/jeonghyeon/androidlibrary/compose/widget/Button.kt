@@ -8,8 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.ViewModelFlow
 import kim.jeonghyeon.client.call
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * change parameter order to match with swiftui
@@ -47,7 +48,7 @@ fun Button(
 @Composable
 fun Button(
     text: String,
-    clickFlow: DataFlow<Unit>,
+    clickFlow: ViewModelFlow<Unit>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     interactionState: InteractionState = remember { InteractionState() },

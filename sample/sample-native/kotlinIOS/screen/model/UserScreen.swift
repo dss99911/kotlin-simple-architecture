@@ -12,7 +12,7 @@ import sample_base
 func UserScreen(_ model: UserViewModel) -> some View {
     Screen(model) {
         ScrollableColumn {
-            if let userDetail = model.user.value {
+            if let userDetail = +model.user {
                 Text("Id : \(userDetail.id!)")
                 Text("Name : \(userDetail.name)")
                 Button("Log Out") { model.onClickLogOut() }

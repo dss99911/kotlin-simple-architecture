@@ -11,7 +11,7 @@ import sample_base
 func ApiBindingScreen(_ model: ApiBindingViewModel) -> some View {
     Screen(model) {
         ScrollableColumn {
-            Text("Result : \(+model.result ?? "")")
+            Text("Result : \(+model.result)")
             Button("Bind 2 Api") { model.onClickBind2Api() }
             Button("Bind 3 Api") { model.onClickBind3Api() }
             Button("Bind Response to Parameter") { model.onClickBindResposneToParameter() }

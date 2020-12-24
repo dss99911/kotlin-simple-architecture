@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.repository
 
-import kim.jeonghyeon.client.ResourceFlow
-import kim.jeonghyeon.client.resourceFlow
+import kim.jeonghyeon.client.*
 import kim.jeonghyeon.pergist.asListFlow
 import kim.jeonghyeon.sample.Word
 import kim.jeonghyeon.sample.WordQueries
@@ -10,17 +9,19 @@ import kim.jeonghyeon.util.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 
 interface WordRepository {
-    fun getWord(): ResourceFlow<List<Word>>
+    val word: Flow<List<Word>>
     suspend fun insertWord(word: String)
 }
 
 var fetchedWordApi = false
 
 class WordRepositoryImpl(val api: SampleApi, val query: WordQueries) : WordRepository {
-    override fun getWord(): ResourceFlow<List<Word>> = resourceFlow(CoroutineScope(Dispatchers.Main)) {
+    override val word: Flow<List<Word>> = shareFlow(MainScope()) {
         if (!fetchedWordApi) {
             val response = api.getWords()
             query.deleteAll()

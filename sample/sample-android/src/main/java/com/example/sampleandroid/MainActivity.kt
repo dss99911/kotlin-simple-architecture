@@ -11,8 +11,7 @@ import com.example.sampleandroid.ui.AndroidLibraryTheme
 import com.example.sampleandroid.view.MainScaffold
 import com.example.sampleandroid.view.home.HomeScreen
 import com.example.sampleandroid.view.model.*
-import kim.jeonghyeon.androidlibrary.compose.Screen
-import kim.jeonghyeon.androidlibrary.compose.unaryPlus
+import kim.jeonghyeon.androidlibrary.compose.asValue
 import kim.jeonghyeon.client.BaseActivity
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.client.Deeplink
@@ -41,10 +40,11 @@ class MainActivity : BaseActivity() {
     //todo remove to library if composable on library is available
     fun setViewModelContent(content: @Composable (model: BaseViewModel) -> Unit) {
         setContent {
-            val viewModel = +currentViewModel?:return@setContent
-            @Suppress("EXPERIMENTAL_API_USAGE")
-            viewModel.onCompose()
-            content(viewModel)
+            currentViewModel.asValue()?.let {
+                @Suppress("EXPERIMENTAL_API_USAGE")
+                it.onCompose()
+                content(it)
+            }
         }
     }
 }
@@ -65,8 +65,7 @@ fun ScreenContent(viewModel: BaseViewModel) = when (viewModel) {
     is DbSimpleViewModel -> DbSimpleScreen(viewModel)
     is DeeplinkViewModel -> DeeplinkScreen(viewModel)
     is DeeplinkSubViewModel -> DeeplinkSubScreen(viewModel)
-    is ReactiveViewModel -> ReactiveScreen(viewModel)
-    is NoReactiveViewModel -> NoReactiveScreen(viewModel)
+    is SearchViewModel -> SearchScreen(viewModel)
     is SignInViewModel -> SignInScreen(viewModel)
     is SignUpViewModel -> SignUpScreen(viewModel)
     is UserViewModel -> UserScreen(viewModel)

@@ -8,6 +8,8 @@ object deps {
         val reflect = depKotlin("reflect", versions.kotlin.version)
         val testJunit = depKotlin("test-junit", versions.kotlin.version)
         val test = depKotlin("test", versions.kotlin.version)
+        val testCommon = depKotlin("test-common", versions.kotlin.version)
+        val testAnnotationCommon = depKotlin("test-annotations-common", versions.kotlin.version)
     }
 
     object ktor {
@@ -123,7 +125,7 @@ object deps {
     const val shadowGradle = "com.github.jengelman.gradle.plugins:shadow:${versions.shadow}"
     const val gson = "com.google.code.gson:gson:2.8.6"
     const val logback = "ch.qos.logback:logback-classic:1.2.3"
-    const val junit = "junit:junit:4.12"
+    const val junit = "junit:junit:4.13"
 
     const val krypto = "com.soywiz.korlibs.krypto:krypto:1.12.0"
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.flow.Flow
 
 abstract class BaseActivity : AppCompatActivity() {
     abstract val rootViewModel: BaseViewModel
@@ -14,7 +15,7 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     open val deeplinks: List<Deeplink> = emptyList()
 
-    val currentViewModel: DataFlow<BaseViewModel> get() = Navigator.currentFlow
+    val currentViewModel: Flow<BaseViewModel> get() = Navigator.currentFlow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (currentViewModel.value?.canGoBack?.value == false) {
+        if (Navigator.current.canGoBack.valueOrNull == false) {
             return
         }
         Navigator.back() ?: super.onBackPressed()

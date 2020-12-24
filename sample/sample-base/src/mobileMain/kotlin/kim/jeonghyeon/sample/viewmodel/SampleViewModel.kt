@@ -38,7 +38,7 @@ open class ModelViewModel(preference: Preference = serviceLocator.preference) : 
             ViewModelItem { UserViewModel() },
             ViewModelItem { ApiBindingViewModel() },
             ViewModelItem { DeeplinkViewModel() },
-            ViewModelItem { ReactiveViewModel() },
+            ViewModelItem { SearchViewModel() },
         )
     }
 
@@ -80,11 +80,11 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 RedirectionInfo(RedirectionType.retry)
             )
 
-            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
+            initStatus.value = Resource.Error(DeeplinkError(info)) {
                 //this is called when deeplink screen result is ok or click retry button on error ui.
-                initStatus.setValue(Resource.Success(null))//reset status.
+                initStatus.value = Resource.Success(null)//reset status.
                 navigateToSignInOnInitialTimeIfNotSignedIn()
-            })
+            }
         } else {
             onInit()
         }
@@ -109,9 +109,10 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 error.errorMessage,
                 RedirectionInfo(RedirectionType.retry)
             )
-            initStatus.setValue(Resource.Error(DeeplinkError(info), null) {
+            initStatus.value = Resource.Error(DeeplinkError(info)) {
+                initStatus.value = Resource.Success(null)//reset status.
                 status.retryOnError()
-            })
+            }
         }
 
         status.collectOnViewModel { status ->
@@ -130,9 +131,9 @@ open class SampleViewModel(private val preference: Preference = serviceLocator.p
                 RedirectionInfo(RedirectionType.none)
             )
 
-            this@SampleViewModel.status.setValue(Resource.Error(DeeplinkError(info), null) {
+            this@SampleViewModel.status.value = Resource.Error(DeeplinkError(info)) {
                 status.retryOnError()
-            })
+            }
         }
     }
 

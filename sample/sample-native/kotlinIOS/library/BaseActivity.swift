@@ -60,7 +60,7 @@ class BaseActivityViewModel: ObservableObject {
         deeplinkNavigator.deeplinks = deepLinks
         uiManager.initialize(app: UIApplication.shared)
         navigator.navigate(viewModel: _rootViewModel)
-        navigator.currentFlow.watch(scope: uiManager.globalScope) { viewModel in
+        navigator.watchCurrent(scope: uiManager.globalScope) { viewModel in
             self.currentViewModel = viewModel
         }
     }
