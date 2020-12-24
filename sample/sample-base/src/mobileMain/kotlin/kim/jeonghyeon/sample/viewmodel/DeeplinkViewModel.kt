@@ -1,8 +1,7 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.ScreenResult
-import kim.jeonghyeon.client.flowViewModel
-import kim.jeonghyeon.client.value
+import kim.jeonghyeon.client.viewModelFlow
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.sample.api.SampleApi
@@ -42,8 +41,8 @@ class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
 
     override val signInRequired: Boolean = true
 
-    val deeplinkSubResult by add { flowViewModel<String>() }
-    val deeplinkSubRequest by add { flowViewModel<String>() }
+    val deeplinkSubResult = viewModelFlow<String>()
+    val deeplinkSubRequest = viewModelFlow<String>()
 
 
     fun onClickClientDeeplink() {
@@ -98,53 +97,54 @@ class DeeplinkViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
     }
 }
 
-class DeeplinkViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
-
-    //todo [KSA-48] support localization on kotlin side
-    override val title: String = "Deeplink"
-
-    override val signInRequired: Boolean = true
-
-    val deeplinkSubResult by add { flowViewModel<String>() }
-    val deeplinkSubRequest by add { flowViewModel<String>() }
-
-    val clickServerDeeplink = flowViewModel<Unit>()
-    val clickGoToSignInThenGoHome = flowViewModel<Unit>()
-    val clickNavigateByDeeplinkOnly = flowViewModel<Unit>()
-    val clickClientDeeplink = flowViewModel<Unit>().apply {
-        collectOnViewModel {
-            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP)
-        }
-    }
-    val clickGoToHome = flowViewModel<Unit>().apply {
-        collectOnViewModel {
-            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
-        }
-    }
-    val clickGoogleUrl = flowViewModel<Unit>().apply {
-        collectOnViewModel {
-            navigateToDeeplink("https://google.com")
-        }
-    }
-
-    override val status: MutableSharedFlow<Status> by add {
-        merge(
-            clickServerDeeplink
-                .mapInIdle { api.testDeeplink() },
-            clickGoToSignInThenGoHome
-                .mapInIdle {
-                    val result = navigateToDeeplinkForResult(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN)
-                    if (result.isOk) {
-                        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
-                    }
-                },
-            clickNavigateByDeeplinkOnly
-                .mapInIdle {
-                    val result: ScreenResult = navigateForResult(DeeplinkSubViewModel(deeplinkSubRequest.value?:""))
-                    if (result.isOk) {
-                        deeplinkSubResult.value = result.data as? String ?: ""
-                    }
-                }
-        ).toStatus()
-    }
-}
+// TODO reactive way.
+//class DeeplinkViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+//
+//    //todo [KSA-48] support localization on kotlin side
+//    override val title: String = "Deeplink"
+//
+//    override val signInRequired: Boolean = true
+//
+//    val deeplinkSubResult by add { viewModelFlow<String>() }
+//    val deeplinkSubRequest by add { viewModelFlow<String>() }
+//
+//    val clickServerDeeplink = viewModelFlow<Unit>()
+//    val clickGoToSignInThenGoHome = viewModelFlow<Unit>()
+//    val clickNavigateByDeeplinkOnly = viewModelFlow<Unit>()
+//    val clickClientDeeplink = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_SIGN_UP)
+//        }
+//    }
+//    val clickGoToHome = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
+//        }
+//    }
+//    val clickGoogleUrl = viewModelFlow<Unit>().apply {
+//        collectOnViewModel {
+//            navigateToDeeplink("https://google.com")
+//        }
+//    }
+//
+//    override val status: MutableSharedFlow<Status> by add {
+//        merge(
+//            clickServerDeeplink
+//                .mapInIdle { api.testDeeplink() },
+//            clickGoToSignInThenGoHome
+//                .mapInIdle {
+//                    val result = navigateToDeeplinkForResult(DeeplinkUrl.DEEPLINK_PATH_SIGN_IN)
+//                    if (result.isOk) {
+//                        navigateToDeeplink(DeeplinkUrl.DEEPLINK_PATH_HOME)
+//                    }
+//                },
+//            clickNavigateByDeeplinkOnly
+//                .mapInIdle {
+//                    val result: ScreenResult = navigateForResult(DeeplinkSubViewModel(deeplinkSubRequest.value?:""))
+//                    if (result.isOk) {
+//                        deeplinkSubResult.value = result.data as? String ?: ""
+//                    }
+//                }
+//        ).toStatus()
+//    }
+//}

@@ -13,7 +13,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiExternalViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiExternalViewModel2
 
 @Composable
 fun ApiExternalScreen(model: ApiExternalViewModel) {
@@ -29,18 +28,18 @@ fun ApiExternalScreen(model: ApiExternalViewModel) {
         }
     }
 }
-
-@Composable
-fun ApiExternalScreen2(model: ApiExternalViewModel2) {
-    Screen(model) {
-        Column {
-            Row {
-                SampleTextField("Input Git hub search keyword", model.input)
-                Button(R.string.call.resourceToString(), model.clickCall)
-            }
-            ScrollableColumn(+model.repoList, Modifier.weight(1f)) {
-                Text(it)
-            }
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiExternalScreen2(model: ApiExternalViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Row {
+//                SampleTextField("Input Git hub search keyword", model.input)
+//                Button(R.string.call.resourceToString(), model.clickCall)
+//            }
+//            ScrollableColumn(+model.repoList, Modifier.weight(1f)) {
+//                Text(it)
+//            }
+//        }
+//    }
+//}

@@ -1,7 +1,6 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.value
 import kim.jeonghyeon.const.DeeplinkUrl
 import kim.jeonghyeon.net.DeeplinkError
 import kim.jeonghyeon.net.DeeplinkInfo

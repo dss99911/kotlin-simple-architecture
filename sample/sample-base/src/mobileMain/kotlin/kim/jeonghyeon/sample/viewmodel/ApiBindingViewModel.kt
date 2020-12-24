@@ -1,8 +1,8 @@
 package kim.jeonghyeon.sample.viewmodel
 
 import kim.jeonghyeon.client.flowSingle
-import kim.jeonghyeon.client.flowViewModel
 import kim.jeonghyeon.client.toData
+import kim.jeonghyeon.client.viewModelFlow
 import kim.jeonghyeon.net.bindApi
 import kim.jeonghyeon.sample.api.AnnotationAction
 import kim.jeonghyeon.sample.api.SampleApi
@@ -17,7 +17,7 @@ class ApiBindingViewModel(val api: SampleApi = serviceLocator.sampleApi, val use
     //todo [KSA-48] support localization on kotlin side
     override val title: String = "Api Binding"
 
-    val result by add { flowViewModel<String>() }
+    val result = viewModelFlow<String>()
 
     override fun onInit() {
         result.load(initStatus) {
@@ -109,87 +109,88 @@ class ApiBindingViewModel(val api: SampleApi = serviceLocator.sampleApi, val use
     }
 }
 
-class ApiBindingViewModel2(val api: SampleApi = serviceLocator.sampleApi, val userApi: UserApi = serviceLocator.userApi) : ModelViewModel() {
-
-    //todo [KSA-48] support localization on kotlin side
-    override val title: String = "Api Binding"
-
-    val clickBind2Api = flowViewModel<Unit>()
-    val clickBind3Api = flowViewModel<Unit>()
-    val clickBindResposneToParameter = flowViewModel<Unit>()
-    val clickBindResposneFieldToParameter = flowViewModel<Unit>()
-    val clickHandleError = flowViewModel<Unit>()
-    val clickBindApiAuthRequired = flowViewModel<Unit>()
-
-    val result by add {
-        merge(
-            initFlow.mapInIdle {
-                api.getIncreasedNumber().toString()
-            }.toData(scope, initStatus),
-
-            merge(
-                clickBind2Api.mapInIdle {
-                    bindApi {
-                        api.getIncreasedNumber()
-                    }.bindApi {
-                        api.getIncreasedNumber()
-                    }.execute().toString()
-                },
-                clickBind3Api.mapInIdle {
-                    bindApi {
-                        api.getIncreasedNumber()
-                    }.bindApi {
-                        api.getIncreasedNumber()
-                    }.bindApi { _, _ ->
-                        api.getIncreasedNumber()
-                    }.execute().toString()
-                },
-                clickBindResposneToParameter.mapInIdle {
-                    bindApi {
-                        api.getIncreasedNumber()
-                    }.bindApi {
-                        api.getIncreasedNumber()
-
-                    }.bindApi { first, second ->
-                        api.minus(first.bindParameter(0), second.bindParameter(1))
-                    }.execute().toString()
-                },
-                clickBindResposneFieldToParameter.mapInIdle {
-                    bindApi {
-                        api.getAnnotation("key1", AnnotationAction.QUERY, "header")
-                    }.bindApi {
-                        //bind field
-                        api.repeat(it.bindParameter(0) { response ->
-                            response::key
-                        }, 2)
-                    }.bindApi { first, _ ->
-                        //bind field's field
-                        api.repeat(first.bindParameter(0) { response ->
-                            val bind = response::data.bind()
-                            bind::second
-                        }, 2)
-                    }.execute().toString()
-                },
-                clickHandleError.mapInIdle {
-                    bindApi {
-                        api.getSuccess()
-                    }.bindApi {
-                        //bind field
-                        api.getRandomError(2)
-                    }.bindApi { _, _ ->
-                        //bind field's field
-                        api.getSuccess()
-                    }.execute().toString()
-                },
-                clickBindApiAuthRequired.mapInIdle {
-                    bindApi {
-                        api.getIncreasedNumber()
-                    }.bindApi {
-                        userApi.getUser()
-                    }.execute().toString()
-                }
-            )
-            .toData(scope, status)
-        )
-    }
-}
+// TODO reactive way.
+//class ApiBindingViewModel2(val api: SampleApi = serviceLocator.sampleApi, val userApi: UserApi = serviceLocator.userApi) : ModelViewModel() {
+//
+//    //todo [KSA-48] support localization on kotlin side
+//    override val title: String = "Api Binding"
+//
+//    val clickBind2Api = viewModelFlow<Unit>()
+//    val clickBind3Api = viewModelFlow<Unit>()
+//    val clickBindResposneToParameter = viewModelFlow<Unit>()
+//    val clickBindResposneFieldToParameter = viewModelFlow<Unit>()
+//    val clickHandleError = viewModelFlow<Unit>()
+//    val clickBindApiAuthRequired = viewModelFlow<Unit>()
+//
+//    val result by add {
+//        merge(
+//            initFlow.mapInIdle {
+//                api.getIncreasedNumber().toString()
+//            }.toData(scope, initStatus),
+//
+//            merge(
+//                clickBind2Api.mapInIdle {
+//                    bindApi {
+//                        api.getIncreasedNumber()
+//                    }.bindApi {
+//                        api.getIncreasedNumber()
+//                    }.execute().toString()
+//                },
+//                clickBind3Api.mapInIdle {
+//                    bindApi {
+//                        api.getIncreasedNumber()
+//                    }.bindApi {
+//                        api.getIncreasedNumber()
+//                    }.bindApi { _, _ ->
+//                        api.getIncreasedNumber()
+//                    }.execute().toString()
+//                },
+//                clickBindResposneToParameter.mapInIdle {
+//                    bindApi {
+//                        api.getIncreasedNumber()
+//                    }.bindApi {
+//                        api.getIncreasedNumber()
+//
+//                    }.bindApi { first, second ->
+//                        api.minus(first.bindParameter(0), second.bindParameter(1))
+//                    }.execute().toString()
+//                },
+//                clickBindResposneFieldToParameter.mapInIdle {
+//                    bindApi {
+//                        api.getAnnotation("key1", AnnotationAction.QUERY, "header")
+//                    }.bindApi {
+//                        //bind field
+//                        api.repeat(it.bindParameter(0) { response ->
+//                            response::key
+//                        }, 2)
+//                    }.bindApi { first, _ ->
+//                        //bind field's field
+//                        api.repeat(first.bindParameter(0) { response ->
+//                            val bind = response::data.bind()
+//                            bind::second
+//                        }, 2)
+//                    }.execute().toString()
+//                },
+//                clickHandleError.mapInIdle {
+//                    bindApi {
+//                        api.getSuccess()
+//                    }.bindApi {
+//                        //bind field
+//                        api.getRandomError(2)
+//                    }.bindApi { _, _ ->
+//                        //bind field's field
+//                        api.getSuccess()
+//                    }.execute().toString()
+//                },
+//                clickBindApiAuthRequired.mapInIdle {
+//                    bindApi {
+//                        api.getIncreasedNumber()
+//                    }.bindApi {
+//                        userApi.getUser()
+//                    }.execute().toString()
+//                }
+//            )
+//            .toData(scope, status)
+//        )
+//    }
+//}

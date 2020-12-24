@@ -1,35 +1,17 @@
 package kim.jeonghyeon.client
 
-import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.ResourceError
-import kim.jeonghyeon.type.Status
-import kim.jeonghyeon.type.UnknownResourceError
+import kim.jeonghyeon.type.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-fun <T> flowViewModel(): MutableSharedFlow<T> = MutableSharedFlow(1, 0, BufferOverflow.DROP_OLDEST)
-fun <T> flowViewModel(initialValue: T): MutableSharedFlow<T> = MutableSharedFlow<T>(1, 0, BufferOverflow.DROP_OLDEST)
+fun <T> viewModelFlow(): ViewModelFlow<T> = ViewModelFlow(MutableSharedFlow(1, 0, BufferOverflow.DROP_OLDEST))
+fun <T> viewModelFlow(initialValue: T): ViewModelFlow<T> = ViewModelFlow(MutableSharedFlow<T>(1, 0, BufferOverflow.DROP_OLDEST))
     .apply {
         tryEmit(initialValue)
     }
-
-/**
- * for empty value.
- */
-fun MutableSharedFlow<Unit>.call() {
-    tryEmit(Unit)
-}
-val <T> SharedFlow<T>.value: T
-    get(): T = replayCache[0]
-
-val <T> SharedFlow<T>.valueOrNull get(): T? = replayCache.getOrNull(0)
-
-var <T> MutableSharedFlow<T>.value: T
-    get(): T = replayCache[0]
-    set(value) { tryEmit(value) }
 
 
 
@@ -39,30 +21,30 @@ var <T> MutableSharedFlow<T>.value: T
  * if retry several times, previous retry get cancelled
  */
 fun <T> Flow<T>.collectResource(scope: CoroutineScope, action: suspend (value: Resource<T>) -> Unit): Job {
-    var job: Job? = null
+    var job = atomic<Job?>(null)
     return map<T, Resource<T>> {
         Resource.Success(it) {
-            job?.cancel()
-            job = collectResource(scope, action)//todo synchronize
+            job.value?.cancel()
+            job.value = collectResource(scope, action)//todo synchronize
         }
     }.catch {
         emit(Resource.Error(if (it is ResourceError) it else UnknownResourceError(it)) {
             scope.launch {
-                job?.cancel()
-                job = collectResource(scope, action)//todo synchronize
+                job.value?.cancel()
+                job.value = collectResource(scope, action)//todo synchronize
             }
 
         })
     }.onStart {
         action(Resource.Loading(cancel = {
-            job?.cancel()
+            job.value?.cancel()
         }) {
-            job?.cancel()
-            job = collectResource(scope, action)//todo synchronize
+            job.value?.cancel()
+            job.value = collectResource(scope, action)//todo synchronize
         })
     }.onEach(action)
         .launchIn(scope)
-        .also { job = it }
+        .also { job.value = it }
 
 }
 

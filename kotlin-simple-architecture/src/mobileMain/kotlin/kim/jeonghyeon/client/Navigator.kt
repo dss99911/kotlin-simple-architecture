@@ -1,6 +1,8 @@
 package kim.jeonghyeon.client
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  *
@@ -19,6 +21,17 @@ object Navigator {
 
     val currentFlow: Flow<BaseViewModel> = _backStack.map {
         it.lastOrNull()?: error("viewModel doesn't exist. at least one viewmoel should exist.")
+    }
+
+    /**
+     * used on IOS
+     */
+    fun watchCurrent(scope: CoroutineScope, perform: (BaseViewModel) -> Unit) {
+        scope.launch {
+            currentFlow.collect {
+                perform(it)
+            }
+        }
     }
 
     val current: BaseViewModel get() = backStack.lastOrNull()?: error("viewModel doesn't exist. at least one viewmoel should exist.")

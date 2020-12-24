@@ -18,7 +18,7 @@ class ApiError(val body: ApiErrorBody, cause: Throwable? = null) :
 fun Exception.isApiErrorOf(expectedBody: ApiErrorBody): Boolean = this is ApiError && body == expectedBody
 
 fun errorApi(code: Int, message: String? = null, cause: Throwable? = null): Nothing {
-    throw ApiError(ApiErrorBody(code, message), cause)
+    throw ApiErrorBody(code, message).toError(cause)
 }
 
 fun errorApi(body: ApiErrorBody, cause: Throwable? = null): Nothing {
@@ -121,6 +121,8 @@ data class ApiErrorBody(
         val VariantAlsoNegotiates = ApiErrorBody(506, "Variant Also Negotiates")
         val InsufficientStorage = ApiErrorBody(507, "Insufficient Storage")
     }
+
+    fun toError(cause: Throwable? = null): ApiError = ApiError(this, cause)
 }
 
 fun HttpStatusCode.isApiError(): Boolean = value == HTTP_STATUS_CODE_API_ERROR

@@ -19,10 +19,8 @@ class ApiDbViewModel(private val repository: WordRepository = serviceLocator.wor
     //todo [KSA-48] support localization on kotlin side
     override val title: String = "DB Api together"
 
-    val wordList by add {
-        repository.word.toData(initStatus)
-    }
-    val newWord by add { flowViewModel<String>() }
+    val wordList = repository.word.toData(initStatus)
+    val newWord = viewModelFlow<String>()
 
     fun onClickAdd() {
         status.load {
@@ -31,20 +29,21 @@ class ApiDbViewModel(private val repository: WordRepository = serviceLocator.wor
     }
 }
 
-class ApiDbViewModel2(private val repository: WordRepository = serviceLocator.wordRepository) : ModelViewModel() {
-
-    //todo [KSA-48] support localization on kotlin side
-    override val title: String = "DB Api together"
-
-    val newWord by add { flowViewModel<String>() }
-    val clickAdd = flowViewModel<Unit>()
-
-    val wordList by add {
-        repository.word.toData(initStatus)
-    }
-    override val status: MutableSharedFlow<Status> by add {
-        clickAdd.mapInIdle {
-            repository.insertWord(newWord.valueOrNull?: error("please input word"))
-        }.toStatus()
-    }
-}
+// TODO reactive way.
+//class ApiDbViewModel2(private val repository: WordRepository = serviceLocator.wordRepository) : ModelViewModel() {
+//
+//    //todo [KSA-48] support localization on kotlin side
+//    override val title: String = "DB Api together"
+//
+//    val newWord by add { viewModelFlow<String>() }
+//    val clickAdd = viewModelFlow<Unit>()
+//
+//    val wordList by add {
+//        repository.word.toData(initStatus)
+//    }
+//    override val status: MutableSharedFlow<Status> by add {
+//        clickAdd.mapInIdle {
+//            repository.insertWord(newWord.valueOrNull?: error("please input word"))
+//        }.toStatus()
+//    }
+//}

@@ -12,7 +12,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiParallelViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiParallelViewModel2
 
 @Composable
 fun ApiParallelScreen(model: ApiParallelViewModel) {
@@ -30,20 +29,20 @@ fun ApiParallelScreen(model: ApiParallelViewModel) {
         }
     }
 }
-
-@Composable
-fun ApiParallelScreen2(model: ApiParallelViewModel2) {
-    Screen(model) {
-        Column {
-            SampleTextField("Input value1", model.input1)
-            SampleTextField("Input value2", model.input2)
-            SampleTextField("Input value3", model.input3)
-
-            Button(R.string.update.resourceToString(), model.click)
-
-            ScrollableColumn(list = +model.list, modifier = Modifier.weight(1f)) {
-                Text("key : ${it.first}, value : ${it.second}")
-            }
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiParallelScreen2(model: ApiParallelViewModel2) {
+//    Screen(model) {
+//        Column {
+//            SampleTextField("Input value1", model.input1)
+//            SampleTextField("Input value2", model.input2)
+//            SampleTextField("Input value3", model.input3)
+//
+//            Button(R.string.update.resourceToString(), model.click)
+//
+//            ScrollableColumn(list = +model.list, modifier = Modifier.weight(1f)) {
+//                Text("key : ${it.first}, value : ${it.second}")
+//            }
+//        }
+//    }
+//}

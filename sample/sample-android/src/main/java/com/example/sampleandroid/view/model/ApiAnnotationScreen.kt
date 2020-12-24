@@ -10,7 +10,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiAnnotationViewModel2
 
 @Composable
 fun ApiAnnotationScreen(model: ApiAnnotationViewModel) {
@@ -22,14 +21,14 @@ fun ApiAnnotationScreen(model: ApiAnnotationViewModel) {
         }
     }
 }
-
-@Composable
-fun ApiAnnotationScreen2(model: ApiAnnotationViewModel2) {
-    Screen(model) {
-        Column {
-            SampleTextField("Input value", model.input)
-            Button("update", model.click)
-            Text("current value : ${+model.result}")
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiAnnotationScreen2(model: ApiAnnotationViewModel2) {
+//    Screen(model) {
+//        Column {
+//            SampleTextField("Input value", model.input)
+//            Button("update", model.click)
+//            Text("current value : ${+model.result}")
+//        }
+//    }
+//}

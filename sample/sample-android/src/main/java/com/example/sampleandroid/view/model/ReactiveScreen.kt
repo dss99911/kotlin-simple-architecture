@@ -17,7 +17,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
-import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel2
 
 @Composable
 fun ReactiveScreen(model: ReactiveViewModel) {
@@ -44,24 +43,25 @@ fun ReactiveScreen(model: ReactiveViewModel) {
     }
 }
 
-@Composable
-fun ReactiveScreen2(model: ReactiveViewModel2) {
-    Screen(model) {
-        Column {
-            Row(modifier = Modifier.padding(4.dp)) {
-                SampleTextField(
-                    "Input new row",
-                    model.newWord,
-                    modifier = Modifier.weight(1f)
-                )
-                Button(R.string.add.resourceToString(), model.click, Modifier.align(CenterVertically))
-            }
-
-            SampleTextField("Search", model.keyword)
-
-            ScrollableColumn(+model.list, Modifier.weight(1f).fillMaxWidth()) {
-                Text(it)
-            }
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ReactiveScreen2(model: ReactiveViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Row(modifier = Modifier.padding(4.dp)) {
+//                SampleTextField(
+//                    "Input new row",
+//                    model.newWord,
+//                    modifier = Modifier.weight(1f)
+//                )
+//                Button(R.string.add.resourceToString(), model.click, Modifier.align(CenterVertically))
+//            }
+//
+//            SampleTextField("Search", model.keyword)
+//
+//            ScrollableColumn(+model.list, Modifier.weight(1f).fillMaxWidth()) {
+//                Text(it)
+//            }
+//        }
+//    }
+//}

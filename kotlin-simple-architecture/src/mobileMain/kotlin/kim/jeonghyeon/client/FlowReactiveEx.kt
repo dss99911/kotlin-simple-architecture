@@ -2,8 +2,8 @@ package kim.jeonghyeon.client
 
 import kim.jeonghyeon.type.Resource
 import kim.jeonghyeon.type.Status
+import kim.jeonghyeon.type.atomic
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlin.experimental.ExperimentalTypeInference
 
@@ -30,8 +30,8 @@ fun <T, R> Flow<T>.transformCancelRunning(scope: CoroutineScope, @BuilderInferen
  * allow multiple emit. SUSPEND
  * retry collect all emits.
  */
-fun <T> Flow<T>.toResource(scope: CoroutineScope): MutableSharedFlow<Resource<T>> {
-    val result = flowViewModel<Resource<T>>()
+fun <T> Flow<T>.toResource(scope: CoroutineScope): ViewModelFlow<Resource<T>> {
+    val result = viewModelFlow<Resource<T>>()
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -43,8 +43,8 @@ fun <T> Flow<T>.toResource(scope: CoroutineScope): MutableSharedFlow<Resource<T>
     return result
 }
 
-fun <T> Flow<T>.toStatus(scope: CoroutineScope): MutableSharedFlow<Status> {
-    val result = flowViewModel<Status>()
+fun <T> Flow<T>.toStatus(scope: CoroutineScope): ViewModelFlow<Status> {
+    val result = viewModelFlow<Status>()
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -60,8 +60,8 @@ fun <T> Flow<T>.toStatus(scope: CoroutineScope): MutableSharedFlow<Status> {
  * - 1 cache
  * - assign data, status separately
  */
-fun <T> Flow<T>.toData(scope: CoroutineScope, status: MutableSharedFlow<Status>? = null): MutableSharedFlow<T> {
-    val result = flowViewModel<T>()
+fun <T> Flow<T>.toData(scope: CoroutineScope, status: MutableSharedFlow<Status>? = null): ViewModelFlow<T> {
+    val result = viewModelFlow<T>()
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -89,17 +89,17 @@ private fun <T, R> Flow<T>.transformWithJob(scope: CoroutineScope, jobPolicy: Fl
     val result = MutableSharedFlow<Any?>()
     return result.onActive(scope) {
         if (it) {
-            var job: Job? = null
+            var job = atomic<Job?>(null)
             scope.launch {
                 catch {
                     result.emit(ExceptionOnFlow(it))
                 }.collect {
                     if (jobPolicy == FlowJobPolicy.CANCEL_RUNNING) {
-                        job?.cancel()
+                        job.value?.cancel()
                     }
 
-                    if (jobPolicy != FlowJobPolicy.IN_IDLE || job?.isActive != true) {
-                        job = scope.launch {
+                    if (jobPolicy != FlowJobPolicy.IN_IDLE || job.value?.isActive != true) {
+                        job.value = scope.launch {
                             try {
                                 object : FlowCollector<R> {
                                     override suspend fun emit(value: R) {

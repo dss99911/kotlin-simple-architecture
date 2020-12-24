@@ -24,17 +24,17 @@ class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
     //todo [KSA-48] support localization on kotlin side
     override val title: String = "Reactive"
 
-    val list by add { flowViewModel<List<String>>() }
-    val newWord by add { flowViewModel<String>() }
+    val list = viewModelFlow<List<String>>()
+    val newWord = viewModelFlow<String>()
 
     /**
      * emit status when error only. so, when type keyword, loading ui doesn't block user typing.
      */
-    val keywordStatus by add { flowViewModel<Status>() }
+    val keywordStatus = viewModelFlow<Status>()
 
-    override val status: MutableSharedFlow<Status> by add { flowViewModel<Status>().withSource(keywordStatus.filter { it.isError() }) }
+    override val status: ViewModelFlow<Status> = viewModelFlow<Status>().withSource(keywordStatus.filter { it.isError() })
 
-    val keyword by add { flowViewModel<String>() }
+    val keyword = viewModelFlow<String>()
 
     override fun onInit() {
         list.load(initStatus) {
@@ -56,46 +56,47 @@ class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) :
     }
 }
 
-class ReactiveViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
-
-    //todo [KSA-48] support localization on kotlin side
-    override val title: String = "Reactive"
-
-    val keyword by add { flowViewModel<String>() }
-    val newWord by add { flowViewModel<String>() }
-    val click by add { flowViewModel<Unit>() }
-
-    val list by add {
-        merge(
-            initFlow
-                .map {
-                    api.getWords()
-                }
-                .toData(initStatus),
-            keyword
-                .debounce(1000)
-                .mapCancelRunning {
-                    api.getWordsOfKeyword(it)
-                }
-                .toData(keywordStatus),
-            click
-                .mapInIdle {
-                    api.addWord(newWord.valueOrNull?: error("input word"))
-                    api.getWordsOfKeyword(keyword.valueOrNull?:"")
-                }
-                .toData(status)
-        )
-    }
-
-    val keywordStatus by add { flowViewModel<Status>() }
-
-    override val status: MutableSharedFlow<Status> by add {
-        //emit status when error only. so, when type keyword, loading ui doesn't block user typing.
-        keywordStatus.filter { it.isError() }.toStatus()
-    }
-
-
-}
+// TODO reactive way.
+//class ReactiveViewModel2(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+//
+//    //todo [KSA-48] support localization on kotlin side
+//    override val title: String = "Reactive"
+//
+//    val keyword by add { viewModelFlow<String>() }
+//    val newWord by add { viewModelFlow<String>() }
+//    val click by add { viewModelFlow<Unit>() }
+//
+//    val list by add {
+//        merge(
+//            initFlow
+//                .map {
+//                    api.getWords()
+//                }
+//                .toData(initStatus),
+//            keyword
+//                .debounce(1000)
+//                .mapCancelRunning {
+//                    api.getWordsOfKeyword(it)
+//                }
+//                .toData(keywordStatus),
+//            click
+//                .mapInIdle {
+//                    api.addWord(newWord.valueOrNull?: error("input word"))
+//                    api.getWordsOfKeyword(keyword.valueOrNull?:"")
+//                }
+//                .toData(status)
+//        )
+//    }
+//
+//    val keywordStatus by add { viewModelFlow<Status>() }
+//
+//    override val status: MutableSharedFlow<Status> by add {
+//        //emit status when error only. so, when type keyword, loading ui doesn't block user typing.
+//        keywordStatus.filter { it.isError() }.toStatus()
+//    }
+//
+//
+//}
 
 /**
  * TODO arrange the comment

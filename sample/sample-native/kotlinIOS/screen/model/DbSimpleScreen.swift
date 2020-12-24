@@ -11,7 +11,7 @@ import sample_base
 func DbSimpleScreen(_ model: DbSimpleViewModel) -> some View {
     Screen(model) {
         Column {
-            List(model.wordList.value as? [Word] ?? [Word](), id: \.self.id) { item in
+            List(model.wordList.asValue(viewModel: model) as? [Word] ?? [Word](), id: \.self.id) { item in
                 Text("id : \(item.id), text : \(item.text)")
             }
             Row {

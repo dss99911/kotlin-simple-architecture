@@ -6,7 +6,6 @@ import com.example.sampleandroid.view.widget.SampleTextField
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.sample.viewmodel.DeeplinkSubViewModel
-import kim.jeonghyeon.sample.viewmodel.DeeplinkSubViewModel2
 
 @Composable
 fun DeeplinkSubScreen(model: DeeplinkSubViewModel) {
@@ -18,12 +17,13 @@ fun DeeplinkSubScreen(model: DeeplinkSubViewModel) {
     }
 }
 
-@Composable
-fun DeeplinkSubScreen2(model: DeeplinkSubViewModel2) {
-    Screen(model) {
-        Column {
-            SampleTextField("Input value", model.result)
-            Button("OK", model.click)
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun DeeplinkSubScreen2(model: DeeplinkSubViewModel2) {
+//    Screen(model) {
+//        Column {
+//            SampleTextField("Input value", model.result)
+//            Button("OK", model.click)
+//        }
+//    }
+//}

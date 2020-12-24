@@ -7,7 +7,6 @@ import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.sample.viewmodel.ApiBindingViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiBindingViewModel2
 
 @Composable
 fun ApiBindingScreen(model: ApiBindingViewModel) {
@@ -24,17 +23,18 @@ fun ApiBindingScreen(model: ApiBindingViewModel) {
     }
 }
 
-@Composable
-fun ApiBindingScreen2(model: ApiBindingViewModel2) {
-    Screen(model) {
-        ScrollableColumn {
-            Text("Result : ${+model.result}")
-            Button("Bind 2 Api", model.clickBind2Api)
-            Button("Bind 3 Api", model.clickBind3Api)
-            Button("Bind Response to Parameter", model.clickBindResposneToParameter)
-            Button("Bind Response's Field to Parameter", model.clickBindResposneFieldToParameter)
-            Button("Handle Error", model.clickHandleError)
-            Button("Bind Api with Auth", model.clickBindApiAuthRequired)
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiBindingScreen2(model: ApiBindingViewModel2) {
+//    Screen(model) {
+//        ScrollableColumn {
+//            Text("Result : ${+model.result}")
+//            Button("Bind 2 Api", model.clickBind2Api)
+//            Button("Bind 3 Api", model.clickBind3Api)
+//            Button("Bind Response to Parameter", model.clickBindResposneToParameter)
+//            Button("Bind Response's Field to Parameter", model.clickBindResposneFieldToParameter)
+//            Button("Handle Error", model.clickHandleError)
+//            Button("Bind Api with Auth", model.clickBindApiAuthRequired)
+//        }
+//    }
+//}

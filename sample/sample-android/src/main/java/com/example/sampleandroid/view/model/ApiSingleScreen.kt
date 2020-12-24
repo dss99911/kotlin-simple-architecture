@@ -10,7 +10,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiSingleViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiSingleViewModel2
 
 @Composable
 fun ApiSingleScreen(model: ApiSingleViewModel) {
@@ -23,13 +22,14 @@ fun ApiSingleScreen(model: ApiSingleViewModel) {
     }
 }
 
-@Composable
-fun ApiSingleScreen2(model: ApiSingleViewModel2) {
-    Screen(model) {
-        Column {
-            Text("current value : ${+model.result}")
-            SampleTextField("Input value", model.input)
-            Button("update", model.click)
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiSingleScreen2(model: ApiSingleViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Text("current value : ${+model.result}")
+//            SampleTextField("Input value", model.input)
+//            Button("update", model.click)
+//        }
+//    }
+//}

@@ -10,7 +10,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.DeeplinkViewModel
-import kim.jeonghyeon.sample.viewmodel.DeeplinkViewModel2
 
 @Composable
 fun DeeplinkScreen(model: DeeplinkViewModel) {
@@ -28,18 +27,19 @@ fun DeeplinkScreen(model: DeeplinkViewModel) {
     }
 }
 
-@Composable
-fun DeeplinkScreen2(model: DeeplinkViewModel2) {
-    Screen(model) {
-        ScrollableColumn {
-            Button("Deeplink on client", model.clickClientDeeplink)
-            Button("Deeplink from server", model.clickServerDeeplink)
-            Button("Deeplink to home", model.clickGoToHome)
-            Button("Deeplink to signIn then home", model.clickGoToSignInThenGoHome)
-            Button("link to google", model.clickGoogleUrl)
-            SampleTextField("Input parameter", model.deeplinkSubRequest)
-            Text("result value : ${+model.deeplinkSubResult}")
-            Button("navigate to screen by deeplink only", model.clickNavigateByDeeplinkOnly)
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun DeeplinkScreen2(model: DeeplinkViewModel2) {
+//    Screen(model) {
+//        ScrollableColumn {
+//            Button("Deeplink on client", model.clickClientDeeplink)
+//            Button("Deeplink from server", model.clickServerDeeplink)
+//            Button("Deeplink to home", model.clickGoToHome)
+//            Button("Deeplink to signIn then home", model.clickGoToSignInThenGoHome)
+//            Button("link to google", model.clickGoogleUrl)
+//            SampleTextField("Input parameter", model.deeplinkSubRequest)
+//            Text("result value : ${+model.deeplinkSubResult}")
+//            Button("navigate to screen by deeplink only", model.clickNavigateByDeeplinkOnly)
+//        }
+//    }
+//}

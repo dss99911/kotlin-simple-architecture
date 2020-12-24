@@ -1,13 +1,73 @@
 package kim.jeonghyeon.client
 
-import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.type.ResourceError
-import kim.jeonghyeon.type.Status
-import kim.jeonghyeon.type.UnknownResourceError
+import kim.jeonghyeon.annotation.SimpleArchInternal
+import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlin.experimental.ExperimentalTypeInference
+
+
+/**
+ * interface is not recognized on swift.
+ * so added wrapper
+ */
+class ViewModelFlow<T>(val flow: MutableSharedFlow<T>) : MutableSharedFlow<T> {
+
+    /**
+     * used on Swift
+     */
+    fun asValue(viewModel: BaseViewModel): T? {
+        if (viewModel.flowSet.value.contains(this)) {
+            return valueOrNull
+        }
+        viewModel.flowSet.value = (viewModel.flowSet.value + this)
+        viewModel.scope.launch {
+            flow.collect {
+                viewModel.changeCount.value ++
+            }
+        }
+
+        return valueOrNull
+    }
+
+    @InternalCoroutinesApi
+    override suspend fun collect(collector: FlowCollector<T>) {
+        flow.collect(collector)
+    }
+
+    override val subscriptionCount: StateFlow<Int>
+        get() = flow.subscriptionCount
+
+    override suspend fun emit(value: T) {
+        flow.emit(value)
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun resetReplayCache() {
+        flow.resetReplayCache()
+    }
+
+    override fun tryEmit(value: T): Boolean {
+        return flow.tryEmit(value)
+    }
+
+    override val replayCache: List<T>
+        get() = flow.replayCache
+
+    var value: T
+        get(): T = replayCache[0]
+        set(value) { tryEmit(value)}
+
+    val valueOrNull get(): T? = replayCache.getOrNull(0)
+}
+
+/**
+ * for empty value.
+ */
+fun ViewModelFlow<Unit>.call() {
+    tryEmit(Unit)
+}
 
 
 fun <T> flowSingle(action: suspend () -> T): Flow<T> = flow {
@@ -19,18 +79,18 @@ fun <T> flowSingle(action: suspend () -> T): Flow<T> = flow {
  * - if exception occurs, all subscriber is disconnected. at that time, reset cache, so that, when retry by collecting again. upstream will be collected again.
  */
 fun <T> Flow<T>.toShare(scope: CoroutineScope): Flow<T> {
-    var job: Job? = null
+    var job = atomic<Job?>(null)
     val flow = MutableSharedFlow<Resource<T>>(1, 0, BufferOverflow.DROP_OLDEST)
     flow.onActive(scope) {
         if (it) {
-            job = scope.launch {
+            job.value = scope.launch {
                 this@toShare
                     .map<T, Resource<T>> { Resource.Success(it) }
                     .catch { emit(Resource.Error(if (it is ResourceError) it else UnknownResourceError(it))) }
                     .collect { flow.emit(it) }
             }
         } else {
-            job?.cancel()
+            job.value?.cancel()
             if (flow.replayCache.getOrNull(0)?.isError() == true) {
                 flow.resetReplayCache()
             }

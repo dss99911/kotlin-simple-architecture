@@ -10,7 +10,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiHeaderViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiHeaderViewModel2
 
 @Composable
 fun ApiHeaderScreen(model: ApiHeaderViewModel) {
@@ -22,14 +21,15 @@ fun ApiHeaderScreen(model: ApiHeaderViewModel) {
         }
     }
 }
-
-@Composable
-fun ApiHeaderScreen2(model: ApiHeaderViewModel2) {
-    Screen(model) {
-        Column {
-            Text("current header : ${+model.result}")
-            SampleTextField("Input custom header", model.input)
-            Button("change header", model.click)
-        }
-    }
-}
+// TODO reactive way.
+//
+//@Composable
+//fun ApiHeaderScreen2(model: ApiHeaderViewModel2) {
+//    Screen(model) {
+//        Column {
+//            Text("current header : ${+model.result}")
+//            SampleTextField("Input custom header", model.input)
+//            Button("change header", model.click)
+//        }
+//    }
+//}

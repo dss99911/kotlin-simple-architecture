@@ -20,8 +20,7 @@
 		5520BC992544B5F00080A5E0 /* ApiHeaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5520BC982544B5F00080A5E0 /* ApiHeaderScreen.swift */; };
 		5520BC9B2544E0910080A5E0 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5520BC9A2544E0910080A5E0 /* Navigator.swift */; };
 		552C23142532090400947BE3 /* Snackbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552C23132532090400947BE3 /* Snackbar.swift */; };
-		5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172D2531BBC500A56449 /* ReactiveScreen.swift */; };
-		556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172F2531DD5400A56449 /* NoReactiveScreen.swift */; };
+		556517302531DD5400A56449 /* ReactiveScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5565172F2531DD5400A56449 /* ReactiveScreen.swift */; };
 		55817E8D250AF71300DF8271 /* ThreadEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55817E8C250AF71300DF8271 /* ThreadEx.swift */; };
 		559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 559105F524424C4100ADA03F /* kotlinIOS.xcdatamodeld */; };
 		559105FB24424C4200ADA03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 559105FA24424C4200ADA03F /* Assets.xcassets */; };
@@ -84,8 +83,7 @@
 		552C23132532090400947BE3 /* Snackbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Snackbar.swift; sourceTree = "<group>"; };
 		5530048D249A76BC00981F3E /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
 		554B058424D5F52300F10D33 /* KotlinApi.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KotlinApi.framework; path = "../sample-base/build/fat-framework/KotlinApi.framework"; sourceTree = "<group>"; };
-		5565172D2531BBC500A56449 /* ReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveScreen.swift; sourceTree = "<group>"; };
-		5565172F2531DD5400A56449 /* NoReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoReactiveScreen.swift; sourceTree = "<group>"; };
+		5565172F2531DD5400A56449 /* ReactiveScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactiveScreen.swift; sourceTree = "<group>"; };
 		55817E8C250AF71300DF8271 /* ThreadEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEx.swift; sourceTree = "<group>"; };
 		559105EE24424C4100ADA03F /* kotlinIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kotlinIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559105F624424C4100ADA03F /* kotlinIOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = kotlinIOS.xcdatamodel; sourceTree = "<group>"; };
@@ -175,8 +173,7 @@
 				55EE98CC2520905900ECD534 /* ApiBindingScreen.swift */,
 				55C5D11F25272B2500438969 /* DeeplinkScreen.swift */,
 				55C5D1262527405B00438969 /* DeeplinkSubScreen.swift */,
-				5565172D2531BBC500A56449 /* ReactiveScreen.swift */,
-				5565172F2531DD5400A56449 /* NoReactiveScreen.swift */,
+				5565172F2531DD5400A56449 /* ReactiveScreen.swift */,
 				5520BC982544B5F00080A5E0 /* ApiHeaderScreen.swift */,
 			);
 			path = model;
@@ -550,11 +547,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				55D47FC024C42C9400BEBA59 /* ApiPollingScreen.swift in Sources */,
-				556517302531DD5400A56449 /* NoReactiveScreen.swift in Sources */,
+				556517302531DD5400A56449 /* ReactiveScreen.swift in Sources */,
 				55D47FBE24C343D000BEBA59 /* Localizable.swift in Sources */,
 				559105F724424C4100ADA03F /* kotlinIOS.xcdatamodeld in Sources */,
 				217DEBC820DDFC41B950C985 /* ModelScreen.swift in Sources */,
-				5565172E2531BBC500A56449 /* ReactiveScreen.swift in Sources */,
 				55DE1FAC252522D5004A8F1B /* UserScreen.swift in Sources */,
 				55C5D1252527334000438969 /* SampleTextField.swift in Sources */,
 				55C5D12025272B2500438969 /* DeeplinkScreen.swift in Sources */,

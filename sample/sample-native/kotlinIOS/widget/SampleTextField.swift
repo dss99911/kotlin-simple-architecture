@@ -11,6 +11,7 @@ import SwiftUI
 import sample_base
 
 
-func SampleTextField<S>(_ title: S, _ text: Kotlin_simple_architectureDataFlow<NSString>) -> some View where S : StringProtocol {
+func SampleTextField(_ title: String, _ text: Kotlin_simple_architectureViewModelFlow<NSString>) -> some View {
     TextField(title, text: ++text)
 }
+

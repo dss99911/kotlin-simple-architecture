@@ -12,7 +12,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.ApiSequentialViewModel
-import kim.jeonghyeon.sample.viewmodel.ApiSequentialViewModel2
 
 @Composable
 fun ApiSequentialScreen(model: ApiSequentialViewModel) {
@@ -31,19 +30,20 @@ fun ApiSequentialScreen(model: ApiSequentialViewModel) {
     }
 }
 
-@Composable
-fun ApiSequentialScreen2(model: ApiSequentialViewModel2) {
-    Screen(model) {
-        Column {
-            SampleTextField("Input value1", model.input1)
-            SampleTextField("Input value2", model.input2)
-            SampleTextField("Input value3", model.input3)
-
-            Button(R.string.update.resourceToString(), model.click)
-
-            ScrollableColumn(list = +model.textList, modifier = Modifier.weight(1f)) {
-                Text(it)
-            }
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun ApiSequentialScreen2(model: ApiSequentialViewModel2) {
+//    Screen(model) {
+//        Column {
+//            SampleTextField("Input value1", model.input1)
+//            SampleTextField("Input value2", model.input2)
+//            SampleTextField("Input value3", model.input3)
+//
+//            Button(R.string.update.resourceToString(), model.click)
+//
+//            ScrollableColumn(list = +model.textList, modifier = Modifier.weight(1f)) {
+//                Text(it)
+//            }
+//        }
+//    }
+//}

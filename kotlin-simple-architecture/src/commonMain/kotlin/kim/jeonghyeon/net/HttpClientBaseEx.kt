@@ -127,7 +127,7 @@ object SimpleApiUtil {
                      */
                     Preference().removeUserToken()
                 }
-                ApiError(ApiErrorBody(status.value, status.description), e)
+                ApiErrorBody(status.value, status.description).toError(e)
             }
             else -> {
                 ApiError(ApiErrorBody.Unknown, e)

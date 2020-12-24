@@ -29,7 +29,6 @@ func MainActivity() -> some View {
             case is DeeplinkViewModel: DeeplinkScreen(viewModel as! DeeplinkViewModel)
             case is DeeplinkSubViewModel: DeeplinkSubScreen(viewModel as! DeeplinkSubViewModel)
             case is ReactiveViewModel: ReactiveScreen(viewModel as! ReactiveViewModel)
-            case is NoReactiveViewModel: NoReactiveScreen(viewModel as! NoReactiveViewModel)
             case is SignInViewModel: SignInScreen(viewModel as! SignInViewModel)
             case is SignUpViewModel: SignUpScreen(viewModel as! SignUpViewModel)
             case is UserViewModel: UserScreen(viewModel as! UserViewModel)

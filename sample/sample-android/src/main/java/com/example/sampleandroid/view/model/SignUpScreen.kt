@@ -6,7 +6,6 @@ import com.example.sampleandroid.view.widget.SampleTextField
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.sample.viewmodel.SignUpViewModel
-import kim.jeonghyeon.sample.viewmodel.SignUpViewModel2
 
 @Composable
 fun SignUpScreen(model: SignUpViewModel) {
@@ -22,16 +21,17 @@ fun SignUpScreen(model: SignUpViewModel) {
     }
 }
 
-@Composable
-fun SignUpScreen2(model: SignUpViewModel2) {
-    Screen(model) {
-        Column {
-            SampleTextField("Id", model.inputId)
-            SampleTextField("Name", model.inputName)
-            SampleTextField("Password", model.inputPassword)
-            Button("Sign up", model.clickSignUp)
-            Button("Google", model.clickGoogle)
-            Button("Facebook", model.clickFacebook)
-        }
-    }
-}
+// TODO reactive way.
+//@Composable
+//fun SignUpScreen2(model: SignUpViewModel2) {
+//    Screen(model) {
+//        Column {
+//            SampleTextField("Id", model.inputId)
+//            SampleTextField("Name", model.inputName)
+//            SampleTextField("Password", model.inputPassword)
+//            Button("Sign up", model.clickSignUp)
+//            Button("Google", model.clickGoogle)
+//            Button("Facebook", model.clickFacebook)
+//        }
+//    }
+//}
