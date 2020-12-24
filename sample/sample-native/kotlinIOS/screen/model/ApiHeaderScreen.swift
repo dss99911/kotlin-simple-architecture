@@ -13,7 +13,7 @@ import sample_base
 func ApiHeaderScreen(_ model: ApiHeaderViewModel) -> some View {
     Screen(model) {
         Column {
-            Text("current header : \(model.result.asValue(viewModel: model) ?? "")")
+            Text("current header : \(+model.result)")
             SampleTextField("Input custom header", model.input)
             Button("change header") { model.onClick() }
         }

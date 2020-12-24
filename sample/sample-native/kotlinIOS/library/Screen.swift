@@ -55,18 +55,18 @@ struct Screen<Content> : View where Content : View {
                 EmptyView()
             }
             
-            if (model.initStatus.asValue(viewModel: model)?.isLoading() ?? false) {
+            if (model.initStatus.asValue()?.isLoading() ?? false) {
                 initLoading()
-            } else if (model.initStatus.asValue(viewModel: model)?.isError() ?? false) {
+            } else if (model.initStatus.asValue()?.isError() ?? false) {
                 initError(model.initStatus.value!.error()) {
                     model.initStatus.value!.retryOnError()
                 }
             } else {
                 children()
                 
-                if (model.status.asValue(viewModel: model)?.isLoading() ?? false) {
+                if (model.status.asValue()?.isLoading() ?? false) {
                     loading()
-                } else if (model.status.asValue(viewModel: model)?.isError() ?? false) {
+                } else if (model.status.asValue()?.isError() ?? false) {
                     error(model.status.value!.error()) {
                         model.status.value!.retryOnError()
                     }

@@ -7,7 +7,7 @@ import Foundation
 import SwiftUI
 import sample_base
 
-func ReactiveScreen(_ model: ReactiveViewModel) -> some View {
+func SearchScreen(_ model: SearchViewModel) -> some View {
     Screen(model) {
         Column {
             Row {
@@ -18,7 +18,7 @@ func ReactiveScreen(_ model: ReactiveViewModel) -> some View {
             }
             SampleTextField("Search", model.keyword)
             
-            List(model.list.asValue(viewModel: model) as? [String] ?? [String](), id: \.self) { item in
+            List(+model.list as? [String] ?? [String](), id: \.self) { item in
                 Text("\(item)")
             }
         }

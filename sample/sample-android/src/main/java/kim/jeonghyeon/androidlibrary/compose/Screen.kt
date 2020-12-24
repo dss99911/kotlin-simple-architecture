@@ -14,8 +14,6 @@ import kim.jeonghyeon.androidlibrary.compose.widget.LoadingBox
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.androidlibrary.extension.toast
 import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.value
-import kim.jeonghyeon.client.valueOrNull
 import kim.jeonghyeon.type.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -69,7 +67,7 @@ fun <T> Flow<T>.asState(
 ): State<T?> = collectAsState(
     when (this) {
         is SharedFlow<T> -> {
-            valueOrNull
+            replayCache.getOrNull(0)
         }
         is StateFlow<T> -> {
             value

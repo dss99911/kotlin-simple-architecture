@@ -16,10 +16,10 @@ import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.compose.widget.ScrollableColumn
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.sample.compose.R
-import kim.jeonghyeon.sample.viewmodel.ReactiveViewModel
+import kim.jeonghyeon.sample.viewmodel.SearchViewModel
 
 @Composable
-fun ReactiveScreen(model: ReactiveViewModel) {
+fun SearchScreen(model: SearchViewModel) {
     Screen(model) {
         Column {
             Row(modifier = Modifier.padding(4.dp)) {

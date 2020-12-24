@@ -18,7 +18,7 @@ func DeeplinkScreen(_ model: DeeplinkViewModel) -> some View {
             Button("Deeplink to signIn then home") { model.onClickGoToSignInThenGoHome() }
             Button("link to google") { model.onClickGoogleUrl() }
             SampleTextField("Input parameter", model.deeplinkSubRequest)
-            Text("result value : \(model.deeplinkSubResult.asValue(viewModel: model) ?? "")")
+            Text("result value : \(+model.deeplinkSubResult)")
             Button("navigate to screen by deeplink only") { model.onClickNavigateByDeeplinkOnly() }
         }
     }

@@ -14,7 +14,7 @@ import sample_base
 func ApiAnnotationScreen(_ model: ApiAnnotationViewModel) -> some View {
     Screen(model) {
         Column(alignment: .center) {
-            Text("current value : \(model.result.asValue(viewModel: model) ?? "")")
+            Text("current value : \(+model.result)")
             SampleTextField("update", model.input).frame(width: 100, alignment: .center)
             Button("Update") {
                 model.onClick()

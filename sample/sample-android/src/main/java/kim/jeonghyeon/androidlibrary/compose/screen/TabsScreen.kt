@@ -9,13 +9,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import kim.jeonghyeon.androidlibrary.compose.unaryPlus
-import kim.jeonghyeon.client.value
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kim.jeonghyeon.client.ViewModelFlow
 
 data class TabData(val icon: ImageVector?, val title: String, val view: @Composable () -> Unit)
 
 @Composable
-fun SimpleTabsScreen(tabIndexFlow: MutableSharedFlow<Int>, tabs: List<TabData>) {
+fun SimpleTabsScreen(tabIndexFlow: ViewModelFlow<Int>, tabs: List<TabData>) {
     val tabIndex = +tabIndexFlow ?: 0
 
     Column {

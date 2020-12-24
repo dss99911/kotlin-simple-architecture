@@ -11,7 +11,7 @@ import sample_base
 func ApiSingleScreen(_ model: ApiSingleViewModel) -> some View {
     Screen(model) {
         Column(alignment: .center) {
-            Text("current value : \(model.result.asValue(viewModel: model) ?? "")")
+            Text("current value : \(+model.result)")
             SampleTextField("Enter value", model.input).frame(width: 100, alignment: .center)
             Button("Update") { model.onClick() }
         }

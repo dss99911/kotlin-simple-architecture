@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.sampleandroid.ui.AndroidLibraryTheme
@@ -13,13 +12,11 @@ import com.example.sampleandroid.view.MainScaffold
 import com.example.sampleandroid.view.home.HomeScreen
 import com.example.sampleandroid.view.model.*
 import kim.jeonghyeon.androidlibrary.compose.asValue
-import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.client.BaseActivity
 import kim.jeonghyeon.client.BaseViewModel
 import kim.jeonghyeon.client.Deeplink
 import kim.jeonghyeon.sample.deeplinkList
 import kim.jeonghyeon.sample.viewmodel.*
-import kotlinx.coroutines.flow.SharedFlow
 
 class MainActivity : BaseActivity() {
     override val rootViewModel: BaseViewModel = HomeViewModel()
@@ -68,7 +65,7 @@ fun ScreenContent(viewModel: BaseViewModel) = when (viewModel) {
     is DbSimpleViewModel -> DbSimpleScreen(viewModel)
     is DeeplinkViewModel -> DeeplinkScreen(viewModel)
     is DeeplinkSubViewModel -> DeeplinkSubScreen(viewModel)
-    is ReactiveViewModel -> ReactiveScreen(viewModel)
+    is SearchViewModel -> SearchScreen(viewModel)
     is SignInViewModel -> SignInScreen(viewModel)
     is SignUpViewModel -> SignUpScreen(viewModel)
     is UserViewModel -> UserScreen(viewModel)

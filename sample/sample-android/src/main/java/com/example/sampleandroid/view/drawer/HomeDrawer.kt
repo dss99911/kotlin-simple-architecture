@@ -15,7 +15,6 @@ import kim.jeonghyeon.androidlibrary.compose.unaryPlus
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerH
 import kim.jeonghyeon.androidlibrary.compose.widget.SpacerW
 import kim.jeonghyeon.client.Navigator
-import kim.jeonghyeon.client.value
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.HomeViewModel
 

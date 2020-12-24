@@ -1,6 +1,7 @@
 package kim.jeonghyeon.client
 
 import kim.jeonghyeon.annotation.SimpleArchInternal
+import kim.jeonghyeon.delegate.weak
 import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
@@ -11,16 +12,22 @@ import kotlin.experimental.ExperimentalTypeInference
 /**
  * interface is not recognized on swift.
  * so added wrapper
+ *
+ * plus, refer the viewModel. so, swift side code looks simpler. but it may not good approach.
+ * also, ViewModelFlow can't be shared on multiple viewModel. consider this one more time when developing a viewModel refer another viewModel
  */
-class ViewModelFlow<T>(val flow: MutableSharedFlow<T>) : MutableSharedFlow<T> {
-
+class ViewModelFlow<T>(viewModel: BaseViewModel, val flow: MutableSharedFlow<T>) : MutableSharedFlow<T> {
+    val viewModelWeakReference: WeakReference<BaseViewModel> = WeakReference(viewModel)
     /**
      * used on Swift
      */
-    fun asValue(viewModel: BaseViewModel): T? {
+    fun asValue(): T? {
+        val viewModel = viewModelWeakReference.get()?:return valueOrNull
+
         if (viewModel.flowSet.value.contains(this)) {
             return valueOrNull
         }
+
         viewModel.flowSet.value = (viewModel.flowSet.value + this)
         viewModel.scope.launch {
             flow.collect {
@@ -79,7 +86,7 @@ fun <T> flowSingle(action: suspend () -> T): Flow<T> = flow {
  * - if exception occurs, all subscriber is disconnected. at that time, reset cache, so that, when retry by collecting again. upstream will be collected again.
  */
 fun <T> Flow<T>.toShare(scope: CoroutineScope): Flow<T> {
-    var job = atomic<Job?>(null)
+    val job = atomic<Job?>(null)
     val flow = MutableSharedFlow<Resource<T>>(1, 0, BufferOverflow.DROP_OLDEST)
     flow.onActive(scope) {
         if (it) {

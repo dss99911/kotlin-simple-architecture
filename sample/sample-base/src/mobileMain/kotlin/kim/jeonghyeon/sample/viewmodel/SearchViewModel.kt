@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.*
  * Demerit
  * - difficult to know what change the data(but as it's simple, I feel it's not that difficult if business logic is not too much complicated)
  */
-class ReactiveViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
+class SearchViewModel(private val api: SampleApi = serviceLocator.sampleApi) : ModelViewModel() {
 
     //todo [KSA-48] support localization on kotlin side
-    override val title: String = "Reactive"
+    override val title: String = "Search"
 
     val list = viewModelFlow<List<String>>()
     val newWord = viewModelFlow<String>()

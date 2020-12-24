@@ -14,7 +14,7 @@ import sample_base
 func ApiExternalScreen(_ model: ApiExternalViewModel) -> some View {
     Screen(model) {
         Column {
-            List(model.repoList.asValue(viewModel: model) as? [String] ?? [String](), id: \.self) { item in
+            List(+model.repoList as? [String] ?? [String](), id: \.self) { item in
                 Text(item)
             }
             Row {

@@ -11,7 +11,7 @@ import sample_base
 func ApiSequentialScreen(_ model: ApiSequentialViewModel) -> some View {
     Screen(model) {
         Column {
-            List(model.textList.asValue(viewModel: model) as? [String] ?? [String](), id: \.self) { item in
+            List(+model.textList as? [String] ?? [String](), id: \.self) { item in
                 Text(item)
             }
             

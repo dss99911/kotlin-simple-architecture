@@ -7,8 +7,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-fun <T> viewModelFlow(): ViewModelFlow<T> = ViewModelFlow(MutableSharedFlow(1, 0, BufferOverflow.DROP_OLDEST))
-fun <T> viewModelFlow(initialValue: T): ViewModelFlow<T> = ViewModelFlow(MutableSharedFlow<T>(1, 0, BufferOverflow.DROP_OLDEST))
+fun <T> viewModelFlow(viewModel: BaseViewModel): ViewModelFlow<T> = ViewModelFlow(viewModel, MutableSharedFlow(1, 0, BufferOverflow.DROP_OLDEST))
+fun <T> viewModelFlow(viewModel: BaseViewModel, initialValue: T): ViewModelFlow<T> = ViewModelFlow(viewModel, MutableSharedFlow<T>(1, 0, BufferOverflow.DROP_OLDEST))
     .apply {
         tryEmit(initialValue)
     }
@@ -21,7 +21,7 @@ fun <T> viewModelFlow(initialValue: T): ViewModelFlow<T> = ViewModelFlow(Mutable
  * if retry several times, previous retry get cancelled
  */
 fun <T> Flow<T>.collectResource(scope: CoroutineScope, action: suspend (value: Resource<T>) -> Unit): Job {
-    var job = atomic<Job?>(null)
+    val job = atomic<Job?>(null)
     return map<T, Resource<T>> {
         Resource.Success(it) {
             job.value?.cancel()

@@ -30,8 +30,8 @@ fun <T, R> Flow<T>.transformCancelRunning(scope: CoroutineScope, @BuilderInferen
  * allow multiple emit. SUSPEND
  * retry collect all emits.
  */
-fun <T> Flow<T>.toResource(scope: CoroutineScope): ViewModelFlow<Resource<T>> {
-    val result = viewModelFlow<Resource<T>>()
+fun <T> Flow<T>.toResource(viewModel: BaseViewModel, scope: CoroutineScope): ViewModelFlow<Resource<T>> {
+    val result = viewModelFlow<Resource<T>>(viewModel)
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -43,8 +43,8 @@ fun <T> Flow<T>.toResource(scope: CoroutineScope): ViewModelFlow<Resource<T>> {
     return result
 }
 
-fun <T> Flow<T>.toStatus(scope: CoroutineScope): ViewModelFlow<Status> {
-    val result = viewModelFlow<Status>()
+fun <T> Flow<T>.toStatus(viewModel: BaseViewModel, scope: CoroutineScope): ViewModelFlow<Status> {
+    val result = viewModelFlow<Status>(viewModel)
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -60,8 +60,8 @@ fun <T> Flow<T>.toStatus(scope: CoroutineScope): ViewModelFlow<Status> {
  * - 1 cache
  * - assign data, status separately
  */
-fun <T> Flow<T>.toData(scope: CoroutineScope, status: MutableSharedFlow<Status>? = null): ViewModelFlow<T> {
-    val result = viewModelFlow<T>()
+fun <T> Flow<T>.toData(viewModel: BaseViewModel, scope: CoroutineScope, status: MutableSharedFlow<Status>? = null): ViewModelFlow<T> {
+    val result = viewModelFlow<T>(viewModel)
     result.onActive(scope) {
         if (it) {
             collectResource(scope) {
@@ -89,7 +89,7 @@ private fun <T, R> Flow<T>.transformWithJob(scope: CoroutineScope, jobPolicy: Fl
     val result = MutableSharedFlow<Any?>()
     return result.onActive(scope) {
         if (it) {
-            var job = atomic<Job?>(null)
+            val job = atomic<Job?>(null)
             scope.launch {
                 catch {
                     result.emit(ExceptionOnFlow(it))

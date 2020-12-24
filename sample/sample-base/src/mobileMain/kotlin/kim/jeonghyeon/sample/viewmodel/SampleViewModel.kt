@@ -12,7 +12,6 @@ import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.sample.di.serviceLocator
 import kim.jeonghyeon.type.Resource
-import kim.jeonghyeon.util.log
 
 /**
  * used for model page viewModels.
@@ -39,7 +38,7 @@ open class ModelViewModel(preference: Preference = serviceLocator.preference) : 
             ViewModelItem { UserViewModel() },
             ViewModelItem { ApiBindingViewModel() },
             ViewModelItem { DeeplinkViewModel() },
-            ViewModelItem { ReactiveViewModel() },
+            ViewModelItem { SearchViewModel() },
         )
     }
 

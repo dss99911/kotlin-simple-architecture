@@ -10,6 +10,7 @@ import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.*
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -162,6 +163,10 @@ open class BaseViewModel {
         toastText.value = message
     }
 
+    fun <T> viewModelFlow(): ViewModelFlow<T> = viewModelFlow<T>(this)
+    fun <T> viewModelFlow(initialValue: T): ViewModelFlow<T> = viewModelFlow<T>(this, initialValue)
+
+
     fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)
 
     fun <T> Flow<T>.assign(result: MutableSharedFlow<Resource<T>>) {
@@ -241,21 +246,21 @@ open class BaseViewModel {
         status.loadDebounce(delayMillis, work)
     }
 
-    fun <T> Flow<T>.toData(status: MutableSharedFlow<Status>? = null): ViewModelFlow<T> = toData(scope, status)
+    fun <T> Flow<T>.toData(status: MutableSharedFlow<Status>? = null): ViewModelFlow<T> = toData(this@BaseViewModel, scope, status)
 
-    fun <T> Flow<T>.toResource(): ViewModelFlow<Resource<T>> = toResource(scope)
+    fun <T> Flow<T>.toResource(): ViewModelFlow<Resource<T>> = toResource(this@BaseViewModel, scope)
 
-    fun <T> Flow<T>.toStatus(): ViewModelFlow<Status> = toStatus(scope)
+    fun <T> Flow<T>.toStatus(): ViewModelFlow<Status> = toStatus(this@BaseViewModel, scope)
 
     @OptIn(ExperimentalTypeInference::class)
     inline fun <T, U> ViewModelFlow<T>.withSource(
         source: Flow<U>,
         @BuilderInference crossinline transform: suspend FlowCollector<T>.(value: U) -> Unit
-    ): ViewModelFlow<T> = ViewModelFlow(withSource(scope, source, transform))
+    ): ViewModelFlow<T> = ViewModelFlow(this@BaseViewModel, withSource(scope, source, transform))
 
     fun <T> ViewModelFlow<T>.withSource(
         source: Flow<T>
-    ): ViewModelFlow<T> = ViewModelFlow(withSource(scope, source))
+    ): ViewModelFlow<T> = ViewModelFlow(this@BaseViewModel, withSource(scope, source))
 
     fun <T, R> Flow<T>.mapInIdle(transformData: suspend (value: T) -> R): Flow<R> = mapInIdle(transformData)
 
