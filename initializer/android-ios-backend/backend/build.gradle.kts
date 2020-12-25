@@ -4,7 +4,7 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"

@@ -9,7 +9,7 @@ plugins {
     kotlin("native.cocoapods")
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 
 version = "1.0"//for cocoa pod
@@ -30,7 +30,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.common)
+                api(deps.simpleArch.client)
             }
         }
         val clientMain by creating {

@@ -1,5 +1,4 @@
 import kim.jeonghyeon.simplearchitecture.plugin.task.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS
-import kim.jeonghyeon.simplearchitecture.plugin.task.getEnvironment
 import kim.jeonghyeon.simplearchitecture.plugin.task.simpleProperty
 
 val androidKeyAlias: String by project
@@ -30,7 +29,7 @@ val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
-    val isProduction by simpleProperty(true/*getEnvironment() == "production"*/)
+    val isProduction by simpleProperty(false/*getEnvironment() == "production"*/)
     val deeplinkScheme by simpleProperty(deeplinkScheme)
     val deeplinkHost by simpleProperty(deeplinkHost)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
@@ -41,7 +40,7 @@ simpleArch {
     }
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradle.toPlugInId())
 
 sqldelight {
 
@@ -79,7 +78,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.common)
+                api(deps.simpleArch.client)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here

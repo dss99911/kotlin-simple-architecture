@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath(deps.simpleArch.pluginGradle)
+        classpath(deps.simpleArch.gradle)
         classpath(deps.android.buildToolGradle)
         classpath(deps.kotlin.gradle)
         classpath(deps.sqldelight.gradle)

@@ -25,8 +25,10 @@ object deps {
     }
 
     object simpleArch {
-        val common = depSimpleArchitecture(version = versions.simpleArch)
-        val pluginGradle = depSimpleArchitecture("gradle-plugin", versions.simpleArch)
+        val client = depSimpleArchitecture("client", versions.simpleArch)
+        val backend = depSimpleArchitecture("backend", versions.simpleArch)
+        val gradle = depSimpleArchitecture("gradle", versions.simpleArch)
+        val gradlePluginId = gradle.toPluginId()
     }
 
     object sqldelight {
@@ -46,3 +48,5 @@ private fun depKotlinx(module: String, version: String? = null): String =
 
 private fun depSimpleArchitecture(module: String? = null, version: String? = null): String =
     "kim.jeonghyeon:kotlin-simple-architecture${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
+
+private fun String.toPluginId() = split(':')[0] + "." + split(':')[1]

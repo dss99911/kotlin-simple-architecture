@@ -441,9 +441,9 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - To use this library without copying these files will be supported soon.
 
 ### To run Sample in Local
-- run backend `sh sh/runBackendLocal.sh`
-- run android `sh sh/installAndroid.sh` (you can run with android Studio configuration)
-- run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. maybe it's related to Xcode 12 for swiftUI 2.0. let's check again when it's publicly released)
+- run backend `sh shell/runBackendLocal.sh`
+- run android `sh shell/installAndroid.sh` (you can run with android Studio configuration)
+- run ios : open xcode with path `sample/sample-native` (I tried `sh shell/installIos.sh`, it was working. but now not working. maybe it's related to Xcode 12 for swiftUI 2.0. let's check again when it's publicly released)
 
 
 # Test on local

@@ -1,1 +1,0 @@
-./gradlew -PincludingModuleName=kotlin-simple-architecture :kotlin-simple-architecture:publishToMavenLocal

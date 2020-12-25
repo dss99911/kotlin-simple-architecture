@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 android {
     compileSdkVersion(30)

@@ -9,6 +9,6 @@ buildscript {
     }
 
     dependencies {
-        classpath(deps.simpleArch.pluginGradle)
+        classpath(deps.simpleArch.gradle)
     }
 }

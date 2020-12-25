@@ -20,10 +20,15 @@ tasks.withType<Jar> {
     }
 }
 
+project.tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 tasks.withType<KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 dependencies {
     implementation(project(":sample:sample-base"))
+    implementation(deps.simpleArch.backend)
 }

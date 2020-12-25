@@ -10,6 +10,9 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
 
     //this is old way. https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application
@@ -20,6 +23,7 @@ buildscript {
         classpath(deps.shadowGradle)   //for creating jar
         classpath(deps.sqldelight.gradle)
         classpath(deps.kotlin.serializationGradle)
+        classpath(deps.plugin.gradlePublish)//gradle plugin publishing
     }
 }
 

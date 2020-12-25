@@ -5,7 +5,7 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import kim.jeonghyeon.auth.ServiceAuthType
 import kim.jeonghyeon.auth.SignInAuthType
-import kotlinsimplearchitecture.generated.net.createSimple
+import kotlinsimpleapiclient.generated.net.createSimple
 import samplebase.generated.SimpleConfig
 import samplebase.generated.net.create
 

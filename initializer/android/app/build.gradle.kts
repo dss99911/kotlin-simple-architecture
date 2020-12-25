@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 android {
     compileSdkVersion(30)
@@ -30,5 +30,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
 }
 
 dependencies {
-    implementation(deps.simpleArch.common)
+    implementation(deps.simpleArch.client)
 }
