@@ -395,11 +395,11 @@ class SampleController : SampleApi {
 - Android
     - Android Studio Arctic Fox | 2020.3.1 Canary 2
     - Java 11
-### Template
+### Initializer
 - No need to configure kotlin multiplatform, libraries. just download template project to start with this framework
-    - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
-    - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
-    - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
+    - [android](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android)
+    - [android + ios](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android-ios)
+    - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android-ios-backend)
 
 ### Use on existing project
 1. project's build.gradle.kts

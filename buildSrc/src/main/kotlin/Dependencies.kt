@@ -102,6 +102,15 @@ object deps {
         val pluginApiNative = depSimpleArchitecture("gradle-plugin-api-native", versions.simpleArch)
         val pluginGradle = depSimpleArchitecture("gradle-plugin", versions.simpleArch)
         val annotation = depSimpleArchitecture("annotation", versions.simpleArch)
+
+        object api {
+            val client = depSimpleApi("client", version = versions.simpleArch)
+            val backend = depSimpleApi("backend", version = versions.simpleArch)
+            val gradle = depSimpleApi("gradle", version = versions.simpleArch)
+            val gradleService = depSimpleApi("gradle-service", version = versions.simpleArch)
+            val gradleServiceNative = depSimpleApi("gradle-service-native", version = versions.simpleArch)
+            val gradleServiceShared = depSimpleApi("gradle-service-shared", version = versions.simpleArch)
+        }
     }
 
     object plugin {
@@ -139,6 +148,9 @@ private fun depKotlinx(module: String, version: String? = null): String =
 
 private fun depSimpleArchitecture(module: String? = null, version: String? = null): String =
     "kim.jeonghyeon:kotlin-simple-architecture${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
+
+private fun depSimpleApi(module: String? = null, version: String? = null): String =
+    "kim.jeonghyeon:kotlin-simple-api${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
 
 fun String.getGroupId(): String = split(':')[0]
 fun String.getArtifactId(): String = split(':')[1]

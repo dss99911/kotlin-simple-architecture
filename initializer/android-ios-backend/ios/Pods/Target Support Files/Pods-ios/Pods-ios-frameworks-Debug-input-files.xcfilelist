@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-ios/Pods-ios-frameworks.sh
+${PODS_ROOT}/../../base/build/cocoapods/framework/base.framework
+${PODS_ROOT}/../../base/build/cocoapods/framework/base.framework.dSYM

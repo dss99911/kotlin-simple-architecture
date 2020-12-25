@@ -122,14 +122,26 @@ class ApiGenerator(
         getAnnotationString(Body::class) != null -> {
             makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
         }
+        getAnnotationString(retrofit2.http.Body::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
+        }
         getAnnotationString(Query::class) != null -> {
             makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKey(Query::class), "${name}.toParameterString()", null.toString())
+        }
+        getAnnotationString(retrofit2.http.Query::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Query::class), "${name}.toParameterString()", null.toString())
         }
         getAnnotationString(Header::class) != null -> {
             makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKey(Header::class), "${name}.toParameterString()", null.toString())
         }
+        getAnnotationString(retrofit2.http.Header::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Header::class), "${name}.toParameterString()", null.toString())
+        }
         getAnnotationString(Path::class) != null -> {
             makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKey(Path::class), "${name}.toParameterString()", null.toString())
+        }
+        getAnnotationString(retrofit2.http.Path::class) != null -> {
+            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Path::class), "${name}.toParameterString()", null.toString())
         }
         else -> {
             makeApiParameterInfo(ApiParameterType.NONE, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
@@ -141,6 +153,11 @@ class ApiGenerator(
             .trimParenthesis()!!
             .getParameterString(Query::name.name, 0)!!//all parametetType's key's field name should be 'name' and index is 0
 
+    private fun SharedKtParameter.getParameterKeyRetrofit(parameterType: KClass<*>): String =
+        getAnnotationString(parameterType)!!
+            .trimParenthesis()!!
+            .getParameterString(retrofit2.http.Query::value.name, 0)!!//all parametetType's key's field name should be 'name' and index is 0
+
     private fun makeApiParameterInfo(type: ApiParameterType, parameterName: String, key: String, value: String, jsonElement: String): String {
         return """ApiParameterInfo(ApiParameterType.${type.name}, $parameterName, $key, $value, $jsonElement)"""
     }
@@ -148,25 +165,36 @@ class ApiGenerator(
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
         return getRequestMethodAnnotationString()
             ?.trimParenthesis()
-            ?.getParameterString(Get::path.name, 0)//each method type's 'path' field name should be same
-            ?: "\"$name\""
+            ?.let {
+                it.getParameterString(Get::path.name, 0)//each method type's 'path' field name should be same
+                    ?:it.getParameterString(retrofit2.http.GET::value.name, 0)//for retrofit
+            } ?: "\"$name\""
     }
 
     private fun SharedKtNamedFunction.getRequestMethodFunctionName(): String =
         getRequestMethodAnnotation().simpleName!!
 
     val requestMethodAnnotationNames = listOf(Get::class, Delete::class, Head::class, Options::class, Patch::class, Put::class, Post::class)
+    val requestMethodAnnotationNamesRetrofit = mapOf(
+        retrofit2.http.GET::class to Get::class,
+        retrofit2.http.DELETE::class to Delete::class,
+        retrofit2.http.HEAD::class to Head::class,
+        retrofit2.http.OPTIONS::class to Options::class,
+        retrofit2.http.PATCH::class to Patch::class,
+        retrofit2.http.PUT::class to Put::class,
+        retrofit2.http.POST::class to Post::class
+    )
 
     private fun SharedKtNamedFunction.getRequestMethodAnnotationString(): String? {
         return requestMethodAnnotationNames.mapNotNull {
             getAnnotationString(it)
-        }.firstOrNull()
+        }.firstOrNull()?:(requestMethodAnnotationNamesRetrofit.keys.mapNotNull { getAnnotationString(it) }.firstOrNull())
     }
 
     private fun SharedKtNamedFunction.getRequestMethodAnnotation(): KClass<out Annotation> {
         return requestMethodAnnotationNames.firstOrNull {
             getAnnotationString(it) != null
-        }?:Post::class
+        }?:(requestMethodAnnotationNamesRetrofit.keys.firstOrNull { getAnnotationString(it) != null }?.let { requestMethodAnnotationNamesRetrofit[it] }?: Post::class)
     }
 
     private fun GeneratedApiSource.generateApiClassFile(): File? =

@@ -1,0 +1,6 @@
+framework module base {
+  umbrella header "dummy.h"
+
+  export *
+  module * { export * }
+}
