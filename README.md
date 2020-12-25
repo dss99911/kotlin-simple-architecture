@@ -128,9 +128,7 @@ scope.launch {
     - Retry on Error
         - `Resource` contains `retry()`
         - Default error ui(snackbar) shows retry button and user can retry by the button without additional implementation
-- This provides common functions on ViewModel and Screen
-    - `goBack()` : You can return response, it's explained on [Navigate to the deeplink from Client / Server](https://github.com/dss99911/kotlin-simple-architecture#navigate-to-the-deeplink-from-client--server)
-    - `navigateToDeeplink()`
+- This provides common functions on ViewModel
     - `loadInIdle()` : For example, in case of clicking button two times quickly. 2nd time click is ignored.
     - `loadBounce()` : For example, searching with keyword. and if searching takes time(like api call is required), in that case, delay the api call and if next input comes, cancel previous call
 

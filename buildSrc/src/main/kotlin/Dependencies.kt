@@ -102,7 +102,6 @@ object deps {
         val pluginApiNative = depSimpleArchitecture("gradle-plugin-api-native", versions.simpleArch)
         val pluginGradle = depSimpleArchitecture("gradle-plugin", versions.simpleArch)
         val annotation = depSimpleArchitecture("annotation", versions.simpleArch)
-        val annotationJvm = depSimpleArchitecture("annotation-jvm", versions.simpleArch)
     }
 
     object plugin {

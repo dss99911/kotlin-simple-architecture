@@ -55,8 +55,7 @@ kotlin {
                 api(deps.ktor.clientSerialization)
                 api(deps.ktor.clientLogging)
                 api(deps.sqldelight.runtime)
-                //todo this is not working, try after coroutin mt released. https://github.com/cashapp/sqldelight/issues/1917
-                //api(deps.sqldelight.coroutine)
+                api(deps.sqldelight.coroutine)
                 api(deps.simpleArch.annotation)
                 api(deps.ktor.clientAuth)
                 api(deps.krypto)
