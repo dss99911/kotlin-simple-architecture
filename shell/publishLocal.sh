@@ -1,0 +1,10 @@
+./gradlew -PincludingModuleName=api:library:kotlin-simple-api-annotation api:library:kotlin-simple-api-annotation:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service-shared :api:plugin:kotlin-simple-api-gradle-service-shared:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service :api:plugin:kotlin-simple-api-gradle-service:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service-native :api:plugin:kotlin-simple-api-gradle-service-native:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:plugin:kotlin-simple-api-gradle :api:plugin:kotlin-simple-api-gradle:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:library:kotlin-simple-api-client :api:library:kotlin-simple-api-client:publishToMavenLocal && \
+./gradlew -PincludingModuleName=api:library:kotlin-simple-api-backend :api:library:kotlin-simple-api-backend:publishToMavenLocal && \
+./gradlew -PincludingModuleName=framework:kotlin-simple-architecture-gradle :framework:kotlin-simple-architecture-gradle:publishToMavenLocal && \
+./gradlew -PincludingModuleName=framework:kotlin-simple-architecture-client :framework:kotlin-simple-architecture-client:publishToMavenLocal && \
+./gradlew -PincludingModuleName=framework:kotlin-simple-architecture-backend :framework:kotlin-simple-architecture-backend:publishToMavenLocal
