@@ -13,4 +13,4 @@ This covers some common use cases below
 - Sign-in, OAuth
 - Api Binding
 - Deeplink
-- Reactive
+- Search
