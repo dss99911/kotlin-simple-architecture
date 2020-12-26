@@ -1,15 +1,11 @@
-package kim.jeonghyeon.ui
+package kim.jeonghyeon.client
 
 import kim.jeonghyeon.application
-import kim.jeonghyeon.client.BaseViewModel
-import kim.jeonghyeon.client.Deeplink
-import kim.jeonghyeon.client.DeeplinkNavigator
-import kim.jeonghyeon.client.Navigator
 import kotlinx.coroutines.GlobalScope
 import platform.UIKit.UIApplication
 
-open class UiManager {
-    //as this is not recognized on swift.
+actual class UiManager actual constructor() {
+
     val deeplinkNavigator = DeeplinkNavigator
     val navigator = Navigator
     val globalScope = GlobalScope

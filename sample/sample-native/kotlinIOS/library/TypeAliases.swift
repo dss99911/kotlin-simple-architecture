@@ -9,6 +9,10 @@
 import Foundation
 import sample_base
 
+let uiManager = Kotlin_simple_architecture_clientUiManager()
+
+let navigator = uiManager.navigator
+let deeplinkNavigator = uiManager.deeplinkNavigator
 
 typealias BaseViewModel = Kotlin_simple_architecture_clientBaseViewModel
 typealias ResourceError = Kotlin_simple_api_clientResourceError

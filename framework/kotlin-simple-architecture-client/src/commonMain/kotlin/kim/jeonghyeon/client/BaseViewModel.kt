@@ -10,7 +10,6 @@ import kim.jeonghyeon.net.RedirectionType
 import kim.jeonghyeon.type.*
 import kim.jeonghyeon.util.log
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -313,6 +312,14 @@ open class BaseViewModel {
 
     @SimpleArchInternal("used on IOS base code. don't use these code")
     val flowSet = atomic(setOf<ViewModelFlow<*>>())
+
+    /**
+     * as this is not recognized on swift. let BaseViewModel to refer this.
+     */
+    @SimpleArchInternal("used on IOS base code. don't use these code")
+    val iosUiManager: UiManager get() {
+        error("don't call this")
+    }
 }
 
 data class ScreenResult(val resultCode: Int, val data: Any? = null) {
