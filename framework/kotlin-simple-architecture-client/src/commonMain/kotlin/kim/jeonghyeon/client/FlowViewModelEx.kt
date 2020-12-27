@@ -1,6 +1,7 @@
 package kim.jeonghyeon.client
 
 import kim.jeonghyeon.type.*
+import kim.jeonghyeon.util.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -34,6 +35,8 @@ fun <T> Flow<T>.collectResource(scope: CoroutineScope, action: suspend (value: R
                 job.value = collectResource(scope, action)//todo synchronize
             }
 
+        }.also {
+            log.e(it.errorData)
         })
     }.onStart {
         action(Resource.Loading(cancel = {

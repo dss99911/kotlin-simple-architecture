@@ -29,7 +29,8 @@ class ApiGenerator(
 
     private val SharedKtFile.generatedApiSources
         get(): List<GeneratedApiSource> = getChildrenOfKtClass()
-            .filter { it.isApiInterface() }
+            .filter { it.isInterface()}
+            .filter { it.hasApiAnnotation() || it.hasRetrofitAnnotation() }
             .map {
                 GeneratedApiSource(
                     getApiImplementationName(it.name) + ".kt",
@@ -40,7 +41,12 @@ class ApiGenerator(
                 )
             }
 
-    private fun SharedKtClass.isApiInterface(): Boolean = isInterface() && hasAnnotation(Api::class)
+    private fun SharedKtClass.hasApiAnnotation(): Boolean = hasAnnotation(Api::class)
+    private fun SharedKtClass.hasRetrofitAnnotation(): Boolean = functions.any { it.isRetrofitFunction() }
+
+    private fun SharedKtNamedFunction.isRetrofitFunction(): Boolean {
+        return !hasBody() && isSuspend() && requestMethodAnnotationNamesRetrofit.keys.mapNotNull { getAnnotationString(it) }.any()
+    }
 
     private fun SharedKtClass.makeApiClassSource(): String = """
     |// $GENERATED_FILE_COMMENT
@@ -71,13 +77,15 @@ class ApiGenerator(
         """.trimMargin()
 
     private fun SharedKtClass.makeClassDefinition() =
-        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String) : $name"
+        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String, val responseTransformer: ResponseTransformer) : $name"
 
     private fun SharedKtClass.makeMainPathProperty(): String {
 
         val path = getDefinedPathStatement() ?: "\"${packageName?.replace(".", "/")?.let { "$it/" } ?: ""}${name}\""
+        val retrofitPath = getDefinedPathStatement() ?: "\"\""
 
-        return "val mainPath = $path"
+        return "val mainPath = $path\n" +
+                "   val retrofitPath = $retrofitPath"
     }
 
     private fun SharedKtClass.getDefinedPathStatement(): String? {
@@ -109,12 +117,12 @@ class ApiGenerator(
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
         val isAuthenticating = getAnnotationString(Authenticate::class) != null || ktClass?.getAnnotationString(Authenticate::class) != null
         return """
-        |val callInfo = ApiCallInfo(baseUrl, mainPath, ${makeSubPathStatement()}, "${(ktClass!!.packageName?.let { "$it." }?:"") + ktClass!!.name}", "$name", HttpMethod.${getRequestMethodFunctionName()}, $isAuthenticating,
+        |val callInfo = ApiCallInfo(baseUrl, ${if (isRetrofitFunction()) "retrofitPath" else "mainPath"}, ${makeSubPathStatement()}, "${(ktClass!!.packageName?.let { "$it." }?:"") + ktClass!!.name}", "$name", HttpMethod.${getRequestMethodFunctionName()}, $isAuthenticating,
         |    listOf(
         |        ${parameters.map { it.toParameterInfo() }.joinToString(",\n        ")}
         |    )
         |)
-        |return client.callApi(callInfo)
+        |return client.callApi(callInfo, responseTransformer)
         """.trimMargin()
     }
 
@@ -208,7 +216,7 @@ class ApiGenerator(
         if (pluginOptions.isMultiplatform) {
             val expectPath = generatedSourceSetPath(pluginOptions.buildPath, SOURCE_SET_NAME_COMMON)
             expectFile = File("$expectPath/$filePath")
-                .takeIf { !it.exists() }
+                .takeIf { !it.exists() } // e: java.lang.IllegalStateException: Unable to collect additional sources in reasonable number of iterations
                 ?.write {
                     append(
                         """
@@ -216,29 +224,37 @@ class ApiGenerator(
                         package ${pluginOptions.packageName}.generated.net
 
                         import io.ktor.client.HttpClient
+                        import kim.jeonghyeon.net.*
 
-                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, responseTransformer: ResponseTransformer = ResponseTransformerInternal.getDefaultResponseTransformer()): T
 
                         """.trimIndent()
                     )
                 }
         }
 
+        if (pluginOptions.platformType == KotlinPlatformType.common) {
+            return listOfNotNull(expectFile)
+        }
+
         val actualPath = pluginOptions.getGeneratedTargetVariantsPath().let {
-            File("$it/$filePath").takeIf { !it.exists() }?.write {
+            File("$it/$filePath")
+                .takeIf { !it.exists() } // e: java.lang.IllegalStateException: Unable to collect additional sources in reasonable number of iterations
+                ?.write {
                 append(
                     """
                 |// $GENERATED_FILE_COMMENT
                 |package ${pluginOptions.packageName}.generated.net
                 |
                 |import io.ktor.client.HttpClient
+                |import kim.jeonghyeon.net.*
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, responseTransformer: ResponseTransformer${if (pluginOptions.isMultiplatform) "" else " = ResponseTransformerInternal.getDefaultResponseTransformer()"}): T {
                 |
                 |    return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl) as T" }.prependIndent("        ")}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, responseTransformer) as T" }.prependIndent("        ")}
                 |
                 |        else -> error("can not create " + T::class.simpleName)
                 |    }
@@ -247,7 +263,7 @@ class ApiGenerator(
                 )
             }
         }
-        return listOfNotNull(actualPath, expectFile)
+        return listOfNotNull(expectFile, actualPath)
     }
 }
 

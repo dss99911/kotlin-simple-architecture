@@ -53,7 +53,7 @@ sqldelight {
 version = "1.0"//for cocoa pod
 
 kotlin {
-    jvm()//for backend
+    jvm()
 
     android()
 
@@ -88,6 +88,15 @@ kotlin {
 
         val androidMain by getting {
             dependsOn(mobileMain)
+
+            dependencies {
+                implementation("com.squareup.retrofit2:retrofit:2.9.0")
+                implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+                implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+                implementation(deps.ktor.clientOkHttp)
+                implementation(deps.ktor.clientGson)
+
+            }
         }
 
         val iosMain by getting {

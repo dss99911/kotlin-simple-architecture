@@ -3,6 +3,7 @@
 package kim.jeonghyeon.net
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -15,12 +16,14 @@ import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
 import kim.jeonghyeon.extension.toJsonString
+import kim.jeonghyeon.net.ResponseTransformerInternal.getDefaultResponseTransformer
 import kim.jeonghyeon.net.error.*
 import kim.jeonghyeon.net.error.isApiError
 import kim.jeonghyeon.pergist.KEY_USER_TOKEN
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.pergist.removeUserToken
+import kim.jeonghyeon.util.log
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -31,6 +34,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 
 @HttpClientDsl
@@ -49,32 +55,22 @@ fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient =
 
 @SimpleArchInternal
 object SimpleApiUtil {
-    suspend inline fun <reified RET> HttpClient.callApi(callInfo: ApiCallInfo): RET {
+    @OptIn(ExperimentalStdlibApi::class)
+    suspend inline fun <reified RET> HttpClient.callApi(callInfo: ApiCallInfo, responseTransformer: ResponseTransformer = getDefaultResponseTransformer()): RET {
         if (isApiBinding()) {
             throw ApiBindingException(callInfo, this)
         }
         var response: HttpResponse? = null
-        val responseText: String
-
         try {
             response = requestApi(callInfo)
-            responseText = response.readText()
+            return responseTransformer.transform(response, callInfo, typeOf<RET>(), typeInfo<RET>())
             setResponse(response)//`freeze` error occurs if call before readText()
         } catch (e: Exception) {
             response?.let { setResponse(it) }
-            throwException(e)
+            return responseTransformer.error(e, callInfo, typeOf<RET>(), typeInfo<RET>())
         }
 
-        if (callInfo.isAuthRequired) {
-            response.saveToken()
-        }
 
-        validateResponse(response, responseText)
-
-        if (RET::class == Unit::class) {
-            return Unit as RET
-        }
-        return Json { ignoreUnknownKeys = true }.decodeFromString(serializer(), responseText)
     }
 
     inline fun <reified T : Any?> T.toParameterString(): String? {
@@ -109,53 +105,6 @@ object SimpleApiUtil {
         }
     }
 
-    fun throwException(e: Throwable): Nothing {
-        if (e.isConnectException()) {
-            throw ApiError(ApiErrorBody.NoNetwork, e)
-        }
-        throw when (e) {
-            //todo check what kind of network exception exists
-            is SocketTimeoutException -> {
-                ApiError(ApiErrorBody.NoNetwork, e)
-            }
-            is ClientRequestException -> {
-                val status = e.response.status
-                if (status == HttpStatusCode.Unauthorized) {
-                    /**
-                     * todo if it's unauthorized on response, remove token on preference.
-                     *  when remove token, check api url and realm.
-                     */
-                    Preference().removeUserToken()
-                }
-                ApiErrorBody(status.value, status.description).toError(e)
-            }
-            else -> {
-                ApiError(ApiErrorBody.Unknown, e)
-            }
-        }
-    }
-
-    /**
-     * @throws ApiError if error
-     * @return if success
-     */
-    suspend fun validateResponse(response: HttpResponse, responseText: String) {
-        if (response.status.isApiError()) {
-            val json = Json { }
-            errorApi(json.decodeFromString(ApiErrorBody.serializer(), responseText))
-        }
-
-        if (response.status.isDeeplinkError()) {
-            val json = Json { }
-            errorDeeplink(json.decodeFromString(DeeplinkInfo.serializer(), responseText))
-        }
-
-        if (response.status.isSuccess()) {
-            return
-        }
-
-        errorApi(ApiErrorBody.CODE_UNKNOWN, "unknown error occurred : ${response.status}, Text : ${response.readText()}")
-    }
 
     private fun HttpRequestBuilder.putTokenHeader() {
         //if it's signin, no token required
@@ -173,12 +122,6 @@ object SimpleApiUtil {
         //for jwt token authentication
         header(HttpHeaders.Authorization, HttpAuthHeader.Single("Bearer", tokenString).render())
 
-    }
-
-    fun HttpResponse.saveToken() {
-        //if sigh out, tokenString will be ""
-        val tokenString = headers[HEADER_NAME_TOKEN]?:return
-        Preference().setEncryptedString(Preference.KEY_USER_TOKEN, tokenString)
     }
 }
 

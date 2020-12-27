@@ -13,6 +13,7 @@ import kim.jeonghyeon.auth.SignInAuthType
 import kim.jeonghyeon.backend.auth.SampleSignBasicController
 import kim.jeonghyeon.backend.auth.SampleSignDigestController
 import kim.jeonghyeon.backend.auth.SampleSignOAuthController
+import kim.jeonghyeon.backend.controller.RetrofitToSimpleController
 import kim.jeonghyeon.backend.controller.SampleController
 import kim.jeonghyeon.backend.di.ServiceLocatorBackendImpl
 import kim.jeonghyeon.backend.di.serviceLocatorBackend
@@ -72,6 +73,7 @@ fun Application.module(@Suppress("UNUSED_PARAMETER") testing: Boolean = false) {
             +SampleController()
             +PreferenceController(serviceLocatorBackend.preference)
             +UserController()
+            +RetrofitToSimpleController()
 
             configure = {
                 get("/ping") {

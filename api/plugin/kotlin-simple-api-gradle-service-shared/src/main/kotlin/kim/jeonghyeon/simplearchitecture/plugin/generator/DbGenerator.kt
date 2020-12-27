@@ -73,7 +73,7 @@ class DbGenerator(
                 SOURCE_SET_NAME_COMMON
             )
             expectFile = File("$expectPath/$filePath")
-                .takeIf { !it.exists() }
+                .takeIf { !it.exists() } //e: java.lang.IllegalStateException: Unable to collect additional sources in reasonable number of iterations
                 ?.write {
                     append(
                         """
@@ -99,7 +99,9 @@ class DbGenerator(
         }
 
         val actualPath = pluginOptions.getGeneratedTargetVariantsPath().let {
-            File("$it/$filePath").takeIf { !it.exists() }?.write {
+            File("$it/$filePath")
+                .takeIf { !it.exists() }//e: java.lang.IllegalStateException: Unable to collect additional sources in reasonable number of iterations
+                ?.write {
                 append(
                     """
                 |// $GENERATED_FILE_COMMENT
@@ -119,7 +121,7 @@ class DbGenerator(
                 )
             }
         }
-        return listOfNotNull(actualPath, expectFile)
+        return listOfNotNull(expectFile, actualPath)
     }
 
 
