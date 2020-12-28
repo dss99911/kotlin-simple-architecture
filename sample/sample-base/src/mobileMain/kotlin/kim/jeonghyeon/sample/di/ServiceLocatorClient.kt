@@ -6,7 +6,6 @@ import kim.jeonghyeon.auth.SignOAuthClient
 import kim.jeonghyeon.auth.createSignApi
 import kim.jeonghyeon.net.AUTH_TYPE_SIGN_IN
 import kim.jeonghyeon.net.api
-import kim.jeonghyeon.net.apiSimple
 import kim.jeonghyeon.net.client
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.SampleDb
@@ -49,7 +48,7 @@ class ServiceLocatorClientImpl : ServiceLocatorClient {
     override val oauthClient: SignOAuthClient get() = SignOAuthClient(SimpleConfig.serverUrl)
     override val userApi: UserApi get() = api()
     override val userRepository: UserRepository by lazy { UserRepositoryImpl() }
-    override val preferenceApi: PreferenceApi get() = apiSimple()
+    override val preferenceApi: PreferenceApi get() = api()
     override val preference: Preference = Preference()
 
     //wordQueries notify to listeners when data is changed.

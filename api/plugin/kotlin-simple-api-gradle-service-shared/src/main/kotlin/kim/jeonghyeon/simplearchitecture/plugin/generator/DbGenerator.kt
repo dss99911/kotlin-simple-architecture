@@ -129,7 +129,7 @@ class DbGenerator(
         val isOtherWithArchitecture = !pluginOptions.isInternal && pluginOptions.useFramework
 
         return if (isOtherWithArchitecture) {
-            "import kotlinsimplearchitectureclient.generated.db"
+            "import kotlinsimplearchitectureclient.generated.db.dbSimpleFramework"
         } else {
             ""
         }

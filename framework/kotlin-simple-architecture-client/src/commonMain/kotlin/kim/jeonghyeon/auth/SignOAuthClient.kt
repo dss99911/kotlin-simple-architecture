@@ -6,6 +6,9 @@ import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.http.*
 import kim.jeonghyeon.pergist.Preference
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 
 class SignOAuthClient(private val serverUrl: String): SignOAuthApi {
 
@@ -65,15 +68,15 @@ class SignOAuthClient(private val serverUrl: String): SignOAuthApi {
         loadUrlInBrowser(url)
     }
 
-    inline fun <reified T> T.toParameterString(): String? {
+    private inline fun <reified T> T.toParameterString(): String? {
         if (this == null) {
             return null
         }
 
-        when (this) {
-            is String -> return this
-            is Enum<*> -> return this.name
-            else -> error("not supported type $this")
+        return when (this) {
+            is String -> this
+            is Enum<*> -> this.name
+            else -> Json {  }.encodeToString(serializer<T>(), this)
         }
     }
 }
