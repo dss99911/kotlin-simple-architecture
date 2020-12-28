@@ -78,7 +78,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.client)
+                if (config.buildByProject) {
+                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
+                } else {
+                    api(deps.simpleArch.client)
+                }
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -97,6 +101,9 @@ kotlin {
                 implementation(deps.ktor.clientGson)
 
             }
+        }
+        val jvmMain by getting {
+            dependsOn(commonMain)
         }
 
         val iosMain by getting {

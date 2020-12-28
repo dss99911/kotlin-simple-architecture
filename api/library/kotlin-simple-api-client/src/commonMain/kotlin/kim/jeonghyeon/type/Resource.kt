@@ -1,7 +1,5 @@
 package kim.jeonghyeon.type
 
-import kim.jeonghyeon.util.log
-
 /**
  * Resource = data + status
  */

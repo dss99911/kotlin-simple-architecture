@@ -1,5 +1,3 @@
-@file:UseSerializers(HttpMethodSerializer::class)
-
 package kim.jeonghyeon.net
 
 import io.ktor.client.*
@@ -9,21 +7,13 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.content.*
 import io.ktor.http.*
-import io.ktor.http.auth.*
-import io.ktor.network.sockets.*
 import kim.jeonghyeon.annotation.ApiParameterType
 import kim.jeonghyeon.annotation.SimpleArchInternal
-import kim.jeonghyeon.auth.HEADER_NAME_TOKEN
-import kim.jeonghyeon.extension.toJsonString
-import kim.jeonghyeon.net.ResponseTransformerInternal.getDefaultResponseTransformer
-import kim.jeonghyeon.net.error.*
-import kim.jeonghyeon.net.error.isApiError
-import kim.jeonghyeon.pergist.KEY_USER_TOKEN
-import kim.jeonghyeon.pergist.Preference
-import kim.jeonghyeon.pergist.getUserToken
-import kim.jeonghyeon.pergist.removeUserToken
-import kim.jeonghyeon.util.log
+import kim.jeonghyeon.net.SimpleApiUtil.isKotlinXSerializer
+import kim.jeonghyeon.net.SimpleApiUtil.toJsonElement
+import kim.jeonghyeon.net.error.ApiError
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -34,62 +24,67 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
-
-@HttpClientDsl
-expect fun httpClientSimple(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient
 
 expect fun Throwable.isConnectException(): Boolean
-
-@HttpClientDsl
-fun httpClientDefault(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient = HttpClient {
-    install(JsonFeature) {
-        serializer = KotlinxSerializer()
-    }
-
-    config()
-}
 
 @SimpleArchInternal
 object SimpleApiUtil {
     @OptIn(ExperimentalStdlibApi::class)
-    suspend inline fun <reified RET> HttpClient.callApi(callInfo: ApiCallInfo, responseTransformer: ResponseTransformer = getDefaultResponseTransformer()): RET {
-        if (isApiBinding()) {
-            throw ApiBindingException(callInfo, this)
-        }
+    suspend inline fun <reified RET> HttpClient.callApi(
+        callInfo: ApiCallInfo,
+        requestResponseAdapter: RequestResponseAdapter = getDefaultRequestResponseAdapter()
+    ): RET {
+        requestResponseAdapter.beforeBuildRequest(callInfo, this)
+
         var response: HttpResponse? = null
         try {
-            response = requestApi(callInfo)
-            return responseTransformer.transform(response, callInfo, typeOf<RET>(), typeInfo<RET>())
+
+            response = requestApi(callInfo, requestResponseAdapter)
+            val returnValue = requestResponseAdapter.transformResponse<RET>(response, callInfo, typeInfo<RET>())
             setResponse(response)//`freeze` error occurs if call before readText()
+            return returnValue
         } catch (e: Exception) {
             response?.let { setResponse(it) }
-            return responseTransformer.error(e, callInfo, typeOf<RET>(), typeInfo<RET>())
+            if (e is ApiError || e is DeeplinkError) {
+                throw e
+            }
+            return requestResponseAdapter.handleException(e, callInfo, typeInfo<RET>())
         }
 
 
     }
 
-    inline fun <reified T : Any?> T.toParameterString(): String? {
+    inline fun <reified T : Any?> T.toParameterString(client: HttpClient): String? {
+        if (this == null) {
+            return null
+        }
+
         return when (this) {
             is String -> this
             is Enum<*> -> this.name
-            else -> this?.toJsonString()
+            else -> {
+                (client.feature(JsonFeature)!!.serializer.write(this) as TextContent).text
+            }
         }
     }
 
-    inline fun <reified  T : Any?> T.toJsonElement(): JsonElement =
-        Json {}.encodeToJsonElement(this)
+    inline fun <reified T> T.toJsonElement(client: HttpClient): JsonElement? =
+        if (client.isKotlinXSerializer()) {
+            Json {}.encodeToJsonElement(this)
+        } else {
+            null
+        }
 
-    suspend fun HttpClient.requestApi(callInfo: ApiCallInfo) = request<HttpResponse> {
+    suspend fun HttpClient.requestApi(
+        callInfo: ApiCallInfo,
+        requestResponseAdapter: RequestResponseAdapter
+    ) = request<HttpResponse> {
         url.takeFrom(callInfo.buildPath())
 
         method = callInfo.method
 
-        callInfo.body()?.let { body = it }
+        callInfo.body(this@requestApi)?.let { body = it }
         if (callInfo.isJsonContentType()) {
             contentType(ContentType.Application.Json)
         }
@@ -100,29 +95,14 @@ object SimpleApiUtil {
         callInfo.headers().forEach {
             header(it.first, it.second)
         }
-        if (callInfo.isAuthRequired) {
-            putTokenHeader()
-        }
+
+        requestResponseAdapter.buildRequest(this, callInfo)
     }
 
-
-    private fun HttpRequestBuilder.putTokenHeader() {
-        //if it's signin, no token required
-        if (headers[HttpHeaders.Authorization] != null) {
-            return
-        }
-
-        val tokenString = Preference().getUserToken()
-        if (tokenString.isNullOrEmpty()) {
-            return
-        }
-        //for stateful session based authentication
-        header(HEADER_NAME_TOKEN, tokenString)
-
-        //for jwt token authentication
-        header(HttpHeaders.Authorization, HttpAuthHeader.Single("Bearer", tokenString).render())
-
+    fun HttpClient.isKotlinXSerializer(): Boolean {
+        return feature(JsonFeature)!!.serializer::class == KotlinxSerializer::class
     }
+
 }
 
 /**
@@ -130,7 +110,6 @@ object SimpleApiUtil {
  */
 fun String.isUri(): Boolean = contains("://")
 
-@Serializable
 data class ApiCallInfo(
     val baseUrl: String,
     val mainPath: String,
@@ -153,8 +132,9 @@ data class ApiCallInfo(
         }
     }
 
-    fun body(): JsonElement? {
-        parameters.firstOrNull { it.type == ApiParameterType.BODY }?.jsonElement?.let {
+    @OptIn(SimpleArchInternal::class)
+    fun body(client: HttpClient): Any? {
+        parameters.firstOrNull { it.type == ApiParameterType.BODY }?.getBodyOrJsonElement()?.let {
             return it
         }
 
@@ -163,10 +143,14 @@ data class ApiCallInfo(
             return null
         }
 
-        return buildJsonObject {
-            bodyParameters.forEach {
-                put(it.parameterName, it.jsonElement!!)
+        return if (client.isKotlinXSerializer()) {
+            buildJsonObject {
+                bodyParameters.forEach {
+                    put(it.parameterName, (it.bodyJsonElement?:return@forEach))
+                }
             }
+        } else {
+            bodyParameters.associate { Pair(it.parameterName, it.body) }
         }
     }
 
@@ -174,8 +158,10 @@ data class ApiCallInfo(
         HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete, HttpMethod.Patch -> true
         else -> false
     }
+
     fun queries() = parameters.filter { it.type == ApiParameterType.QUERY }
-            .map { it.key!! to it.value }
+        .map { it.key!! to it.value }
+
     fun headers() = parameters.filter { it.type == ApiParameterType.HEADER }
         .map { it.key!! to it.value }
 
@@ -199,29 +185,17 @@ data class ApiCallInfo(
 /**
  * @param key if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, there is no key
  * @param value if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, this is null
- * @param jsonElement if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, this exists.
+ * @param body if it's [ApiParameterType.BODY], [ApiParameterType.NONE] type, this exists.
  */
-@Serializable
 data class ApiParameterInfo(
     val type: ApiParameterType,
     val parameterName: String,//todo this seems not required
     val key: String?,
     val value: String?,
-    val jsonElement: JsonElement?
-)
-
-
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = HttpMethod::class)
-internal object HttpMethodSerializer : KSerializer<HttpMethod> {
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor("HttpMethodDefaultSerializer", PrimitiveKind.STRING)
-
-    override fun deserialize(decoder: Decoder): HttpMethod {
-        return HttpMethod(decoder.decodeString())
-    }
-
-    override fun serialize(encoder: Encoder, value: HttpMethod) {
-        encoder.encodeString(value.value)
+    val body: Any?,
+    val bodyJsonElement: JsonElement?,
+) {
+    fun getBodyOrJsonElement(): Any? {
+        return body?:bodyJsonElement
     }
 }

@@ -18,11 +18,18 @@ plugins {
 simpleArch {
     postfix = "simpleFramework"
     simpleConfig = false
+    isInternal = true
 }
 apply(plugin = deps.simpleArch.gradle.toPlugInId())
 
 group = deps.simpleArch.client.getGroupId()
 version = deps.simpleArch.client.getVersion()
+
+sqldelight {
+    database("SimpleDB") {
+        packageName = "kim.jeonghyeon.db"
+    }
+}
 
 kotlin {
 
@@ -35,14 +42,25 @@ kotlin {
 
     js().browser()
 
-
     ios()
-
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.api.client)
+                api(deps.ktor.clientSerialization)
+                api(deps.ktor.clientLogging)
+                api(deps.ktor.clientAuth)
+
+                api(deps.sqldelight.runtime)
+                api(deps.sqldelight.coroutine)
+
+                if (config.buildByProject) {
+                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
+                } else {
+                    api(deps.simpleArch.api.client)
+                }
+
+                api(deps.krypto)
             }
         }
         val commonTest by getting {
@@ -52,7 +70,22 @@ kotlin {
             }
         }
 
+        val jvmShareMain by creating {
+            dependencies {
+                api(deps.gson)
+            }
+        }
+
+        val jvmMain by getting {
+            dependsOn(jvmShareMain)
+            dependencies {
+
+                api(deps.sqldelight.jvm)
+            }
+        }
+
         val androidMain by getting {
+            dependsOn(jvmShareMain)
             dependencies {
                 api(deps.android.appCompat)
                 api(deps.android.supportCompat)
@@ -64,6 +97,9 @@ kotlin {
                 deps.android.compose.forEach { api(it) }
 
                 api(deps.android.anko)
+
+                api(deps.sqldelight.android)
+                api(deps.android.timber)
             }
         }
 
@@ -71,6 +107,12 @@ kotlin {
             dependencies {
                 implementation(deps.kotlin.testJunit)
                 implementation(deps.junit)
+            }
+        }
+
+        val iosMain by getting {
+            dependencies {
+                api(deps.sqldelight.native)
             }
         }
 

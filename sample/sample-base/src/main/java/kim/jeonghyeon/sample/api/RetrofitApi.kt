@@ -7,12 +7,9 @@ import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kim.jeonghyeon.net.ApiCallInfo
-import kim.jeonghyeon.net.ResponseTransformer
-import kim.jeonghyeon.net.ResponseTransformerInternal
-import kim.jeonghyeon.net.ResponseTransformerInternal.saveToken
+import kim.jeonghyeon.net.RequestResponseAdapter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -22,7 +19,6 @@ import retrofit2.http.Path
 import samplebase.generated.SimpleConfig
 import samplebase.generated.net.create
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 
 interface RetrofitApi {
@@ -76,24 +72,35 @@ fun getRetrofitApiFromSimpleApi(): RetrofitApi {
 /**
  * use your Retrofit Call Aapter
  */
-inline fun getRetrofitResponseTransformer(): ResponseTransformer = object : ResponseTransformer {
-    override suspend fun <OUT> transform(
-        response: HttpResponse,
+inline fun getRetrofitResponseTransformer(): RequestResponseAdapter = object : RequestResponseAdapter {
+    override suspend fun beforeBuildRequest(
         callInfo: ApiCallInfo,
-        returnType: KType,
-        returnTypeInfo: TypeInfo
-    ): OUT = if (returnType.classifier == RetrofitResponseBody::class) {
-        response.call.receive(returnTypeInfo) as OUT
-    } else {
-        (response.call.receive(typeInfo<RetrofitResponseBody<OUT>>()) as RetrofitResponseBody<OUT>).data
+        client: HttpClient
+    ): ApiCallInfo {
+        return callInfo
     }
 
-    override suspend fun <OUT> error(
+    override suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo) {
+
+    }
+
+    override suspend fun <OUT> handleException(
         e: Throwable,
         callInfo: ApiCallInfo,
-        returnType: KType,
         returnTypeInfo: TypeInfo
     ): OUT {
         throw e
+    }
+
+    override suspend fun <OUT> transformResponse(
+        response: HttpResponse,
+        callInfo: ApiCallInfo,
+        returnTypeInfo: TypeInfo
+    ): OUT {
+        return if (returnTypeInfo.type == RetrofitResponseBody::class) {
+            response.call.receive(returnTypeInfo) as OUT
+        } else {
+            (response.call.receive(typeInfo<RetrofitResponseBody<OUT>>()) as RetrofitResponseBody<OUT>).data
+        }
     }
 }

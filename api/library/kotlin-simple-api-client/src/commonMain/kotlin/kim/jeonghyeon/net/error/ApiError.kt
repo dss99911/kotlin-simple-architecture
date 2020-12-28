@@ -1,8 +1,6 @@
 package kim.jeonghyeon.net.error
 
 import io.ktor.http.HttpStatusCode
-import kim.jeonghyeon.net.DeeplinkError
-import kim.jeonghyeon.net.DeeplinkInfo
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.serialization.Serializable
 
@@ -23,10 +21,6 @@ fun errorApi(code: Int, message: String? = null, cause: Throwable? = null): Noth
 
 fun errorApi(body: ApiErrorBody, cause: Throwable? = null): Nothing {
     throw ApiError(body, cause)
-}
-
-fun errorDeeplink(info: DeeplinkInfo, cause: Throwable? = null): Nothing {
-    throw DeeplinkError(info, cause)
 }
 
 //response body and error body is different. sever will devliver it different way.

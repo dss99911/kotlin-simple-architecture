@@ -4,7 +4,6 @@ import kim.jeonghyeon.api.PreferenceApi
 import kim.jeonghyeon.auth.SignApi
 import kim.jeonghyeon.auth.SignOAuthClient
 import kim.jeonghyeon.auth.createSignApi
-import kim.jeonghyeon.delegate.weak
 import kim.jeonghyeon.net.AUTH_TYPE_SIGN_IN
 import kim.jeonghyeon.net.api
 import kim.jeonghyeon.net.apiSimple
@@ -19,6 +18,7 @@ import kim.jeonghyeon.sample.repository.UserRepository
 import kim.jeonghyeon.sample.repository.UserRepositoryImpl
 import kim.jeonghyeon.sample.repository.WordRepository
 import kim.jeonghyeon.sample.repository.WordRepositoryImpl
+import kim.jeonghyeon.type.weak
 import samplebase.generated.SimpleConfig
 import samplebase.generated.db.db
 

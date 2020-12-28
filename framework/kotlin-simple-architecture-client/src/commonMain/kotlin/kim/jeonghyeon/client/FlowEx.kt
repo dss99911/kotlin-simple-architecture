@@ -1,7 +1,6 @@
 package kim.jeonghyeon.client
 
 import kim.jeonghyeon.annotation.SimpleArchInternal
-import kim.jeonghyeon.delegate.weak
 import kim.jeonghyeon.type.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow

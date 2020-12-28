@@ -3,6 +3,11 @@ package kim.jeonghyeon.net
 import kim.jeonghyeon.type.ResourceError
 import kotlinx.serialization.Serializable
 
+
+fun errorDeeplink(info: DeeplinkInfo, cause: Throwable? = null): Nothing {
+    throw DeeplinkError(info, cause)
+}
+
 /**
  * throw this error, then client will go to the link.
  */

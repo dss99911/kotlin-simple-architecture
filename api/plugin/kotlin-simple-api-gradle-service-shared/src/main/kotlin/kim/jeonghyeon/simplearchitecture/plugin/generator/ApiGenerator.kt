@@ -77,7 +77,7 @@ class ApiGenerator(
         """.trimMargin()
 
     private fun SharedKtClass.makeClassDefinition() =
-        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String, val responseTransformer: ResponseTransformer) : $name"
+        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String, val requestResponseAdapter: RequestResponseAdapter?) : $name"
 
     private fun SharedKtClass.makeMainPathProperty(): String {
 
@@ -85,7 +85,7 @@ class ApiGenerator(
         val retrofitPath = getDefinedPathStatement() ?: "\"\""
 
         return "val mainPath = $path\n" +
-                "   val retrofitPath = $retrofitPath"
+                "    val retrofitPath = $retrofitPath"
     }
 
     private fun SharedKtClass.getDefinedPathStatement(): String? {
@@ -122,37 +122,37 @@ class ApiGenerator(
         |        ${parameters.map { it.toParameterInfo() }.joinToString(",\n        ")}
         |    )
         |)
-        |return client.callApi(callInfo, responseTransformer)
+        |return client.callApi(callInfo, if (requestResponseAdapter == null) { if (${pluginOptions.useFramework}) getDefaultRequestResponseAdapterForArchitecture() else getDefaultRequestResponseAdapter()  } else requestResponseAdapter)
         """.trimMargin()
     }
 
     private fun SharedKtParameter.toParameterInfo(): String = when {
         getAnnotationString(Body::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
+            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "if (client.isKotlinXSerializer()) null else ${name}","${name}.toJsonElement(client)")
         }
         getAnnotationString(retrofit2.http.Body::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
+            makeApiParameterInfo(ApiParameterType.BODY, "\"${name}\"", null.toString(), null.toString(), "if (client.isKotlinXSerializer()) null else ${name}", "${name}.toJsonElement(client)")
         }
         getAnnotationString(Query::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKey(Query::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKey(Query::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         getAnnotationString(retrofit2.http.Query::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Query::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.QUERY, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Query::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         getAnnotationString(Header::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKey(Header::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKey(Header::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         getAnnotationString(retrofit2.http.Header::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Header::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.HEADER, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Header::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         getAnnotationString(Path::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKey(Path::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKey(Path::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         getAnnotationString(retrofit2.http.Path::class) != null -> {
-            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Path::class), "${name}.toParameterString()", null.toString())
+            makeApiParameterInfo(ApiParameterType.PATH, "\"${name}\"", getParameterKeyRetrofit(retrofit2.http.Path::class), "${name}.toParameterString(client)", null.toString(), null.toString())
         }
         else -> {
-            makeApiParameterInfo(ApiParameterType.NONE, "\"${name}\"", null.toString(), null.toString(), "${name}.toJsonElement()")
+            makeApiParameterInfo(ApiParameterType.NONE, "\"${name}\"", null.toString(), null.toString(), "if (client.isKotlinXSerializer()) null else ${name}", "${name}.toJsonElement(client)")
         }
     }
 
@@ -166,8 +166,8 @@ class ApiGenerator(
             .trimParenthesis()!!
             .getParameterString(retrofit2.http.Query::value.name, 0)!!//all parametetType's key's field name should be 'name' and index is 0
 
-    private fun makeApiParameterInfo(type: ApiParameterType, parameterName: String, key: String, value: String, jsonElement: String): String {
-        return """ApiParameterInfo(ApiParameterType.${type.name}, $parameterName, $key, $value, $jsonElement)"""
+    private fun makeApiParameterInfo(type: ApiParameterType, parameterName: String, key: String, value: String, body: String, bodyJsonElement: String): String {
+        return """ApiParameterInfo(ApiParameterType.${type.name}, $parameterName, $key, $value, $body, $bodyJsonElement)"""
     }
 
     private fun SharedKtNamedFunction.makeSubPathStatement(): String {
@@ -226,7 +226,7 @@ class ApiGenerator(
                         import io.ktor.client.HttpClient
                         import kim.jeonghyeon.net.*
 
-                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, responseTransformer: ResponseTransformer = ResponseTransformerInternal.getDefaultResponseTransformer()): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = null): T
 
                         """.trimIndent()
                     )
@@ -238,6 +238,9 @@ class ApiGenerator(
         }
 
         val actualPath = pluginOptions.getGeneratedTargetVariantsPath().let {
+
+
+
             File("$it/$filePath")
                 .takeIf { !it.exists() } // e: java.lang.IllegalStateException: Unable to collect additional sources in reasonable number of iterations
                 ?.write {
@@ -248,15 +251,16 @@ class ApiGenerator(
                 |
                 |import io.ktor.client.HttpClient
                 |import kim.jeonghyeon.net.*
+                |${getElseImport()}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, responseTransformer: ResponseTransformer${if (pluginOptions.isMultiplatform) "" else " = ResponseTransformerInternal.getDefaultResponseTransformer()"}): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = null"}): T {
                 |
                 |    return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, responseTransformer) as T" }.prependIndent("        ")}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, requestResponseAdapter) as T" }.prependIndent("        ")}
                 |
-                |        else -> error("can not create " + T::class.simpleName)
+                |        else -> ${getElseStatement()}
                 |    }
                 |}
                 """.trimMargin()
@@ -264,6 +268,39 @@ class ApiGenerator(
             }
         }
         return listOfNotNull(expectFile, actualPath)
+    }
+
+    fun getElseImport(): String {
+        val isApi = pluginOptions.isInternal && !pluginOptions.useFramework
+        val isArchitecture = pluginOptions.isInternal && pluginOptions.useFramework
+        val isOtherWithApi = !pluginOptions.isInternal && !pluginOptions.useFramework
+
+        return if (isApi) {
+            ""
+        } else if (isArchitecture || isOtherWithApi) {
+            "import kotlinsimpleapiclient.generated.net.createSimple"
+        } else {
+            "import kotlinsimplearchitectureclient.generated.net.createSimpleFramework"
+        }
+
+    }
+
+    fun getElseStatement(): String {
+        //api -> error("can not create " + T::class.simpleName)
+        //architecture -> createSimple<T>(baseUrl, requestResponseAdapter)
+        //other with api -> createSimple<T>(baseUrl, requestResponseAdapter)
+        //other with architecture -> createSimpleFramework<T>(baseUrl, requestResponseAdapter)
+        val isApi = pluginOptions.isInternal && !pluginOptions.useFramework
+        val isArchitecture = pluginOptions.isInternal && pluginOptions.useFramework
+        val isOtherWithApi = !pluginOptions.isInternal && !pluginOptions.useFramework
+
+        return if (isApi) {
+            "error(\"can not create \" + T::class.simpleName)"
+        } else if (isArchitecture || isOtherWithApi) {
+            "createSimple<T>(baseUrl, requestResponseAdapter)"
+        } else {
+            "createSimpleFramework<T>(baseUrl, requestResponseAdapter)"
+        }
     }
 }
 

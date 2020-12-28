@@ -9,7 +9,7 @@ import kim.jeonghyeon.net.DeeplinkInfo
 import kim.jeonghyeon.net.HEADER_KEY
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.error.errorApi
-import kim.jeonghyeon.net.error.errorDeeplink
+import kim.jeonghyeon.net.errorDeeplink
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.sample.api.AnnotationAction
 import kim.jeonghyeon.sample.api.AnnotationObject

@@ -30,5 +30,10 @@ tasks.withType<KotlinCompile>().all {
 
 dependencies {
     implementation(project(":sample:sample-base"))
-    implementation(deps.simpleArch.backend)
+    if (config.buildByProject) {
+        implementation(project(":framework:${deps.simpleArch.backend.getArtifactId()}"))
+    } else {
+        implementation(deps.simpleArch.backend)
+    }
+
 }

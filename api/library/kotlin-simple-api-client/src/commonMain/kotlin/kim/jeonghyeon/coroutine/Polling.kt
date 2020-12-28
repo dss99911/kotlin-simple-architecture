@@ -1,7 +1,6 @@
 package kim.jeonghyeon.coroutine
 
 import kim.jeonghyeon.type.ResourceError
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.delay
 
 /**
@@ -20,7 +19,6 @@ suspend inline fun <T> polling(
         try {
             return action(repeatIndex)
         } catch (e: Exception) {
-            log.e(e)
             //retry
             delay(delayMillis)
         }

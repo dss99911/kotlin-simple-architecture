@@ -6,6 +6,7 @@ import io.ktor.client.request.*
 import kim.jeonghyeon.auth.ServiceAuthType
 import kim.jeonghyeon.auth.SignInAuthType
 import kotlinsimpleapiclient.generated.net.createSimple
+import kotlinsimplearchitectureclient.generated.net.createSimpleFramework
 import samplebase.generated.SimpleConfig
 import samplebase.generated.net.create
 
@@ -22,7 +23,7 @@ val client: HttpClient by lazy {
 }
 
 inline fun <reified API> api(baseUrl: String = SimpleConfig.serverUrl): API = client.create(baseUrl)
-inline fun <reified API> apiSimple(baseUrl: String = SimpleConfig.serverUrl): API = client.createSimple(baseUrl)
+inline fun <reified API> apiSimple(baseUrl: String = SimpleConfig.serverUrl): API = client.createSimpleFramework(baseUrl)
 
 //just for sample showing how to set common header
 const val HEADER_KEY = "KEY"

@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 //this is new way. https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block
 plugins {
@@ -25,6 +26,8 @@ buildscript {
         classpath(deps.kotlin.serializationGradle)
         classpath(deps.plugin.gradlePublish)//gradle plugin publishing
     }
+
+
 }
 
 allprojects {

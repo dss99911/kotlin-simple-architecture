@@ -9,6 +9,8 @@ open class SimpleArchExtension {
     var androidConfig: Boolean = true
     var commonConfig: Boolean = true
     var generationConfig: Boolean = true
+    var useFramework: Boolean = false
+    var isInternal: Boolean = false
 
     /**
      * "a" to "1" => const val a = 1

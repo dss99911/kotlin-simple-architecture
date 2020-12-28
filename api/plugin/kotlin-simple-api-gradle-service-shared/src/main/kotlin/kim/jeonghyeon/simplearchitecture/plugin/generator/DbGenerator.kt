@@ -108,13 +108,14 @@ class DbGenerator(
                 |package ${pluginOptions.packageName}.generated.db
                 |
                 |${makeImport()}
+                |${getElseImport()}
                 |
                 |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T : Transacter> db${pluginOptions.postFix.capitalize()}(path: String, properties: Map<String?, String?>): T {
                 |
                 |    return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}(${it.makeDriverInstance(it.name)})" }.prependIndent("        ")}
                 |
-                |        else -> error("can not create database name " + T::class.simpleName)
+                |        else -> ${getElseStatement()}
                 |    } as T
                 |}
                 """.trimMargin()
@@ -122,6 +123,27 @@ class DbGenerator(
             }
         }
         return listOfNotNull(expectFile, actualPath)
+    }
+
+    fun getElseImport(): String {
+        val isOtherWithArchitecture = !pluginOptions.isInternal && pluginOptions.useFramework
+
+        return if (isOtherWithArchitecture) {
+            "import kotlinsimplearchitectureclient.generated.db"
+        } else {
+            ""
+        }
+
+    }
+
+    fun getElseStatement(): String {
+        val isOtherWithArchitecture = !pluginOptions.isInternal && pluginOptions.useFramework
+
+        return if (isOtherWithArchitecture) {
+            "dbSimpleFramework<T>(path, properties)"
+        } else {
+            "error(\"can not create database name \" + T::class.simpleName)"
+        }
     }
 
 

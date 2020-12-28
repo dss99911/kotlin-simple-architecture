@@ -4,8 +4,6 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
-import io.ktor.gson.*
-import io.ktor.gson.gson
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -14,21 +12,13 @@ import io.ktor.serialization.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import kim.jeonghyeon.annotation.*
-import kim.jeonghyeon.api.ApiBindingController
-import kim.jeonghyeon.auth.SignFeature
-import kim.jeonghyeon.extension.fromJsonString
-import kim.jeonghyeon.extension.toJsonObject
-import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.net.error.ApiError
 import kim.jeonghyeon.net.error.ApiErrorBody
 import kim.jeonghyeon.net.error.DeeplinkError
-import kim.jeonghyeon.util.log
 import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
 import java.lang.reflect.InvocationTargetException
@@ -36,15 +26,13 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.KType
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
-private val preControllers: MutableList<Any> = mutableListOf(ApiBindingController())
+private val preControllers: MutableList<Any> = mutableListOf()
 
 fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
     check(featureOrNull(SimpleRouting) == null) {
@@ -54,14 +42,24 @@ fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
     preControllers.add(_controller)
 }
 
+/**
+ * TODO provide customization option for
+ *  - StatusPages
+ *  - ContentNegotiation : currently only support kotlinx serialization.
+ *  - CallLogging
+ */
 class SimpleRouting(val config: Configuration) {
     class Configuration {
-        internal val controllerList = mutableListOf(*preControllers.toTypedArray())
+        @SimpleArchInternal
+        val controllerList = mutableListOf(*preControllers.toTypedArray())
         var configure: (Routing.() -> Unit)? = null
 
         operator fun Any.unaryPlus() {
             controllerList.add(this)
         }
+
+        @SimpleArchInternal
+        var hasSignFeature = false//todo consider other way if there is additional customization required
 
     }
 
@@ -79,20 +77,26 @@ class SimpleRouting(val config: Configuration) {
 
     fun initialize(pipeline: Application) {
         pipeline.install(StatusPages) {
-            val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit = {
-                log.e(it)
-                call.respond(HttpStatusCode.ApiError, ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, it.message))
-            }
+            val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit =
+                {
+                    println("[SimpleRouting] ${it.message}")
+                    call.respond(
+                        HttpStatusCode.ApiError,
+                        ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, it.message)
+                    )
+                }
 
-            val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit = {
-                log.e(it)
-                call.respond(HttpStatusCode.ApiError, it.body)
-            }
+            val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit =
+                {
+                    println("[SimpleRouting] ${it.message}")
+                    call.respond(HttpStatusCode.ApiError, it.body)
+                }
 
-            val deeplinkException: suspend PipelineContext<Unit, ApplicationCall>.(exception: DeeplinkError) -> Unit = {
-                log.e(it)
-                call.respond(HttpStatusCode.DeeplinkError, it.deeplinkInfo)
-            }
+            val deeplinkException: suspend PipelineContext<Unit, ApplicationCall>.(exception: DeeplinkError) -> Unit =
+                {
+                    println("[SimpleRouting] ${it.message}")
+                    call.respond(HttpStatusCode.DeeplinkError, it.deeplinkInfo)
+                }
 
             exception<Throwable> { error ->
                 unknownException(error)
@@ -130,7 +134,7 @@ class SimpleRouting(val config: Configuration) {
     }
 
     private fun Routing.installControllers(controllers: List<Any>) {
-        log.i("[SimpleRouting] Start to install Routing")
+        println("[SimpleRouting] Start to install Routing")
         controllers.forEach { installController(it) }
     }
 
@@ -141,7 +145,7 @@ class SimpleRouting(val config: Configuration) {
             .forEach { apiInterface ->
                 val mainPath = apiInterface.getMainPath() ?: return@forEach
                 installAuthenticate(apiInterface.annotations) {
-                    log.i("[SimpleRouting] Main Path : $mainPath, ${controller::class.simpleName}")
+                    println("[SimpleRouting] Main Path : $mainPath, ${controller::class.simpleName}")
                     route(mainPath) {
                         this.installSubPaths(controller, apiInterface)
                     }
@@ -150,11 +154,12 @@ class SimpleRouting(val config: Configuration) {
     }
 
     private fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
-        if (application.featureOrNull(SignFeature) == null) {
+        if (!config.hasSignFeature) {
             //ApiBindingController is added as default
             return build()
         }
-        val authenticateAnnotation = annotations.filterIsInstance<Authenticate>().firstOrNull()?: return build()
+        val authenticateAnnotation =
+            annotations.filterIsInstance<Authenticate>().firstOrNull() ?: return build()
         if (authenticateAnnotation.name.isBlank()) {
             authenticate(build = build)
         } else {
@@ -184,7 +189,7 @@ class SimpleRouting(val config: Configuration) {
 
             installAuthenticate(kfunction.annotations) {
                 route(subPath, method) {
-                    log.i("[SimpleRouting]     Sub Path : $subPath $method")
+                    println("[SimpleRouting]     Sub Path : $subPath $method")
                     handle {
                         handleRequest(controller, kfunction)
                     }
@@ -244,15 +249,24 @@ class SimpleRouting(val config: Configuration) {
         launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
             if (!pipelineContextStore.responded) {
-                call.respond(Json{}.encodeToJsonElement(serializer(apiFunction.returnType), response))
+                call.respond(
+                    Json {}.encodeToJsonElement(
+                        serializer(apiFunction.returnType),
+                        response
+                    )
+                )
             }
-        }
+        }.join()
     }
 
     @OptIn(InternalSerializationApi::class)
-    private fun PipelineContext<Unit, ApplicationCall>.getArgument(param: KParameter, body: JsonObject?): Any? {
+    private fun PipelineContext<Unit, ApplicationCall>.getArgument(
+        param: KParameter,
+        body: JsonObject?
+    ): Any? {
         try {
             val json = Json { }
+
             val parameterAnnotation = param.annotations.firstOrNull { it.isParameterAnnotation() }
                 ?: //if no annotation, it's body argument
                 return body!![param.name]?.let {
@@ -281,12 +295,13 @@ class SimpleRouting(val config: Configuration) {
                 }
             }
         } catch (e: Exception) {
-            log.e(e.message + "\nparam : ${param.name}")
+            println("[SimpleRouting]" + e.message + "\nparam : ${param.name}")
             throw e
         }
     }
 
-    private fun Annotation.isParameterAnnotation(): Boolean = this is Header || this is Path || this is Query || this is Body
+    private fun Annotation.isParameterAnnotation(): Boolean =
+        this is Header || this is Path || this is Query || this is Body
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(): JsonObject? {
         //todo if body not exists, ignore it with better approach.
@@ -301,7 +316,7 @@ class SimpleRouting(val config: Configuration) {
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =
         this::class.functions.first {
             func.name == it.name &&
-            func.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }  ==
-                    it.parameters.mapIndexedNotNull{ i, v -> if (i == 0) null else v.type }
+                    func.parameters.mapIndexedNotNull { i, v -> if (i == 0) null else v.type } ==
+                    it.parameters.mapIndexedNotNull { i, v -> if (i == 0) null else v.type }
         }
 }

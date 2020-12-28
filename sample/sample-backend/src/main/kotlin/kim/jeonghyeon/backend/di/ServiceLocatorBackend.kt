@@ -10,7 +10,7 @@ import kim.jeonghyeon.di.ServiceLocator
 import kim.jeonghyeon.pergist.Preference
 import kim.jeonghyeon.pergist.UserPreference
 import kim.jeonghyeon.sample.SampleDb
-import kotlinsimpleapiclient.generated.db.dbSimple
+import kotlinsimplearchitectureclient.generated.db.dbSimpleFramework
 import samplebase.generated.db.db
 
 lateinit var serviceLocatorBackend: ServiceLocatorBackend
@@ -29,5 +29,5 @@ class ServiceLocatorBackendImpl(val application: Application) : ServiceLocatorBa
 
     override val jwtAlgorithm: Algorithm by lazy { Algorithm.HMAC256(application.jwtSecret) }
 
-    override val userQueries: UserQueries by lazy { dbSimple<SimpleDB>(application.dbPath).userQueries }
+    override val userQueries: UserQueries by lazy { dbSimpleFramework<SimpleDB>(application.dbPath).userQueries }
 }

@@ -69,7 +69,9 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             project.buildDir.toString(),
             targetVariantsName,
             project.simpleArchExtension.postfix,
-            project.getGeneratedPackageName()
+            project.getGeneratedPackageName(),
+            project.simpleArchExtension.useFramework,
+            project.simpleArchExtension.isInternal
         )
             //it doesn't allow some special character. so, used Base64
             .let { Base64.getEncoder().encodeToString(it.toString().toByteArray()) }

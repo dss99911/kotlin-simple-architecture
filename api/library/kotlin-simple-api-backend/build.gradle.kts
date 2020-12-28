@@ -13,7 +13,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.api.client)
+                if (config.buildByProject) {
+                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
+                } else {
+                    api(deps.simpleArch.api.client)
+                }
             }
         }
 
@@ -22,16 +26,7 @@ kotlin {
             dependencies {
                 api(deps.ktor.core)
                 api(deps.ktor.auth)
-                api(deps.ktor.authJwt)
-                api(deps.ktor.gson)
-                api(deps.ktor.serverNetty)
                 api(deps.ktor.serialization)
-                api(deps.ktor.clientEngineApache)
-                api(deps.ktor.serverSessions)
-
-                api(deps.logback)
-
-                api(deps.kotlin.reflect)
             }
         }
 

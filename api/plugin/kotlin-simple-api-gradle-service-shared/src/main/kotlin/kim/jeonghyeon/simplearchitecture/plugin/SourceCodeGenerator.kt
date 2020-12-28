@@ -17,8 +17,7 @@ object SourceCodeGenerator {
             return emptyList()
         }
 
-        val apiFiles = ApiGenerator(pluginOptions, origin).generate()
-        val dbFiles = DbGenerator(pluginOptions, origin).generate()
-        return apiFiles + dbFiles
+        return ApiGenerator(pluginOptions, origin).generate() + if (pluginOptions.useFramework) DbGenerator(pluginOptions, origin).generate()
+        else emptyList()
     }
 }
