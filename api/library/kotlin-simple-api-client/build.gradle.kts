@@ -29,7 +29,9 @@ kotlin {
 
     jvm()
 
-    android()
+    android {
+        publishLibraryVariants("release", "debug")
+    }
 
     js().browser()
 

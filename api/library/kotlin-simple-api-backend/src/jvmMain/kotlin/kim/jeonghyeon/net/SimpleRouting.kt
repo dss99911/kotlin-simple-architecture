@@ -1,5 +1,6 @@
 package kim.jeonghyeon.net
 
+import com.google.gson.Gson
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -19,13 +20,12 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
 import java.lang.reflect.InvocationTargetException
 import java.util.*
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
+import kotlin.reflect.*
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredFunctions
@@ -45,8 +45,6 @@ fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
 /**
  * TODO provide customization option for
  *  - StatusPages
- *  - ContentNegotiation : currently only support kotlinx serialization.
- *  - CallLogging
  */
 class SimpleRouting(val config: Configuration) {
     class Configuration {
@@ -120,16 +118,12 @@ class SimpleRouting(val config: Configuration) {
 
         }
 
-        pipeline.install(ContentNegotiation) {
-            json()
-        }
-
         pipeline.install(Routing) {
             installControllers(config.controllerList)
             config.configure?.invoke(this)
         }
 
-        pipeline.install(CallLogging)
+
 
     }
 
@@ -238,7 +232,7 @@ class SimpleRouting(val config: Configuration) {
     ) {
         val controllerFunction = controller.findFunction(apiFunction)
 
-        val body: JsonObject? = getBody()
+        val body: Any? = getBody()
         val args = apiFunction.parameters
             .subList(1, apiFunction.parameters.size)//first parameter is for suspend function
             .map { param ->
@@ -259,22 +253,52 @@ class SimpleRouting(val config: Configuration) {
         }.join()
     }
 
-    @OptIn(InternalSerializationApi::class)
+    @OptIn(InternalSerializationApi::class, ExperimentalStdlibApi::class)
     private fun PipelineContext<Unit, ApplicationCall>.getArgument(
         param: KParameter,
-        body: JsonObject?
+        body: Any?
     ): Any? {
-        try {
-            val json = Json { }
+        //If use serialization. use serialization
+        //if not use serialization, just use gson, because ContentConverter is difficult to use for converting string to type
+        //the purpose is that if use serialization, model require Serializable annotation. other converter doesn't require it.
+        val json = Json { }
+        val gson = Gson()
 
+        fun Any.getValue(key: String): Any? {
+            return if (this is Map<*, *>) {
+                this[key]
+            } else if (this is JsonObject) {
+                this[key]
+            } else error("${this::class.simpleName} is not supported for body")
+        }
+
+        fun Any.toType(type: KType): Any? {
+            println("${this::class.simpleName}")
+            return if (this is JsonElement) {
+                json.decodeFromJsonElement(serializer(type), this)
+            } else {
+                println("${gson.toJson(this)} :: ${type.javaType.toString()}")
+                gson.fromJson(gson.toJson(this), type.javaType)
+            }
+        }
+
+        fun String.fromStringToType(type: KType): Any? {
+            return if (isSerializationConverter()) {
+                json.decodeFromString(serializer(type), this)
+            } else {
+                gson.fromJson(this, type.javaType)
+            }
+        }
+
+        try {
             val parameterAnnotation = param.annotations.firstOrNull { it.isParameterAnnotation() }
                 ?: //if no annotation, it's body argument
-                return body!![param.name]?.let {
-                    json.decodeFromJsonElement(serializer(param.type), it)
+                return body!!.getValue(param.name!!)?.let {
+                    it.toType(param.type)
                 }
 
             return if (parameterAnnotation is Body) {
-                body?.let { json.decodeFromJsonElement(serializer(param.type), it) }
+                body?.toType(param.type)
             } else {
                 when (parameterAnnotation) {
                     is Header -> call.request.headers[parameterAnnotation.name]
@@ -283,15 +307,13 @@ class SimpleRouting(val config: Configuration) {
                     else -> null
                 }?.let {
                     if (param.type.jvmErasure.let { it == String::class || it.java.isEnum }) {
+                        //TEXT => "TEXT" => String or enum
                         json.encodeToJsonElement(String.serializer(), it).let {
-                            //TEXT => "TEXT" => String or enum
-                            json.decodeFromJsonElement(serializer(param.type), it)
+                            it.toType(param.type)
                         }
                     } else {
-                        json.decodeFromString(serializer(param.type), it)
+                        it.fromStringToType(param.type)
                     }
-
-
                 }
             }
         } catch (e: Exception) {
@@ -303,14 +325,27 @@ class SimpleRouting(val config: Configuration) {
     private fun Annotation.isParameterAnnotation(): Boolean =
         this is Header || this is Path || this is Query || this is Body
 
-    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(): JsonObject? {
+    private suspend fun PipelineContext<Unit, ApplicationCall>.getBody(): Any? {
         //todo if body not exists, ignore it with better approach.
         return try {
-            call.receive()
+            //check if it's serialization or not. because, serialization require annotation on model
+            if (isSerializationConverter()) {
+                call.receive<JsonObject>()
+            } else {
+                call.receive<Map<String, Any?>>()
+            }
         } catch (e: ContentTransformationException) {
             e.printStackTrace()
             null
         }
+    }
+
+    private fun PipelineContext<Unit, ApplicationCall>.isSerializationConverter(): Boolean {
+        return application.feature(ContentNegotiation)
+            .registrations
+            .filter { it.contentType == ContentType.Application.Json}
+            .filter { it.converter is SerializationConverter }
+            .any()
     }
 
     private fun Any.findFunction(func: KFunction<*>): KFunction<*> =

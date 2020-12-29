@@ -27,6 +27,7 @@ kotlin {
                 api(deps.ktor.core)
                 api(deps.ktor.auth)
                 api(deps.ktor.serialization)
+                api(deps.gson)
             }
         }
 

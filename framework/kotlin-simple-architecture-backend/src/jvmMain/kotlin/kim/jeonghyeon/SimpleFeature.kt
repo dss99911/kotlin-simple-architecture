@@ -1,6 +1,8 @@
 package kim.jeonghyeon
 
 import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.serialization.*
 import io.ktor.util.AttributeKey
 import kim.jeonghyeon.api.ApiBindingController
 import kim.jeonghyeon.auth.*
@@ -15,6 +17,12 @@ class SimpleFeature {
         var serviceLocator: ServiceLocator? = null
         internal var signConfig: (SignFeature.Configuration.() -> Unit)? = null
         internal var routingConfig: (SimpleRouting.Configuration.() -> Unit)? = null
+
+        var contentNegotiationConfig: ContentNegotiation.Configuration.() -> Unit = {
+            json()
+        }
+
+        var callLoggingConfig: (CallLogging.Configuration.() -> Unit)? = {}
 
         fun sign(config: SignFeature.Configuration.() -> Unit) {
             signConfig = config
@@ -34,6 +42,13 @@ class SimpleFeature {
             configure: Configuration.() -> Unit
         ): SimpleFeature {
             val config = Configuration().apply(configure)
+
+            pipeline.install(ContentNegotiation, config.contentNegotiationConfig)
+
+            if (config.callLoggingConfig != null) {
+                pipeline.install(CallLogging, config.callLoggingConfig!!)
+            }
+
 
             pipeline.addControllerBeforeInstallSimpleRouting(ApiBindingController())
 
