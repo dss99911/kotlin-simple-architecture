@@ -20,6 +20,7 @@ class ViewModelFlow<T>(viewModel: BaseViewModel, val flow: MutableSharedFlow<T>)
     /**
      * used on Swift
      */
+    @OptIn(SimpleArchInternal::class)
     fun asValue(): T? {
         val viewModel = viewModelWeakReference.get()?:return valueOrNull
 
@@ -84,6 +85,7 @@ fun <T> flowSingle(action: suspend () -> T): Flow<T> = flow {
  * - sharedFlow doesn't throw exception to downstream
  * - if exception occurs, all subscriber is disconnected. at that time, reset cache, so that, when retry by collecting again. upstream will be collected again.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> Flow<T>.toShare(scope: CoroutineScope): Flow<T> {
     val job = atomic<Job?>(null)
     val flow = MutableSharedFlow<Resource<T>>(1, 0, BufferOverflow.DROP_OLDEST)

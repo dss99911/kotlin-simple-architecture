@@ -5,6 +5,8 @@ plugins {
 group = deps.simpleArch.backend.getGroupId()
 version = deps.simpleArch.backend.getVersion()
 
+val buildByLibrary: Boolean? by project
+
 kotlin {
     jvm()
 
@@ -12,17 +14,17 @@ kotlin {
         val commonMain by getting {
             dependencies {
 
-                if (config.buildByProject) {
-                    api(project(":api:library:${deps.simpleArch.api.backend.getArtifactId()}"))
-                } else {
+                if (buildByLibrary == true) {
                     api(deps.simpleArch.api.backend)
+                } else {
+                    api(project(":api:library:${deps.simpleArch.api.backend.getArtifactId()}"))
                 }
 
 
-                if (config.buildByProject) {
-                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
-                } else {
+                if (buildByLibrary == true) {
                     api(deps.simpleArch.client)
+                } else {
+                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
                 }
 
 

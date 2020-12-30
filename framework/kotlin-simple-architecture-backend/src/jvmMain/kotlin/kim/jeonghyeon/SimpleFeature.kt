@@ -4,6 +4,7 @@ import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.serialization.*
 import io.ktor.util.AttributeKey
+import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.api.ApiBindingController
 import kim.jeonghyeon.auth.*
 import kim.jeonghyeon.di.ServiceLocator
@@ -37,6 +38,7 @@ class SimpleFeature {
         ApplicationFeature<Application, Configuration, SimpleFeature> {
         override val key: AttributeKey<SimpleFeature> = AttributeKey("SimpleFeature")
 
+        @OptIn(SimpleArchInternal::class)
         override fun install(
             pipeline: Application,
             configure: Configuration.() -> Unit

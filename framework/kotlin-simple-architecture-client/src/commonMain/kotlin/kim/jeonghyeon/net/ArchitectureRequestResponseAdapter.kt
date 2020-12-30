@@ -18,7 +18,7 @@ import kim.jeonghyeon.pergist.getUserToken
 import kim.jeonghyeon.pergist.removeUserToken
 
 @OptIn(SimpleArchInternal::class)
-inline fun getDefaultRequestResponseAdapterForArchitecture(listener: RequestResponseListener? = null): RequestResponseAdapter = getDefaultRequestResponseAdapter(
+fun getDefaultRequestResponseAdapterForArchitecture(listener: RequestResponseListener? = null): RequestResponseAdapter = getDefaultRequestResponseAdapter(
         object : RequestResponseListener {
             override suspend fun beforeBuildRequest(callInfo: ApiCallInfo, client: HttpClient): ApiCallInfo {
                 if (isApiBinding()) {
@@ -36,7 +36,7 @@ inline fun getDefaultRequestResponseAdapterForArchitecture(listener: RequestResp
             override suspend fun <OUT> transformResponse(
                 response: HttpResponse,
                 callInfo: ApiCallInfo,
-                returnTypeInfo: TypeInfo
+                returnTypeInfo: TypeInfo,
             ) {
                 listener?.transformResponse<OUT>(response, callInfo, returnTypeInfo)
 

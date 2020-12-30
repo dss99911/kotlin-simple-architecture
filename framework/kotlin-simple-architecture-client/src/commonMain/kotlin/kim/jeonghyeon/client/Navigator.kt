@@ -98,9 +98,9 @@ object Navigator {
 
         if (inclusivePopIndex == backStack.size) return true//there is nothing to pop
 
-        backStack.filterIndexed { index, viewModel ->
+        backStack.filterIndexed { index, vm ->
             if (index >= inclusivePopIndex) {
-                viewModel.onBackPressed()
+                vm.onBackPressed()
                 false
             } else true
         }.let {

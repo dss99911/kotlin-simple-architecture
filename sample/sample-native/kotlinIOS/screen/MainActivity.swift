@@ -32,6 +32,7 @@ func MainActivity() -> some View {
             case is SignInViewModel: SignInScreen(viewModel as! SignInViewModel)
             case is SignUpViewModel: SignUpScreen(viewModel as! SignUpViewModel)
             case is UserViewModel: UserScreen(viewModel as! UserViewModel)
+            case is ApiTestViewModel: ApiTestScreen(viewModel as! ApiTestViewModel)
             default: EmptyView()
             }
         }

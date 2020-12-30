@@ -1,6 +1,9 @@
 plugins {
     kotlin("multiplatform")
 }
+apply(plugin = "kotlinx-serialization")
+
+val buildByLibrary: Boolean? by project
 
 group = deps.simpleArch.api.backend.getGroupId()
 version = deps.simpleArch.api.backend.getVersion()
@@ -12,10 +15,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (config.buildByProject) {
-                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
-                } else {
+                if (buildByLibrary == true) {
                     api(deps.simpleArch.api.client)
+                } else {
+                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
                 }
             }
         }

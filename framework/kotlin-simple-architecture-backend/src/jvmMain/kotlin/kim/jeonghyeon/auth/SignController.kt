@@ -239,7 +239,7 @@ open class SignOAuthController(
                 val port = url.port.let { port -> if (port == defaultPort || port == 0) "" else ":$port" }
                 call().respondRedirect("intent://${url.host}$port${url.fullPath}$tokenParameter#Intent;scheme=$scheme;package=$packageName;end")
             }
-            ClientPlatform.IOS, ClientPlatform.JS -> {
+            ClientPlatform.IOS, ClientPlatform.JS, ClientPlatform.JVM -> {
                 call().respondRedirect("$redirectUrl$tokenParameter")
             }
         }

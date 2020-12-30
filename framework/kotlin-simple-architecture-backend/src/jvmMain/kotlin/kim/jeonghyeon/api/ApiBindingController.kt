@@ -3,6 +3,7 @@ package kim.jeonghyeon.api
 import io.ktor.application.*
 import kim.jeonghyeon.annotation.Api
 import kim.jeonghyeon.annotation.ApiParameterType
+import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.di.application
 import kim.jeonghyeon.extension.toJsonString
 import kim.jeonghyeon.net.ApiBindingApi
@@ -63,6 +64,7 @@ class ApiBindingController : ApiBindingApi {
         return kFunction.callSuspend(controller, *kFunction.makeParameter(this, responseList).toTypedArray())
     }
 
+    @OptIn(SimpleArchInternal::class)
     private fun ApiBindingCallInfo.findController(): Any {
         val routing = application.feature(SimpleRouting)
         val controllerList = routing.config.controllerList

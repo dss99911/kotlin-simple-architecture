@@ -39,7 +39,6 @@ object SimpleApiUtil {
 
         var response: HttpResponse? = null
         try {
-
             response = requestApi(callInfo, requestResponseAdapter)
             val returnValue = requestResponseAdapter.transformResponse<RET>(response, callInfo, typeInfo<RET>())
             setResponse(response)//`freeze` error occurs if call before readText()
@@ -64,7 +63,12 @@ object SimpleApiUtil {
             is String -> this
             is Enum<*> -> this.name
             else -> {
-                (client.feature(JsonFeature)!!.serializer.write(this) as TextContent).text
+                if (client.isKotlinXSerializer()) {
+                    Json {}.encodeToString(this)//with below, generic type has error, so, use this way.
+                } else {
+                    (client.feature(JsonFeature)!!.serializer.write(this) as TextContent).text
+                }
+
             }
         }
     }

@@ -120,6 +120,7 @@ private fun <T, R> Flow<T>.transformWithJob(scope: CoroutineScope, jobPolicy: Fl
         if (it is ExceptionOnFlow) {
             throw it.exception
         }
+        @Suppress("UNCHECKED_CAST")
         it as R
     }
 }

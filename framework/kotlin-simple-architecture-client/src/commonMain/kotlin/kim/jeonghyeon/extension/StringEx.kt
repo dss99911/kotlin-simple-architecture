@@ -25,15 +25,9 @@ fun String.replaceLast(oldValue: String, newValue: String, ignoreCase: Boolean =
     return if (index < 0) this else replaceRange(index, index + oldValue.length, newValue)
 }
 
-@Deprecated("this is not working with Any", ReplaceWith("toJsonStringNew"))
-inline fun <reified T : Any> T.toJsonString(): String {
-    return Json { }.encodeToString(this)
-}
 
-//todo change to this function and change name
-// difference is that, if data is null, then with toJsonString, it's null
-// but with this, if data is null, then it return "null"
-fun Any?.toJsonStringNew(): String {
+inline fun <reified T> T.toJsonString(): String {
+//    return Json { }.encodeToString(this)
     return (KotlinxSerializer().write(this?: return "null") as TextContent).text
 }
 

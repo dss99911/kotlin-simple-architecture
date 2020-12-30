@@ -12,6 +12,7 @@ import kim.jeonghyeon.sample.SampleDb
 import kim.jeonghyeon.sample.WordQueries
 import kim.jeonghyeon.sample.api.GithubApi
 import kim.jeonghyeon.sample.api.SampleApi
+import kim.jeonghyeon.sample.api.TestApi
 import kim.jeonghyeon.sample.api.UserApi
 import kim.jeonghyeon.sample.repository.UserRepository
 import kim.jeonghyeon.sample.repository.UserRepositoryImpl
@@ -31,6 +32,7 @@ interface ServiceLocatorClient {
     val signApi: SignApi
     val oauthClient: SignOAuthClient
     val userApi: UserApi
+    val testApi: TestApi
     val userRepository: UserRepository
     val wordQueries: WordQueries
     val wordRepository: WordRepository
@@ -47,6 +49,7 @@ class ServiceLocatorClientImpl : ServiceLocatorClient {
     override val signApi: SignApi get() = client.createSignApi(SimpleConfig.serverUrl, AUTH_TYPE_SIGN_IN)
     override val oauthClient: SignOAuthClient get() = SignOAuthClient(SimpleConfig.serverUrl)
     override val userApi: UserApi get() = api()
+    override val testApi: TestApi get() = api()
     override val userRepository: UserRepository by lazy { UserRepositoryImpl() }
     override val preferenceApi: PreferenceApi get() = api()
     override val preference: Preference = Preference()

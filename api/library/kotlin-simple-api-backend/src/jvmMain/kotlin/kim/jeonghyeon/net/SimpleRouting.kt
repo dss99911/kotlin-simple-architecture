@@ -26,10 +26,7 @@ import kotlinx.serialization.serializer
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import kotlin.reflect.*
-import kotlin.reflect.full.allSuperclasses
-import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.functions
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 
 private val preControllers: MutableList<Any> = mutableListOf()
@@ -52,6 +49,7 @@ class SimpleRouting(val config: Configuration) {
         val controllerList = mutableListOf(*preControllers.toTypedArray())
         var configure: (Routing.() -> Unit)? = null
 
+        @OptIn(SimpleArchInternal::class)
         operator fun Any.unaryPlus() {
             controllerList.add(this)
         }
@@ -73,6 +71,7 @@ class SimpleRouting(val config: Configuration) {
         }
     }
 
+    @OptIn(SimpleArchInternal::class)
     fun initialize(pipeline: Application) {
         pipeline.install(StatusPages) {
             val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit =
@@ -150,6 +149,7 @@ class SimpleRouting(val config: Configuration) {
             }
     }
 
+    @OptIn(SimpleArchInternal::class)
     private fun Route.installAuthenticate(annotations: List<Annotation>, build: Route.() -> Unit) {
         if (!config.hasSignFeature) {
             //ApiBindingController is added as default
@@ -229,6 +229,7 @@ class SimpleRouting(val config: Configuration) {
             }.firstOrNull() ?: HttpMethod.Post
     }
 
+    @OptIn(InternalSerializationApi::class, ExperimentalStdlibApi::class)
     private suspend fun PipelineContext<Unit, ApplicationCall>.handleRequest(
         controller: Any,
         apiFunction: KFunction<*>
@@ -246,9 +247,11 @@ class SimpleRouting(val config: Configuration) {
         launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
             if (!pipelineContextStore.responded) {
-                call.respond((if (apiFunction.returnType.jvmErasure.let { it == String::class || it.java.isEnum }) {
-                    Json {}.encodeToJsonElement(serializer(apiFunction.returnType), response)
-                } else response)?:"null")
+                call.respond(if (isSerializationConverter()) {
+                    Json{}.encodeToJsonElement(serializer(apiFunction.returnType), response)
+                } else {
+                    Gson().toJson(response, apiFunction.returnType.javaType)
+                })
             }
         }.join()
     }

@@ -2,17 +2,15 @@ package kim.jeonghyeon.net
 
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.auth.*
 import io.ktor.network.sockets.*
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.net.error.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import kotlin.reflect.typeOf
 
 interface RequestResponseAdapter {
     suspend fun beforeBuildRequest(callInfo: ApiCallInfo, client: HttpClient): ApiCallInfo
@@ -24,20 +22,29 @@ interface RequestResponseAdapter {
 interface RequestResponseListener {
     suspend fun beforeBuildRequest(callInfo: ApiCallInfo, client: HttpClient): ApiCallInfo
     suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo)
-    suspend fun <OUT> transformResponse(response: HttpResponse, callInfo: ApiCallInfo, returnTypeInfo: TypeInfo)
+    suspend fun <OUT> transformResponse(
+        response: HttpResponse,
+        callInfo: ApiCallInfo,
+        returnTypeInfo: TypeInfo
+    )
+
     suspend fun <OUT> handleException(e: Throwable, callInfo: ApiCallInfo, returnTypeInfo: TypeInfo)
 }
 
-@OptIn(SimpleArchInternal::class)
-inline fun getDefaultRequestResponseAdapter(listener: RequestResponseListener? = null): RequestResponseAdapter = object : RequestResponseAdapter {
+@OptIn(SimpleArchInternal::class, ExperimentalStdlibApi::class)
+fun getDefaultRequestResponseAdapter(listener: RequestResponseListener? = null): RequestResponseAdapter =
+    object : RequestResponseAdapter {
 
-    override suspend fun beforeBuildRequest(callInfo: ApiCallInfo, client: HttpClient): ApiCallInfo {
-        return listener?.beforeBuildRequest(callInfo, client)?: callInfo
-    }
+        override suspend fun beforeBuildRequest(
+            callInfo: ApiCallInfo,
+            client: HttpClient
+        ): ApiCallInfo {
+            return listener?.beforeBuildRequest(callInfo, client) ?: callInfo
+        }
 
-    override suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo) {
-        listener?.buildRequest(builder, callInfo)
-    }
+        override suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo) {
+            listener?.buildRequest(builder, callInfo)
+        }
 
     override suspend fun <OUT> transformResponse(
         response: HttpResponse,
@@ -56,9 +63,22 @@ inline fun getDefaultRequestResponseAdapter(listener: RequestResponseListener? =
         // I think it should be "aa", need to analyze the reason.
         if (returnTypeInfo.type == String::class) {
             val text = response.readText()
+            @Suppress("UNCHECKED_CAST")
             return Json { }.decodeFromString(serializer(returnTypeInfo.kotlinType!!), text) as OUT
         }
 
+        if (returnTypeInfo.kotlinType!!.isMarkedNullable) {
+            return try {
+                @Suppress("UNCHECKED_CAST")
+                response.call.receive(returnTypeInfo) as OUT
+            } catch (e: NullPointerException) {
+                //TODO as ktor doesn't support nullable for response. try catch
+                // This is not proper way to handle
+                // Using Wrapper is not good, as we have to use external api as well.
+                @Suppress("UNCHECKED_CAST")
+                null as OUT
+            }
+        }
         @Suppress("UNCHECKED_CAST")
         return response.call.receive(returnTypeInfo) as OUT
     }
@@ -93,7 +113,10 @@ object RequestResponseAdapterInternal {
             return
         }
 
-        errorApi(ApiErrorBody.CODE_UNKNOWN, "unknown error occurred : ${response.status}, Text : ${response.readText()}")
+        errorApi(
+            ApiErrorBody.CODE_UNKNOWN,
+            "unknown error occurred : ${response.status}, Text : ${response.readText()}"
+        )
     }
 
     fun throwException(e: Throwable): Nothing {
