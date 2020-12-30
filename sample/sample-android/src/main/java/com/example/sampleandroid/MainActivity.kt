@@ -69,6 +69,8 @@ fun ScreenContent(viewModel: BaseViewModel) = when (viewModel) {
     is SignInViewModel -> SignInScreen(viewModel)
     is SignUpViewModel -> SignUpScreen(viewModel)
     is UserViewModel -> UserScreen(viewModel)
+    is ApiTestViewModel -> ApiTestScreen(viewModel)
+    is RetrofitViewModel -> RetrofitScreen(viewModel)
     else -> error("Screen is not defined for $viewModel ")
 }
 

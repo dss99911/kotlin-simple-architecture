@@ -1,5 +1,4 @@
 import kim.jeonghyeon.simplearchitecture.plugin.task.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS
-import kim.jeonghyeon.simplearchitecture.plugin.task.getEnvironment
 import kim.jeonghyeon.simplearchitecture.plugin.task.simpleProperty
 
 val androidKeyAlias: String by project
@@ -30,7 +29,7 @@ val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
-    val isProduction by simpleProperty(true/*getEnvironment() == "production"*/)
+    val isProduction by simpleProperty(false/*getEnvironment() == "production"*/)
     val deeplinkScheme by simpleProperty(deeplinkScheme)
     val deeplinkHost by simpleProperty(deeplinkHost)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
@@ -41,7 +40,7 @@ simpleArch {
     }
 }
 
-apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
+apply(plugin = deps.simpleArch.gradle.toPlugInId())
 
 sqldelight {
 
@@ -53,8 +52,10 @@ sqldelight {
 
 version = "1.0"//for cocoa pod
 
+val buildByLibrary: Boolean? by project
+
 kotlin {
-    jvm()//for backend
+    jvm()
 
     android()
 
@@ -79,7 +80,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(deps.simpleArch.common)
+                if (buildByLibrary == true) {
+                    api(deps.simpleArch.client)
+                } else {
+                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
+                }
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here
@@ -89,6 +94,18 @@ kotlin {
 
         val androidMain by getting {
             dependsOn(mobileMain)
+
+            dependencies {
+                implementation("com.squareup.retrofit2:retrofit:2.9.0")
+                implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+                implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+                implementation(deps.ktor.clientOkHttp)
+                implementation(deps.ktor.clientGson)
+
+            }
+        }
+        val jvmMain by getting {
+            dependsOn(commonMain)
         }
 
         val iosMain by getting {

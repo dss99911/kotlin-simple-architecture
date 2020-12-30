@@ -10,27 +10,25 @@ import Foundation
 import SwiftUI
 import sample_base
 
-prefix func + (_ flow: Kotlin_simple_architectureViewModelFlow<NSString>) -> String {
+prefix func + (_ flow: ViewModelFlow<NSString>) -> String {
     return flow.asValue() as String? ?? ""
 }
 
-prefix func + (_ flow: Kotlin_simple_architectureViewModelFlow<KotlinInt>) -> Int? {
+prefix func + (_ flow: ViewModelFlow<KotlinInt>) -> Int? {
     guard let value = flow.asValue() else {
         return nil
     }
     return Int(truncating: value)
 }
 
-prefix func + <VALUE> (_ flow: Kotlin_simple_architectureViewModelFlow<VALUE>) -> VALUE? {
+prefix func + <VALUE> (_ flow: ViewModelFlow<VALUE>) -> VALUE? {
     return flow.asValue()
 }
 
-prefix func ++ (_ flow: Kotlin_simple_architectureViewModelFlow<NSString>) -> Binding<String> {
+prefix func ++ (_ flow: ViewModelFlow<NSString>) -> Binding<String> {
     return Binding<String>(get: { () -> String in flow.valueOrNull as String? ?? "" }, set: { (v: String) in
         if (flow.valueOrNull as String? ?? "" != v) {
             flow.tryEmit(value: NSString(utf8String: v))
         }
     })
 }
-
-typealias BaseViewModel = Kotlin_simple_architectureBaseViewModel

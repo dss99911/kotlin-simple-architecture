@@ -6,13 +6,18 @@ if (includingModuleName != null) {
     }
     include(includingModuleName)
 } else {
-    include("kotlin-simple-architecture-annotation")
-    include("gradle-plugin")
-    include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-shared")
-    include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api")
-    include("gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native")
-    include("gradle-plugin:kotlin-simple-architecture-gradle-plugin")
-    include("kotlin-simple-architecture")
+
+    include("api:plugin:kotlin-simple-api-gradle-service-shared")
+    include("api:plugin:kotlin-simple-api-gradle-service")
+    include("api:plugin:kotlin-simple-api-gradle-service-native")
+    include("api:plugin:kotlin-simple-api-gradle")
+
+    include("api:library:kotlin-simple-api-annotation")
+    include("api:library:kotlin-simple-api-client")
+    include("api:library:kotlin-simple-api-backend")
+    include("framework:kotlin-simple-architecture-gradle")
+    include("framework:kotlin-simple-architecture-client")
+    include("framework:kotlin-simple-architecture-backend")
     include("sample")
     include("sample:sample-base")
     include("sample:sample-android")

@@ -3,7 +3,6 @@ package com.example.sampleandroid.view.home
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
@@ -14,11 +13,13 @@ import androidx.compose.ui.unit.dp
 import kim.jeonghyeon.androidlibrary.compose.Screen
 import kim.jeonghyeon.androidlibrary.compose.screen.SimpleTabsScreen
 import kim.jeonghyeon.androidlibrary.compose.screen.TabData
+import kim.jeonghyeon.androidlibrary.compose.widget.Button
 import kim.jeonghyeon.androidlibrary.extension.resourceToString
 import kim.jeonghyeon.client.Navigator
 import kim.jeonghyeon.sample.compose.R
 import kim.jeonghyeon.sample.viewmodel.HomeViewModel
 import kim.jeonghyeon.sample.viewmodel.ModelViewModel
+import kim.jeonghyeon.sample.viewmodel.RetrofitViewModel
 import kim.jeonghyeon.sample.viewmodel.ViewViewModel
 
 val homeTabList = listOf(
@@ -40,13 +41,15 @@ fun HomeScreen(viewModel: HomeViewModel) {
 fun ModelTabScreen() {
     ScrollableColumn {
         ModelViewModel.items.forEach {
-            Button(
-                onClick = { Navigator.navigate(it.generate()) },
-                modifier = Modifier.fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                Text(it.generate().title)//just for simplicity, created viewModel. but recommend to show title for each button
+            Button(it.generate().title, Modifier.fillMaxWidth().padding(10.dp)) {
+                Navigator.navigate(it.generate())//just for simplicity, created viewModel. but recommend to show title for each button
             }
+        }
+
+        val retrofitViewModel = RetrofitViewModel()
+        Button(retrofitViewModel.title, Modifier.fillMaxWidth().padding(10.dp)) {
+
+            Navigator.navigate(retrofitViewModel)
         }
     }
 }
@@ -55,12 +58,8 @@ fun ModelTabScreen() {
 fun ViewTabScreen() {
     ScrollableColumn {
         ViewViewModel.items.forEach {
-            Button(
-                onClick = { Navigator.navigate(it.generate()) },
-                modifier = Modifier.fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                Text(it.generate().title)//just for simplicity, created viewModel. but recommend to show title for each button
+            Button(it.generate().title, Modifier.fillMaxWidth().padding(10.dp)) {
+                Navigator.navigate(it.generate())//just for simplicity, created viewModel. but recommend to show title for each button
             }
         }
     }

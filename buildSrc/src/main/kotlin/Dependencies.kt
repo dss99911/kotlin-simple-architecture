@@ -25,14 +25,10 @@ object deps {
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
         const val clientJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
         const val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
+        const val clientOkHttp = "io.ktor:ktor-client-okhttp:${versions.kotlin.ktor}"
         const val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
-        const val clientLoggingJvm = "io.ktor:ktor-client-logging-jvm:${versions.kotlin.ktor}"
-        const val clientLoggingNative = "io.ktor:ktor-client-logging-native:${versions.kotlin.ktor}"
-        const val clientLoggingJs = "io.ktor:ktor-client-logging-js:${versions.kotlin.ktor}"
         const val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
-        const val clientSerializationJvm = "io.ktor:ktor-client-serialization-jvm:${versions.kotlin.ktor}"
-        const val clientSerializationNative = "io.ktor:ktor-client-serialization-native:${versions.kotlin.ktor}"
-        const val clientSerializationJs = "io.ktor:ktor-client-serialization-js:${versions.kotlin.ktor}"
+        const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
 
         const val clientAuth = "io.ktor:ktor-client-auth:${versions.kotlin.ktor}"
         const val clientAuthJvm = "io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}"
@@ -92,16 +88,20 @@ object deps {
     }
 
     object simpleArch {
-        val common = depSimpleArchitecture(version = versions.simpleArch)
+        val client = depSimpleArchitecture("client", version = versions.simpleArch)
+        val backend = depSimpleArchitecture("backend", version = versions.simpleArch)
+        val gradle = depSimpleArchitecture("gradle", versions.simpleArch)
 
-        val jvm = depSimpleArchitecture("jvm", versions.simpleArch)
-        val android = depSimpleArchitecture("android", versions.simpleArch)
 
-        val pluginShared = depSimpleArchitecture("gradle-plugin-api-shared", versions.simpleArch)
-        val pluginApi = depSimpleArchitecture("gradle-plugin-api", versions.simpleArch)
-        val pluginApiNative = depSimpleArchitecture("gradle-plugin-api-native", versions.simpleArch)
-        val pluginGradle = depSimpleArchitecture("gradle-plugin", versions.simpleArch)
-        val annotation = depSimpleArchitecture("annotation", versions.simpleArch)
+        object api {
+            val annotation = depSimpleApi("annotation", versions.simpleArch)
+            val gradleServiceShared = depSimpleApi("gradle-service-shared", version = versions.simpleArch)
+            val gradleService = depSimpleApi("gradle-service", version = versions.simpleArch)
+            val gradleServiceNative = depSimpleApi("gradle-service-native", version = versions.simpleArch)
+            val gradle = depSimpleApi("gradle", version = versions.simpleArch)
+            val client = depSimpleApi("client", version = versions.simpleArch)
+            val backend = depSimpleApi("backend", version = versions.simpleArch)
+        }
     }
 
     object plugin {
@@ -140,6 +140,10 @@ private fun depKotlinx(module: String, version: String? = null): String =
 private fun depSimpleArchitecture(module: String? = null, version: String? = null): String =
     "kim.jeonghyeon:kotlin-simple-architecture${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
 
+private fun depSimpleApi(module: String? = null, version: String? = null): String =
+    "kim.jeonghyeon:kotlin-simple-api${module?.let { "-$module" } ?: ""}${version?.let { ":$version" } ?: ""}"
+
 fun String.getGroupId(): String = split(':')[0]
 fun String.getArtifactId(): String = split(':')[1]
 fun String.getVersion(): String = split(':')[2]
+fun String.toPlugInId(): String = getGroupId() + "." + getArtifactId()

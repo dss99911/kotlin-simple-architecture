@@ -1,5 +1,5 @@
 object versions {
-    const val simpleArch = "1.3.1"
+    const val simpleArch = "1.4.0"
 
     object kotlin {
         const val version = "1.4.20"
@@ -12,7 +12,6 @@ object versions {
         const val buildTool = "7.0.0-alpha02"
         const val xBase = "1.1.0"
         const val xTest = "1.2.0"
-        const val xEspresso = "3.2.0"
         const val material = "1.1.0"
         const val compose = "1.0.0-alpha08"
     }

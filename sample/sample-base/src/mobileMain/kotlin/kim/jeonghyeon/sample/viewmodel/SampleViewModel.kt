@@ -39,6 +39,7 @@ open class ModelViewModel(preference: Preference = serviceLocator.preference) : 
             ViewModelItem { ApiBindingViewModel() },
             ViewModelItem { DeeplinkViewModel() },
             ViewModelItem { SearchViewModel() },
+            ViewModelItem { ApiTestViewModel() },
         )
     }
 

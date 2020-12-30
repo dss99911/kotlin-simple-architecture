@@ -394,12 +394,12 @@ class SampleController : SampleApi {
     - Xcode 12 (for SwiftUI 2.0, Big Sur is required)
 - Android
     - Android Studio Arctic Fox | 2020.3.1 Canary 2
-    - Java 11
-### Template
+    - Java 11 (install java 11, then add `org.gradle.java.home={java-11-path}` to gradle.properties)
+### Initializer
 - No need to configure kotlin multiplatform, libraries. just download template project to start with this framework
-    - [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
-    - [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
-    - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios-backend)
+    - [android](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android)
+    - [android + ios](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android-ios)
+    - [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture/blob/master/initializer/android-ios-backend)
 
 ### Use on existing project
 1. project's build.gradle.kts
@@ -441,9 +441,9 @@ apply(plugin = "kim.jeonghyeon.kotlin-simple-architecture-gradle-plugin")
 - To use this library without copying these files will be supported soon.
 
 ### To run Sample in Local
-- run backend `sh sh/runBackendLocal.sh`
-- run android `sh sh/installAndroid.sh` (you can run with android Studio configuration)
-- run ios : open xcode with path `sample/sample-native` (I tried `sh sh/installIos.sh`, it was working. but now not working. maybe it's related to Xcode 12 for swiftUI 2.0. let's check again when it's publicly released)
+- run backend `sh shell/runBackendLocal.sh`
+- run android `sh shell/installAndroid.sh` (you can run with android Studio configuration)
+- run ios : open xcode with path `sample/sample-native` (I tried `sh shell/installIos.sh`, it was working. but now not working. maybe it's related to Xcode 12 for swiftUI 2.0. let's check again when it's publicly released)
 
 
 # Test on local
