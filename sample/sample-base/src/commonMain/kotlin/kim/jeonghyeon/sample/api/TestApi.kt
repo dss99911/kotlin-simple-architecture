@@ -17,6 +17,8 @@ interface TestApi {
     suspend fun checkEmptyFunction()
 }
 
+//Serializable for enum is required for IOS
+@Serializable
 enum class EnumValue {
     A, B
 }
