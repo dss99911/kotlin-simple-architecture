@@ -14,6 +14,9 @@ plugins {
     id("com.android.library")
     kotlin("multiplatform")
 }
+
+apply(plugin = "org.jetbrains.kotlin.kapt")
+
 apply(plugin = "kotlinx-serialization")
 
 simpleArch {
@@ -86,6 +89,10 @@ kotlin {
     }
 }
 
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 android {
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
@@ -93,7 +100,11 @@ android {
         minSdkVersion(16)
         targetSdkVersion(config.targetSdkVersion)
     }
-
 }
+
+System.setProperty(// Enabling kotlin compiler plugin
+    "kotlin.compiler.execution.strategy",
+    "in-process"
+)
 
 publishMPP()

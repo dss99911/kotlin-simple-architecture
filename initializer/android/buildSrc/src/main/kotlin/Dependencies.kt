@@ -1,12 +1,12 @@
 object versions {
-    const val simpleArch = "1.1.0"
+    const val simpleArch = "1.4.0"
 
     object kotlin {
-        const val version = "1.4.10"
+        const val version = "1.4.20"
     }
 
     object android {
-        const val buildTool = "4.2.0-alpha13"
+        const val buildTool = "7.0.0-alpha02"
     }
 
     const val sqldelight = "1.4.2"

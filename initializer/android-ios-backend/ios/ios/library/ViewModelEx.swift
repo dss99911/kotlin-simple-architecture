@@ -10,24 +10,25 @@ import Foundation
 import SwiftUI
 import base
 
-//TODO: this only support Any type Any? type is not supported..
-prefix func + (_ flow: Kotlin_simple_architectureDataFlow<NSString>) -> String? {
-    return flow.value as String?
+prefix func + (_ flow: ViewModelFlow<NSString>) -> String {
+    return flow.asValue() as String? ?? ""
 }
 
-prefix func + (_ flow: Kotlin_simple_architectureDataFlow<KotlinInt>) -> Int? {
-    guard let value = flow.value else {
+prefix func + (_ flow: ViewModelFlow<KotlinInt>) -> Int? {
+    guard let value = flow.asValue() else {
         return nil
     }
     return Int(truncating: value)
 }
 
-prefix func + <VALUE> (_ flow: Kotlin_simple_architectureDataFlow<VALUE>) -> VALUE? {
-    return flow.value
+prefix func + <VALUE> (_ flow: ViewModelFlow<VALUE>) -> VALUE? {
+    return flow.asValue()
 }
 
-prefix func ++ (_ flow: Kotlin_simple_architectureDataFlow<NSString>) -> Binding<String> {
-    return Binding<String>(get: { () -> String in flow.value as String? ?? "" }, set: { (v: String) in flow.setValue(value: NSString(utf8String: v)) })
+prefix func ++ (_ flow: ViewModelFlow<NSString>) -> Binding<String> {
+    return Binding<String>(get: { () -> String in flow.valueOrNull as String? ?? "" }, set: { (v: String) in
+        if (flow.valueOrNull as String? ?? "" != v) {
+            flow.tryEmit(value: NSString(utf8String: v))
+        }
+    })
 }
-
-typealias BaseViewModel = Kotlin_simple_architectureBaseViewModel

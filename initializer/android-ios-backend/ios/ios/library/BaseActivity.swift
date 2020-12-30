@@ -17,7 +17,7 @@ struct BaseActivity<Content>: View where Content : View {
     
     @ObservedObject private var baseActivityViewModel: BaseActivityViewModel
     
-    init(rootViewModel: BaseViewModel, deeplinks: [Kotlin_simple_architectureDeeplink], makeScreen: @escaping (BaseViewModel) -> Content) {
+    init(rootViewModel: BaseViewModel, deeplinks: [Deeplink], makeScreen: @escaping (BaseViewModel) -> Content) {
         self.baseActivityViewModel = BaseActivityViewModel(_rootViewModel: rootViewModel, deepLinks: deeplinks)
         self.makeScreen = makeScreen
     }
@@ -56,11 +56,11 @@ struct BaseActivity<Content>: View where Content : View {
 class BaseActivityViewModel: ObservableObject {
     @Published var currentViewModel : BaseViewModel? = nil
     
-    init(_rootViewModel: BaseViewModel, deepLinks: [Kotlin_simple_architectureDeeplink]) {
+    init(_rootViewModel: BaseViewModel, deepLinks: [Deeplink]) {
         deeplinkNavigator.deeplinks = deepLinks
         uiManager.initialize(app: UIApplication.shared)
         navigator.navigate(viewModel: _rootViewModel)
-        navigator.currentFlow.watch(scope: uiManager.globalScope) { viewModel in
+        navigator.watchCurrent(scope: uiManager.globalScope) { viewModel in
             self.currentViewModel = viewModel
         }
     }

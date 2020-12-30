@@ -10,6 +10,10 @@ application {
     mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
+project.tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 tasks.withType<Jar> {
     manifest {
         attributes(
@@ -22,4 +26,5 @@ tasks.withType<Jar> {
 
 dependencies {
     implementation(project(":base"))
+    implementation(deps.simpleArch.backend)
 }

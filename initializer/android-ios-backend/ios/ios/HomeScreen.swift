@@ -10,6 +10,6 @@ import base
 
 func HomeScreen(_ model: HomeViewModel) -> some View {
     Screen(model) {
-        Text("\(HelloIosKt.helloText). \(+model.greeting ?? "")")
+        Text("\(HelloIosKt.helloText). \(+model.greeting)")
     }
 }

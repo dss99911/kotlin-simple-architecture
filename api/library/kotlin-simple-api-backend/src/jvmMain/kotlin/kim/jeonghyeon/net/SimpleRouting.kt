@@ -77,6 +77,7 @@ class SimpleRouting(val config: Configuration) {
         pipeline.install(StatusPages) {
             val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit =
                 {
+                    it.printStackTrace()
                     println("[SimpleRouting] ${it.message}")
                     call.respond(
                         HttpStatusCode.ApiError,
@@ -86,12 +87,14 @@ class SimpleRouting(val config: Configuration) {
 
             val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit =
                 {
+                    it.printStackTrace()
                     println("[SimpleRouting] ${it.message}")
                     call.respond(HttpStatusCode.ApiError, it.body)
                 }
 
             val deeplinkException: suspend PipelineContext<Unit, ApplicationCall>.(exception: DeeplinkError) -> Unit =
                 {
+                    it.printStackTrace()
                     println("[SimpleRouting] ${it.message}")
                     call.respond(HttpStatusCode.DeeplinkError, it.deeplinkInfo)
                 }
@@ -243,12 +246,9 @@ class SimpleRouting(val config: Configuration) {
         launch(coroutineContext + pipelineContextStore) {
             val response = controllerFunction.callSuspend(controller, *args)
             if (!pipelineContextStore.responded) {
-                call.respond(
-                    Json {}.encodeToJsonElement(
-                        serializer(apiFunction.returnType),
-                        response
-                    )
-                )
+                call.respond((if (apiFunction.returnType.jvmErasure.let { it == String::class || it.java.isEnum }) {
+                    Json {}.encodeToJsonElement(serializer(apiFunction.returnType), response)
+                } else response)?:"null")
             }
         }.join()
     }

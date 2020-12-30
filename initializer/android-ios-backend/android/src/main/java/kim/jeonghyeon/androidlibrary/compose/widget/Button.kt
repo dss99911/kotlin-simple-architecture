@@ -2,59 +2,73 @@ package kim.jeonghyeon.androidlibrary.compose.widget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.InnerPadding
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.ButtonConstants
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextButton
-import androidx.compose.material.contentColorFor
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import kim.jeonghyeon.client.DataFlow
+import kim.jeonghyeon.client.ViewModelFlow
 import kim.jeonghyeon.client.call
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * change parameter order to match with swiftui
  */
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Button(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = InteractionState(),
-    elevation: Dp = 2.dp,
+    interactionState: InteractionState = remember { InteractionState() },
+    elevation: ButtonElevation? = ButtonConstants.defaultElevation(),
     shape: Shape = MaterialTheme.shapes.small,
     border: BorderStroke? = null,
-    backgroundColor: Color = MaterialTheme.colors.primary,
-    contentColor: Color = contentColorFor(backgroundColor),
-    contentPadding: InnerPadding = ButtonConstants.DefaultContentPadding,
+    colors: ButtonColors = ButtonConstants.defaultButtonColors(),
+    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
     onClick: () -> Unit,
 ) {
-    androidx.compose.material.Button(onClick, modifier, enabled, interactionState, elevation, shape, border, backgroundColor, contentColor, contentPadding) {
+    androidx.compose.material.Button(
+        onClick,
+        modifier,
+        enabled,
+        interactionState,
+        elevation,
+        shape,
+        border,
+        colors,
+        contentPadding
+    ) {
         Text(text)
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Button(
     text: String,
-    clickFlow: DataFlow<Unit>,
+    clickFlow: ViewModelFlow<Unit>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionState: InteractionState = InteractionState(),
-    elevation: Dp = 2.dp,
+    interactionState: InteractionState = remember { InteractionState() },
+    elevation: ButtonElevation? = ButtonConstants.defaultElevation(),
     shape: Shape = MaterialTheme.shapes.small,
     border: BorderStroke? = null,
-    backgroundColor: Color = MaterialTheme.colors.primary,
-    contentColor: Color = contentColorFor(backgroundColor),
-    contentPadding: InnerPadding = ButtonConstants.DefaultContentPadding,
+    colors: ButtonColors = ButtonConstants.defaultButtonColors(),
+    contentPadding: PaddingValues = ButtonConstants.DefaultContentPadding,
 ) {
-    androidx.compose.material.Button({ clickFlow.call() }, modifier, enabled, interactionState, elevation, shape, border, backgroundColor, contentColor, contentPadding) {
+    androidx.compose.material.Button(
+        { clickFlow.call() },
+        modifier,
+        enabled,
+        interactionState,
+        elevation,
+        shape,
+        border,
+        colors,
+        contentPadding
+    ) {
         Text(text)
     }
 }

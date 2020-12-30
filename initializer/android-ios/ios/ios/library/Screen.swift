@@ -11,9 +11,9 @@ import base
 struct Screen<Content> : View where Content : View {
     
     let initLoading: () -> AnyView
-    let initError: (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView
+    let initError: (_ error: ResourceError, _ retry: @escaping () -> Void) -> AnyView
     let loading: () -> AnyView
-    let error: (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView
+    let error: (_ error: ResourceError, _ retry: @escaping () -> Void) -> AnyView
     let model: BaseViewModel
     
     let children: () -> Content
@@ -25,12 +25,12 @@ struct Screen<Content> : View where Content : View {
     init(
         _ model: BaseViewModel,
         initLoading: @escaping () -> AnyView = { AnyView(ProgressView("Init Loading…")) },
-        initError: @escaping (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
+        initError: @escaping (_ error: ResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
             AnyView(Snackbar(message: "Init Error \(error.message ?? "nil")", buttonText: "Retry") {
                 retry()
             })
         },
-        error: @escaping (_ error: Kotlin_simple_architectureResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
+        error: @escaping (_ error: ResourceError, _ retry: @escaping () -> Void) -> AnyView = { error, retry in
             AnyView(Snackbar(message: "Error \(error.message ?? "nil")", buttonText: "Retry") {
                 retry()
             })
@@ -47,7 +47,7 @@ struct Screen<Content> : View where Content : View {
     
     
     @State
-    var scope: Kotlin_simple_architectureViewModelScope? = nil
+    var scope: ViewModelScope? = nil
     
     var body: some View {
         Box {
@@ -55,18 +55,18 @@ struct Screen<Content> : View where Content : View {
                 EmptyView()
             }
             
-            if (model.initStatus.value?.isLoading() ?? false) {
+            if (model.initStatus.asValue()?.isLoading() ?? false) {
                 initLoading()
-            } else if (model.initStatus.value?.isError() ?? false) {
+            } else if (model.initStatus.asValue()?.isError() ?? false) {
                 initError(model.initStatus.value!.error()) {
                     model.initStatus.value!.retryOnError()
                 }
             } else {
                 children()
                 
-                if (model.status.value?.isLoading() ?? false) {
+                if (model.status.asValue()?.isLoading() ?? false) {
                     loading()
-                } else if (model.status.value?.isError() ?? false) {
+                } else if (model.status.asValue()?.isError() ?? false) {
                     error(model.status.value!.error()) {
                         model.status.value!.retryOnError()
                     }

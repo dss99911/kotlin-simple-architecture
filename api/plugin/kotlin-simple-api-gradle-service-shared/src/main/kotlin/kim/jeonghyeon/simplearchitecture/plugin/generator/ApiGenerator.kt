@@ -122,7 +122,7 @@ class ApiGenerator(
         |        ${parameters.map { it.toParameterInfo() }.joinToString(",\n        ")}
         |    )
         |)
-        |return client.callApi(callInfo, if (requestResponseAdapter == null) { if (${pluginOptions.useFramework}) getDefaultRequestResponseAdapterForArchitecture() else getDefaultRequestResponseAdapter()  } else requestResponseAdapter)
+        |return client.callApi(callInfo, if (requestResponseAdapter == null) ${if (pluginOptions.useFramework) "getDefaultRequestResponseAdapterForArchitecture()" else "getDefaultRequestResponseAdapter()"} else requestResponseAdapter)
         """.trimMargin()
     }
 

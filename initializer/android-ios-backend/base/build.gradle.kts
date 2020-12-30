@@ -19,7 +19,7 @@ kotlin {
 
     ios()
 
-    jvm()//for backend
+    jvm()
 
     cocoapods {
         // Configure fields required by CocoaPods.
