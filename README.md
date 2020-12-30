@@ -1,6 +1,6 @@
 # Kotlin Simple Architecture
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/_latestVersion)
+[![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/_latestVersion)
 
 Kotlin Simple Architecture is a library example how to develop simple and easily in Kotlin Multiplatform
 
