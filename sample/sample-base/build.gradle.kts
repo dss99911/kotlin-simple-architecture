@@ -52,7 +52,7 @@ sqldelight {
 
 version = "1.0"//for cocoa pod
 
-val buildByLibrary: Boolean? by project
+val buildByLibrary: String? by project
 
 kotlin {
     jvm()
@@ -80,7 +80,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (buildByLibrary == true) {
+                if (buildByLibrary == "true") {
                     api(deps.simpleArch.client)
                 } else {
                     api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))

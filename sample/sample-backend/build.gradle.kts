@@ -29,11 +29,11 @@ tasks.withType<KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
-val buildByLibrary: Boolean? by project
+val buildByLibrary: String? by project
 
 dependencies {
     implementation(project(":sample:sample-base"))
-    if (buildByLibrary == true) {
+    if (buildByLibrary == "true") {
         implementation(deps.simpleArch.backend)
     } else {
         implementation(project(":framework:${deps.simpleArch.backend.getArtifactId()}"))

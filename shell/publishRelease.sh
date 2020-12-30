@@ -1,7 +1,10 @@
-./gradlew -PincludingModuleName=kotlin-simple-architecture-annotation :kotlin-simple-architecture-annotation:publish && \
-./gradlew -PincludingModuleName=gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-shared :gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-shared:publish && \
-./gradlew -PincludingModuleName=gradle-plugin:kotlin-simple-architecture-gradle-plugin-api :gradle-plugin:kotlin-simple-architecture-gradle-plugin-api:publish && \
-./gradlew -PincludingModuleName=gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native :gradle-plugin:kotlin-simple-architecture-gradle-plugin-api-native:publish && \
-./gradlew -PincludingModuleName=gradle-plugin:kotlin-simple-architecture-gradle-plugin :gradle-plugin:kotlin-simple-architecture-gradle-plugin:publishPlugins && \
-./gradlew -PincludingModuleName=kotlin-simple-architecture :kotlin-simple-architecture:publish
-#todo :kotlin-simple-architecture:publish is fail at first time, but after try one more time. it's working.
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:library:kotlin-simple-api-annotation api:library:kotlin-simple-api-annotation:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service-shared :api:plugin:kotlin-simple-api-gradle-service-shared:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service :api:plugin:kotlin-simple-api-gradle-service:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:plugin:kotlin-simple-api-gradle-service-native :api:plugin:kotlin-simple-api-gradle-service-native:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:plugin:kotlin-simple-api-gradle :api:plugin:kotlin-simple-api-gradle:publishPlugins && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:library:kotlin-simple-api-client :api:library:kotlin-simple-api-client:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:library:kotlin-simple-api-backend :api:library:kotlin-simple-api-backend:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=framework:kotlin-simple-architecture-gradle :framework:kotlin-simple-architecture-gradle:publishPlugins && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=framework:kotlin-simple-architecture-client :framework:kotlin-simple-architecture-client:publish && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=framework:kotlin-simple-architecture-backend :framework:kotlin-simple-architecture-backend:publish

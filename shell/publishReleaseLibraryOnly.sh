@@ -1,2 +1,0 @@
-./gradlew -PincludingModuleName=kotlin-simple-architecture :kotlin-simple-architecture:publish
-#todo :kotlin-simple-architecture:publish is fail at first time, but after try one more time. it's working.

@@ -1,2 +1,2 @@
-./gradlew -PincludingModuleName=api:library:kotlin-simple-api-client :api:library:kotlin-simple-api-client:publishToMavenLocal && \
-./gradlew -PincludingModuleName=framework:kotlin-simple-architecture-client :framework:kotlin-simple-architecture-client:publishToMavenLocal
+./gradlew -PbuildByLibrary=true -PincludingModuleName=api:library:kotlin-simple-api-client :api:library:kotlin-simple-api-client:publishToMavenLocal && \
+./gradlew -PbuildByLibrary=true -PincludingModuleName=framework:kotlin-simple-architecture-client :framework:kotlin-simple-architecture-client:publishToMavenLocal

@@ -25,7 +25,7 @@ apply(plugin = deps.simpleArch.gradle.toPlugInId())
 group = deps.simpleArch.client.getGroupId()
 version = deps.simpleArch.client.getVersion()
 
-val buildByLibrary: Boolean? by project
+val buildByLibrary: String? by project
 
 sqldelight {
     database("SimpleDB") {
@@ -56,7 +56,7 @@ kotlin {
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
 
-                if (buildByLibrary == true) {
+                if (buildByLibrary == "true") {
                     api(deps.simpleArch.api.client)
                 } else {
                     api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
