@@ -19,4 +19,4 @@ val client: HttpClient by lazy {
     }
 }
 
-inline fun <reified API> api(baseUrl: String = "http://192.168.0.28:8080"): API = client.create(baseUrl)
+inline fun <reified API> api(baseUrl: String = "{server-url}}:8080"): API = client.create(baseUrl)

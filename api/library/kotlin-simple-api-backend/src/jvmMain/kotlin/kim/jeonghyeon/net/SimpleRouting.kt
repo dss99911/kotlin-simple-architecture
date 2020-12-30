@@ -273,11 +273,9 @@ class SimpleRouting(val config: Configuration) {
         }
 
         fun Any.toType(type: KType): Any? {
-            println("${this::class.simpleName}")
             return if (this is JsonElement) {
                 json.decodeFromJsonElement(serializer(type), this)
             } else {
-                println("${gson.toJson(this)} :: ${type.javaType.toString()}")
                 gson.fromJson(gson.toJson(this), type.javaType)
             }
         }
