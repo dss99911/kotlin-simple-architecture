@@ -36,6 +36,9 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
 }
 //todo error, remove?
