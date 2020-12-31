@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
+import org.slf4j.Logger
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import kotlin.reflect.*
@@ -44,6 +45,8 @@ fun Application.addControllerBeforeInstallSimpleRouting(_controller: Any) {
  *  - StatusPages
  */
 class SimpleRouting(val config: Configuration) {
+    lateinit var log: Logger
+
     class Configuration {
         @SimpleArchInternal
         val controllerList = mutableListOf(*preControllers.toTypedArray())
@@ -73,11 +76,13 @@ class SimpleRouting(val config: Configuration) {
 
     @OptIn(SimpleArchInternal::class)
     fun initialize(pipeline: Application) {
+        log = pipeline.environment.log
+
         pipeline.install(StatusPages) {
             val unknownException: suspend PipelineContext<Unit, ApplicationCall>.(exception: Throwable) -> Unit =
                 {
-                    it.printStackTrace()
-                    println("[SimpleRouting] ${it.message}")
+                    log.error(it)
+                    log.info("[SimpleRouting] ${it.message}")
                     call.respond(
                         HttpStatusCode.ApiError,
                         ApiErrorBody(ApiErrorBody.CODE_UNKNOWN, it.message)
@@ -86,15 +91,15 @@ class SimpleRouting(val config: Configuration) {
 
             val apiException: suspend PipelineContext<Unit, ApplicationCall>.(exception: ApiError) -> Unit =
                 {
-                    it.printStackTrace()
-                    println("[SimpleRouting] ${it.message}")
+                    log.error(it)
+                    log.info("[SimpleRouting] ${it.message}")
                     call.respond(HttpStatusCode.ApiError, it.body)
                 }
 
             val deeplinkException: suspend PipelineContext<Unit, ApplicationCall>.(exception: DeeplinkError) -> Unit =
                 {
-                    it.printStackTrace()
-                    println("[SimpleRouting] ${it.message}")
+                    log.error(it)
+                    log.info("[SimpleRouting] ${it.message}")
                     call.respond(HttpStatusCode.DeeplinkError, it.deeplinkInfo)
                 }
 
@@ -130,7 +135,7 @@ class SimpleRouting(val config: Configuration) {
     }
 
     private fun Routing.installControllers(controllers: List<Any>) {
-        println("[SimpleRouting] Start to install Routing")
+        log.info("[SimpleRouting] Start to install Routing")
         controllers.forEach { installController(it) }
     }
 
@@ -141,7 +146,7 @@ class SimpleRouting(val config: Configuration) {
             .forEach { apiInterface ->
                 val mainPath = apiInterface.getMainPath() ?: return@forEach
                 installAuthenticate(apiInterface.annotations) {
-                    println("[SimpleRouting] Main Path : $mainPath, ${controller::class.simpleName}")
+                    log.info("[SimpleRouting] Main Path : $mainPath, ${controller::class.simpleName}")
                     route(mainPath) {
                         this.installSubPaths(controller, apiInterface)
                     }
@@ -186,7 +191,7 @@ class SimpleRouting(val config: Configuration) {
 
             installAuthenticate(kfunction.annotations) {
                 route(subPath, method) {
-                    println("[SimpleRouting]     Sub Path : $subPath $method")
+                    log.info("[SimpleRouting]     Sub Path : $subPath $method")
                     handle {
                         handleRequest(controller, kfunction)
                     }
@@ -318,7 +323,7 @@ class SimpleRouting(val config: Configuration) {
                 }
             }
         } catch (e: Exception) {
-            println("[SimpleRouting]" + e.message + "\nparam : ${param.name}")
+            log.info("[SimpleRouting]" + e.message + "\nparam : ${param.name}")
             throw e
         }
     }

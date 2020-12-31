@@ -21,14 +21,14 @@
 #-renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
-# START : Kotlin Serialization
--keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.SerializationKt
--keep,includedescriptorclasses class *$$serializer { *; } # <-- change package name to your app's
--keepclassmembers class * { # <-- change package name to your app's
-    *** Companion;
+
+# keep data classes
+-keepclasseswithmembers class kim.jeonghyeon.template.** {
+    public ** component1();
+    <fields>;
 }
--keepclasseswithmembers class * { # <-- change package name to your app's
-    kotlinx.serialization.KSerializer serializer(...);
+
+# keep classes which with Keep annotation.
+-keep @kim.jeonghyeon.annotation.Keep class ** {
+    *;
 }
-# END : Kotlin Serialization

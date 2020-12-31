@@ -1,4 +1,5 @@
 import kim.jeonghyeon.simplearchitecture.plugin.task.PROPERTY_NAME_BUILD_TIME_LOCAL_IP_ADDRESS
+import kim.jeonghyeon.simplearchitecture.plugin.task.getEnvironment
 import kim.jeonghyeon.simplearchitecture.plugin.task.simpleProperty
 
 val androidKeyAlias: String by project
@@ -29,7 +30,7 @@ val deeplinkPrePath = "/deeplink"
 
 simpleArch {
     //todo how to set environment on cocoapod?
-    val isProduction by simpleProperty(false/*getEnvironment() == "production"*/)
+    val isProduction by simpleProperty(getEnvironment() == "production")
     val deeplinkScheme by simpleProperty(deeplinkScheme)
     val deeplinkHost by simpleProperty(deeplinkHost)
     val deeplinkPrePath by simpleProperty(deeplinkPrePath)
@@ -127,8 +128,6 @@ kotlin {
 
 
 android {
-    val appId = "kim.jeonghyeon.sample"
-
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
     defaultConfig {
@@ -137,100 +136,9 @@ android {
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
 
-
-        //todo this is only for android, is this required?
-        buildConfigField("String", "freePackageName", "\"${appId}\"")
-
-        //todo this is only for android, is this required?
-        buildConfigField("boolean", "isFree", "false")
-        buildConfigField("boolean", "isPro", "false")
-        buildConfigField("boolean", "isDev", "false")
-        buildConfigField("boolean", "isProd", "false")
-        buildConfigField("boolean", "isMock", "false")
-
         resValue("string", "deeplink_scheme", deeplinkScheme)
         resValue("string", "deeplink_host", deeplinkHost)
         resValue("string", "deeplink_pathPrefix", deeplinkPrePath)
-    }
-
-    flavorDimensions("mode", "stage")
-
-    val FLAVOR_NAME_MOCK = "mock"
-
-    productFlavors {
-        val free by creating {
-            dimension = "mode"
-            //todo when removing sampleandroid. uncomment this
-            //applicationId = appId
-            buildConfigField("boolean", "isFree", "true")
-        }
-
-        val pro by creating {
-            dimension = "mode"
-            //todo when removing sampleandroid. uncomment this
-            //applicationId = appId + ".pro"
-            buildConfigField("boolean", "isPro", "true")
-        }
-
-        //todo environment is managed by gradle property, is this required?
-        // and change name 'environment' to 'stage'?
-        val dev by creating {
-            dimension = "stage"
-            //todo when removing sampleandroid. uncomment this
-//            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
-
-            buildConfigField("boolean", "isDev", "true")
-            //optimize build time
-            resConfigs("en", "hdpi")
-            minSdkVersion(if (config.minSdkVersion > 21) config.minSdkVersion else 21)
-        }
-
-        val prod by creating {
-            dimension = "stage"
-            buildConfigField("boolean", "isProd", "true")
-        }
-
-        create(FLAVOR_NAME_MOCK) {
-            dimension = "stage"
-
-            //todo when removing sampleandroid. uncomment this
-//            applicationIdSuffix = ".mock"
-            versionNameSuffix = "-mock"
-
-            buildConfigField("boolean", "isMock", "true")
-            //optimize build time
-            resConfigs("en", "hdpi")
-            minSdkVersion(if (config.minSdkVersion > 21) config.minSdkVersion else 21)
-        }
-    }
-
-    val SIGNING_CONFIG_NAME_RELEASE = "release"
-
-    signingConfigs {
-        create(SIGNING_CONFIG_NAME_RELEASE) {
-            keyAlias = androidKeyAlias
-            keyPassword = androidKeyPassword
-            storeFile = file(androidStoreFile)
-            storePassword = androidStorePassword
-        }
-    }
-
-    val BUILD_TYPE_NAME_DEBUG = "debug"
-    val BUILD_TYPE_NAME_RELEASE = "release"
-
-    buildTypes {
-        getByName(BUILD_TYPE_NAME_DEBUG) {
-            isTestCoverageEnabled = true
-        }
-
-        getByName(BUILD_TYPE_NAME_RELEASE) {
-            isMinifyEnabled = true
-            //todo when removing sampleandroid. uncomment this
-//            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName(SIGNING_CONFIG_NAME_RELEASE)
-        }
     }
 
     // Always show the result of every unit test, even if it passes.

@@ -5,7 +5,7 @@ object versions {
         const val version = "1.4.20"
         const val coroutine = "1.4.2-native-mt"
         const val ktor = "1.4.3"
-        const val serialization = "1.0.0"
+        const val serialization = "1.0.1"
     }
 
     object android {

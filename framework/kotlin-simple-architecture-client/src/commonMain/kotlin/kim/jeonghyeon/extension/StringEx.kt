@@ -32,5 +32,5 @@ inline fun <reified T> T.toJsonString(): String {
 }
 
 inline fun <reified T : Any?> String.fromJsonString(): T {
-    return Json { }.decodeFromString(this)
+    return Json { ignoreUnknownKeys = true }.decodeFromString(this)
 }

@@ -1,6 +1,13 @@
-This is template for the [Kotlin Simple Architecture](https://github.com/dss99911/kotlin-simple-architecture)
 
-platforms
-- [android + ios + backend](https://github.com/dss99911/kotlin-simple-architecture-template/tree/master)
-- [android + ios](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android-ios)
-- [android](https://github.com/dss99911/kotlin-simple-architecture-template/tree/android)
+Common
+1. Set JDK 11 path on gradle.properties
+
+Android
+1. change android package name
+2. change package name on proguard for kotlin serialization
+3. run android by `sh shell/installAndroid.sh`
+4. connect same wifi with desktop(for running local)
+
+Backend
+1. run backend by `sh shell/runBackend.sh`
+2. connect same wifi with Android(for running local)

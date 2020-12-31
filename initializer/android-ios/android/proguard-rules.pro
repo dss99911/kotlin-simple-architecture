@@ -23,12 +23,39 @@
 
 # START : Kotlin Serialization
 -keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.SerializationKt
--keep,includedescriptorclasses class *$$serializer { *; } # <-- change package name to your app's
--keepclassmembers class * { # <-- change package name to your app's
+-dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations
+
+# kotlinx-serialization-json specific. Add this if you have java.lang.NoClassDefFoundError kotlinx.serialization.json.JsonObjectSerializer
+-keepclassmembers class kotlinx.serialization.json.** {
     *** Companion;
 }
--keepclasseswithmembers class * { # <-- change package name to your app's
+-keepclasseswithmembers class kotlinx.serialization.json.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# Change here kim.jeonghyeon.template
+-keep,includedescriptorclasses class kim.jeonghyeon.template.**$$serializer { *; } # <-- change package name to your app's
+-keepclassmembers class kim.jeonghyeon.template.** { # <-- change package name to your app's
+    *** Companion;
+}
+-keepclasseswithmembers class kim.jeonghyeon.template.** { # <-- change package name to your app's
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# TODO Added in addition to kotlin serialization requirements.
+#  It was not working by uncertain reason.
+-keep @kotlinx.serialization.Serializable class ** {
+    *;
+}
 # END : Kotlin Serialization
+
+# keep data classes
+-keepclasseswithmembers class kim.jeonghyeon.template.** {
+    public ** component1();
+    <fields>;
+}
+
+# keep classes which with Keep annotation.
+-keep @kim.jeonghyeon.annotation.Keep class ** {
+    *;
+}

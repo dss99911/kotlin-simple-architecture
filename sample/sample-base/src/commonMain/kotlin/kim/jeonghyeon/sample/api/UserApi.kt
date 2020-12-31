@@ -11,4 +11,4 @@ interface UserApi {
 }
 
 @Serializable
-data class SerializableUserDetail(val id: String?, val name: String)
+data class SerializableUserDetail(val id: String? = null, val name: String)

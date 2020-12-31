@@ -60,6 +60,8 @@ fun getDefaultRequestResponseAdapterForArchitecture(listener: RequestResponseLis
                          *  when remove token, check api url and realm.
                          */
                         Preference().removeUserToken()
+                        //on https server. description is empty. so I used `HttpStatusCode.Unauthorized` instead of `status`
+                        throw ApiErrorBody(HttpStatusCode.Unauthorized.value, HttpStatusCode.Unauthorized.description).toError(e)
                     }
                     throw ApiErrorBody(status.value, status.description).toError(e)
                 }
