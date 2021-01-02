@@ -2,15 +2,46 @@ package kim.jeonghyeon.net
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.network.sockets.*
+import io.ktor.util.*
 import kim.jeonghyeon.annotation.SimpleArchInternal
 import kim.jeonghyeon.net.error.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import kotlin.reflect.typeOf
+
+
+class SimpleApiCustom internal constructor(val config: Config) {
+
+    class Config {
+        val adapter: RequestResponseAdapter? = null
+    }
+
+    companion object Feature : HttpClientFeature<Config, SimpleApiCustom> {
+        override val key: AttributeKey<SimpleApiCustom> = AttributeKey("SimpleApiCustom")
+
+        override fun prepare(block: Config.() -> Unit): SimpleApiCustom =
+            SimpleApiCustom(Config().apply(block))
+
+        override fun install(feature: SimpleApiCustom, scope: HttpClient) {
+
+        }
+
+        fun HttpClient.getAdapter(): RequestResponseAdapter? {
+            return feature(SimpleApiCustom)?.config?.adapter
+        }
+    }
+}
+
+fun HttpClientConfig<*>.simpleApiCustom(block: SimpleApiCustom.Config.() -> Unit) {
+    install(SimpleApiCustom, block)
+}
+
 
 interface RequestResponseAdapter {
     suspend fun beforeBuildRequest(callInfo: ApiCallInfo, client: HttpClient): ApiCallInfo

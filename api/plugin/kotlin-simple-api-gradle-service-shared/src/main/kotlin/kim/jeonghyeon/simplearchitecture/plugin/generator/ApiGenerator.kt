@@ -3,6 +3,7 @@ package kim.jeonghyeon.simplearchitecture.plugin.generator
 import kim.jeonghyeon.annotation.*
 import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.*
+import org.jetbrains.kotlin.util.collectionUtils.concat
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -97,22 +98,38 @@ class ApiGenerator(
     private fun SharedKtClass.makeFunctions(): String {
         val functions = functions
             .filter { !it.hasBody() }
-            .also { check(it.all { it.isSuspend() }) { "$name has abstract function which is not suspend" } }
 
         if (functions.map { it.name }.toSet().size < functions.size) {
+            //todo support same name
             error("doesn't support same name on ${this.name}")
         }
 
-        return functions
-            .map { it.makeFunction() }
-            .joinToString("\n\n") { it }
+        return properties.filter { !it.hasBody() }
+            .map { it.makeProperty() }
+            .concat(
+                functions.map { it.makeFunction() }
+            )!!.joinToString("\n\n") { it }
     }
 
-    private fun SharedKtNamedFunction.makeFunction(): String = """
+    private fun SharedKtProperty.makeProperty(): String {
+        return "override val ${name}${returnTypeName?.let { ": $it" } ?: ": Unit"} = error(\"$name has abstract property which is not suspend\")"
+    }
+
+    private fun SharedKtNamedFunction.makeFunction(): String {
+        if (!isSuspend()) {
+            return """
+            |override fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ": Unit"} {
+            |   error("$name has abstract function which is not suspend")
+            |}
+            """.trimMargin()
+        }
+
+        return """
     |override suspend fun ${name}(${parameters.joinToString { "${it.name}:${it.type}" }})${returnTypeName?.let { ": $it" } ?: ": Unit"} = SimpleApiUtil.run {
     |${makeFunctionBody().prependIndent("    ")}
     |}
     """.trimMargin()
+    }
 
     private fun SharedKtNamedFunction.makeFunctionBody(): String {
         val isAuthenticating = getAnnotationString(Authenticate::class) != null || ktClass?.getAnnotationString(Authenticate::class) != null
@@ -226,7 +243,7 @@ class ApiGenerator(
                         import io.ktor.client.HttpClient
                         import kim.jeonghyeon.net.*
 
-                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = null): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = SimpleApiCustom.run { client.getAdapter() }): T
 
                         """.trimIndent()
                     )
@@ -255,7 +272,7 @@ class ApiGenerator(
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = null"}): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = SimpleApiCustom.run { client.getAdapter() }"}): T {
                 |
                 |    return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, requestResponseAdapter) as T" }.prependIndent("        ")}

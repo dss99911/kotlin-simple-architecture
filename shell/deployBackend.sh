@@ -1,6 +1,0 @@
-#todo migrate to teamcity after libraries are deployed
-source ~/.path_profile
-
-./gradlew -PbuildByLibrary=true -Penvironment=production :sample:sample-backend:build && \
-scp sample/sample-backend/build/libs/sample-backend-all.jar hyun-server:~/app/sample-backend/sample-backend-all.jar && \
-ssh hyun-server "sudo systemctl restart sample-backend"

@@ -10,11 +10,9 @@ group = deps.simpleArch.api.gradle.getGroupId()
 version = deps.simpleArch.api.gradle.getVersion()
 
 dependencies {
-//    implementation(project(":gradle-plugin:${deps.simpleArch.api.gradleServiceShared.getArtifactId()}"))
-    api(deps.simpleArch.api.gradleServiceShared)
-    api(deps.kotlin.gradle)
-    api(deps.android.buildToolGradle)
-    api(deps.sqldelight.gradle)
+    implementation(deps.simpleArch.api.gradleServiceShared)
+    implementation(deps.kotlin.gradle)
+    implementation(deps.android.buildToolGradle)
 
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)

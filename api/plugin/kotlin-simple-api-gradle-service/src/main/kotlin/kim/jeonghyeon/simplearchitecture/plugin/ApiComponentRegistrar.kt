@@ -43,12 +43,15 @@ class ApiComponentRegistrar : ComponentRegistrar {
                     configuration: CompilerConfiguration,
                     project: Project
                 ): Collection<KtFile> {
+                    val pluginOptions = configuration[KEY_PLUGIN_OPTIONS]!!
+
                     //this is used for analyze kt file
-                    //KtFileAnalyzer(knownSources).analyze("SimpleApi.kt")
+                    KtFileAnalyzer(knownSources).analyze(pluginOptions.apiLogFileName)
+
 
                     return SourceCodeGenerator
                         .generate(
-                            configuration[KEY_PLUGIN_OPTIONS]!!,
+                            pluginOptions,
                             knownSources.map { it.asShared() }
                         ).map { it.toKtFile(project) }
                 }

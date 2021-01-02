@@ -37,6 +37,15 @@ fun <T : Any> KtNamedFunction.getAnnotationString(clazz: KClass<T>): String? {
     }?.text
 }
 
+fun <T : Any> KtProperty.getAnnotationString(clazz: KClass<T>): String? {
+    val hasApiImport = containingKtFile.hasImport(clazz)
+
+    return annotationEntryList.firstOrNull {
+        (it.text.startsWith("@${clazz.simpleName}") && hasApiImport)
+                || it.text.startsWith("@${clazz.qualifiedName}")
+    }?.text
+}
+
 fun <T : Any> KtParameter.getAnnotationString(clazz: KClass<T>): String? {
     val hasApiImport = containingKtFile.hasImport(clazz)
 
@@ -58,13 +67,16 @@ fun KtFile.getPathStringOf(type: String) =
         ?.importPath?.pathStr
 
 //todo ignore annotation
-fun KtNamedFunction.isSuspend() = text.substringBefore("fun").contains("suspend")
+fun KtNamedFunction.isSuspend() = text.substringBefore("fun").contains("suspend") || text.contains(
+    Regex("suspend +fun")
+)
 
 val KtClass.importList get() = parent.getChildOfType<KtImportList>()!!
 
 val KtClass.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
 val KtNamedFunction.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
+val KtProperty.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
 val KtParameter.annotationEntryList get() = getChildOfType<KtDeclarationModifierList>()?.getChildrenOfType<KtAnnotationEntry>() ?: arrayOf()
 
@@ -83,7 +95,7 @@ val KtNamedFunction.parameters: Array<KtParameter>
 /**
  * ex) @Body int: Int = 1 =>  Int
  */
-val KtParameter.type: String get() = text.substringBefore("=").substringAfterLast(":")
+val KtParameter.type: String get() = text.substringAfterLast(":").substringBefore("=")
 
 fun File.toKtFile(project: Project): KtFile {
     val fileSystem =

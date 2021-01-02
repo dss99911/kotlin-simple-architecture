@@ -1,5 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin.extension
 
+import kim.jeonghyeon.annotation.SimpleArchInternal
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionContainer
 
@@ -9,8 +10,13 @@ open class SimpleArchExtension {
     var androidConfig: Boolean = true
     var commonConfig: Boolean = true
     var generationConfig: Boolean = true
+
+    @SimpleArchInternal
     var useFramework: Boolean = false
+    @SimpleArchInternal
     var isInternal: Boolean = false
+    @SimpleArchInternal
+    var apiLogFileName: List<String> = emptyList()
 
     /**
      * "a" to "1" => const val a = 1

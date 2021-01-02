@@ -10,5 +10,20 @@ buildscript {
 
     dependencies {
         classpath(deps.simpleArch.gradle)
+        classpath(deps.android.buildToolGradle)
+        classpath(deps.shadowGradle)//for creating jar of backend
+        classpath(deps.kotlin.gradle)
+        classpath(deps.sqldelight.gradle)
+        classpath(deps.kotlin.serializationGradle)
+    }
+}
+
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
     }
 }

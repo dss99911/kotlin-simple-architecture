@@ -1,0 +1,1 @@
+./gradlew :sample-backend:run

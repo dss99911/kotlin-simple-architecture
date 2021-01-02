@@ -1,6 +1,5 @@
 
 Common
-1. set JDK 11 path on gradle.properties
 2. set ip address of the server on base/src/commonMain/kotlin/kim.jeonghyeon.base.HttpClient.kt
 
 Android

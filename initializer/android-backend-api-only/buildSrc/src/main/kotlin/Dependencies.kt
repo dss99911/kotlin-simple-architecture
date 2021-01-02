@@ -1,5 +1,5 @@
 object versions {
-    const val simpleArch = "1.4.0"
+    const val simpleArch = "1.4.4"
 
     object kotlin {
         const val version = "1.4.20"
@@ -7,10 +7,8 @@ object versions {
     }
 
     object android {
-        const val buildTool = "7.0.0-alpha02"
+        const val buildTool = "4.1.1"
     }
-
-    const val sqldelight = "1.4.2"
 
     const val shadow = "5.1.0"
 }
@@ -18,7 +16,6 @@ object versions {
 object deps {
     object kotlin {
         val gradle = depKotlin("gradle-plugin", versions.kotlin.version)
-        val serializationGradle = depKotlin("serialization", versions.kotlin.version)
     }
 
     object ktor {

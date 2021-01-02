@@ -84,7 +84,9 @@ kotlin {
                 if (buildByLibrary == "true") {
                     api(deps.simpleArch.client)
                 } else {
-                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
+                    api(deps.simpleArch.client)
+                    //todo refer to library by file path
+//                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
                 }
             }
         }
