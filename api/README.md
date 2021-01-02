@@ -162,7 +162,7 @@ check [Retrofit & Simple Api sample](https://github.com/dss99911/kotlin-simple-a
 There are two steps to migrate
 
 #### 1. Change HttpClient(Mandatory)
-Before migration, you won't be sure if the Simple Api will work properly with your project.
+Before migration, you won't be sure if the Simple Api will work properly with your project
 There are lots of api interface of retrofit in your project. and it's not easy to migrate all the api interface.
 
 So, Simple Api support Retrofit annotation.
