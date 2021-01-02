@@ -1,11 +1,11 @@
 # Simple API
 
 ## Index
-- Description
-- Simple Usage
-- Define Http Request
-- Request Response Adapter
-- Retrofit Migration
+- [Description](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#description)
+- [Simple Usage](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#simple-usage)
+- [Define Http Request](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#define-http-request)
+- [Request Response Adapter](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#request-response-adapter)
+- [Retrofit Migration](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#retrofit-migration)
 - Setup
 - Sample
 - Initializer
@@ -177,7 +177,7 @@ interface RetrofitApi {
     suspend fun get(): Response<SomeData>
     fun get2(): Call<SomeData>
 }
-
+```
 
 ## Setup
 
@@ -202,6 +202,7 @@ System.setProperty(// Enabling kotlin compiler plugin
 ```
 
 module build.gradle.kts
+
 ```
 apply plugin: 'kim.jeonghyeon.kotlin-simple-api-gradle'
 
