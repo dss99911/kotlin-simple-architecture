@@ -157,26 +157,22 @@ HttpClient {
 ## Retrofit Migration
 As Simple Api is similar with Retrofit, it provides smooth migration
 
-check [Retrofit & Simple Api sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/main/java/kim/jeonghyeon/sample/api/RetrofitApi.kt)
+refer to [Retrofit & Simple Api sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/main/java/kim/jeonghyeon/sample/api/RetrofitApi.kt)
 
 There are two steps to migrate
 
 #### 1. Change HttpClient(Mandatory)
 Before migration, you won't be sure if the Simple Api will work properly with your project.<br/>
-There are lots of api interface of retrofit in your project. and it's not easy to migrate all the api interface.
+There are lots of api interface of retrofit in your project. and it's not easy to migrate all the api interface.<br/>
 
-So, Simple Api support Retrofit annotation.
-
-It means that you don't need to change Retrofit Annotations to Simple Api.
-
+So, Simple Api support Retrofit annotation.<br/>
+It means that you don't need to change Retrofit Annotations to Simple Api.<br/>
 instead, Just change HttpClient.
-
 
 If the responseType and returnType is different, check [Request Response Adapter](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#request-response-adapter)
 
 #### 2. Change Annotations(Optional)
-This is not mandatory. but Retrofit is only for JVM. Retrofit Annotation can't be used for other environment.
-
+This is not mandatory. but Retrofit is only for JVM. Retrofit Annotation can't be used for other environment.<br/>
 on that time, you may migrate to Simple Api annotations.
 
 #### Limitation
