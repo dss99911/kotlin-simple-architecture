@@ -9,7 +9,7 @@ interface RetrofitBackendApi {
     suspend fun getValue(@Path("key") key: String): RetrofitResponseBodyBackend<RetrofitDataBackend>
 
     @Post("retrofit/{key}/value")
-    suspend fun setValue(@Path("key") key: String, @Body body: RetrofitRequestBodyBackend): RetrofitDataBackend
+    suspend fun setValue(@Path("key") key: String, @Body body: RetrofitRequestBodyBackend): RetrofitResponseBodyBackend<RetrofitDataBackend>
 }
 
 @Serializable

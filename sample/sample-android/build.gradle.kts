@@ -4,7 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
 }
-apply(plugin = deps.simpleArch.gradle.toPlugInId())
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
@@ -124,5 +124,5 @@ tasks.withType<KotlinCompile>().all {
 }
 
 dependencies {
-    implementation(project(":sample:sample-base"))
+    implementation(project(":sample-base"))
 }

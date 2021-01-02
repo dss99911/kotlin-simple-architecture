@@ -3,6 +3,7 @@ object versions {
 
     object kotlin {
         const val version = "1.4.20"
+        const val ktor = "1.4.3"
     }
 
     object android {
@@ -29,6 +30,11 @@ object deps {
         val backend = depSimpleArchitecture("backend", versions.simpleArch)
         val gradle = depSimpleArchitecture("gradle", versions.simpleArch)
         val gradlePluginId = gradle.toPluginId()
+    }
+
+    object ktor {
+        const val clientOkHttp = "io.ktor:ktor-client-okhttp:${versions.kotlin.ktor}"
+        const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
     }
 
     object sqldelight {

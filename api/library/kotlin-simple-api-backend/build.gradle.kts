@@ -3,8 +3,6 @@ plugins {
 }
 apply(plugin = "kotlinx-serialization")
 
-val buildByLibrary: String? by project
-
 group = deps.simpleArch.api.backend.getGroupId()
 version = deps.simpleArch.api.backend.getVersion()
 
@@ -15,11 +13,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (buildByLibrary == "true") {
-                    api(deps.simpleArch.api.client)
-                } else {
-                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
-                }
+                api(deps.simpleArch.api.client)
             }
         }
 

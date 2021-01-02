@@ -47,7 +47,7 @@ data class PluginOptions(
                 split[5],
                 split[6].toBoolean(),
                 split[7].toBoolean(),
-                split[8].split(",")
+                if (split[8].isEmpty()) listOf() else split[8].split(",")
             )
         }
     }

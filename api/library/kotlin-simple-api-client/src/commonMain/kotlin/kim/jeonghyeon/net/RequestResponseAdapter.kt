@@ -19,7 +19,7 @@ import kotlinx.serialization.serializer
 class SimpleApiCustom internal constructor(val config: Config) {
 
     class Config {
-        val adapter: RequestResponseAdapter? = null
+        var adapter: RequestResponseAdapter? = null
     }
 
     companion object Feature : HttpClientFeature<Config, SimpleApiCustom> {
