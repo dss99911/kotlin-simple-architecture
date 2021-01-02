@@ -155,7 +155,7 @@ HttpClient {
 ```
 
 ## Retrofit Migration
-As Simple Api is similar with Retrofit, it provides smooth migration
+As Simple Api is similar with Retrofit, it provides smooth migration from Retrofit to Simple Api
 
 refer to [Retrofit & Simple Api sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/main/java/kim/jeonghyeon/sample/api/RetrofitApi.kt)
 
@@ -168,6 +168,24 @@ There are lots of api interface of retrofit in your project. and it's not easy t
 So, Simple Api support Retrofit annotation.<br/>
 It means that you don't need to change Retrofit Annotations to Simple Api.<br/>
 instead, Just change HttpClient.
+
+What you have to do is only the below
+```kotlin
+
+fun getYourApi(): YourApi {
+    return HttpClient(OkHttp) {
+        engine {
+            //use your Okhttp interceptor here
+            addInterceptor(interceptor)
+        }
+        install(JsonFeature) {
+            //set your serializer
+            serializer = GsonSerializer()
+        }
+    }.create(serverUrl)
+}
+
+```
 
 If the responseType and returnType is different, check [Request Response Adapter](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#request-response-adapter)
 
