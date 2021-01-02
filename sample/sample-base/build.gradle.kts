@@ -41,7 +41,7 @@ simpleArch {
     }
 }
 
-apply(plugin = deps.simpleArch.gradle.toPlugInId())
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 sqldelight {
 
@@ -52,8 +52,6 @@ sqldelight {
 
 
 version = "1.0"//for cocoa pod
-
-val buildByLibrary: String? by project
 
 kotlin {
     jvm()
@@ -81,11 +79,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (buildByLibrary == "true") {
-                    api(deps.simpleArch.client)
-                } else {
-                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
-                }
+                api(deps.simpleArch.client)
             }
         }
         //TODO HYUN [multi-platform2] : consider to change to clientMain. as front end also may be included to here

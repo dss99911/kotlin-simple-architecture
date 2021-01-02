@@ -5,28 +5,14 @@ plugins {
 group = deps.simpleArch.backend.getGroupId()
 version = deps.simpleArch.backend.getVersion()
 
-val buildByLibrary: String? by project
-
 kotlin {
     jvm()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-
-                if (buildByLibrary == "true") {
-                    api(deps.simpleArch.api.backend)
-                } else {
-                    api(project(":api:library:${deps.simpleArch.api.backend.getArtifactId()}"))
-                }
-
-
-                if (buildByLibrary == "true") {
-                    api(deps.simpleArch.client)
-                } else {
-                    api(project(":framework:${deps.simpleArch.client.getArtifactId()}"))
-                }
-
+                api(deps.simpleArch.api.backend)
+                api(deps.simpleArch.client)
 
                 api(deps.ktor.authJwt)
                 api(deps.ktor.clientEngineApache)

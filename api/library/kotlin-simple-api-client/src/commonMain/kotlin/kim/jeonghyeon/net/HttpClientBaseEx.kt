@@ -33,7 +33,7 @@ object SimpleApiUtil {
     @OptIn(ExperimentalStdlibApi::class)
     suspend inline fun <reified RET> HttpClient.callApi(
         callInfo: ApiCallInfo,
-        requestResponseAdapter: RequestResponseAdapter = getDefaultRequestResponseAdapter()
+        requestResponseAdapter: RequestResponseAdapter
     ): RET {
         requestResponseAdapter.beforeBuildRequest(callInfo, this)
 

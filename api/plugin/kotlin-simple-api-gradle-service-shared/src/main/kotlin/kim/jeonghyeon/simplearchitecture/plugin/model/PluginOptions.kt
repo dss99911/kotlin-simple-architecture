@@ -19,7 +19,8 @@ data class PluginOptions(
     val postFix: String,//HttpClient.create(), db() prefix.if this is "simple" result will be HttpClient.createSimple(), dbSimple(). as the generated code only takes care of each module's source code. each module should use different prefix.
     val packageName: String,
     val useFramework: Boolean = false,//don't configure by user.
-    val isInternal: Boolean = false//don't configure by user.
+    val isInternal: Boolean = false,//don't configure by user.
+    val apiLogFileName: List<String>
 ) {
     fun getGeneratedTargetVariantsPath(): String =
         generatedSourceSetPath(
@@ -31,7 +32,7 @@ data class PluginOptions(
 
 
     override fun toString(): String {
-        return "${platformType.name}|$isMultiplatform|$buildPath|$compileTargetVariantsName|$postFix|$packageName|$useFramework|$isInternal"
+        return "${platformType.name}|$isMultiplatform|$buildPath|$compileTargetVariantsName|$postFix|$packageName|$useFramework|$isInternal|${apiLogFileName.joinToString(",")}"
     }
 
     companion object {
@@ -45,7 +46,8 @@ data class PluginOptions(
                 split[4],
                 split[5],
                 split[6].toBoolean(),
-                split[7].toBoolean()
+                split[7].toBoolean(),
+                if (split[8].isEmpty()) listOf() else split[8].split(",")
             )
         }
     }

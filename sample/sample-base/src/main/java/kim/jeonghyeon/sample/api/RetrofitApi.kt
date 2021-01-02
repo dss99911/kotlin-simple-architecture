@@ -6,11 +6,10 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import kim.jeonghyeon.net.ApiCallInfo
-import kim.jeonghyeon.net.RequestResponseAdapter
+import kim.jeonghyeon.net.SimpleApiCustom
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -18,7 +17,6 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import samplebase.generated.SimpleConfig
 import samplebase.generated.net.create
-import kotlin.reflect.KType
 
 
 interface RetrofitApi {
@@ -39,18 +37,21 @@ data class RetrofitRequestBody(val value: String)
 
 data class RetrofitResponseBody<T>(val data: T)
 
-data class RetrofitData(val name: String, val id: String)
+data class RetrofitData(val name: String, val id: String) : Data
+
+interface Data
 
 fun getRetrofitApi(): RetrofitApi {
     val okHttpClient = OkHttpClient()
     val client = okHttpClient.newBuilder()
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .build()
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
     val retrofit = Retrofit.Builder()
-        .client(client)
-        .baseUrl(SimpleConfig.serverUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+            .client(client)
+            .baseUrl(SimpleConfig.serverUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(getRetrofitAdapterFactory())
+            .build()
 
     return retrofit.create(RetrofitApi::class.java)
 }
@@ -66,41 +67,9 @@ fun getRetrofitApiFromSimpleApi(): RetrofitApi {
             serializer = GsonSerializer()
         }
 
-    }.create(SimpleConfig.serverUrl, getRetrofitResponseTransformer())
-}
-
-/**
- * use your Retrofit Call Aapter
- */
-inline fun getRetrofitResponseTransformer(): RequestResponseAdapter = object : RequestResponseAdapter {
-    override suspend fun beforeBuildRequest(
-        callInfo: ApiCallInfo,
-        client: HttpClient
-    ): ApiCallInfo {
-        return callInfo
-    }
-
-    override suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo) {
-
-    }
-
-    override suspend fun <OUT> handleException(
-        e: Throwable,
-        callInfo: ApiCallInfo,
-        returnTypeInfo: TypeInfo
-    ): OUT {
-        throw e
-    }
-
-    override suspend fun <OUT> transformResponse(
-        response: HttpResponse,
-        callInfo: ApiCallInfo,
-        returnTypeInfo: TypeInfo
-    ): OUT {
-        return if (returnTypeInfo.type == RetrofitResponseBody::class) {
-            response.call.receive(returnTypeInfo) as OUT
-        } else {
-            (response.call.receive(typeInfo<RetrofitResponseBody<OUT>>()) as RetrofitResponseBody<OUT>).data
+        install(SimpleApiCustom) {
+            adapter = getCustomApiAdapter()
         }
-    }
+    }.create(SimpleConfig.serverUrl)
 }
+

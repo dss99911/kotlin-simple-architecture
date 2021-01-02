@@ -19,7 +19,7 @@ fun File.readLines(action: (String) -> Unit) {
 
 fun File.write(action: FileWriter.() -> Unit) {
     if (!exists()) {
-        parentFile.mkdirs()
+        parentFile?.mkdirs()
         createNewFile()
     }
 

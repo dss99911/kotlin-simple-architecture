@@ -9,9 +9,9 @@
 /* Begin PBXAggregateTarget section */
 		E200A690C4A7BC6B71371EDBBD267D9E /* sample_base */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 21FB0CBCE92EB2AE7B6FA1BAE55C9D7D /* Build configuration list for PBXAggregateTarget "sample_base" */;
+			buildConfigurationList = 03750D15E42CA3090BACD7231111F3FD /* Build configuration list for PBXAggregateTarget "sample_base" */;
 			buildPhases = (
-				A17E60B0662436FF9C7A9EFEC99115E8 /* [CP-User] Build sample_base */,
+				D76DEA657A0EE9EB76BEA7EB9EEDFC69 /* [CP-User] Build sample_base */,
 			);
 			dependencies = (
 			);
@@ -407,7 +407,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A17E60B0662436FF9C7A9EFEC99115E8 /* [CP-User] Build sample_base */ = {
+		D76DEA657A0EE9EB76BEA7EB9EEDFC69 /* [CP-User] Build sample_base */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -415,7 +415,7 @@
 			name = "[CP-User] Build sample_base";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "                set -ev\n                REPO_ROOT=\"$PODS_TARGET_SRCROOT\"\n                \"$REPO_ROOT/../../gradlew\" -p \"$REPO_ROOT\" :sample:sample-base:syncFramework                     -Pkotlin.native.cocoapods.target=$KOTLIN_TARGET                     -Pkotlin.native.cocoapods.configuration=$CONFIGURATION                     -Pkotlin.native.cocoapods.cflags=\"$OTHER_CFLAGS\"                     -Pkotlin.native.cocoapods.paths.headers=\"$HEADER_SEARCH_PATHS\"                     -Pkotlin.native.cocoapods.paths.frameworks=\"$FRAMEWORK_SEARCH_PATHS\"\n";
+			shellScript = "                set -ev\n                REPO_ROOT=\"$PODS_TARGET_SRCROOT\"\n                \"$REPO_ROOT/../gradlew\" -p \"$REPO_ROOT\" :sample-base:syncFramework                     -Pkotlin.native.cocoapods.target=$KOTLIN_TARGET                     -Pkotlin.native.cocoapods.configuration=$CONFIGURATION                     -Pkotlin.native.cocoapods.cflags=\"$OTHER_CFLAGS\"                     -Pkotlin.native.cocoapods.paths.headers=\"$HEADER_SEARCH_PATHS\"                     -Pkotlin.native.cocoapods.paths.frameworks=\"$FRAMEWORK_SEARCH_PATHS\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -544,6 +544,40 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
+		};
+		0B08AE424D3B85F7D1B658BB90DC5966 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89AB09D922D90A89C38593B4B4A45EF2 /* sample_base.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		37F510988D47C4D53FFB520376F32329 /* Debug-Prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 89AB09D922D90A89C38593B4B4A45EF2 /* sample_base.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Debug-Prod";
 		};
 		43C0034813E80D387470A779A93A25FF /* Debug-Prod */ = {
 			isa = XCBuildConfiguration;
@@ -708,6 +742,22 @@
 			};
 			name = Debug;
 		};
+		8FB4CC8CFD3DA627F8B2027B41D8336D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 54F483E44EFAA81088CAC990EAA10B4D /* sample_base.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		9114C42FCC7E82D249AF003357F0DD26 /* Debug-Prod */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1FBA13CEF4577C869313B5C49A977244 /* Pods-kotlinIOS.debug-prod.xcconfig */;
@@ -785,22 +835,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = "Debug-Prod";
-		};
-		9C503E3753388CBFE0383FB8C7F31CDF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 54F483E44EFAA81088CAC990EAA10B4D /* sample_base.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		AF1F8D2941B0228930706FA0F2C9BB78 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -940,23 +974,6 @@
 			};
 			name = "Debug-Prod";
 		};
-		DD253A2E62C886BE7391CB826739497D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89AB09D922D90A89C38593B4B4A45EF2 /* sample_base.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		E549FA43457A3371163B07FB73718938 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 881119CA285499BD4AF5C5626F8E15AF /* Pods-kotlinIOS-kotlinIOSUITests.debug.xcconfig */;
@@ -994,23 +1011,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
-		};
-		EB6D13E84183BBF3D54EB70E06FD3449 /* Debug-Prod */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89AB09D922D90A89C38593B4B4A45EF2 /* sample_base.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Debug-Prod";
 		};
 		FE6BFB18611E6ADA7978CC8415D0C90D /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1053,12 +1053,12 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		21FB0CBCE92EB2AE7B6FA1BAE55C9D7D /* Build configuration list for PBXAggregateTarget "sample_base" */ = {
+		03750D15E42CA3090BACD7231111F3FD /* Build configuration list for PBXAggregateTarget "sample_base" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9C503E3753388CBFE0383FB8C7F31CDF /* Debug */,
-				EB6D13E84183BBF3D54EB70E06FD3449 /* Debug-Prod */,
-				DD253A2E62C886BE7391CB826739497D /* Release */,
+				8FB4CC8CFD3DA627F8B2027B41D8336D /* Debug */,
+				37F510988D47C4D53FFB520376F32329 /* Debug-Prod */,
+				0B08AE424D3B85F7D1B658BB90DC5966 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

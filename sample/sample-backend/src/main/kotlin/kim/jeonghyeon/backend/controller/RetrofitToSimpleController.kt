@@ -18,7 +18,7 @@ class RetrofitToSimpleController : RetrofitBackendApi {
         return RetrofitResponseBodyBackend(RetrofitDataBackend("a", "B"))
     }
 
-    override suspend fun setValue(@Path("key") key: String, @Body body: RetrofitRequestBodyBackend): RetrofitDataBackend {
-        return RetrofitDataBackend("a", "B")
+    override suspend fun setValue(@Path("key") key: String, @Body body: RetrofitRequestBodyBackend): RetrofitResponseBodyBackend<RetrofitDataBackend> {
+        return RetrofitResponseBodyBackend(RetrofitDataBackend("a", "B"))
     }
 }

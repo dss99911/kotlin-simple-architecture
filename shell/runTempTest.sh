@@ -1,0 +1,1 @@
+./gradlew -PincludingModuleName=temp-test :temp-test:run

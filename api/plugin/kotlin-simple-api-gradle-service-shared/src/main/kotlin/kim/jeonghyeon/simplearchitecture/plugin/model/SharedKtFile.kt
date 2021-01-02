@@ -16,6 +16,7 @@ interface SharedKtClass {
     val importSourceCode: String
 
     val functions: List<SharedKtNamedFunction>
+    val properties: List<SharedKtProperty>
     val superTypeText: String?
 
     val containingKtFile: SharedKtFile
@@ -32,6 +33,14 @@ interface SharedKtNamedFunction {
     val parameters: Array<SharedKtParameter>
     fun hasBody(): Boolean
     fun isSuspend(): Boolean
+    val returnTypeName: String?
+    fun <T : Any> getAnnotationString(clazz: KClass<T>): String?//ex) @Api("dsfdsf")
+}
+
+interface SharedKtProperty {
+    val name: String
+    val ktClass: SharedKtClass?
+    fun hasBody(): Boolean
     val returnTypeName: String?
     fun <T : Any> getAnnotationString(clazz: KClass<T>): String?//ex) @Api("dsfdsf")
 }

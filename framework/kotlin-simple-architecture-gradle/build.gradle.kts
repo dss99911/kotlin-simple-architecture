@@ -11,6 +11,7 @@ version = deps.simpleArch.gradle.getVersion()
 
 dependencies {
     implementation(deps.simpleArch.api.gradle)
+    implementation(deps.sqldelight.gradle)
     compileOnly(deps.plugin.auto)
     kapt(deps.plugin.auto)
 

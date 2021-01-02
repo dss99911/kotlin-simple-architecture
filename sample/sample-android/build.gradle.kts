@@ -4,7 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
 }
-apply(plugin = deps.simpleArch.gradle.toPlugInId())
+apply(plugin = deps.simpleArch.gradlePluginId)
 
 val androidKeyAlias: String by project
 val androidKeyPassword: String by project
@@ -17,8 +17,8 @@ android {
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
     defaultConfig {
-        versionCode = 10003
-        versionName = "1.00.03"
+        versionCode = 10100
+        versionName = "1.01.00"
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
         applicationId = appId
@@ -124,5 +124,5 @@ tasks.withType<KotlinCompile>().all {
 }
 
 dependencies {
-    implementation(project(":sample:sample-base"))
+    implementation(project(":sample-base"))
 }

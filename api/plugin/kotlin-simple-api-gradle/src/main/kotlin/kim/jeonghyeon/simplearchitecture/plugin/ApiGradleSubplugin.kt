@@ -71,7 +71,8 @@ class ApiGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
             project.simpleArchExtension.postfix,
             project.getGeneratedPackageName(),
             project.simpleArchExtension.useFramework,
-            project.simpleArchExtension.isInternal
+            project.simpleArchExtension.isInternal,
+            project.simpleArchExtension.apiLogFileName
         )
             //it doesn't allow some special character. so, used Base64
             .let { Base64.getEncoder().encodeToString(it.toString().toByteArray()) }

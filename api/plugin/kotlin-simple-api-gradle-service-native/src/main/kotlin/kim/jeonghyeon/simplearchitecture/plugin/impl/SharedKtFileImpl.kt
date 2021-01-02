@@ -1,9 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin.impl
 
-import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtClass
-import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtFile
-import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtNamedFunction
-import kim.jeonghyeon.simplearchitecture.plugin.model.SharedKtParameter
+import kim.jeonghyeon.simplearchitecture.plugin.model.*
 import kim.jeonghyeon.simplearchitecture.plugin.util.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
@@ -47,6 +44,9 @@ class SharedKtClassImpl(val ktClass: KtClass) : SharedKtClass {
 
     override val functions: List<SharedKtNamedFunction>
         get() = ktClass.functions.map { SharedKtNamedFunctionImpl(it) }
+    override val properties: List<SharedKtProperty>
+        get() = ktClass.getProperties().map { SharedKtPropertyImpl(it) }
+
     override val superTypeText: String?
         get() = ktClass.findDescendantOfType<KtSuperTypeList>()?.text
 
@@ -73,6 +73,17 @@ class SharedKtNamedFunctionImpl(val ktFunc: KtNamedFunction) : SharedKtNamedFunc
         get() = ktFunc.name!!
 
     override fun <T : Any> getAnnotationString(clazz: KClass<T>): String? = ktFunc.getAnnotationString(clazz)
+}
+
+class SharedKtPropertyImpl(val ktProperty: KtProperty) : SharedKtProperty {
+    override val name: String
+        get() = ktProperty.name!!
+    override val ktClass: SharedKtClass?
+        get() = ktProperty.containingClass()?.let { SharedKtClassImpl(it) }
+    override val returnTypeName: String?
+        get() = ktProperty.typeReference?.text
+    override fun hasBody(): Boolean = ktProperty.hasBody()
+    override fun <T : Any> getAnnotationString(clazz: KClass<T>): String? = ktProperty.getAnnotationString(clazz)
 }
 
 class SharedKtParameterImpl(val parameter: KtParameter) : SharedKtParameter {

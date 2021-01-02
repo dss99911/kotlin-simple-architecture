@@ -1,3 +1,5 @@
+import com.squareup.sqldelight.gradle.SqlDelightExtension
+
 buildscript {
     repositories {
         mavenLocal()
@@ -7,6 +9,7 @@ buildscript {
 
     dependencies {
         classpath(deps.simpleArch.gradle)
+        classpath(deps.android.buildToolGradle)
     }
 }
 
@@ -25,12 +28,9 @@ apply(plugin = deps.simpleArch.gradle.toPlugInId())
 group = deps.simpleArch.client.getGroupId()
 version = deps.simpleArch.client.getVersion()
 
-val buildByLibrary: String? by project
-
-sqldelight {
-    database("SimpleDB") {
-        packageName = "kim.jeonghyeon.db"
-    }
+val sqlDelight = project.extensions.getByType<SqlDelightExtension>()
+sqlDelight.database("SimpleDB") {
+    packageName = "kim.jeonghyeon.db"
 }
 
 kotlin {
@@ -56,11 +56,7 @@ kotlin {
                 api(deps.sqldelight.runtime)
                 api(deps.sqldelight.coroutine)
 
-                if (buildByLibrary == "true") {
-                    api(deps.simpleArch.api.client)
-                } else {
-                    api(project(":api:library:${deps.simpleArch.api.client.getArtifactId()}"))
-                }
+                api(deps.simpleArch.api.client)
 
                 api(deps.krypto)
             }

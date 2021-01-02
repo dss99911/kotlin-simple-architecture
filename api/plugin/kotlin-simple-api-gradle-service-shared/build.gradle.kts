@@ -15,7 +15,6 @@ group = deps.simpleArch.api.gradleServiceShared.getGroupId()
 version = deps.simpleArch.api.gradleServiceShared.getVersion()
 
 dependencies {
-    api(deps.gson)
     api(deps.plugin.gradleApi)
 
     compileOnly(deps.plugin.compilerEmbeddable)

@@ -9,9 +9,10 @@ class KtFileAnalyzer(val files: Collection<KtFile>) {
     /**
      * @param fileName : include '.kt'
      */
-    fun analyze(fileName: String) {
-        files.filter { it.name == fileName }
-            .forEach { analyze(it) }
+    fun analyze(fileNames: List<String>) {
+        files.filter { file ->
+            fileNames.any { file.name.contains(it, true) }
+        }.forEach { analyze(it) }
     }
 
     fun analyze(file: KtFile) {

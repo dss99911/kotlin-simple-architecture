@@ -25,10 +25,8 @@ object deps {
         const val clientIos = "io.ktor:ktor-client-ios:${versions.kotlin.ktor}"
         const val clientJs = "io.ktor:ktor-client-js:${versions.kotlin.ktor}"
         const val clientAndroid = "io.ktor:ktor-client-android:${versions.kotlin.ktor}"
-        const val clientOkHttp = "io.ktor:ktor-client-okhttp:${versions.kotlin.ktor}"
         const val clientLogging = "io.ktor:ktor-client-logging:${versions.kotlin.ktor}"
         const val clientSerialization = "io.ktor:ktor-client-serialization:${versions.kotlin.ktor}"
-        const val clientGson = "io.ktor:ktor-client-gson:${versions.kotlin.ktor}"
 
         const val clientAuth = "io.ktor:ktor-client-auth:${versions.kotlin.ktor}"
         const val clientAuthJvm = "io.ktor:ktor-client-auth-jvm:${versions.kotlin.ktor}"

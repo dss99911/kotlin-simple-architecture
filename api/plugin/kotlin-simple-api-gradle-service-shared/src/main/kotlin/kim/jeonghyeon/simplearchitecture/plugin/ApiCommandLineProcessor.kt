@@ -1,7 +1,6 @@
 package kim.jeonghyeon.simplearchitecture.plugin
 
 import com.google.auto.service.AutoService
-import com.google.gson.Gson
 import kim.jeonghyeon.simplearchitecture.plugin.model.PluginOptions
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption

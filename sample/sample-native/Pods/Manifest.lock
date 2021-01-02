@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../sample-base"
 
 SPEC CHECKSUMS:
-  sample_base: 966c33f3aa0d36fde422d2028348da293498734e
+  sample_base: a3c80a31b9b3785d6defc7701dbec36451816053
 
 PODFILE CHECKSUM: 0d7139545c9eb68325cb6a582bd90580a73c7f3c
 
