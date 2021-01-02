@@ -217,7 +217,8 @@ module build.gradle.kts
 apply plugin: 'kim.jeonghyeon.kotlin-simple-api-gradle'
 
 dependencies {
-    implementation "kim.jeonghyeon:kotlin-simple-architecture-client:{latest-version}"
+    implementation "kim.jeonghyeon:kotlin-simple-api-client:{latest-version}"
+    implementation "kim.jeonghyeon:kotlin-simple-api-backend:{latest-version}"
 }
 
 ```

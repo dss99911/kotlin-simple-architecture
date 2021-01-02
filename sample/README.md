@@ -24,15 +24,19 @@ Download [Sample android application](https://play.google.com/store/apps/details
 - Retrofit
 
 
-# Setup
+# Setup & Run
 
 Common
 1. Set JDK 11 path on gradle.properties
 
 Android
-1. run android by `sh shell/installAndroid.sh`
+1. run android by `sh shell/installAndroid.sh` (you can run with android Studio configuration)
 2. connect same wifi with desktop(for running on local)
 
 Backend
 1. run backend by `sh shell/runBackendLocal.sh`
 2. connect same wifi with Android(for running local)
+
+Ios
+1. open xcode with path `sample-native`
+2. run by Xcode (I tried `sh shell/installIos.sh`, it was working. but now not working. need to fix it. consider Intellij plugin to run ios)
