@@ -68,7 +68,7 @@ fun getRetrofitApiFromSimpleApi(): RetrofitApi {
         }
 
         install(SimpleApiCustom) {
-            adapter = getSimpleApiAdapter()
+            adapter = getCustomApiAdapter()
         }
     }.create(SimpleConfig.serverUrl)
 }

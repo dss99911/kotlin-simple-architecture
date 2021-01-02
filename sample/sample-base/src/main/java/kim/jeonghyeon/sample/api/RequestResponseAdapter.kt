@@ -11,26 +11,7 @@ import kotlin.reflect.full.isSubclassOf
 /**
  * migrate your Retrofit Call Aapter to this function
  */
-inline fun getSimpleApiAdapter(): RequestResponseAdapter = object : RequestResponseAdapter {
-    override suspend fun beforeBuildRequest(
-        callInfo: ApiCallInfo,
-        client: HttpClient
-    ): ApiCallInfo {
-        return callInfo
-    }
-
-    override suspend fun buildRequest(builder: HttpRequestBuilder, callInfo: ApiCallInfo) {
-
-    }
-
-    override suspend fun <OUT> handleException(
-        e: Throwable,
-        callInfo: ApiCallInfo,
-        returnTypeInfo: TypeInfo
-    ): OUT {
-        throw e
-    }
-
+inline fun getCustomApiAdapter(): RequestResponseAdapter = object : RequestResponseAdapter() {
     override suspend fun <OUT> transformResponse(
         response: HttpResponse,
         callInfo: ApiCallInfo,
