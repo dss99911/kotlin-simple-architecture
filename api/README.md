@@ -6,22 +6,23 @@
 - [Define Http Request](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#define-http-request)
 - [Request Response Adapter](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#request-response-adapter)
 - [Retrofit Migration](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#retrofit-migration)
-- Setup
-- Sample
-- Initializer
+- [Setup](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#setup)
+- [Sample](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#sample)
+- [Initializer](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#initializer)
 
 ## Description
-- use interface for api call similar with [Retrofit](https://square.github.io/retrofit/)
-- Share api interface by client, server both
-- You can call api like suspend function
+- Simple Api uses interface for api call similar with [Retrofit](https://square.github.io/retrofit/)
+- It shares api interface between client, server both
+- You can call api just like function
     - No Http definition like GET, POST, Query, Body(if required, you can set it as well)
     - So, You just simply make function on interface. and client call the function and server implement the function. that's it.
 - If you have to define Http request(like calling external api), it's also available
-    - Check this [sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/commonMain/kotlin/kim/jeonghyeon/sample/api/GithubApi.kt)
+    - Check [Define Http Request](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#define-http-request)
 - How to handle error?
     - Let's think about calling function, what function return when it's error?
     - It just throw exception instead of returning data which contains error status.
     - So, calling api also doesn't require to return response which contains error status. just throw exception
+    - for how to handle on viewModel, check [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
 
 ## Simple Usage
 
@@ -48,7 +49,7 @@ val client: HttpClient = HttpClient {
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 
 scope.launch {
-    api<SampleApi>().getGreeting("Hyun", "Programmer")
+    val greeting = api<SampleApi>().getGreeting("Hyun", "Programmer")
 }
 
 ```
@@ -68,12 +69,12 @@ install(SimpleRouting) {
 ```
 
 ## Define Http Request
-When we call external api. or server doesn't use Simple Api, we have to define http request
+When we call external api or server doesn't use Simple Api, we have to define http request
 
-Supported Method
+#### Supported Method
 - Get, Post, Put, Patch, Delete, Options, Head
 
-Supported Type
+#### Supported Type
 - Body, Header, Path, Query
 
 ```kotlin
@@ -93,20 +94,20 @@ interface GithubApi {
 
 ## Request Response Adapter
 This is used for the cases below
-1. Transform response to return type : in case that server response and return type is different. If client, server both use Simple Api. this is not required.
+1. Transform response to return type : in case that server response and return type is different (If client, server both use Simple Api. this is not required)
 2. Perform some action or modification on request/respond
 
-This is similar with Interceptor and CallAdapter of Okhttp, Retrofit
+This is similar with [Interceptor](https://square.github.io/okhttp/interceptors/) and [CallAdapter](https://square.github.io/retrofit/2.x/retrofit/retrofit2/CallAdapter.html) of Okhttp, Retrofit
 
 The Adapter has 4 function to implement
 - beforeBuildRequest : before build request
-- buildRequest : after building request
-- transformResponse : transform response to return type
-- handleException : handle the exception
+- buildRequest : after building request, you can retrive request data, and also can add/modify request data
+- transformResponse : transform response to return type (when response type and return type is different. or for additional logic)
+- handleException : handle the exception of api call
 
-TODO check sample code
+check [sample code](https://github.com/dss99911/kotlin-simple-architecture/blob/a1b7c1deffcdbccb74afeeb4fcd2160cc78e870f/sample/sample-base/src/main/java/kim/jeonghyeon/sample/api/RequestResponseAdapter.kt#L14)
 
-Transform response to return type
+Example : transform ResponseBody to just data
 ```kotlin
 
 data class ResponseBody<T>(val data: T)
@@ -135,7 +136,7 @@ HttpClient {
 
 ```
 
-Perform some action or modification on request/respond
+Example : add token on header while building request
 ```kotlin
 
 inline fun getCustomApiAdapter(): RequestResponseAdapter = object : RequestResponseAdapter() {
@@ -154,23 +155,26 @@ HttpClient {
 ```
 
 ## Retrofit Migration
-As this is similar with Retrofit.
-this provide smooth migration
+As Simple Api is similar with Retrofit
+it provides smooth migration
 
-There are two steps
-1. Change HttpClient
-2. Change Annotations
+There are two steps to migrate
 
+#### 1. Change HttpClient(Mandatory)
 Before migration, you won't be sure if the Simple Api will work properly with your project.
 There are lots of api interface of retrofit in your project. and it's not easy to migrate all the api interface.
-So, Simple Api support Retrofit annotation as well.
+So, Simple Api support Retrofit annotation.
 It means that you don't need to change Retrofit Annotations to Simple Api.
 instead, Just change HttpClient.
 
-If the responseType and returnType is different, check [Request Response Adapter](#)
+If the responseType and returnType is different, check [Request Response Adapter](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#request-response-adapter)
 
-### Limitation
-- it doesn't support Retrofit Response or Call type like the below.
+#### 2. Change Annotations(Optional)
+This is not mandatory. but Retrofit is only for JVM. Retrofit Annotation can't be used for other environment.
+on that time, you may migrate to Simple Api annotations.
+
+#### Limitation
+- it doesn't support Retrofit [Response](https://square.github.io/retrofit/2.x/retrofit/retrofit2/Response.html) or [Call](https://square.github.io/retrofit/2.x/retrofit/retrofit2/Call.html) type like the below.
 
 ```kotlin
 interface RetrofitApi {
@@ -212,20 +216,19 @@ dependencies {
 
 ```
 
-Todo check initializer/android-backend-api-only
+refer to initializer of [Android + Backend](https://github.com/dss99911/kotlin-simple-architecture/tree/master/initializer/android-backend-api-only)
 
 
 ## Sample
-- Simple Architecture sample
-- Retrofit & Simple Api sample
--
+- [Simple Architecture sample](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
+- [Retrofit & Simple Api sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/main/java/kim/jeonghyeon/sample/api/RetrofitApi.kt)
 
 ## Initializer
 As it's complicated to configure build script.
 Simple Api provide initialzer
-- Android + Backend
+- [Android + Backend](https://github.com/dss99911/kotlin-simple-architecture/tree/master/initializer/android-backend-api-only)
 
 Simple Architecture provide several initializer
-- Android
-- Android + Ios
-- Android + Ios + Backend
+- [Android](https://github.com/dss99911/kotlin-simple-architecture/tree/master/initializer/android)
+- [Android + Ios](https://github.com/dss99911/kotlin-simple-architecture/tree/master/initializer/android-ios)
+- [Android + Ios + Backend](https://github.com/dss99911/kotlin-simple-architecture/tree/master/initializer/android-ios-backend)
