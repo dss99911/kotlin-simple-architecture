@@ -6,7 +6,7 @@ Kotlin Simple Architecture is a library to develop simple and easy in Kotlin Mul
 
 # Features
 
-- [API Interface](https://github.com/dss99911/kotlin-simple-architecture#api-interface)
+- [API Interface](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api)
 - [API Binding](https://github.com/dss99911/kotlin-simple-architecture#api-binding)
 - [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
 - [Sign-in/Sign-up, OAuth(google, facebook, etc)](https://github.com/dss99911/kotlin-simple-architecture#sign-insign-up-oauthgoogle-facebook-etc)
