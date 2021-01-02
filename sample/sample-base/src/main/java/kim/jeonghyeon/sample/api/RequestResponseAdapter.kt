@@ -19,10 +19,8 @@ inline fun getCustomApiAdapter(): RequestResponseAdapter = object : RequestRespo
     ): OUT {
         return if (returnTypeInfo.type == RetrofitResponseBody::class) {
             response.call.receive(returnTypeInfo) as OUT
-        } else if (returnTypeInfo.type.isSubclassOf(Data::class)){
-            (response.call.receive(typeInfo<RetrofitResponseBody<OUT>>()) as RetrofitResponseBody<OUT>).data
         } else {
-            error("not supported")
+            (response.call.receive(typeInfo<RetrofitResponseBody<OUT>>()) as RetrofitResponseBody<OUT>).data
         }
 
         //other jvm example case from actual project

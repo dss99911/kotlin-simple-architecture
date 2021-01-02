@@ -17,8 +17,8 @@ android {
     compileSdkVersion(config.compileSdkVersion)
     buildToolsVersion(config.buildToolVersion)
     defaultConfig {
-        versionCode = 10003
-        versionName = "1.00.03"
+        versionCode = versions.simpleArch.replace(".","").toInt()
+        versionName = versions.simpleArch
         minSdkVersion(config.minSdkVersion)
         targetSdkVersion(config.targetSdkVersion)
         applicationId = appId

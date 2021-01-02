@@ -45,7 +45,7 @@ fun HttpClientConfig<*>.simpleApiCustom(block: SimpleApiCustom.Config.() -> Unit
 }
 
 
-abstract class RequestResponseAdapter {
+open class RequestResponseAdapter {
     /**
      * before building request
      */
@@ -62,7 +62,10 @@ abstract class RequestResponseAdapter {
     /**
      * if server response and return type is different, use this.
      */
-    abstract suspend fun <OUT> transformResponse(response: HttpResponse, callInfo: ApiCallInfo, returnTypeInfo: TypeInfo): OUT
+    open suspend fun <OUT> transformResponse(response: HttpResponse, callInfo: ApiCallInfo, returnTypeInfo: TypeInfo): OUT {
+        @Suppress("UNCHECKED_CAST")
+        return response.call.receive(returnTypeInfo) as OUT
+    }
 
     /**
      * handle exception.
