@@ -171,6 +171,11 @@ instead, Just change HttpClient.
 
 What you have to do is only the below
 ```kotlin
+//this is the interface with Retrofit annotations
+interface YourApi {
+    @GET("your")
+    suspend fun get(): SomeResponse
+}
 
 fun getYourApi(): YourApi {
     return HttpClient(OkHttp) {
@@ -183,6 +188,10 @@ fun getYourApi(): YourApi {
             serializer = GsonSerializer()
         }
     }.create(serverUrl)
+}
+
+suspend fun callApi() {
+    val response = getYourApi().get()
 }
 
 ```
