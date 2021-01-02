@@ -213,7 +213,8 @@ interface RetrofitApi {
 ```
 
 ## Setup
-This Setup is only for Simple Api. If you want to use Simple Architecture. check [Simple Architecture Setup](https://github.com/dss99911/kotlin-simple-architecture#setup)
+This Setup is only for Simple Api.<br/>
+If you want to use Simple Architecture. check [Simple Architecture Setup](https://github.com/dss99911/kotlin-simple-architecture#setup)
 
 #### Dependency
 - [Ktor](https://github.com/ktorio/ktor)
