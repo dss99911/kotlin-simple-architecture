@@ -2,39 +2,55 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/_latestVersion)
 
-Kotlin Simple Architecture is a library to develop simple and easy in Kotlin Multiplatform
+Kotlin Simple Architecture is a library for simple and easy development in Kotlin Multiplatform
+
+# Index
+- [Features](https://github.com/dss99911/kotlin-simple-architecture#features)
+- [Dependency](https://github.com/dss99911/kotlin-simple-architecture#dependency)
+- [Introduction](https://github.com/dss99911/kotlin-simple-architecture#introduction)
+    - [Simple Api](https://github.com/dss99911/kotlin-simple-architecture#simple-api)
+    - [Api Binding](https://github.com/dss99911/kotlin-simple-architecture#api-binding)
+    - [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
+    - [Sign-in/Sign-up, OAuth(google, facebook, etc)](https://github.com/dss99911/kotlin-simple-architecture#sign-insign-up-oauthgoogle-facebook-etc)
+    - [Deeplink](https://github.com/dss99911/kotlin-simple-architecture#deeplink)
+- [Sample](https://github.com/dss99911/kotlin-simple-architecture#sample)
+- [Setup](https://github.com/dss99911/kotlin-simple-architecture#setup)
+
 
 # Features
 
-- [API Interface](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api)
+- [Simple Api](https://github.com/dss99911/kotlin-simple-architecture#simple-api)
 - [API Binding](https://github.com/dss99911/kotlin-simple-architecture#api-binding)
 - [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
 - [Sign-in/Sign-up, OAuth(google, facebook, etc)](https://github.com/dss99911/kotlin-simple-architecture#sign-insign-up-oauthgoogle-facebook-etc)
 - [Deeplink](https://github.com/dss99911/kotlin-simple-architecture#deeplink)
 
 # Dependency
+
 - [Ktor](https://github.com/ktorio/ktor)
 - [Sqldelight](https://github.com/cashapp/sqldelight)
 - [Jetpack Compose](https://developer.android.com/jetpack/compose)(for Android)
 - [SwiftUI 2.0](https://developer.apple.com/xcode/swiftui/)(for Ios)
 
 # Introduction
-- The sample code is [here](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
-- Sample android application to install [here](https://play.google.com/store/apps/details?id=kim.jeonghyeon.sample.compose)
-## API Interface
-- Share api interface by client, server both
-- You can call api like suspend function
+
+## Simple Api
+- Simple Api uses interface for api call similar with [Retrofit](https://square.github.io/retrofit/)
+- It shares api interface between client, server both
+- You can call api just like function
     - No Http definition like GET, POST, Query, Body(if required, you can set it as well)
-    - So, simply make function. and client use the function and server implement the function. that's it.
+    - So, You just simply make function on interface. and client call the function and server implement the function. that's it.
 - If you have to define Http request(like calling external api), it's also available
-    - Check this [sample](https://github.com/dss99911/kotlin-simple-architecture/blob/master/sample/sample-base/src/commonMain/kotlin/kim/jeonghyeon/sample/api/GithubApi.kt)
+    - Check [Define Http Request](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api#define-http-request)
 - How to handle error?
     - Let's think about calling function, what function return when it's error?
     - It just throw exception instead of returning data which contains error status.
     - So, calling api also doesn't require to return response which contains error status. just throw exception
+    - For how to handle on viewModel, check [MVVM on Multiplatform](https://github.com/dss99911/kotlin-simple-architecture#mvvm-on-multiplatform)
+
+Refer to [Simple Api Detail](https://github.com/dss99911/kotlin-simple-architecture/tree/master/api)
 
 common
-
 ```kotlin
 @Api
 interface SampleApi {
@@ -45,10 +61,19 @@ interface SampleApi {
 client
 
 ```kotlin
+val client: HttpClient = HttpClient {
+    install(JsonFeature) {
+        //set your serializer
+        serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+            ignoreUnknownKeys = true
+        })
+    }
+}
+
 inline fun <reified API> api(baseUrl: String = serverUrl): API = client.create(baseUrl)
 
 scope.launch {
-    api<SampleApi>().getGreeting("Hyun", "Programmer")
+    val greeting = api<SampleApi>().getGreeting("Hyun", "Programmer")
 }
 
 ```
@@ -61,12 +86,9 @@ class SampleController : SampleApi {
     override suspend fun getGreeting(name: String, job: String): String = "Hello $name($job)"
 }
 
-install(SimpleFeature) {
-    routing {
-        +SampleController()
-    }
+install(SimpleRouting) {
+    +SampleController()
 }
-
 
 ```
 
@@ -383,6 +405,9 @@ class SampleController : SampleApi {
 }
 
 ```
+
+# Sample
+- [Common Sample](https://github.com/dss99911/kotlin-simple-architecture/tree/master/sample)
 
 # Setup
 

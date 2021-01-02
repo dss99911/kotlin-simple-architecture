@@ -1,6 +1,13 @@
 This is sample of Kotlin Simple Architecture
 
-This covers some common use cases below
+Download [Sample android application](https://play.google.com/store/apps/details?id=kim.jeonghyeon.sample.compose)
+
+# Used Framework & Library
+- Android - Jetpack Compose
+- IOS - SwiftUi 2.0
+- Backend - Ktor
+
+# This covers some common use cases below
 
 - Single Api Call
 - Sequential Api Call
