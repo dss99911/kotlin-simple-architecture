@@ -98,8 +98,8 @@ kotlin {
 
                 api(deps.sqldelight.android)
                 api(deps.android.timber)
-                api(deps.android.accompanist.coil)
-                api(deps.android.accompanist.insets)
+//                api(deps.android.accompanist.coil)
+//                api(deps.android.accompanist.insets)
             }
         }
 
