@@ -82,7 +82,10 @@ object deps {
             const val uiTest = "androidx.compose.ui:ui-test-junit4:${versions.android.compose}"
         }
 
-
+        object accompanist {
+            const val coil = "dev.chrisbanes.accompanist:accompanist-coil:${versions.android.accompanist}"
+            const val insets = "dev.chrisbanes.accompanist:accompanist-insets:${versions.android.accompanist}"
+        }
     }
 
     object simpleArch {

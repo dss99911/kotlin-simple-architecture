@@ -243,7 +243,7 @@ class ApiGenerator(
                         import io.ktor.client.HttpClient
                         import kim.jeonghyeon.net.*
 
-                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = SimpleApiCustom.run { client.getAdapter() }): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = SimpleApiCustom.run { getAdapter() }): T
 
                         """.trimIndent()
                     )
@@ -272,7 +272,7 @@ class ApiGenerator(
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = SimpleApiCustom.run { client.getAdapter() }"}): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = SimpleApiCustom.run { getAdapter() }"}): T {
                 |
                 |    return when (T::class) {
                 |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, requestResponseAdapter) as T" }.prependIndent("        ")}
