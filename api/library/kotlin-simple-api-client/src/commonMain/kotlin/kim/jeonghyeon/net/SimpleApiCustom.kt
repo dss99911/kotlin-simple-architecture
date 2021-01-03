@@ -32,8 +32,8 @@ class SimpleApiCustom internal constructor(val config: Config) {
 
         }
 
-        fun HttpClient.getAdapter(): RequestResponseAdapter? {
-            return feature(SimpleApiCustom)?.config?.adapter
+        fun getAdapter(client: HttpClient): RequestResponseAdapter? {
+            return client.feature(SimpleApiCustom)?.config?.adapter
         }
 
         val NoConfig = Config()
