@@ -428,7 +428,7 @@ buildscript {
         //for android, if not use Jetpack compose
         classpath("com.android.tools.build:gradle:4.1.1")
         //for android, if use Jetpack compose
-        classpath("com.android.tools.build:gradle:7.0.0-alpha02")
+        classpath("com.android.tools.build:gradle:7.0.0-alpha03")
 
         //for backend (creating jar of backend)
         classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")

@@ -13,6 +13,13 @@ kotlin {
     js()/*.browser()*/
 
     ios()
+
+    sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+        }
+    }
+
 }
 
 publishMPP()

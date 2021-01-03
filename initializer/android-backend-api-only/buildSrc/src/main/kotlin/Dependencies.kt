@@ -1,9 +1,9 @@
 object versions {
-    const val simpleArch = "1.4.5"
+    const val simpleArch = "1.4.51"
 
     object kotlin {
         const val version = "1.4.20"
-        const val ktor = "1.4.3"
+        const val ktor = "1.5.0"
     }
 
     object android {
