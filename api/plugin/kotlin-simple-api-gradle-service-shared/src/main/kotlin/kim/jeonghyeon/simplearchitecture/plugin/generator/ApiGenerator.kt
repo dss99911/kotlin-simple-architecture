@@ -78,7 +78,7 @@ class ApiGenerator(
         """.trimMargin()
 
     private fun SharedKtClass.makeClassDefinition() =
-        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String, val requestResponseAdapter: RequestResponseAdapter?) : $name"
+        "class ${getApiImplementationName(name)}(val client: HttpClient, val baseUrl: String) : $name"
 
     private fun SharedKtClass.makeMainPathProperty(): String {
 
@@ -139,6 +139,7 @@ class ApiGenerator(
         |        ${parameters.map { it.toParameterInfo() }.joinToString(",\n        ")}
         |    )
         |)
+        |val requestResponseAdapter: RequestResponseAdapter? = SimpleApiCustom.getAdapter(client)
         |return client.callApi(callInfo, if (requestResponseAdapter == null) ${if (pluginOptions.useFramework) "SimpleApiCustom.NoConfig.getArchitectureAdapter()" else "SimpleApiCustom.NoConfig.getApiAdapter()"} else requestResponseAdapter)
         """.trimMargin()
     }
@@ -243,7 +244,7 @@ class ApiGenerator(
                         import io.ktor.client.HttpClient
                         import kim.jeonghyeon.net.*
 
-                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter? = SimpleApiCustom.run { getAdapter() }): T
+                        expect inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T
 
                         """.trimIndent()
                     )
@@ -272,10 +273,10 @@ class ApiGenerator(
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}" }}
                 |${joinToString("\n") { "import ${if (it.packageName.isEmpty()) "" else "${it.packageName}."}${it.name}Impl" }}
                 |
-                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String, requestResponseAdapter: RequestResponseAdapter?${if (pluginOptions.isMultiplatform) "" else " = SimpleApiCustom.run { getAdapter() }"}): T {
+                |${if (pluginOptions.isMultiplatform) "actual " else ""}inline fun <reified T> HttpClient.create${pluginOptions.postFix.capitalize()}(baseUrl: String): T {
                 |
                 |    return when (T::class) {
-                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl, requestResponseAdapter) as T" }.prependIndent("        ")}
+                |${joinToString("\n") { "${it.name}::class -> ${it.name}Impl(this, baseUrl) as T" }.prependIndent("        ")}
                 |
                 |        else -> ${getElseStatement()}
                 |    }
@@ -304,9 +305,9 @@ class ApiGenerator(
 
     fun getElseStatement(): String {
         //api -> error("can not create " + T::class.simpleName)
-        //architecture -> createSimple<T>(baseUrl, requestResponseAdapter)
-        //other with api -> createSimple<T>(baseUrl, requestResponseAdapter)
-        //other with architecture -> createSimpleFramework<T>(baseUrl, requestResponseAdapter)
+        //architecture -> createSimple<T>(baseUrl)
+        //other with api -> createSimple<T>(baseUrl)
+        //other with architecture -> createSimpleFramework<T>(baseUrl)
         val isApi = pluginOptions.isInternal && !pluginOptions.useFramework
         val isArchitecture = pluginOptions.isInternal && pluginOptions.useFramework
         val isOtherWithApi = !pluginOptions.isInternal && !pluginOptions.useFramework
@@ -314,9 +315,9 @@ class ApiGenerator(
         return if (isApi) {
             "error(\"can not create \" + T::class.simpleName)"
         } else if (isArchitecture || isOtherWithApi) {
-            "createSimple<T>(baseUrl, requestResponseAdapter)"
+            "createSimple<T>(baseUrl)"
         } else {
-            "createSimpleFramework<T>(baseUrl, requestResponseAdapter)"
+            "createSimpleFramework<T>(baseUrl)"
         }
     }
 }

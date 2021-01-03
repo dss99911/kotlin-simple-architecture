@@ -1,5 +1,5 @@
 object versions {
-    const val simpleArch = "1.4.51"
+    const val simpleArch = "1.4.52"
 
     object kotlin {
         const val version = "1.4.20"
