@@ -3,7 +3,7 @@ object versions {
 
     object kotlin {
         const val version = "1.4.20"
-        const val ktor = "1.4.3"
+        const val ktor = "1.5.0"
     }
 
     object android {
