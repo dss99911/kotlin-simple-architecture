@@ -1,7 +1,7 @@
 # Kotlin Simple Architecture
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Download](https://api.bintray.com/packages/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/images/download.svg) ](https://bintray.com/hyun/kotlin-simple-architecture/kotlin-simple-architecture-client/_latestVersion)
-![kotlin-version](https://img.shields.io/badge/kotlin-1.4.21-orange)<br/>
+![kotlin-version](https://img.shields.io/badge/kotlin-1.4.31-orange)<br/>
 Kotlin Simple Architecture is a library for simple and easy development in Kotlin Multiplatform
 
 # Table of Contents
@@ -428,7 +428,7 @@ buildscript {
         //for android, if not use Jetpack compose
         classpath("com.android.tools.build:gradle:4.1.1")
         //for android, if use Jetpack compose
-        classpath("com.android.tools.build:gradle:7.0.0-alpha03")
+        classpath("com.android.tools.build:gradle:7.0.0-alpha09")
 
         //for backend (creating jar of backend)
         classpath("com.github.jengelman.gradle.plugins:shadow:5.1.0")

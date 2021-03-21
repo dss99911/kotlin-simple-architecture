@@ -1,11 +1,11 @@
 object versions {
-    const val simpleArch = "1.4.52"
+    const val simpleArch = "1.4.60"
 
     object kotlin {
-        const val version = "1.4.21"
+        const val version = "1.4.31"
         const val coroutine = "1.4.2-native-mt"
-        const val ktor = "1.5.0"
-        const val serialization = "1.0.1"
+        const val ktor = "1.5.2"
+        const val serialization = "1.1.0"
     }
 
     object android {
@@ -13,8 +13,8 @@ object versions {
         const val xBase = "1.1.0"
         const val xTest = "1.2.0"
         const val material = "1.1.0"
-        const val compose = "1.0.0-alpha09"
-        const val accompanist = "0.4.1"
+        const val compose = "1.0.0-beta02"
+        const val accompanist = "0.6.2"
     }
 
     const val shadow = "5.1.0"
